@@ -45,7 +45,7 @@ def create_app(config_class: type[Config] = Config):
     @app.route("/")
     def home():
         if current_user.is_authenticated:
-            return redirect(url_for("user_bp.index"))  # Adjust blueprint name
+            return redirect(url_for("tbl_users.index"))  # Adjust blueprint name
         return redirect(url_for("auth.login"))
     
     # Create tables (dev only)

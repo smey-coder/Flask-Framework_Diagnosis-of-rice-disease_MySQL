@@ -4,6 +4,7 @@ from wtforms import BooleanField, StringField, SubmitField, PasswordField, Selec
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from config import Config
 from extensions import db
+from app.models.user import UserTable
 
 def strong_password(form, field):
     """"Requirement: min 8 chars, apper, lower, digit, special."""
@@ -71,16 +72,12 @@ class UserCreateForm(FlaskForm):
     # ---------- server-side uniqueness checks ---------
     
     def validate_username(self, field):
-        exists = db.session.scalar(
-            db.select(Config).filter(Config.username == field.data)
-        )
+        exists = UserTable.query.filter_by(username=field.data).first()
         if exists:
             raise ValidationError("This username is already taken.")
         
     def validate_email(self, field):
-        exists = db.session.scalar(
-            db.select(Config).filter(Config.email == field.data)
-        )
+        exists = UserTable.query.filter_by(email=field.data).first()
         if exists:
             raise ValidationError("This email is already taken.")
         
@@ -123,14 +120,12 @@ class UserEditForm(FlaskForm):
         super().__init__(*args, **kwargs)
         self.original_user = original_user
     def validate_username(self, field):
-        q = db.select(Config).filter(Config.username == field.data, Config.id != self.original_user.id)
-        exists = db.session.scalar(q)
+        exists = UserTable.query.filter(UserTable.username == field.data, UserTable.id != self.original_user.id).first()
         if exists:
             raise ValidationError("This username is already taken.")
 
     def validate_email(self, field):
-        q = db.select(Config).filter(Config.email == field.data, Config.id != self.original_user.id)
-        exists = db.session.scalar(q)
+        exists = UserTable.query.filter(UserTable.email == field.data, UserTable.id != self.original_user.id).first()
         if exists:
             raise ValidationError("This email is already taken.")
 
