@@ -1,0 +1,44 @@
+{% extends "layouts/base.html" %}
+{% block title %}Verify Email{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='images/verify.png') }}"
+                 alt="OTP Illustration"
+                 class="img-fluid"
+                 style="max-width: 120px;">
+        </div>
+
+        <h3 class="text-center mb-3">Verify OTP</h3>
+
+        <p class="text-center text-muted mb-4">
+            Verification code has been sent to <strong>{{ email }}</strong>
+        </p>
+
+
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Enter OTP</label>
+                <input type="text"
+                       name="otp"
+                       class="form-control text-center fs-5"
+                       maxlength="6"
+                       placeholder="XXXXXX"
+                       required>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-2">
+                Verify Code
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="{{ url_for('auth.forget_password') }}" class="text-decoration-none small">
+                Resend OTP
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

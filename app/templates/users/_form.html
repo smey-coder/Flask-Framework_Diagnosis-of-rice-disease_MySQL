@@ -1,0 +1,93 @@
+{{ form.hidden_tag() }}
+
+<div class="mb-3">
+    {{ form.username.label(class="form-label")}}
+    {{ form.username(class="form-control")}}
+    {% if form.username.error %}
+     <div class="text-danger small">
+        {% for error in form.username.errors %}
+           <div>{{ error }}</div>
+        {% endfor %}
+     </div>
+     {% endif %}
+</div>
+
+<div class="mb-3">
+    {{ form.email.label(class="form-label")}}
+    {{ form.email(class="form-control")}}
+    {% if form.email.error %}
+     <div class="text-danger small">
+        {% for error in form.email.errors %}
+           <div>{{ error }}</div>
+        {% endfor %}
+     </div>
+     {% endif %}
+</div>
+
+<div class="mb-3">
+    {{ form.full_name.label(class="form-label")}}
+    {{ form.full_name(class="form-control")}}
+    {% if form.full_name.error %}
+     <div class="text-danger small">
+        {% for error in form.full_name.errors %}
+           <div>{{ error }}</div>
+        {% endfor %}
+     </div>
+     {% endif %}
+</div>
+
+<div class="mb-3">
+   {{ form.is_active(class="form-check-input")}}
+   {{ form.is_active.label(class="form-check-label")}}
+</div>
+
+<div class="mb-3">
+   {{form.role_id.label(class="form-label")}}
+   {{ form.role_id(class="form-select")}}
+   {% if form.role_id.error %}
+     <div class="text-danger small">
+        {% for error in form.role_id.errors %}
+           <div>{{ error }}</div>
+        {% endfor %}
+     </div>
+     {% endif %}
+</div>
+{# Password fields (may be required or optional)#}
+
+<div class="mb-3">
+    {{ form.password.label(class="form-label")}}
+    {{ form.password(class="form-control")}}
+    {% if form.password.error %}
+     <div class="text-danger small">
+        {% for error in form.password.errors %}
+           <div>{{ error }}</div>
+        {% endfor %}
+     </div>
+     {% endif %}
+</div>
+
+<div class="mb-3">
+    {{ form.confirm_password.label(class="form-label")}}
+    {{ form.confirm_password(class="form-control")}}
+    {% if form.confirm_password.error %}
+     <div class="text-danger small">
+        {% for error in form.confirm_password.errors %}
+           <div>{{ error }}</div>
+        {% endfor %}
+     </div>
+     {% endif %}
+</div>
+
+<div class="mb-3">
+   <button type="submit" class="btn btn-primary">
+      {% if form.submit.label.text == 'Save' %}
+         <i class="bi bi-save me-1"></i>
+      {% else %}
+         <i class="bi bi-check2 me-1"></i>
+      {% endif %}
+      {{ form.submit.label.text }}
+   </button>
+   <a href="{{ url_for('tbl_users.index')}}" class="btn btn-outline-secondary">
+      Cancel
+   </a>
+</div>
