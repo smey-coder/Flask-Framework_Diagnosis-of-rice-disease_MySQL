@@ -4,7 +4,7 @@
    <div class="mb-3">
       {{ form.name.label(class="form-label")}}
       {{ form.name(class="form-control")}}
-      {% if form.name.error %}
+      {% if form.name.errors %}
       <div class="text-danger small">
          {% for error in form.name.errors %}
             <div>{{ error }}</div>
