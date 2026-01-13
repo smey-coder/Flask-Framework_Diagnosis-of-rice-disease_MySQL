@@ -11,6 +11,7 @@ class UserTable(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     full_name = db.Column(db.String(80), nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    email_verified = db.Column(db.Boolean, default=False, nullable=False)
     #NEW: store only the hash, never plain text
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -40,6 +41,14 @@ class UserTable(UserMixin, db.Model):
             and self.reset_code_expire
             and self.reset_code_expire >= datetime.utcnow()
         )
+    
+    #  # ------------------- EMAIL VERIFICATION -------------------
+    # def mark_email_verified(self) -> None:
+    #     """Mark user as verified and active."""
+    #     self.email_verified = True
+    #     self.is_active = True
+    #     self.reset_code = None
+    #     self.reset_code_expire = None
     
     def has_role(self, role_name: str) -> bool:
         return any(role.name == role_name for role in self.roles)

@@ -2,179 +2,132 @@ import re
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField, SubmitField, PasswordField, SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
-from config import Config
 from extensions import db
 from app.models.user import UserTable
 from app.models.role import RoleTable
 
+# ------------------ Password strength validator ------------------
 def strong_password(form, field):
-    """"Requirement: min 8 chars, apper, lower, digit, special."""
-
+    """Requirement: min 8 chars, uppercase, lowercase, digit, special."""
     password = field.data or ""
-
     if not password:
         return
     if len(password) < 8:
         raise ValidationError("Password must be at least 8 characters long.")
     if not re.search(r"[A-Z]", password):
         raise ValidationError("Password must contain at least one uppercase letter.")  
-    
     if not re.search(r"[a-z]", password):
         raise ValidationError("Password must contain at least one lowercase letter.")  
-    
     if not re.search(r"[0-9]", password):
         raise ValidationError("Password must contain at least one digit.")
-    
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>_\-+=]", password):
         raise ValidationError("Password must contain at least one special character.")
-    
+
+
+# ------------------ Role select choices ------------------
 def _role_choices():
-    """Return list of tuples for role select field."""
     return [
         (role.id, role.name)
-        for role in db.session.scalars(
-            db.select(RoleTable).order_by(RoleTable.name)
-        )
+        for role in db.session.scalars(db.select(RoleTable).order_by(RoleTable.name))
     ]
+
+
+# ------------------ User Create Form ------------------
 class UserCreateForm(FlaskForm):
-    username = StringField(
-        "Username",
-        validators=[DataRequired(), Length(min=3, max=80)],
-        render_kw={"placeholder": "Enter username"},
-    )
-    email = StringField(
-        "Email",
-        validators=[DataRequired(), Email(), Length(max=120)],
-        render_kw={"placeholder": "Enter email"},
-    )
-    full_name = StringField(
-        "Full name",
-        validators=[DataRequired(), Length(min=3, max=120)],
-        render_kw={"placeholder": "Enter full name"},
-    )
+    username = StringField("Username", validators=[DataRequired(), Length(min=3, max=80)])
+    email = StringField("Email", validators=[DataRequired(), Email(), Length(max=120)])
+    full_name = StringField("Full Name", validators=[DataRequired(), Length(min=3, max=120)])
     is_active = BooleanField("Active", default=True)
-    
-    role_id = SelectField(
-        "Role",
-        coerce=int,
-        choices=[],
-        render_kw={"placeholder": "Select role"},
-    )
-    password = PasswordField(
-        "Password",
-        validators=[
-            DataRequired(), 
-            strong_password],
-        render_kw={"placeholder": "Strong password"},
-    )
-    confirm_password = PasswordField(
-        "Confirm password",
-        validators=[
-            DataRequired(),
-            EqualTo("password", message="Passwords must match.")
-        ],
-        render_kw={"placeholder": "Confirm password"},
-    )
-    
+    role_id = SelectField("Role", coerce=int, choices=[])
+    password = PasswordField("Password", validators=[DataRequired(), strong_password])
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password")])
     submit = SubmitField("Save")
-    
-    # ---------- server-side uniqueness checks ---------
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.role_id.choices = _role_choices()
-    
+
     def validate_username(self, field):
-        exists = db.session.scalar(
-            db.select(UserTable).filter(UserTable.username == field.data)
-        )
-        if exists:
+        if db.session.scalar(db.select(UserTable).filter(UserTable.username == field.data)):
             raise ValidationError("This username is already taken.")
-        
+
     def validate_email(self, field):
-        exists = db.session.scalar(
-            db.select(UserTable).filter(UserTable.email == field.data)
-        )
-        if exists:
+        if db.session.scalar(db.select(UserTable).filter(UserTable.email == field.data)):
             raise ValidationError("This email is already taken.")
-        
-        
-# --------- edit form (password optional) -------------
+
+
+# ------------------ User Edit Form ------------------
 class UserEditForm(FlaskForm):
-    username = StringField(
-        "Username",
-        validators=[DataRequired(), Length(min=3, max=80)],
-    )
-    email = StringField(
-        "Email",
-        validators=[DataRequired(), Length(max=120)],
-    )
-    full_name = StringField(
-        "Full name",
-        validators=[DataRequired(), Length(min=3, max=120)],
-    )
+    username = StringField("Username", validators=[DataRequired(), Length(min=3, max=80)])
+    email = StringField("Email", validators=[DataRequired(), Length(max=120)])
+    full_name = StringField("Full Name", validators=[DataRequired(), Length(min=3, max=120)])
     is_active = BooleanField("Active")
-    
-    # -------- optional password - only change if filled
-    role_id = SelectField(
-        "Role",
-        coerce=int,
-        validators=[DataRequired()],
-    )
-    password = PasswordField(
-        "New password (leave blank to keep current)",
-        validators=[strong_password],
-        render_kw={"placeholder": "New strong password (optional)"},
-    )
-    confirm_password = PasswordField(
-        "Confirm new password",
-        validators=[EqualTo("password", message="Passwords must match.")]
-    )
-    
+    role_id = SelectField("Role", coerce=int, validators=[DataRequired()])
+    password = PasswordField("New Password (leave blank to keep current)", validators=[strong_password])
+    confirm_password = PasswordField("Confirm New Password", validators=[EqualTo("password")])
     submit = SubmitField("Update")
-    
+
     def __init__(self, original_user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.original_user = original_user
         self.role_id.choices = _role_choices()
+        if not self.is_submitted() and original_user.roles:
+            self.role_id.data = original_user.roles[0].id
 
-        if not self.is_submitted():
-            if original_user.roles:
-                self.role_id.data = original_user.roles[0].id
-            else:
-                self.role_id.data = None
-        
     def validate_username(self, field):
-        q = db.select(UserTable).filter(
-            UserTable.username == field.data,
-            UserTable.id != self.original_user.id
-        )
-        exists = db.session.scalar(q)
-        if exists:
+        if db.session.scalar(db.select(UserTable).filter(UserTable.username == field.data, UserTable.id != self.original_user.id)):
             raise ValidationError("This username is already taken.")
 
     def validate_email(self, field):
-        q = db.select(UserTable).filter(
-            UserTable.email == field.data,
-            UserTable.id != self.original_user.id
-        )
-        exists = db.session.scalar(q)
-        if exists:
+        if db.session.scalar(db.select(UserTable).filter(UserTable.email == field.data, UserTable.id != self.original_user.id)):
             raise ValidationError("This email is already registered.")
 
+
+# ------------------ User Confirm Delete Form ------------------
 class UserConfirmDeleteForm(FlaskForm):
     submit = SubmitField("Confirm Delete")
-    
 
+
+# ------------------ Login Form ------------------
 class LoginForm(FlaskForm):
-    username = StringField(
-        "Username",
-        validators=[DataRequired()],
-        render_kw={"placeholder": "Enter your username"},
-    )
-    password = PasswordField(
-        "Password",
-        validators=[DataRequired()],
-        render_kw={"placeholder": "Enter your password"},
-    )
-    is_active = BooleanField("Remember me", default=True)
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    remember_me = BooleanField("Remember Me", default=True)
     submit = SubmitField("Login")
+
+
+# ------------------ Register Form ------------------
+# class RegisterForm(FlaskForm):
+#     username = StringField("Username", validators=[DataRequired(), Length(min=3, max=80)])
+#     email = StringField("Email", validators=[DataRequired(), Email(), Length(max=120)])
+#     full_name = StringField("Full Name", validators=[DataRequired(), Length(min=3, max=120)])
+#     password = PasswordField("Password", validators=[DataRequired(), strong_password])
+#     confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password")])
+#     submit = SubmitField("Register")
+
+#     def validate_username(self, field):
+#         if db.session.scalar(db.select(UserTable).filter(UserTable.username == field.data)):
+#             raise ValidationError("This username is already taken.")
+
+#     def validate_email(self, field):
+#         if db.session.scalar(db.select(UserTable).filter(UserTable.email == field.data)):
+#             raise ValidationError("This email is already taken.")
+
+
+# # ------------------ Forget Password Form ------------------
+# class ForgetPasswordForm(FlaskForm):
+#     email = StringField("Email", validators=[DataRequired(), Email(), Length(max=120)])
+#     submit = SubmitField("Send OTP")
+
+
+# # ------------------ OTP Verification Form ------------------
+# class OTPForm(FlaskForm):
+#     otp = StringField("OTP", validators=[DataRequired(), Length(min=6, max=6)])
+#     submit = SubmitField("Verify")
+
+
+# # ------------------ Reset Password Form ------------------
+# class ResetPasswordForm(FlaskForm):
+#     password = PasswordField("New Password", validators=[DataRequired(), strong_password])
+#     confirm_password = PasswordField("Confirm New Password", validators=[DataRequired(), EqualTo("password")])
+#     submit = SubmitField("Reset Password")

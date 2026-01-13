@@ -32,6 +32,7 @@ class UserService:
         db.session.add(user)
         db.session.commit()
         return user
+
     
     @staticmethod
     def update_user(user: UserTable, data: dict, password: Optional[str] = None,

@@ -3,64 +3,63 @@
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height:90vh;">
-    <div class="card shadow border-0" style="width: 380px; border-radius: 20px; overflow:hidden;">
+    <div class="card shadow-lg border-0" style="width: 380px; border-radius: 18px; overflow:hidden;">
 
         <!-- Top Image -->
         <div style="height:200px; overflow:hidden;">
             <img src="{{ url_for('static', filename='images/logo_login.jpg') }}" 
-                 alt="Login image"
+                 alt="Login banner"
                  class="w-100 h-100"
                  style="object-fit:cover;">
         </div>
 
         <!-- Card Body -->
-        <div class="card-body p-4 text-center">
+        <div class="card-body p-4">
 
-            <h3 class="fw-bold fst-italic mb-4">Sign In</h3>
+            <h3 class="fw-bold fst-italic text-center mb-4">Sign In</h3>
 
             <form method="POST" action="{{ url_for('auth.login') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-                <!-- Email / Username -->
                 <div class="mb-3 text-start">
-                    <label class="form-label fw-semibold">Email:</label>
-                    <input type="text"
-                           name="username"
-                           class="form-control rounded-pill px-3"
-                           placeholder="Enter email"
-                           required>
+                    <label for="username" class="form-label fw-semibold">Username</label>
+                    <input 
+                        type="text"
+                        class="form-control"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        required
+                        autofocus>
                 </div>
 
-                <!-- Password -->
-                <div class="mb-2 text-start">
-                    <label class="form-label fw-semibold">Password:</label>
-                    <input type="password"
-                           name="password"
-                           class="form-control rounded-pill px-3"
-                           placeholder="Enter password"
-                           required>
+                <div class="mb-3 text-start">
+                    <label for="password" class="form-label fw-semibold">Password</label>
+                    <input 
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required>
                 </div>
 
-                <!-- Forgot -->
                 <div class="text-end mb-3">
-                    <a href="{{ url_for('auth.forget_password') }}"
-                       class="small text-primary text-decoration-none">
-                        Forgot Password?
+                    <a href="{{ url_for('auth.forget_password') }}" class="small text-decoration-none">
+                        Forgot password?
                     </a>
                 </div>
 
-                <!-- Button -->
                 <div class="d-grid mb-3">
-                    <button type="submit"
-                            class="btn btn-primary rounded-pill fw-semibold">
-                        LOGIN
+                    <button type="submit" class="btn btn-primary fw-semibold">
+                        Log In
                     </button>
                 </div>
             </form>
 
-            <p class="small mb-0">
+            <p class="small text-center mb-0">
                 Don’t have an account?
-                <a href="{{ url_for('auth.register') }}" class="fw-semibold text-primary">
+                <a href="{{ url_for('auth.register') }}" class="fw-semibold text-primary text-decoration-none">
                     Sign Up
                 </a>
             </p>

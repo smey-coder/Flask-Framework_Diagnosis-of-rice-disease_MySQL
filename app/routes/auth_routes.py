@@ -36,6 +36,7 @@ def login():
 
 # ===================== REGISTER =====================
 @auth_bp.route("/register", methods=["GET", "POST"])
+@csrf.exempt
 def register():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
