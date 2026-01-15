@@ -18,6 +18,6 @@ class Config:
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = (
-        os.environ.get("MAIL_SENDER_NAME", "OTP SYSTEM"),
-        os.environ.get("MAIL_USERNAME")  # Ensure this matches Gmail username
+        os.environ.get("MAIL_SENDER_NAME", "Welcome to Rice Disease Diagnosis System 🌾"),
+        os.environ.get("MAIL_USERNAME")  #  this matches Gmail username
     )

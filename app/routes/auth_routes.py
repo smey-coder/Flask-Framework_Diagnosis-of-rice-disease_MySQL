@@ -68,8 +68,8 @@ def register():
                 flash(e, "danger")
             return render_template("auth/register.html", **request.form)
 
-        default_role = RoleTable.query.filter_by(name="User").first()
-        default_role_id = default_role.id if default_role else None
+        # default_role = RoleTable.query.filter_by(name="User").first()
+        # default_role_id = default_role.id if default_role else None
 
         new_user = UserService.create_user(
             data={
@@ -79,7 +79,7 @@ def register():
                 "is_active": True,
             },
             password=password,
-            role_id=default_role_id,
+            # role_id=default_role_id,
         )
 
         login_user(new_user)
