@@ -35,17 +35,34 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.role_routes import role_bp
     from app.routes.permission_routes import permission_bp
     from app.routes.auth_routes import auth_bp
+    from app.routes.admin_route import admin_bp
+    from app.routes.expert_route import expert_bp
+    from app.routes.user_route import user_bp as user_dashboard_bp
+    from app.routes.disease_route import disease_bp
+    from app.routes.symptom_routes import symptom_bp   
 
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(expert_bp)
+    app.register_blueprint(user_dashboard_bp)
+    app.register_blueprint(disease_bp)
+    app.register_blueprint(symptom_bp)
     
     # Home redirect
     @app.route("/")
     def home():
         if current_user.is_authenticated:
-            return redirect(url_for("tbl_users.index"))  # Adjust blueprint name
+            # Redirect based on user role
+            
+            if current_user.has_role("Admin"):
+                return redirect(url_for("admin.dashboard"))
+            elif current_user.has_role("Expert"):
+                return redirect(url_for("expert.dashboard"))
+            else:
+                return redirect(url_for("user.dashboard"))
         return redirect(url_for("auth.login"))
     
     # Create tables (dev only)

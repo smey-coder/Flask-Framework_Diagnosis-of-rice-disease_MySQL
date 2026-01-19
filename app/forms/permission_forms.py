@@ -3,7 +3,9 @@ from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError
 
 from app.models.permission import PermissionTable
+from app.models.role import RoleTable
 from extensions import db
+from app.forms.multi_checkbox_field import MultiCheckboxField
 
 MODULE_CHOICES = [
     ("Users", "Users"),
@@ -103,3 +105,84 @@ class PermissionEditForm(FlaskForm):
 
 class PermissionConfirmDeleteForm(FlaskForm):
     submit = SubmitField("Confirm Delete")
+
+
+def _role_choices():
+    """Get all available roles for permission assignment."""
+    return [
+        (role.id, role.name)
+        for role in db.session.scalars(
+            db.select(RoleTable).order_by(RoleTable.name)
+        )
+    ]
+
+
+class AssignPermissionToRoleForm(FlaskForm):
+    """Form to assign permissions to roles."""
+    role_id = SelectField(
+        "Select Role",
+        coerce=int,
+        validators=[DataRequired()],
+        render_kw={"class": "form-control"},
+    )
+    
+    submit = SubmitField("Assign Permission")
+    
+    def __init__(self, permission: PermissionTable, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.permission = permission
+        self.role_id.choices = _role_choices()
+    
+    def validate_role_id(self, field):
+        """Check if role already has this permission."""
+        role = db.session.get(RoleTable, field.data)
+        if role and self.permission in role.permissions:
+            raise ValidationError(f"Role '{role.name}' already has this permission.")
+
+
+class RemovePermissionFromRoleForm(FlaskForm):
+    """Form to remove permissions from roles."""
+    role_id = SelectField(
+        "Select Role",
+        coerce=int,
+        validators=[DataRequired()],
+        render_kw={"class": "form-control"},
+    )
+    
+    submit = SubmitField("Remove Permission")
+    
+    def __init__(self, permission: PermissionTable, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.permission = permission
+        # Only show roles that have this permission
+        roles_with_perm = db.session.scalars(
+            db.select(RoleTable).filter(RoleTable.permissions.contains(permission))
+        )
+        self.role_id.choices = [(r.id, r.name) for r in roles_with_perm]
+
+
+class BulkAssignPermissionsForm(FlaskForm):
+    """Form to assign multiple permissions to a role."""
+    role_id = SelectField(
+        "Select Role",
+        coerce=int,
+        validators=[DataRequired()],
+        render_kw={"class": "form-control"},
+    )
+    
+    permission_ids = MultiCheckboxField(
+        "Select Permissions",
+        coerce=int,
+    )
+    
+    submit = SubmitField("Assign Permissions")
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.role_id.choices = _role_choices()
+        self.permission_ids.choices = [
+            (perm.id, f"{perm.code} - {perm.name}")
+            for perm in db.session.scalars(
+                db.select(PermissionTable).order_by(PermissionTable.code)
+            )
+        ]

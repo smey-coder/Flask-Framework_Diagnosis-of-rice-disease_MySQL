@@ -25,9 +25,20 @@ def login():
                 return redirect(url_for("auth.login"))
 
             login_user(user)
-            flash("Logged in successfully.", "success")
-            return redirect(url_for("tbl_users.index"))
-
+            flash(f"Welcome back, {user.full_name}!", "success")
+            
+            # Role-based redirection
+            if user.has_role("Admin"):
+                return redirect(url_for("admin.dashboard"))
+            elif user.has_role("Expert"):
+                return redirect(url_for("expert.dashboard"))
+            elif user.has_role("User"):
+                return redirect(url_for("user.dashboard"))
+            
+            flash("No role assigned. Contact administrator.", "warning")
+            return redirect(url_for("auth.login"))
+                
+            
         flash("Invalid username or password.", "danger")
         return redirect(url_for("auth.login"))
 
@@ -84,7 +95,7 @@ def register():
 
         login_user(new_user)
         flash("Account created successfully.", "success")
-        return redirect(url_for("tbl_users.index"))
+        return redirect(url_for("auth.login"))
 
     return render_template("auth/register.html")
 

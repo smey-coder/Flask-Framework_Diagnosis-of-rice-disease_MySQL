@@ -1,0 +1,10 @@
+{% extends "layouts/admin_layout/admin.html"%}
+{% block title %}Edit Symptom {{ symptom.symptom_name}}{% endblock %}
+
+
+{% block content %}
+<h1 class="h3 mb-3">Edit Symptom: {{ symptom.symptom_name}}</h1>
+<form method="post">
+    {% include "symptom_page/_form.html"%}
+</form>
+{% endblock %}

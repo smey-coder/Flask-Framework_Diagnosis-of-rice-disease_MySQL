@@ -1,0 +1,42 @@
+{% extends "layouts/admin_layout/admin.html"%}
+
+{% block title %}Delete Disease - Rice Disease Diagnosis System{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Confirm Deletion
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Are you sure you want to delete the disease <strong>{{ disease.disease_name }}</strong>?
+                    </p>
+                    <p class="text-muted">
+                        <small>This action cannot be undone.</small>
+                    </p>
+
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> This disease will be permanently removed from the system.
+                    </div>
+
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}" 
+                               class="btn btn-secondary">
+                                Cancel
+                            </a>
+                            {{ form.submit(class="btn btn-danger") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

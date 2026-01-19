@@ -1,0 +1,95 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="fw-bold">Welcome, {{ user.full_name }}!</h1>
+            <p class="text-muted">Diagnosis of Rice Disease System</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card user-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h1>🌾</h1>
+                    <h5>Diagnose</h5>
+                    <p class="text-muted">Identify rice diseases</p>
+                    <a href="#" class="btn btn-primary btn-sm">Start</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card user-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h1>🦠</h1>
+                    <h5>Diseases</h5>
+                    <p class="text-muted">Disease information</p>
+                    <a href="#" class="btn btn-primary btn-sm">View</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card user-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h1>💊</h1>
+                    <h5>Treatments</h5>
+                    <p class="text-muted">Treatment options</p>
+                    <a href="#" class="btn btn-primary btn-sm">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card user-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h1>📋</h1>
+                    <h5>My History</h5>
+                    <p class="text-muted">Consultation history</p>
+                    <a href="#" class="btn btn-primary btn-sm">Review</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Recent Activities</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted text-center mb-0">No recent activities yet. Start a diagnosis to see your history here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .user-card {
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .user-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .user-card h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .user-card h5 {
+        font-weight: 600;
+        color: #333;
+    }
+</style>
+{% endblock %}

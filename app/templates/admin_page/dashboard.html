@@ -1,0 +1,52 @@
+{% extends "layouts/admin_layout/admin.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+
+    <div class="col-md-3">
+        <div class="card card-box shadow-sm">
+            <div class="card-body text-center">
+                <h1>👥</h1>
+                <h5>Users</h5>
+                <p class="text-muted">Manage users</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-box shadow-sm">
+            <div class="card-body text-center">
+                <h1>🦠</h1>
+                <h5>Diseases</h5>
+                <p class="text-muted">Rice diseases</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-box shadow-sm">
+            <div class="card-body text-center">
+                <h1>🌱</h1>
+                <h5>Symptoms</h5>
+                <p class="text-muted">Manage symptoms</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-box shadow-sm">
+            <div class="card-body text-center">
+                <h1>🧠</h1>
+                <h5>Expert Rules</h5>
+                <p class="text-muted">Diagnosis logic</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
