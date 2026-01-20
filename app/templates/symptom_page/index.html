@@ -11,7 +11,9 @@
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Symptom Name</th>
+                    <th>Symptom Group</th>
                     <th>Description</th>
                     <th>Actions</th>
                 </tr>
@@ -19,6 +21,7 @@
             <tbody>
                 {% for symptom in symptoms %}
                 <tr>
+                    <th>{{ symptom.id }}</th>
                     <td>
                         <a
                       href="{{ url_for('tbl_symptoms.detail', symptom_id = symptom.id)}}"
@@ -27,6 +30,7 @@
                       {{ symptom.symptom_name }}
                      </a>
                     </td>
+                    <td>{{ symptom.symptom_group }}</td>
                     <td>{{ symptom.description }}</td>
                     <td>
                         <a href="{{ url_for('tbl_symptoms.edit', symptom_id=symptom.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>

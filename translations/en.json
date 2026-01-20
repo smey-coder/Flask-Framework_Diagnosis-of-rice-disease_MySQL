@@ -1,0 +1,67 @@
+{
+    "sidebar": {
+        "rice_expert": "Rice Expert",
+        "dashboard": "Dashboard",
+        "diseases": "Diseases",
+        "symptoms": "Symptoms",
+        "diagnosis": "Diagnosis Test",
+        "facts": "Facts",
+        "rules": "Rules",
+        "taxonomies": "Taxonomies",
+        "settings": "Settings",
+        "logout": "Log out",
+        "lang_en": "English",
+        "lang_km": "Khmer"
+    },
+    "header": {
+        "welcome": "Welcome back",
+        "expert_admin": "Expert Admin",
+        "back_to_admin": "Back to Admin"
+    },
+    "dashboard_page": {
+        "banner_title": "RICE DISEASE DIAGNOSIS SYSTEM",
+        "welcome_message": "Welcome back, Expert",
+        "search_placeholder": "Search for diagnosis history...",
+        "search_btn": "Search",
+        "recent_history": "Recent Diagnosis History",
+        "view_all": "View All",
+        "table": {
+            "no": "No",
+            "user": "User Name",
+            "disease": "Diagnosed Disease",
+            "confidence": "Confidence (%)",
+            "date": "Date",
+            "status": "Status",
+            "empty": "No diagnosis records found yet."
+        }
+    },
+    "disease_page": {
+        "title": "Disease Management",
+        "list_title": "List of Rice Diseases",
+        "add_btn": "Add New Disease",
+        "table": {
+            "image": "Image",
+            "name": "Disease Name",
+            "type": "Type",
+            "severity": "Severity",
+            "actions": "Actions",
+            "no_data": "No data found"
+        }
+    },
+    "diagnosis_page": {
+        "title": "Rice Disease Diagnosis",
+        "search_placeholder": "Search symptoms...",
+        "instruction": "Please select the symptoms found on the rice plant:",
+        "btn_diagnose": "Diagnose Now",
+        "results": "Diagnosis Results",
+        "symptom_list": "Symptom List"
+    },
+    "buttons": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "search": "Search",
+        "update": "Update"
+    }
+}

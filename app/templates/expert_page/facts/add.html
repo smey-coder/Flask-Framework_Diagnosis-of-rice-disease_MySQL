@@ -1,0 +1,22 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block title %}បន្ថែមចំណេះដឹង{% endblock %}
+{% block content %}
+<div class="container p-0" style="max-width: 800px;">
+    <h4 class="fw-bold mb-4">✍️ បន្ថែមចំណេះដឹងថ្មី</h4>
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label class="form-label fw-bold">ចំណងជើង</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">ខ្លឹមសារលម្អិត</label>
+                <textarea name="content" class="form-control" rows="6" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success rounded-pill px-5">រក្សាទុក</button>
+            <a href="{{ url_for('expert.fact_list') }}" class="btn btn-light rounded-pill px-4 ms-2">ថយក្រោយ</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

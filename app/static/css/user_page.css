@@ -1,0 +1,45 @@
+body {
+    min-height: 100vh;
+    background: #f7fbf9;
+
+     /* Khmer + English font */
+    font-family: 
+        'Noto Sans Khmer',
+        'Segoe UI',
+        Arial,
+        sans-serif;
+
+    font-size: 16px;
+    line-height: 1.7;
+}
+.topbar {
+     background: linear-gradient(90deg, #2e8b57, #20c997);
+    color: white;
+}
+
+.nav-link {
+    color: #ffffff;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+     text-decoration: underline;
+}
+
+.hero {
+    background: url("/static/images/rice_bg.jpg") center/cover;
+    border-radius: 20px;
+    color: white;
+    padding: 60px 30px;
+}
+
+.user-card {
+    border-radius: 18px;
+    transition: 0.3s;
+}
+
+.user-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+}

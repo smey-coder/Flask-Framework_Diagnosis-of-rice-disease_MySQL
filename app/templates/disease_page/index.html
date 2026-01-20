@@ -45,6 +45,7 @@
             <table class="table table-striped table-hover mb-0">
                 <thead class="table-light">
                     <tr>
+                        <th>ID</th>
                         <th>Disease Name</th>
                         <th>Type</th>
                         <th>Severity</th>
@@ -56,6 +57,7 @@
                     {% if diseases.items %}
                         {% for disease in diseases.items %}
                         <tr>
+                            <td>{{ disease.id }}</td>
                             <td>
                                 <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}">
                                     {{ disease.disease_name }}

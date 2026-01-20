@@ -1,0 +1,55 @@
+body {
+    min-height: 100vh;
+    background: #f2f7f5;
+
+    /* Khmer + English font */
+    font-family: 
+        'Noto Sans Khmer',
+        'Segoe UI',
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #198754, #157347);
+}
+
+.sidebar h4 {
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+ .sidebar .nav-link {
+    color: #e9f7ef;
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: rgba(255,255,255,0.25);
+    color: #ffffff;
+}
+
+.content {
+    flex-grow: 1;
+}
+
+.topbar {
+    background: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+}
+.expert-card {
+    border-radius: 18px;
+    transition: 0.25s;
+}
+
+.expert-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+}

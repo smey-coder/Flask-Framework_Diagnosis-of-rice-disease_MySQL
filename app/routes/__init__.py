@@ -1,3 +1,7 @@
 from .user_routes import user_bp
 from .role_routes import role_bp
 from .auth_routes import auth_bp
+from .symptom_routes import symptom_bp
+from .disease_routes import disease_bp
+from .admin_route.admin_route import admin_bp
+from .expert_route import expert_bp

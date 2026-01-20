@@ -13,9 +13,11 @@
 
 <div class="card mb-3">
     <div class="card-body">
+        <p><strong>ID:</strong> {{ symptom.id }}</p>
         <p><strong>Symptom Name:</strong> {{ symptom.symptom_name }}</p>
         <p><strong>Description:</strong> {{ symptom.description }}</p>
         <p><strong>Group:</strong> {{ symptom.symptom_group }}</p>
+        
         <p>
             <strong>Status:</strong>
             {% if symptom.is_active %}

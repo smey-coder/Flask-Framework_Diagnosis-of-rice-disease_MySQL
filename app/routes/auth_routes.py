@@ -4,7 +4,7 @@ from app.models.user import UserTable
 from app.models.role import RoleTable
 from app.services.user_service import UserService
 from app.services.auth_service import AuthService
-from extensions import csrf
+from extensions import csrf, db
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
@@ -92,8 +92,12 @@ def register():
             password=password,
             # role_id=default_role_id,
         )
+        user_role = RoleTable.query.filter_by(name="User").first()
+        if user_role:
+            new_user.roles.append(user_role)
+            db.session.commit()
 
-        login_user(new_user)
+    
         flash("Account created successfully.", "success")
         return redirect(url_for("auth.login"))
 

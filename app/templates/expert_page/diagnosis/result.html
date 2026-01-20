@@ -1,0 +1,138 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block title %}លទ្ធផលវិនិច្ឆ័យ{% endblock %}
+
+{% block content %}
+<style>
+    /* ផ្ទៃខាងក្រោយទូទៅ */
+    .bg-sage-light { 
+        background-color: #f4f9f4; 
+        min-height: 90vh; 
+        padding: 30px 20px; 
+    }
+    
+    /* កាតសម្រាប់ជំងឺនីមួយៗ */
+    .disease-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .disease-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    }
+
+    /* ផ្លាកពិន្ទុ (Score Badge) */
+    .score-badge {
+        font-size: 1.2rem;
+        font-weight: 800;
+        padding: 8px 20px;
+        border-radius: 50px;
+        letter-spacing: 0.5px;
+    }
+    .score-high { background-color: #d1e7dd; color: #0f5132; } /* បៃតង (70%+) */
+    .score-med { background-color: #fff3cd; color: #856404; }  /* លឿង (40-69%) */
+    .score-low { background-color: #f8d7da; color: #842029; }  /* ក្រហម (<40%) */
+
+    /* រូបភាព */
+    .disease-img-thumb {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+    }
+
+    /* ចំណងជើងជំងឺ */
+    .disease-title {
+        color: #c0392b; /* ពណ៌ក្រហមដិត */
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+</style>
+
+<div class="container-fluid p-0 bg-sage-light">
+    
+    <div class="container" style="max-width: 900px;">
+        <div class="d-flex align-items-center justify-content-between mb-5">
+            <div>
+                <h3 class="fw-bold text-success mb-1">
+                    <i class="bi bi-clipboard-data-fill me-2"></i> លទ្ធផលវិនិច្ឆ័យ (Diagnosis Results)
+                </h3>
+                <p class="text-muted mb-0">ប្រព័ន្ធបានរកឃើញជំងឺចំនួន <strong>{{ results|length }}</strong> ដែលអាចកើតមានចំពោះស្រូវរបស់អ្នក។</p>
+            </div>
+            <a href="{{ url_for('expert.diagnosis_input') }}" class="btn btn-outline-success border-2 fw-bold rounded-pill px-4">
+                <i class="bi bi-arrow-repeat me-2"></i> វិនិច្ឆ័យម្តងទៀត
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                
+                {% for res in results %}
+                <div class="disease-card">
+                    <div class="row g-0">
+                        <div class="col-md-4 position-relative">
+                            {% if res.disease.image %}
+                                <img src="{{ url_for('static', filename='images/' + res.disease.image) }}" class="disease-img-thumb h-100">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center h-100 text-muted" style="min-height: 200px;">
+                                    <i class="bi bi-image fs-1 opacity-25"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="position-absolute top-0 start-0 m-3 bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center fw-bold text-success" 
+                                 style="width: 35px; height: 35px; border: 2px solid #198754;">
+                                {{ loop.index }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="card-body p-4 h-100 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h4 class="disease-title">{{ res.disease.disease_name }}</h4>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-check-all text-success"></i> 
+                                            ត្រូវនឹងលក្ខខណ្ឌវិនិច្ឆ័យចំនួន: <strong>{{ res.logs|length }}</strong> ចំណុច
+                                        </div>
+                                    </div>
+                                    
+                                    <span class="score-badge {% if res.cf >= 0.7 %}score-high{% elif res.cf >= 0.4 %}score-med{% else %}score-low{% endif %}">
+                                        {{ (res.cf * 100)|int }}%
+                                    </span>
+                                </div>
+
+                                <p class="card-text text-secondary mb-4 flex-grow-1" style="line-height: 1.6;">
+                                    {{ res.disease.description[:180] }}...
+                                </p>
+
+                                <div class="d-flex gap-2 mt-auto border-top pt-3">
+                                    <a href="{{ url_for('expert.diagnosis_explain', disease_id=res.disease.id) }}" class="btn btn-success flex-grow-1 rounded-pill fw-bold">
+                                        <i class="bi bi-eye me-2"></i> មើលការពន្យល់ (Explain)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                    <div class="mb-3">
+                        <i class="bi bi-search fs-1 text-muted opacity-50"></i>
+                    </div>
+                    <h4 class="fw-bold text-secondary">មិនមានលទ្ធផលទេ!</h4>
+                    <p class="text-muted mb-4">រោគសញ្ញាដែលអ្នកជ្រើសរើស មិនទាន់មានទិន្នន័យគ្រប់គ្រាន់ដើម្បីសន្និដ្ឋានថាជាជំងឺអ្វីឡើយ។</p>
+                    <a href="{{ url_for('expert.diagnosis_input') }}" class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-2"></i> ព្យាយាមជ្រើសរើសម្តងទៀត
+                    </a>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

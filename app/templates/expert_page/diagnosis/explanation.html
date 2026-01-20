@@ -1,0 +1,98 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block title %}Explanation{% endblock %}
+
+{% block content %}
+<style>
+    .bg-sage-light { background-color: #f4f9f4; min-height: 90vh; padding: 20px; }
+    
+    .explanation-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        padding: 30px;
+    }
+
+    .conclusion-title {
+        color: #c0392b; /* ក្រហម */
+        font-weight: bold;
+    }
+
+    .final-cf {
+        color: #0d6efd; /* ខៀវ */
+        font-weight: bold;
+    }
+
+    /* Rule Box (ពណ៌លឿងខ្ចីដូចរូប) */
+    .rule-box {
+        background-color: #fcfadc; /* Cream/Yellow Light */
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #f0ebd0;
+    }
+
+    .rule-label {
+        font-weight: bold;
+        color: #000;
+        width: 100px;
+        display: inline-block;
+    }
+    
+    .rule-value {
+        font-weight: normal;
+        color: #333;
+    }
+
+    .rule-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-top: 10px;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="container bg-sage-light">
+    
+    <div class="explanation-card">
+        <h3 class="fw-bold mb-4"><i class="bi bi-book"></i> Explanation (ការពន្យល់)</h3>
+        
+        <div class="mb-4">
+            <h4 class="mb-2">Conclusion: <span class="conclusion-title">{{ disease.disease_name }}</span></h4>
+            <h5 class="mb-0">Final Certainty: <span class="final-cf">{{ final_cf }} ({{ (final_cf * 100)|int }}%)</span></h5>
+        </div>
+
+        <hr class="mb-4">
+
+        {% for log in logs %}
+        <div class="rule-box">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <p class="mb-1"><strong>Rule: #{{ log.rule_id }}</strong></p>
+                    <p class="mb-1"><span class="rule-label">Symptom:</span> {{ log.symptom }}</p>
+                    <p class="mb-1"><span class="rule-label">CF Before:</span> {{ log.cf_before }}</p>
+                    <p class="mb-1"><span class="rule-label">Rule CF:</span> {{ log.rule_cf }}</p>
+                    <p class="mb-1"><span class="rule-label">CF After:</span> <strong>{{ log.cf_after }}</strong></p>
+                    <p class="mb-2 text-muted small fst-italic">Calculation: {{ log.cf_before }} + {{ log.rule_cf }} * (1 - {{ log.cf_before }}) = {{ log.cf_after }}</p>
+                </div>
+                <div class="text-end">
+                    <span class="text-muted small">Step {{ loop.index }}</span>
+                </div>
+            </div>
+
+            {% if disease.image %}
+                <img src="{{ url_for('static', filename='images/' + disease.image) }}" class="rule-img">
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="mt-4">
+            <a href="{{ url_for('expert.diagnosis_result') }}" class="btn btn-success px-4">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

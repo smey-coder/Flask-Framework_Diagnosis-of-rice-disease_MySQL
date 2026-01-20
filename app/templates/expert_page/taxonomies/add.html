@@ -1,0 +1,36 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block title %}បន្ថែមចំណាត់ថ្នាក់{% endblock %}
+{% block content %}
+<div class="container p-0" style="max-width: 700px;">
+    <h4 class="fw-bold mb-4">➕ បន្ថែមចំណាត់ថ្នាក់ថ្មី</h4>
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">ឈ្មោះចំណាត់ថ្នាក់ (Name)</label>
+                <input type="text" name="name" class="form-control" placeholder="ឧ. Fungi (ផ្សិត), Bacteria" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">ប្រភេទ (Type)</label>
+                <select name="type" class="form-select" required>
+                    <option value="" selected disabled>-- ជ្រើសរើសប្រភេទ --</option>
+                    <option value="Pathogen">Pathogen (ភ្នាក់ងារបង្កជំងឺ)</option>
+                    <option value="Host">Host (រុក្ខជាតិម្ចាស់ផ្ទះ)</option>
+                    <option value="Vector">Vector (ភ្នាក់ងារចម្លង)</option>
+                    <option value="Other">Other (ផ្សេងៗ)</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">ការពិពណ៌នា (Description)</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success rounded-pill px-5">រក្សាទុក</button>
+            <a href="{{ url_for('expert.taxonomy_list') }}" class="btn btn-light rounded-pill px-4 ms-2">ថយក្រោយ</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

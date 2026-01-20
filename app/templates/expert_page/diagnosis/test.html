@@ -1,0 +1,199 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block title %}វិភាគរោគសញ្ញា{% endblock %}
+
+{% block content %}
+<style>
+    /* --- CSS កែសម្រួលថ្មី (Professional & Compact) --- */
+
+    /* 1. Background កែឱ្យស៊ីគ្នា និងងងឹតជាងមុន */
+    .test-wrapper {
+        position: relative;
+        min-height: 88vh; /* កម្ពស់ពេញអេក្រង់ */
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center; /* ដាក់កាតនៅកណ្តាល ទាំងលើក្រោម និងឆ្វេងស្តាំ */
+        overflow: hidden;
+    }
+
+    /* ស្រទាប់ Background */
+    .test-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        /* ប្រើរូប banner ដដែល ប៉ុន្តែដាក់ពណ៌ខ្មៅពីលើឱ្យងងឹត (Overlay) */
+        background: linear-gradient(rgba(20, 30, 20, 0.7), rgba(20, 30, 20, 0.8)), url("{{ url_for('static', filename='images/banner.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        filter: blur(5px); /* ព្រិលល្មមៗ */
+        z-index: -1;
+        transform: scale(1.05); /* ពង្រីកបន្តិចកុំឱ្យឃើញគែមស */
+    }
+
+    /* 2. កាតសំណួរ (កែឱ្យតូចសមរម្យ) */
+    .diagnosis-card {
+        background: #ffffff;
+        border-radius: 20px; /* គែមមូលល្មម */
+        width: 100%;
+        max-width: 450px; /* <--- សំខាន់៖ កំណត់ទទឹងត្រឹម 450px ឱ្យដូច App ទូរស័ព្ទ */
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Shadow ធំស្អាត */
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.1);
+        animation: slideUp 0.5s ease-out; /* Animation ពេលចេញមក */
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* 3. Header រូបភាព (តូចជាងមុនបន្តិច) */
+    .header-image {
+        height: 180px; /* បន្ថយពី 220px មក 180px */
+        position: relative;
+    }
+    .header-image img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .header-overlay {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); /* ពណ៌ខ្មៅដេញស្អាត */
+        padding: 20px;
+        color: white;
+    }
+
+    /* 4. តួខ្លួន (Checklist) */
+    .card-body-custom {
+        padding: 25px; /* កាត់បន្ថយ space */
+    }
+
+    /* 5. Checkbox Design (Clean Look) */
+    .symptom-option { display: block; margin-bottom: 12px; cursor: pointer; }
+    
+    .symptom-box {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        background: #f8f9fa; /* ពណ៌ប្រផេះខ្ចី */
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+    
+    .symptom-box:hover {
+        background: #fff;
+        border-color: #50664e;
+        transform: translateX(5px); /* រត់ទៅស្តាំបន្តិចពេល Hover */
+    }
+
+    /* ពេលធីក (Active) */
+    .form-check-input:checked + .symptom-box {
+        background-color: #f0f7ef; /* បៃតងខ្ចី */
+        border-color: #50664e;
+        color: #2f3e2e;
+        box-shadow: 0 2px 8px rgba(80, 102, 78, 0.15);
+    }
+
+    /* រង្វង់ Checkbox */
+    .check-circle {
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        border: 2px solid #adb5bd;
+        margin-right: 15px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        transition: 0.2s;
+        background: white;
+    }
+
+    .form-check-input:checked + .symptom-box .check-circle {
+        background: #50664e;
+        border-color: #50664e;
+    }
+    .check-circle i { color: white; font-size: 12px; display: none; }
+    .form-check-input:checked + .symptom-box .check-circle i { display: block; }
+
+    /* 6. ប៊ូតុង Submit */
+    .btn-submit-test {
+        background: linear-gradient(135deg, #50664e 0%, #3e523d 100%);
+        color: white;
+        width: 100%;
+        padding: 14px;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        margin-top: 25px;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(80, 102, 78, 0.3);
+    }
+    .btn-submit-test:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(80, 102, 78, 0.4);
+    }
+
+    /* Loading Overlay (រក្សាទុកដដែល) */
+    .loading-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.9); z-index: 9999;
+        display: none; flex-direction: column; align-items: center; justify-content: center; color: white;
+    }
+</style>
+
+<div id="loadingScreen" class="loading-overlay">
+    <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+    <h5 class="fw-bold animate__animated animate__pulse animate__infinite">កំពុងវិភាគ...</h5>
+</div>
+
+<div class="container-fluid p-0">
+    <div class="test-wrapper">
+        <div class="diagnosis-card">
+            <div class="header-image">
+                {% if disease.image %}
+                    <img src="{{ url_for('static', filename='images/' + disease.image) }}">
+                {% else %}
+                    <div class="w-100 h-100 bg-secondary"></div>
+                {% endif %}
+                <div class="header-overlay">
+                    <h4 class="fw-bold mb-1">{{ disease.disease_name }}</h4>
+                    <small class="opacity-75" style="font-size: 0.85rem;">
+                        <i class="bi bi-card-checklist me-1"></i> សូមធីករោគសញ្ញាដែលបានជួបប្រទះ
+                    </small>
+                </div>
+            </div>
+
+            <div class="card-body-custom">
+                <form method="POST" onsubmit="showLoading()">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    {% if symptoms %}
+                        {% for symptom in symptoms %}
+                        <label class="symptom-option">
+                            <input type="checkbox" class="form-check-input d-none" name="symptoms" value="{{ symptom.id }}">
+                            <div class="symptom-box">
+                                <div class="check-circle"><i class="bi bi-check-lg"></i></div>
+                                <span class="fw-medium text-dark" style="font-size: 0.95rem;">{{ symptom.description }}</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                        <button type="submit" class="btn-submit-test">
+                            វិភាគលទ្ធផល <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <p class="text-muted">មិនទាន់មានទិន្នន័យ។</p>
+                            <a href="{{ url_for('expert.diagnosis_page') }}" class="btn btn-light rounded-pill btn-sm">ត្រឡប់ក្រោយ</a>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showLoading() {
+        document.getElementById('loadingScreen').style.display = 'flex';
+    }
+</script>
+{% endblock %}

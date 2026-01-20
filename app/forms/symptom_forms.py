@@ -26,7 +26,8 @@ class SymptomCreateForm(FlaskForm):
         choices=SYMPTOM_GROUP,
         render_kw={"class": "form-control"}
     )
-    
+
+
     description = TextAreaField(
         "Description",
         validators=[Length(max=1000)],
@@ -64,6 +65,7 @@ class SymptomEditForm(FlaskForm):
         choices=SYMPTOM_GROUP,
         render_kw={"class": "form-control"}
     )
+
     
     description = TextAreaField(
         "Description",

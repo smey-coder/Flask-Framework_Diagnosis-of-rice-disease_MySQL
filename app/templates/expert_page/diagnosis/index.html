@@ -1,0 +1,99 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block title %}ចាប់ផ្តើមវិនិច្ឆ័យ{% endblock %}
+
+{% block content %}
+<style>
+    /* ផ្ទៃខាងក្រោយទូទៅ */
+    .bg-sage-light {
+        background-color: #f4f9f4; /* ពណ៌បៃតងខ្ចីដូចរូប */
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Card កណ្តាល */
+    .main-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        padding: 40px;
+        width: 100%;
+        max-width: 800px;
+    }
+
+    /* Checkbox Design */
+    .form-check-input {
+        width: 1.3em;
+        height: 1.3em;
+        margin-top: 0.2em;
+        border-color: #adb5bd;
+    }
+    .form-check-input:checked {
+        background-color: #4a6741;
+        border-color: #4a6741;
+    }
+    .form-check-label {
+        font-size: 1.05rem;
+        color: #333;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    .symptom-row {
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .symptom-row:last-child {
+        border-bottom: none;
+    }
+
+    /* Diagnose Button */
+    .btn-diagnose {
+        background-color: #4a6741; /* បៃតងចាស់ */
+        color: white;
+        border-radius: 8px;
+        padding: 10px 40px;
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+    }
+    .btn-diagnose:hover {
+        background-color: #3b5234;
+        color: white;
+    }
+</style>
+
+<div class="container-fluid p-0 bg-sage-light">
+    
+    <div class="main-card">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-success mb-3">
+                <i class="bi bi-flower1"></i> Rice Disease Diagnosis Expert System
+            </h3>
+            <h5 class="text-start fw-bold mt-4">Select Symptoms (សូមជ្រើសរើសរោគសញ្ញា):</h5>
+        </div>
+
+        <form action="{{ url_for('expert.diagnosis_input') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="mb-4">
+                {% for symptom in symptoms %}
+                <div class="form-check symptom-row">
+                    <input class="form-check-input" type="checkbox" name="symptoms" value="{{ symptom.id }}" id="sym_{{ symptom.id }}">
+                    <label class="form-check-label" for="sym_{{ symptom.id }}">
+                        {{ symptom.description }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-diagnose">
+                    <i class="bi bi-search me-2"></i> Diagnose
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

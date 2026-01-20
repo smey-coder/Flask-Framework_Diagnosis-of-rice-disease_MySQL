@@ -1,0 +1,46 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block page_title %}Symptoms Bank{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-thermometer-half me-2"></i>List of Symptoms</span>
+        <a href="{{ url_for('expert.create_symptom') }}" class="btn btn-success btn-sm">
+            <i class="bi bi-plus-lg"></i> Add Symptom
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4">Name</th>
+                    <th>Affected Area</th>
+                    <th>Description</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for symptom in symptoms %}
+                <tr>
+                    <td class="ps-4 fw-bold">{{ symptom.symptom_name }}</td>
+                    <td>
+                        <span class="badge bg-info text-dark">{{ symptom.symptom_group }}</span>
+                    </td>
+                    <td class="text-muted small">{{ symptom.description or '-' }}</td>
+                    <td class="text-end pe-4">
+                        <form action="{{ url_for('expert.delete_symptom', id=symptom.id) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('Delete?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center py-4">No symptoms recorded yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

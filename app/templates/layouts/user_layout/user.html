@@ -10,46 +10,9 @@
 
     <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-    <style>
-        body {
-            min-height: 100vh;
-            background: #f7fbf9;
-        }
-
-        .topbar {
-            background: linear-gradient(90deg, #2e8b57, #20c997);
-            color: white;
-        }
-
-        .nav-link {
-            color: #ffffff;
-            margin-right: 10px;
-            font-weight: 500;
-        }
-
-        .nav-link:hover {
-            text-decoration: underline;
-        }
-
-        .hero {
-            background: url("/static/images/rice_bg.jpg") center/cover;
-            border-radius: 20px;
-            color: white;
-            padding: 60px 30px;
-        }
-
-        .user-card {
-            border-radius: 18px;
-            transition: 0.3s;
-        }
-
-        .user-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-        }
-    </style>
-
+    <!-- Google Fonts khmer -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_page.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>

@@ -1,0 +1,54 @@
+{% extends "expert_page/layouts/expert_base.html" %}
+{% block title %}ចំណាត់ថ្នាក់ (Taxonomies){% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-dark">🌳 ចំណាត់ថ្នាក់ជីវសាស្ត្រ (Taxonomies)</h4>
+        <a href="{{ url_for('expert.add_taxonomy') }}" class="btn btn-success rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg"></i> បន្ថែមថ្មី
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-secondary">
+                    <tr>
+                        <th class="ps-4 py-3">ID</th>
+                        <th>ឈ្មោះចំណាត់ថ្នាក់ (Name)</th>
+                        <th>ប្រភេទ (Type)</th>
+                        <th>ការពិពណ៌នា (Description)</th>
+                        <th class="text-end pe-4">សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tax in taxonomies %}
+                    <tr>
+                        <td class="ps-4">#{{ tax.id }}</td>
+                        <td class="fw-bold text-success">{{ tax.name }}</td>
+                        <td>
+                            <span class="badge bg-info text-dark rounded-pill px-3">
+                                {{ tax.type }}
+                            </span>
+                        </td>
+                        <td class="text-muted">{{ tax.description }}</td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('expert.delete_taxonomy', id=tax.id) }}" 
+                               class="btn btn-light text-danger btn-sm rounded-circle"
+                               onclick="return confirm('តើអ្នកចង់លុបចំណាត់ថ្នាក់នេះមែនទេ?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">មិនទាន់មានទិន្នន័យនៅឡើយ។</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

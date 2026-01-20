@@ -35,11 +35,12 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.role_routes import role_bp
     from app.routes.permission_routes import permission_bp
     from app.routes.auth_routes import auth_bp
-    from app.routes.admin_route import admin_bp
-    from app.routes.expert_route import expert_bp
+    from app.routes.admin_route.admin_route import admin_bp
     from app.routes.user_route import user_bp as user_dashboard_bp
     from app.routes.disease_route import disease_bp
     from app.routes.symptom_routes import symptom_bp   
+    from app.routes.expert_route import expert_bp
+
 
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
