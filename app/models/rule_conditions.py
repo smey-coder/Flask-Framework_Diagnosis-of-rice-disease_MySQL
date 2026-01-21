@@ -4,6 +4,7 @@ from flask_login import UserMixin
 from extensions import db
 from app.models.rules import RulesTable
 from app.models.symptoms import SymptomsTable
+from app.models.diseases import DiseaseTable
 
 class RuleConditionsTable(UserMixin, db.Model):
     __tablename__ ="tbl_rule_conditions"
@@ -14,6 +15,7 @@ class RuleConditionsTable(UserMixin, db.Model):
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    symptom = db.relationship('SymptomsTable', backref='rule_conditions')
 
     def __repr__(self) -> str:
         return f"<RuleConditions {self.id} - Rule {self.rule_id}>"

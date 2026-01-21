@@ -6,10 +6,10 @@ from app.models.symptoms import SymptomsTable
 
 # Symptom severity level choices
 SYMPTOM_GROUP =[
-    ("Leaf","Leaf"),
-    ("Stem","Stem"),
-    ("Root","Root"),
-    ("Grain","Grain"),
+    ("Leaf(ស្លឹក)","Leaf(ស្លឹក)"),
+    ("Stem(ដើម)","Stem(ដើម)"),
+    ("Root(ឬស)","Root(ឬស)"),
+    ("Grain(គ្រាប់)","Grain(គ្រាប់)"),
 ]
 class SymptomCreateForm(FlaskForm):
     """Form for creating a new symptom"""

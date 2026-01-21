@@ -5,3 +5,5 @@ from .auth_service import AuthService
 from .disease_service import DiseaseService
 from .symptom_service import SymptomService
 from .diagnosis_service import DiagnosisService
+from .rule_condition_service import RuleConditionService
+from .prevention_service import PreventionService

@@ -40,6 +40,8 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.disease_route import disease_bp
     from app.routes.symptom_routes import symptom_bp   
     from app.routes.expert_route import expert_bp
+    from app.routes.rule_condition_route import rule_condition_bp
+    from app.routes.prevention_route import prevention_bp
 
 
     app.register_blueprint(user_bp)
@@ -51,6 +53,8 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(user_dashboard_bp)
     app.register_blueprint(disease_bp)
     app.register_blueprint(symptom_bp)
+    app.register_blueprint(rule_condition_bp)
+    app.register_blueprint(prevention_bp)
     
     # Home redirect
     @app.route("/")

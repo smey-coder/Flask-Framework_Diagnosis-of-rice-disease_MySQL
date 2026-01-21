@@ -14,7 +14,7 @@
     </div>
     <div class="mb-3">
         {{ form.symptom_group.label(class="form-label") }}
-        {{ form.symptom_group(class="form-control") }}
+        {{ form.symptom_group(class="form-select") }}
         {% if form.symptom_group.errors %}
         <div class="text-danger small">
             {% for error in form.symptom_group.errors %}

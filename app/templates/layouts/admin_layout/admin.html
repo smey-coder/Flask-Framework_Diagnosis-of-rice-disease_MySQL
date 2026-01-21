@@ -69,17 +69,11 @@
                 </a>
             </li>
 
-            <!-- {#<li class="nav-item">
-                <a class="nav-link" href="{{ url_for('tbl_diagnosis_rules.index') }}">
-                    <i class="bi bi-diagram-3 me-2"></i> Rules
+            <li class="nav-item">
+                <a class="nav-link {% if request.blueprint == 'rule_condition_bp' %}active{% endif %}" href="{{ url_for('rule_condition.index') }}">
+                    <i class="bi bi-activity me-2"></i> Rule Condition
                 </a>
             </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('tbl_engines.index') }}">
-                    <i class="bi bi-clipboard-data me-2"></i> Consultations
-                </a>
-            </li>#} -->
 
             <li class="nav-item">
                 <a class="nav-link {% if request.endpoint.startswith('admin.') %}active{% endif %}" 
@@ -87,7 +81,12 @@
                     <i class="bi bi-clipboard-data me-2"></i> Diagnosis
                 </a>
             </li> 
-            
+
+            <li class="nav-item">
+                <a class="nav-link {% if request.blueprint == 'prevention_bp' %}active{% endif %}" href="{{ url_for('prevention.index') }}">
+                    <i class="bi bi-activity me-2"></i> Prevention
+                </a>
+            </li>
             <!-- {# Settings and About (To be implemented) #}
             {# <hr class="text-white">
             <li class="nav-item">
