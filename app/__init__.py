@@ -39,10 +39,11 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.user_route import user_bp as user_dashboard_bp
     from app.routes.disease_route import disease_bp
     from app.routes.symptom_routes import symptom_bp   
-    from app.routes.expert_route import expert_bp
+    from app.routes.expert_route.expert_route import expert_bp
     from app.routes.rule_condition_route import rule_condition_bp
     from app.routes.prevention_route import prevention_bp
-
+    from app.routes.treatment_route import treatment_bp
+    from app.routes.audit_routes import audit_bp
 
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
@@ -55,7 +56,8 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(symptom_bp)
     app.register_blueprint(rule_condition_bp)
     app.register_blueprint(prevention_bp)
-    
+    app.register_blueprint(treatment_bp)
+    app.register_blueprint(audit_bp)
     # Home redirect
     @app.route("/")
     def home():

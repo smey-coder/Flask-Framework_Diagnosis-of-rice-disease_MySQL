@@ -1,0 +1,62 @@
+{% extends 'layouts/admin_layout/admin.html' %}
+
+{% block title %}Treatment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Treatment</h3>
+        <a href="{{ url_for('treatment.create') }}" class="btn btn-success">+ Add Treatment</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Disease</th>
+                        <th>Type</th>
+                        <th>Image</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in treatments %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.disease.disease_name }}</td>
+                        <td>{{ t.treatment_type }}</td>
+                        <td>
+                            {% if t.image %}
+                                <img src="{{ url_for('static', filename='images/treatments/' ~ t.image) }}" 
+                                     alt="Image" class="img-thumbnail" style="max-width:50px;">
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if t.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('treatment.detail', id=t.id) }}" class="btn btn-sm btn-info">View</a>
+                            <a href="{{ url_for('treatment.edit', id=t.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{{ url_for('treatment.delete', id=t.id) }}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No preventions found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

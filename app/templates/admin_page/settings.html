@@ -1,0 +1,9 @@
+{% extends "layouts/admin_layout/admin.html"%}
+{% block title %}Edit Profile {{ current_user.username }}{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Edit Profile: {{ current_user.username }}</h1>
+<form method="post">
+    {% include "admin_page/_form.html"%}
+</form>
+{% endblock %}

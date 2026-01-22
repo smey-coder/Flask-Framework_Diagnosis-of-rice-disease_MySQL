@@ -1,0 +1,109 @@
+{% extends "layouts/expert_layout/expert.html" %}
+{% block title %}Diagnosis Results{% endblock %}
+
+{% block content %}
+<style>
+    .bg-sage-light { background-color: #f4f9f4; min-height: 90vh; padding: 20px; }
+    
+    /* កាតសម្រាប់ជំងឺនីមួយៗ */
+    .disease-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        transition: transform 0.2s;
+    }
+    .disease-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    }
+
+    /* ពណ៌ភាគរយ */
+    .score-badge {
+        font-size: 1.1rem;
+        font-weight: bold;
+        padding: 5px 15px;
+        border-radius: 50px;
+    }
+    .score-high { background-color: #d1e7dd; color: #0f5132; } /* បៃតង (ខ្ពស់) */
+    .score-med { background-color: #fff3cd; color: #856404; }  /* លឿង (មធ្យម) */
+    .score-low { background-color: #f8d7da; color: #842029; }  /* ក្រហម (ទាប) */
+
+    .disease-img-thumb {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+</style>
+
+<div class="container bg-sage-light">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h3 class="fw-bold text-success mb-0">
+                <i class="bi bi-bar-chart-steps me-2"></i> លទ្ធផលវិនិច្ឆ័យ
+            </h3>
+            <small class="text-muted">ប្រព័ន្ធបានរកឃើញជំងឺចំនួន <strong>{{ results|length }}</strong> ដែលអាចកើតមាន</small>
+        </div>
+        <a href="{{ url_for('expert.diagnosis_input') }}" class="btn btn-outline-success">
+            <i class="bi bi-arrow-repeat"></i> វិនិច្ឆ័យម្តងទៀត
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            
+            {% for res in results %}
+            <div class="disease-card">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if res.disease.image %}
+                            <img src="{{ url_for('static', filename='images/' + res.disease.image) }}" class="disease-img-thumb">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center h-100 text-muted">
+                                <i class="bi bi-image fs-1"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="card-body h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 class="fw-bold text-danger mb-0">{{ res.disease.disease_name }}</h4>
+                                
+                                <span class="score-badge {% if res.cf >= 0.7 %}score-high{% elif res.cf >= 0.4 %}score-med{% else %}score-low{% endif %}">
+                                    {{ (res.cf * 100)|int }}%
+                                </span>
+                            </div>
+
+                            <p class="card-text text-muted small mb-3 flex-grow-1">
+                                {{ res.disease.description[:150] }}...
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <small class="text-muted">
+                                    <i class="bi bi-check-circle-fill text-success"></i> 
+                                    ត្រូវនឹងច្បាប់ចំនួន: {{ res.logs|length }}
+                                </small>
+                                <a href="{{ url_for('expert.diagnosis_explain', disease_id=res.disease.id) }}" class="btn btn-success btn-sm px-4 rounded-pill">
+                                    <i class="bi bi-eye"></i> មើលការពន្យល់
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="100" class="mb-3 opacity-50">
+                <h5>មិនមានលទ្ធផលទេ!</h5>
+                <p class="text-muted">រោគសញ្ញាដែលអ្នកជ្រើសរើស មិនទាន់មានទិន្នន័យគ្រប់គ្រាន់ដើម្បីសន្និដ្ឋាន។</p>
+                <a href="{{ url_for('expert.diagnosis_input') }}" class="btn btn-primary mt-2">ព្យាយាមម្តងទៀត</a>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

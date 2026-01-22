@@ -1,40 +1,96 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, abort, render_template, redirect, request, url_for, flash, session
 from flask_login import login_required, current_user
 from functools import wraps
 from app.forms.diagnosis_form import DiagnosisForm
 from app.models.symptoms import SymptomsTable
 from app.models.diseases import DiseaseTable
 from app.services.diagnosis_service import DiagnosisService
+from app.models.user import UserTable
+from app.models.rules import RulesTable
+from app.services.user_service import UserService
+from extensions import db
+from werkzeug.security import generate_password_hash
+from app.forms.user_forms import UserEditForm
+from app.models.role import RoleTable
+from app.decorators.access import role_required, permission_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin", template_folder="../../templates")
 service = DiagnosisService()
 
 
-# ---------- ACCESS CONTROL ----------
-def admin_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if not current_user.is_authenticated:
-            return redirect(url_for("auth.login"))
-        if not current_user.has_role("Admin"):
-            flash("No permission", "danger")
-            return redirect(url_for("user.dashboard"))
-        return f(*args, **kwargs)
-    return decorated
-
 
 # ---------- DASHBOARD ----------
 @admin_bp.route("/dashboard")
 @login_required
-@admin_required
+@role_required("Admin")
 def dashboard():
-    return render_template("admin_page/dashboard.html", user=current_user)
+    stats = {
+        "users": UserTable.query.count(),
+        "diseases": DiseaseTable.query.count(),
+        "symptoms": SymptomsTable.query.count(),
+        "rules": RulesTable.query.count()
+    }
+
+    return render_template(
+        "admin_page/dashboard.html",
+        user=current_user,
+        stats=stats
+    )
+
+
+# ---------- SETTINGS / PROFILE ----------
+@admin_bp.route("/settings", methods=["GET", "POST"])
+@login_required
+@role_required("Admin")
+@permission_required("MANAGER_USER")
+def settings():
+    from app.forms.user_forms import UserEditForm
+    
+    # Pass the current_user as original_user
+    form = UserEditForm(original_user=current_user)
+
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.full_name = form.full_name.data
+        current_user.email = form.email.data
+
+        if form.password.data:
+            from werkzeug.security import generate_password_hash
+            current_user.password_hash = generate_password_hash(form.password.data)
+
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("admin.settings"))
+
+    # Pre-fill the form fields
+    if request.method == "GET":
+        form.username.data = current_user.username
+        form.full_name.data = current_user.full_name
+        form.email.data = current_user.email
+
+    return render_template("admin_page/settings.html", form=form)
+
+# ---------- ABOUT PAGE ----------
+@admin_bp.route("/about")
+@login_required
+@role_required("Admin")
+@permission_required("MANAGER_USER")
+def about():
+    about_info = {
+        "app_name": "Rice Expert System",
+        "version": "1.0.0",
+        "developer": "SanReaksmey",
+        "email": "sanreaksmey01@gmail.com",
+        "description": "This system helps farmers diagnose rice diseases and manage treatments efficiently.",
+    }
+    return render_template("admin_page/about.html", about=about_info)
 
 
 # ---------- DIAGNOSIS INPUT ----------
 @admin_bp.route("/diagnosis", methods=["GET", "POST"])
 @login_required
-@admin_required
+@role_required("Admin")
+@permission_required("MANAGER_USER")
 def diagnosis_input():
     form = DiagnosisForm()
     symptoms = SymptomsTable.query.filter_by(is_active=True).all()
@@ -56,7 +112,8 @@ def diagnosis_input():
 # ---------- DIAGNOSIS RESULT ----------
 @admin_bp.route("/diagnosis/result")
 @login_required
-@admin_required
+@role_required("Admin")
+@permission_required("MANAGER_USER")
 def diagnosis_result():
     selected_ids = session.get("selected_symptoms")
     if not selected_ids:
@@ -81,7 +138,8 @@ def diagnosis_result():
 # ---------- DIAGNOSIS EXPLANATION ----------
 @admin_bp.route("/diagnosis/explain/<int:disease_id>")
 @login_required
-@admin_required
+@role_required("Admin")
+@permission_required("MANAGER_USER")
 def diagnosis_explain(disease_id):
     rule_trace = session.get("rule_trace")
     if not rule_trace:
@@ -114,22 +172,29 @@ def diagnosis_explain(disease_id):
 # ---------- TREATMENT & PREVENTION ----------
 @admin_bp.route("/diagnosis/treatment/<int:disease_id>")
 @login_required
-@admin_required
+@role_required("Admin")
+@permission_required("MANAGER_USER")
 def disease_treatment(disease_id):
     disease = DiseaseTable.query.get_or_404(disease_id)
     treatments = service.treatment_disease(disease_id)
-    return render_template("diagnosis_page/treatment.html", 
-                           disease=disease, 
-                           treatments=treatments, 
-                           user=current_user)
+    return render_template(
+        "diagnosis_page/treatment.html",
+        disease=disease,
+        treatments=treatments,
+        user=current_user
+    )
 
 
 @admin_bp.route("/diagnosis/prevention/<int:disease_id>")
 @login_required
-@admin_required
+@role_required("Admin")
+@permission_required("MANAGER_USER")
 def disease_prevention(disease_id):
     disease = DiseaseTable.query.get_or_404(disease_id)
     preventions = service.prevention_disease(disease_id)
-    return render_template("diagnosis_page/prevention.html", disease=disease, 
-                           preventions=preventions, 
-                           user=current_user)
+    return render_template(
+        "diagnosis_page/prevention.html",
+        disease=disease,
+        preventions=preventions,
+        user=current_user
+    )

@@ -1,8 +1,13 @@
 from typing import List, Optional
 from app.models.user import UserTable
 from app.models.role import RoleTable
-from extensions import db 
+from extensions import db
+from app.services.audit_service import log_audit 
+
 class UserService:
+
+    # ---------- READ ---------- #
+
     @staticmethod
     def get_user_all() -> List[UserTable]:
         return UserTable.query.order_by(UserTable.id.desc()).all()
@@ -10,12 +15,11 @@ class UserService:
     @staticmethod
     def get_user_by_id(user_id: int) -> Optional[UserTable]:
         return UserTable.query.get(user_id)
-    
+
+    # ---------- CREATE ---------- #
+
     @staticmethod
-    
-    def create_user(data: dict, password: str, 
-                    role_id: Optional[int] = None) -> UserTable:
-        
+    def create_user(data: dict, password: str, role_id: Optional[int] = None) -> UserTable:
         user = UserTable(
             username=data["username"],
             email=data["email"],
@@ -24,45 +28,110 @@ class UserService:
         )
         user.set_password(password)
 
+        # Assign role if provided
         if role_id:
             role = db.session.get(RoleTable, role_id)
             if role:
                 user.roles = [role]
-                
-        db.session.add(user)
-        db.session.commit()
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise ValueError(f"Database error: {str(e)}")
+
+        # ✅ Audit log
+        log_audit(
+            "CREATE",
+            "users",
+            user.id,
+            before_data=None,
+            after_data={
+                "username": user.username,
+                "email": user.email,
+                "full_name": user.full_name,
+                "is_active": user.is_active,
+                "roles": [role.name for role in user.roles] if user.roles else []
+            }
+        )
+
         return user
 
-    
+    # ---------- UPDATE ---------- #
+
     @staticmethod
-    def update_user(user: UserTable, data: dict, password: Optional[str] = None,
-                    role_id: Optional[int] = None ) -> UserTable:
-        
-        user.username = data["username"]
-        user.email = data["email"]
-        user.full_name = data["full_name"]
-        user.is_active = data.get("is_active", True)
-        
+    def update_user(
+        user: UserTable,
+        data: dict,
+        password: Optional[str] = None,
+        role_id: Optional[int] = None
+    ) -> UserTable:
+
+        # Before snapshot
+        before_data = {
+            "username": user.username,
+            "email": user.email,
+            "full_name": user.full_name,
+            "is_active": user.is_active,
+            "roles": [role.name for role in user.roles] if user.roles else []
+        }
+
+        user.username = data.get("username", user.username)
+        user.email = data.get("email", user.email)
+        user.full_name = data.get("full_name", user.full_name)
+        user.is_active = data.get("is_active", user.is_active)
+
         if password:
             user.set_password(password)
-            
-        if role_id:
+
+        # Update role
+        if role_id is not None:
             role = db.session.get(RoleTable, role_id)
             if role:
                 user.roles = [role]
-        db.session.commit()
+            else:
+                user.roles = []
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise ValueError(f"Database error: {str(e)}")
+
+        # After snapshot
+        after_data = {
+            "username": user.username,
+            "email": user.email,
+            "full_name": user.full_name,
+            "is_active": user.is_active,
+            "roles": [role.name for role in user.roles] if user.roles else []
+        }
+
+        # ✅ Audit log
+        log_audit("UPDATE", "users", user.id, before_data, after_data)
+
         return user
-            
-        # try:
-        #     db.session.commit()
-        # except Exception as exc:
-        #     import logging
-        #     logging.getLogger("app").exception("Failed to update user %s: %s", user.id, exc)
-        #     db.session.rollback()
-        #     raise
-        # return user
-    
+
+    # ---------- DELETE ---------- #
+
     @staticmethod
     def delete_user(user: UserTable) -> None:
-        db.session.delete(user)
-        db.session.commit()
+        # Before snapshot
+        before_data = {
+            "username": user.username,
+            "email": user.email,
+            "full_name": user.full_name,
+            "is_active": user.is_active,
+            "roles": [role.name for role in user.roles] if user.roles else []
+        }
+
+        try:
+            db.session.delete(user)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise ValueError(f"Database error: {str(e)}")
+
+        # ✅ Audit log
+        log_audit("DELETE", "users", user.id, before_data, after_data=None)

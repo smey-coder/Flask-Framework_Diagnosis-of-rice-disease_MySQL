@@ -32,7 +32,12 @@ class PreventionCreateForm(FlaskForm):
 
 class PreventionEditForm(FlaskForm):
     disease_id = SelectField("Disease", coerce=int, validators=[DataRequired()])
-    prevention_type = StringField("Prevention Type", validators=[DataRequired(), Length(max=200)])
+    prevention_type = SelectField(
+        "Prevention",
+        validators=[DataRequired()],
+        choices=PREVENTION_TYPE,
+        render_kw={"class": "form-control"}
+    )
     description = TextAreaField("Description")
     image = FileField("Image", validators=[
         FileAllowed(["jpg", "jpeg", "png"], "Only images are allowed.")

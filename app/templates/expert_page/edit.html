@@ -1,0 +1,10 @@
+{% extends "layouts/expert_layout/expert.html"%}
+{% block title %}Edit User {{ user.username}}{% endblock %}
+
+
+{% block content %}
+<h1 class="h3 mb-3">Edit User: {{ user.username}}</h1>
+<form method="post">
+    {% include "expert_page/_form.html"%}
+</form>
+{% endblock %}

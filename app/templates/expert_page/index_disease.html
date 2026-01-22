@@ -1,0 +1,160 @@
+{% extends "layouts/admin_layout/admin.html"%}
+
+{% block title %}Diseases - Rice Disease Diagnosis System{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1>Diseases</h1>
+        </div>
+        <div class="col-md-6 text-end">
+            {% if current_user.has_role("Admin") %}
+            <a href="{{ url_for('tbl_diseases.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Disease
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="{{ url_for('tbl_diseases.index') }}">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ search_form.disease_name(class="form-control", placeholder="Search by name...") }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        {{ search_form.disease_type(class="form-control") }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        {{ search_form.severity_level(class="form-control") }}
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button type="submit" class="btn btn-info w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Diseases Table -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Disease Name</th>
+                        <th>Type</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if diseases.items %}
+                        {% for disease in diseases.items %}
+                        <tr>
+                            <td>{{ disease.id }}</td>
+                            <td>
+                                <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}">
+                                    {{ disease.disease_name }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ disease.disease_type }}</span>
+                            </td>
+                            <td>
+                                {% if disease.severity_level == "Critical" %}
+                                    <span class="badge bg-danger">{{ disease.severity_level }}</span>
+                                {% elif disease.severity_level == "High" %}
+                                    <span class="badge bg-warning">{{ disease.severity_level }}</span>
+                                {% elif disease.severity_level == "Medium" %}
+                                    <span class="badge bg-info">{{ disease.severity_level }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ disease.severity_level }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if disease.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}" 
+                                   class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if current_user.has_role("Admin") %}
+                                <a href="{{ url_for('tbl_diseases.edit', disease_id=disease.id) }}" 
+                                   class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{{ url_for('tbl_diseases.delete', disease_id=disease.id) }}" 
+                                   class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <p class="text-muted">No diseases found.</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if diseases.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if diseases.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('tbl_diseases.index', page=diseases.prev_num) }}">
+                    Previous
+                </a>
+            </li>
+            {% endif %}
+
+            {% for page_num in diseases.iter_pages(left_edge=1, right_edge=10) %}
+                {% if page_num %}
+                    {% if page_num == diseases.page %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('tbl_diseases.index', page=page_num) }}">
+                            {{ page_num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if diseases.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('tbl_diseases.index', page=diseases.next_num) }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

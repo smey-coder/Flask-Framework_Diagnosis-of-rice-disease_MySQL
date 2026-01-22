@@ -1,52 +1,171 @@
-{% extends "layouts/experties_layout/expert.html" %}
+{% extends "layouts/expert_layout/expert.html" %}
 
-{% block title %}Expert Dashboard{% endblock %}
-{% block page_title %}Expert Dashboard{% endblock %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
 
 {% block content %}
 
-<div class="row g-4">
+<style>
+    .dashboard-header {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        height: 240px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
 
-    <div class="col-md-3">
-        <div class="card expert-card shadow-sm">
-            <div class="card-body text-center">
-                <h1>🦠</h1>
-                <h5>Diseases</h5>
-                <p class="text-muted">Knowledge base</p>
-            </div>
+    .dashboard-header img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .dashboard-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0.15));
+        display: flex;
+        align-items: center;
+        padding: 30px;
+        color: white;
+    }
+
+    .dashboard-title {
+        font-size: 2.3rem;
+        font-weight: 800;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
+
+    .stat-icon {
+        width: 65px;
+        height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 30px;
+        margin: auto;
+        margin-bottom: 10px;
+        color: white;
+    }
+
+    .bg-users { background: linear-gradient(135deg, #4e73df, #224abe); }
+    .bg-diseases { background: linear-gradient(135deg, #e74a3b, #be2617); }
+    .bg-symptoms { background: linear-gradient(135deg, #1cc88a, #0f6848); }
+    .bg-rules { background: linear-gradient(135deg, #f6c23e, #dda20a); }
+</style>
+
+<!-- 🌾 HEADER -->
+<div class="dashboard-header">
+    <img src="{{ url_for('static', filename='images/logo_dashboard.jpg') }}" alt="Rice Field">
+    <div class="dashboard-overlay">
+        <div>
+            <div class="dashboard-title">🌾 Rice Disease Expert System Dashboard</div>
+            <div class="opacity-75">Administration & Knowledge Monitoring Panel</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card expert-card shadow-sm">
-            <div class="card-body text-center">
-                <h1>🌱</h1>
-                <h5>Symptoms</h5>
-                <p class="text-muted">Field indicators</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card expert-card shadow-sm">
-            <div class="card-body text-center">
-                <h1>🧠</h1>
-                <h5>Rules</h5>
-                <p class="text-muted">Inference knowledge</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card expert-card shadow-sm">
-            <div class="card-body text-center">
-                <h1>📊</h1>
-                <h5>Consultations</h5>
-                <p class="text-muted">Diagnosis history</p>
-            </div>
-        </div>
-    </div>
-
 </div>
+
+<!-- 📊 STAT CARDS -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card shadow-sm h-100 text-center">
+            <div class="card-body">
+                <div class="stat-icon bg-users">👥</div>
+                <h2 class="fw-bold text-primary">{{ stats.users }}</h2>
+                <small class="text-muted">TOTAL USERS</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card shadow-sm h-100 text-center">
+            <div class="card-body">
+                <div class="stat-icon bg-diseases">🦠</div>
+                <h2 class="fw-bold text-danger">{{ stats.diseases }}</h2>
+                <small class="text-muted">TOTAL DISEASES</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card shadow-sm h-100 text-center">
+            <div class="card-body">
+                <div class="stat-icon bg-symptoms">🌱</div>
+                <h2 class="fw-bold text-success">{{ stats.symptoms }}</h2>
+                <small class="text-muted">TOTAL SYMPTOMS</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card shadow-sm h-100 text-center">
+            <div class="card-body">
+                <div class="stat-icon bg-rules">🧠</div>
+                <h2 class="fw-bold text-warning">{{ stats.rules }}</h2>
+                <small class="text-muted">EXPERT RULES</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 📈 GRAPH SECTION (BOTTOM) -->
+<div class="card shadow-sm border-0 rounded-4 mt-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">📈 Knowledge Base Overview</h5>
+        <canvas id="dashboardChart" height="100"></canvas>
+    </div>
+</div>
+
+<!-- CHART SCRIPT -->
+<script>
+const ctx = document.getElementById('dashboardChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Users', 'Diseases', 'Symptoms', 'Rules'],
+        datasets: [{
+            label: 'System Data Overview',
+            data: [
+                {{ stats.users }},
+                {{ stats.diseases }},
+                {{ stats.symptoms }},
+                {{ stats.rules }}
+            ],
+            borderWidth: 2,
+            borderRadius: 10
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true },
+            title: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+</script>
 
 {% endblock %}
