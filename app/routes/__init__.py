@@ -9,3 +9,4 @@ from .rule_condition_route import rule_condition_bp
 from .prevention_route import prevention_bp
 from .treatment_route import treatment_bp
 from .audit_routes import audit_bp
+from .rule_routes import rule_bp

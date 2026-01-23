@@ -1,79 +1,115 @@
 {% extends "layouts/expert_layout/expert.html" %}
 
-{% block title %}Admin Dashboard{% endblock %}
-{% block page_title %}Admin Dashboard{% endblock %}
+{% block title %}Expert Dashboard{% endblock %}
+{% block page_title %}Expert Dashboard{% endblock %}
 
 {% block content %}
 
 <style>
-    .dashboard-header {
-        position: relative;
-        border-radius: 18px;
-        overflow: hidden;
-        height: 240px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-    }
+/* ================= HEADER ================= */
+.dashboard-header {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    height: 260px;
+    margin-bottom: 30px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
 
-    .dashboard-header img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+.dashboard-header img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-    .dashboard-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0.15));
-        display: flex;
-        align-items: center;
-        padding: 30px;
-        color: white;
-    }
+.dashboard-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0.15));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    padding: 30px;
+}
 
-    .dashboard-title {
-        font-size: 2.3rem;
-        font-weight: 800;
-    }
+.dashboard-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
 
-    .stat-card {
-        border: none;
-        border-radius: 16px;
-        transition: all 0.3s ease;
-    }
+.dashboard-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
 
-    .stat-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
-    }
+/* ================= DATE/TIME ================= */
+.dashboard-time {
+    font-size: 1rem;
+    margin-top: 5px;
+    font-weight: 500;
+    opacity: 0.85;
+}
 
-    .stat-icon {
-        width: 65px;
-        height: 65px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 30px;
-        margin: auto;
-        margin-bottom: 10px;
-        color: white;
-    }
+/* ================= STAT CARDS ================= */
+.stat-card {
+    border: none;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
 
-    .bg-users { background: linear-gradient(135deg, #4e73df, #224abe); }
-    .bg-diseases { background: linear-gradient(135deg, #e74a3b, #be2617); }
-    .bg-symptoms { background: linear-gradient(135deg, #1cc88a, #0f6848); }
-    .bg-rules { background: linear-gradient(135deg, #f6c23e, #dda20a); }
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+}
+
+.stat-icon {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 28px;
+    margin: auto;
+    margin-bottom: 10px;
+    color: white;
+}
+
+/* Color Themes */
+.bg-users { background: linear-gradient(135deg, #4e73df, #224abe); }
+.bg-diseases { background: linear-gradient(135deg, #e74a3b, #be2617); }
+.bg-symptoms { background: linear-gradient(135deg, #1cc88a, #0f6848); }
+.bg-rules { background: linear-gradient(135deg, #f6c23e, #dda20a); }
+.bg-rule-conditions { background: linear-gradient(135deg, #6f42c1, #563d7c); }
+
+/* ================= GRAPH CARD ================= */
+.graph-card {
+    border: none;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .dashboard-title { font-size: 1.8rem; }
+    .dashboard-subtitle { font-size: 0.95rem; }
+    .dashboard-time { font-size: 0.85rem; }
+    .stat-icon { width: 55px; height: 55px; font-size: 24px; }
+}
 </style>
 
 <!-- 🌾 HEADER -->
 <div class="dashboard-header">
     <img src="{{ url_for('static', filename='images/logo_dashboard.jpg') }}" alt="Rice Field">
     <div class="dashboard-overlay">
-        <div>
-            <div class="dashboard-title">🌾 Rice Disease Expert System Dashboard</div>
-            <div class="opacity-75">Administration & Knowledge Monitoring Panel</div>
-        </div>
+        <div class="dashboard-title">🌾 Rice Disease Expert System</div>
+        <div class="dashboard-subtitle">Administration & Knowledge Monitoring Panel</div>
+        <div class="dashboard-time" id="khmer-date-time"></div>
     </div>
 </div>
 
@@ -82,9 +118,9 @@
     <div class="col-xl-3 col-md-6">
         <div class="card stat-card shadow-sm h-100 text-center">
             <div class="card-body">
-                <div class="stat-icon bg-users">👥</div>
-                <h2 class="fw-bold text-primary">{{ stats.users }}</h2>
-                <small class="text-muted">TOTAL USERS</small>
+                <div class="stat-icon bg-rule-conditions">📜</div>
+                <h2 class="fw-bold text-purple">{{ stats.rule_conditions }}</h2>
+                <small class="text-muted">TOTAL RULE CONDITIONS</small>
             </div>
         </div>
     </div>
@@ -120,40 +156,59 @@
     </div>
 </div>
 
-<!-- 📈 GRAPH SECTION (BOTTOM) -->
-<div class="card shadow-sm border-0 rounded-4 mt-4">
+<!-- 📈 GRAPH SECTION -->
+<div class="graph-card card shadow-sm border-0 rounded-4 mt-4">
     <div class="card-body">
         <h5 class="fw-bold mb-3">📈 Knowledge Base Overview</h5>
         <canvas id="dashboardChart" height="100"></canvas>
     </div>
 </div>
 
-<!-- CHART SCRIPT -->
-<script>
-const ctx = document.getElementById('dashboardChart');
+<!-- ================= SCRIPTS ================= -->
+<!-- 📈 GRAPH SECTION -->
+<div class="graph-card card shadow-sm border-0 rounded-4 mt-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">📈 Knowledge Base Overview</h5>
+        <canvas id="dashboardChart" height="100"></canvas>
+    </div>
+</div>
 
+<!-- ================= SCRIPTS ================= -->
+<script>
+// ================= CHART =================
+const ctx = document.getElementById('dashboardChart');
 new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: ['Users', 'Diseases', 'Symptoms', 'Rules'],
+        labels: ['Rule Conditions', 'Diseases', 'Symptoms', 'Rules'],
         datasets: [{
             label: 'System Data Overview',
             data: [
-                {{ stats.users }},
+                {{ stats.rule_conditions }},
                 {{ stats.diseases }},
                 {{ stats.symptoms }},
                 {{ stats.rules }}
             ],
-            borderWidth: 2,
-            borderRadius: 10
+            backgroundColor: [
+                '#6f42c1', // Rule Conditions - Purple
+                '#e74a3b', // Diseases - Red
+                '#1cc88a', // Symptoms - Green
+                '#f6c23e'  // Rules - Yellow
+            ],
+            borderRadius: 12,
+            borderWidth: 1
         }]
     },
     options: {
         responsive: true,
         plugins: {
-            legend: { display: true },
-            title: {
-                display: false
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ' + context.raw;
+                    }
+                }
             }
         },
         scales: {
@@ -161,11 +216,37 @@ new Chart(ctx, {
                 beginAtZero: true,
                 ticks: {
                     stepSize: 1
+                },
+                grid: {
+                    drawBorder: false,
+                    color: 'rgba(0,0,0,0.05)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    font: {
+                        weight: '500'
+                    }
                 }
             }
         }
     }
 });
+// ================= KHMER DATE & TIME =================
+const days = ["អាទិត្យ","ចន្ទ","អង្គារ","ពុធ","ព្រហស្បតិ៍","សុក្រ","សៅរ៍"];
+const months = ["មករា","កុម្ភៈ","មីនា","មេសា","ឧសភា","មិថុនា","កក្កដា","សីហា","កញ្ញា","តុលា","វិច្ឆិកា","ធ្នូ"];
+
+function updateTime(){
+    const d = new Date();
+    const khmerDate = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    const khmerTime = d.toLocaleTimeString('en-US', { hour12: false });
+    document.getElementById('khmer-date-time').innerText = `${khmerDate} | ${khmerTime}`;
+}
+updateTime();
+setInterval(updateTime, 1000);
 </script>
 
 {% endblock %}

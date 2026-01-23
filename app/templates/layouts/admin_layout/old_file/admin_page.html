@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Expert Panel{% endblock %}</title>
+    <title>{% block title %}Admin Panel{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap 5 -->
@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/expert_page.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_page.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis_page.css') }}">
 
     <!-- Charts -->
@@ -23,7 +23,7 @@
 </head>
 <body class="bg-light">
 
-<div class="d-flex" id="expert-wrapper">
+<div class="d-flex" id="admin-wrapper">
 
     <!-- ===== SIDEBAR ===== -->
     <nav class="sidebar bg-dark p-3 text-white flex-shrink-0" style="width: 250px; min-height: 100vh;">
@@ -33,38 +33,72 @@
 
             <!-- Dashboard -->
             <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('expert.dashboard') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('expert.dashboard') }}">
+                <a class="nav-link {% if request.endpoint.startswith('admin.dashboard') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('admin.dashboard') }}">
                     <i class="bi bi-speedometer2 me-2"></i> Dashboard
                 </a>
             </li>
 
+            <!-- Users / Roles / Permissions -->
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.blueprint == 'tbl_users' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_users.index') }}">
+                    <i class="bi bi-people me-2"></i> Users
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.blueprint == 'tbl_roles' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_roles.index') }}">
+                    <i class="bi bi-shield-lock me-2"></i> Roles
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.blueprint == 'tbl_permissions' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_permissions.index') }}">
+                    <i class="bi bi-key me-2"></i> Permissions
+                </a>
+            </li>
+
             <hr class="border-light mt-3">
-            <p class="text-white-50 px-3 mt-2 mb-1">Fact</p>
+            <p class="text-white-50 px-3 mt-2 mb-1">Disease Management</p>
             <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('expert.index_symptom') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('expert.index_symptom') }}">
-                    <i class="bi bi-clipboard-data me-2"></i> Symptoms
+                <a class="nav-link {% if request.blueprint == 'tbl_diseases' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_diseases.index') }}">
+                    <i class="bi bi-bug me-2"></i> Diseases
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('expert.index_disease') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('expert.index_disease') }}">
-                    <i class="bi bi-clipboard-data me-2"></i> Diseases
+                <a class="nav-link {% if request.blueprint == 'tbl_symptoms' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_symptoms.index') }}">
+                    <i class="bi bi-activity me-2"></i> Symptoms
                 </a>
             </li>
-             <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('expert.index_rule') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('expert.index_rule') }}">
-                    <i class="bi bi-clipboard-data me-2"></i> Rule
-                </a>
-            </li>
-            <!-- <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('expert.diagnosis_input') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('expert.diagnosis_input') }}">
-                    <i class="bi bi-clipboard-data me-2"></i> Rule Conditions
-                </a>
-            </li>  -->
-            <hr class="border-light mt-3">
-            <p class="text-white-50 px-3 mt-2 mb-1">Diagnosis</p>
             <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('expert.diagnosis_input') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('expert.diagnosis_input') }}">
+                <a class="nav-link {% if request.blueprint == 'rule_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('rules.index') }}">
+                    <i class="bi bi-diagram-3 me-2"></i> Rule
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.blueprint == 'rule_condition_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('rule_condition.index') }}">
+                    <i class="bi bi-diagram-3 me-2"></i> Rule Conditions
+                </a>
+            </li>
+    
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.blueprint == 'prevention_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('prevention.index') }}">
+                    <i class="bi bi-shield-check me-2"></i> Prevention
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.blueprint == 'treatment_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('treatment.index') }}">
+                    <i class="bi bi-heart-pulse me-2"></i> Treatment
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.endpoint.startswith('admin.diagnosis_input') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('admin.diagnosis_input') }}">
                     <i class="bi bi-clipboard-data me-2"></i> Diagnosis Test
+                </a>
+            </li>
+
+            <hr class="border-light mt-3">
+            <p class="text-white-50 px-3 mt-2 mb-1">Reports</p>
+            <li class="nav-item mb-1">
+                <a class="nav-link {% if request.blueprint == 'audit_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('audit.index') }}">
+                    <i class="bi bi-journal-text me-2"></i> History System
                 </a>
             </li>
 
@@ -72,13 +106,13 @@
             <p class="text-white-50 px-3 mt-2 mb-1">System</p>
             <!-- Settings -->
             <li class="nav-item mb-1">
-                <a href="{{ url_for('expert.settings') }}" class="btn btn-sm btn-outline-primary d-flex align-items-center text-white mb-1">
+                <a href="{{ url_for('admin.settings') }}" class="btn btn-sm btn-outline-primary d-flex align-items-center text-white mb-1">
                     <i class="bi bi-gear me-2"></i> Settings
                 </a>
             </li>
             <!-- About -->
             <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('expert.about') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('expert.about') }}">
+                <a class="nav-link {% if request.endpoint.startswith('admin.about') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('admin.about') }}">
                     <i class="bi bi-info-circle me-2"></i> About
                 </a>
             </li>

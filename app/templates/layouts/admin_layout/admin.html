@@ -5,165 +5,380 @@
     <title>{% block title %}Admin Panel{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Google Fonts Khmer -->
+    <!-- Khmer Font -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_page.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis_page.css') }}">
 
     <!-- Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     {% block extra_css %}{% endblock %}
 </head>
+
 <body class="bg-light">
 
 <div class="d-flex" id="admin-wrapper">
 
-    <!-- ===== SIDEBAR ===== -->
-    <nav class="sidebar bg-dark p-3 text-white flex-shrink-0" style="width: 250px; min-height: 100vh;">
-        <h4 class="text-center mb-4 fw-bold">🌾 Rice Expert</h4>
+    <!-- ================= SIDEBAR (UX/UI Redesign) ================= -->
+    <nav class="sidebar bg-success text-white p-4 shadow-sm"
+     style="width:250px; min-height:100vh; background-image:none; transition: all 0.3s ease;">
 
-        <ul class="nav flex-column">
+    <!-- Logo Section -->
+    <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename='images/logo_rice.png') }}"
+             alt="Rice Expert Logo"
+             class="img-fluid mb-2"
+             style="max-width:120px; border-radius:100px;">
+        <h6 class="fw-bold mb-0">Rice Expert</h6>
+        <small class="text-muted">ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ</small>
+    </div>
 
-            <!-- Dashboard -->
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('admin.dashboard') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('admin.dashboard') }}">
-                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
-                </a>
-            </li>
+    <!-- Navigation -->
+    <ul class="nav flex-column gap-2">
 
-            <!-- Users / Roles / Permissions -->
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'tbl_users' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_users.index') }}">
-                    <i class="bi bi-people me-2"></i> Users
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'tbl_roles' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_roles.index') }}">
-                    <i class="bi bi-shield-lock me-2"></i> Roles
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'tbl_permissions' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_permissions.index') }}">
-                    <i class="bi bi-key me-2"></i> Permissions
-                </a>
-            </li>
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.endpoint.startswith('admin.dashboard') %}active-link{% endif %}"
+               href="{{ url_for('admin.dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i> Dashboard
+            </a>
+        </li>
 
-            <hr class="border-light mt-3">
-            <p class="text-white-50 px-3 mt-2 mb-1">Disease Management</p>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'tbl_diseases' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_diseases.index') }}">
-                    <i class="bi bi-bug me-2"></i> Diseases
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'tbl_symptoms' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('tbl_symptoms.index') }}">
-                    <i class="bi bi-activity me-2"></i> Symptoms
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'rule_condition_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('rule_condition.index') }}">
-                    <i class="bi bi-diagram-3 me-2"></i> Rule Conditions
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'prevention_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('prevention.index') }}">
-                    <i class="bi bi-shield-check me-2"></i> Prevention
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'treatment_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('treatment.index') }}">
-                    <i class="bi bi-heart-pulse me-2"></i> Treatment
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('admin.diagnosis_input') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('admin.diagnosis_input') }}">
-                    <i class="bi bi-clipboard-data me-2"></i> Diagnosis Test
-                </a>
-            </li>
+        <!-- Management Section -->
+        <li class="nav-item mt-3 mb-1 section-title text-uppercase text-muted small px-3">
+            Management
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'tbl_users' %}active-link{% endif %}"
+               href="{{ url_for('tbl_users.index') }}">
+                <i class="bi bi-people me-2"></i> Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'tbl_roles' %}active-link{% endif %}"
+               href="{{ url_for('tbl_roles.index') }}">
+                <i class="bi bi-shield-lock me-2"></i> Roles
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'tbl_permissions' %}active-link{% endif %}"
+               href="{{ url_for('tbl_permissions.index') }}">
+                <i class="bi bi-key me-2"></i> Permissions
+            </a>
+        </li>
 
-            <hr class="border-light mt-3">
-            <p class="text-white-50 px-3 mt-2 mb-1">Reports</p>
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.blueprint == 'audit_bp' %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('audit.index') }}">
-                    <i class="bi bi-journal-text me-2"></i> History System
-                </a>
-            </li>
+        <!-- Disease Section -->
+        <li class="nav-item mt-3 mb-1 section-title text-uppercase text-muted small px-3">
+            Disease Management
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'tbl_diseases' %}active-link{% endif %}"
+               href="{{ url_for('tbl_diseases.index') }}">
+                <i class="bi bi-bug me-2"></i> Diseases
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'tbl_symptoms' %}active-link{% endif %}"
+               href="{{ url_for('tbl_symptoms.index') }}">
+                <i class="bi bi-activity me-2"></i> Symptoms
+            </a>
+        </li>
 
-            <hr class="border-light mt-3">
-            <p class="text-white-50 px-3 mt-2 mb-1">System</p>
-            <!-- Settings -->
-            <li class="nav-item mb-1">
-                <a href="{{ url_for('admin.settings') }}" class="btn btn-sm btn-outline-primary d-flex align-items-center text-white mb-1">
-                    <i class="bi bi-gear me-2"></i> Settings
-                </a>
-            </li>
-            <!-- About -->
-            <li class="nav-item mb-1">
-                <a class="nav-link {% if request.endpoint.startswith('admin.about') %}active{% endif %} text-white d-flex align-items-center" href="{{ url_for('admin.about') }}">
-                    <i class="bi bi-info-circle me-2"></i> About
-                </a>
-            </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'rule_bp' %}active-link{% endif %}"
+               href="{{ url_for('rules.index') }}">
+                <i class="bi bi-diagram-3 me-2"></i> Rules
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'rule_condition_bp' %}active-link{% endif %}"
+               href="{{ url_for('rule_condition.index') }}">
+                <i class="bi bi-diagram-3 me-2"></i> Rule Conditions
+            </a>
+        </li>
 
-            <li class="nav-item mt-4">
-                <a class="nav-link text-danger d-flex align-items-center" href="{{ url_for('auth.logout') }}">
-                    <i class="bi bi-box-arrow-right me-2"></i> Logout
-                </a>
-            </li>
+        <!-- Prevention & Treatment -->
+        <li class="nav-item mt-3 mb-1 section-title text-uppercase text-muted small px-3">
+            Health
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'prevention_bp' %}active-link{% endif %}"
+               href="{{ url_for('prevention.index') }}">
+                <i class="bi bi-shield-check me-2"></i> Prevention
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'treatment_bp' %}active-link{% endif %}"
+               href="{{ url_for('treatment.index') }}">
+                <i class="bi bi-heart-pulse me-2"></i> Treatment
+            </a>
+        </li>
 
-        </ul>
-    </nav>
+        <!-- Diagnosis -->
+        <li class="nav-item mt-3">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.endpoint.startswith('admin.diagnosis_input') %}active-link{% endif %}"
+               href="{{ url_for('admin.diagnosis_input') }}">
+                <i class="bi bi-clipboard-data me-2"></i> Diagnosis Test
+            </a>
+        </li>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="content flex-grow-1">
+        <!-- Reports -->
+        <li class="nav-item mt-3 mb-1 section-title text-uppercase text-muted small px-3">
+            Reports
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.blueprint == 'audit_bp' %}active-link{% endif %}"
+               href="{{ url_for('audit.index') }}">
+                <i class="bi bi-journal-text me-2"></i> History System
+            </a>
+        </li>
 
-        <!-- Topbar -->
-        <nav class="topbar navbar-light bg-white shadow-sm d-flex justify-content-between align-items-center px-4 py-3">
-            <h5 class="mb-0 fw-bold">{% block page_title %}Dashboard{% endblock %}</h5>
+        <!-- System -->
+        <li class="nav-item mt-3 mb-1 section-title text-uppercase text-muted small px-3">
+            System
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('admin.settings') }}"
+               class="btn btn-sm btn-outline-light d-flex align-items-center px-3 py-2 mb-1">
+                <i class="bi bi-gear me-2"></i> Settings
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center px-3 py-2
+                {% if request.endpoint.startswith('admin.about') %}active-link{% endif %}"
+               href="{{ url_for('admin.about') }}">
+                <i class="bi bi-info-circle me-2"></i> About
+            </a>
+        </li>
+
+        <li class="nav-item mt-4">
+            <a class="nav-link text-danger d-flex align-items-center px-3 py-2"
+               href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right me-2"></i> Logout
+            </a>
+        </li>
+    </ul>
+</nav>
+
+    <!-- ================= MAIN ================= -->
+    <div class="flex-grow-1">
+
+        <!-- ================= TOPBAR ================= -->
+        <nav class="topbar bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
+
+            <div>
+                <h5 class="fw-bold mb-0">{% block page_title %}Dashboard{% endblock %}</h5>
+                <small id="greeting-text" class="text-muted"></small>
+            </div>
+
             <div class="d-flex align-items-center gap-3">
+
+                <!-- Date & Time -->
+                <div class="text-end small">
+                    <div id="khmer-date" class="fw-semibold"></div>
+                    <div id="current-time" class="text-muted"></div>
+                </div>
+
+                <!-- Notification
+                <div class="dropdown">
+                    <button class="btn btn-light position-relative" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">3</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <li class="dropdown-header fw-bold">Notifications</li>
+                        <li><a class="dropdown-item">🧠 New Rule Added</a></li>
+                        <li><a class="dropdown-item">📊 Diagnosis Completed</a></li>
+                        <li><a class="dropdown-item">👤 New User Registered</a></li>
+                    </ul>
+                </div> -->
+
+                <!-- Dark Mode -->
+                <button id="darkModeToggle" class="btn btn-outline-secondary">
+                    <i class="bi bi-moon-stars"></i>
+                </button>
+
+                <!-- User -->
                 <span class="fw-semibold">👤 {{ current_user.username }}</span>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
             </div>
         </nav>
 
-        <!-- Page Content -->
-        <main class="p-4">
+        <!-- ================= CONTENT ================= -->
+        <main id="page-content" class="p-4 page-transition">
+
             {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{category}} alert-dismissible fade show">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{category}} alert-dismissible fade show">
+                    {{ message }}
+                    <button class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
             {% endwith %}
 
             {% block content %}{% endblock %}
         </main>
-    </div>
 
+    </div>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- ================= SCRIPTS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-{% block extra_js %}{% endblock %}
+
+<script>
+/* ================= DARK MODE ================= */
+const body = document.body;
+const toggle = document.getElementById("darkModeToggle");
+
+if (localStorage.getItem("dark") === "on") {
+    body.classList.add("dark-mode");
+}
+
+toggle.onclick = () => {
+    body.classList.toggle("dark-mode");
+    localStorage.setItem("dark", body.classList.contains("dark-mode") ? "on" : "off");
+};
+
+/* ================= DATE & TIME ================= */
+const days = ["អាទិត្យ","ចន្ទ","អង្គារ","ពុធ","ព្រហស្បតិ៍","សុក្រ","សៅរ៍"];
+const months = ["មករា","កុម្ភៈ","មីនា","មេសា","ឧសភា","មិថុនា","កក្កដា","សីហា","កញ្ញា","តុលា","វិច្ឆិកា","ធ្នូ"];
+
+function updateTime(){
+    const d = new Date();
+    document.getElementById("khmer-date").innerText =
+        `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    document.getElementById("current-time").innerText = d.toLocaleTimeString();
+}
+updateTime();
+setInterval(updateTime, 1000);
+
+/* ================= GREETING ================= */
+const hour = new Date().getHours();
+document.getElementById("greeting-text").innerText =
+    hour < 12 ? "🌅 Good Morning" :
+    hour < 17 ? "☀️ Good Afternoon" :
+    "🌙 Good Evening";
+
+/* ================= PAGE TRANSITION ================= */
+document.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", function(e) {
+        if (this.target === "_blank" || this.href.includes("#")) return;
+        e.preventDefault();
+        document.getElementById("page-content").classList.add("fade-out");
+        setTimeout(() => window.location = this.href, 200);
+    });
+});
+</script>
 
 <style>
-    body { font-family: 'Noto Sans Khmer', sans-serif; }
-    .sidebar .nav-link.active { background-color: #0d6efd; border-radius: 0.25rem; }
-    .sidebar .nav-link:hover { background-color: #0b5ed7; border-radius: 0.25rem; }
-    .topbar { border-bottom: 1px solid #dee2e6; }
-    main { min-height: calc(100vh - 70px); }
-    .sidebar p { font-size: 0.85rem; color: #adb5bd; margin-left: 12px; }
-    .sidebar .btn-outline-primary { width: 100%; justify-content: start; }
+/* ================= GLOBAL ================= */
+body {
+    font-family: 'Noto Sans Khmer', sans-serif;
+}
+/* ================= SIDEBAR ================= */
+.sidebar p {
+    font-size: .75rem;
+    color: #adb5bd;
+    margin-left: 10px;
+}
+
+.nav-link {
+    transition: all .25s ease;
+}
+
+.nav-link:hover {
+    background-color: #0d6efd;
+    border-radius: 6px;
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    background: linear-gradient(90deg,#0d6efd,#084298);
+    border-radius: 6px;
+}
+
+/* ================= PAGE ANIMATION ================= */
+.page-transition {
+    animation: fadeUp .4s ease;
+}
+
+.fade-out {
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= DARK MODE ================= */
+.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.dark-mode .bg-white {
+    background-color: #1f1f1f !important;
+}
+
+.dark-mode .card,
+.dark-mode .dropdown-menu {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+.sidebar {
+    font-family: 'Noto Sans Khmer', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.sidebar img {
+    background: none; /* logo transparent */
+    transition: transform 0.3s ease;
+}
+
+.sidebar img:hover {
+    transform: scale(1.05);
+}
+
+.nav-link {
+    color: #ffffff;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(5px);
+}
+
+.nav-link.active-link {
+    background-color: #28a745; /* green highlight for active */
+    font-weight: 600;
+    transform: translateX(3px);
+}
+
+.section-title {
+    letter-spacing: 1px;
+}
 </style>
 
+{% block extra_js %}{% endblock %}
 </body>
 </html>

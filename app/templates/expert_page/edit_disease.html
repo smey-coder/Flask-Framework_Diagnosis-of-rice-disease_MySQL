@@ -1,4 +1,4 @@
-{% extends "layouts/admin_layout/admin.html"%}
+{% extends "layouts/expert_layout/expert.html"%}
 
 {% block title %}Edit Disease - Rice Disease Diagnosis System{% endblock %}
 
@@ -9,7 +9,7 @@
             <h1>Edit Disease</h1>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}" class="btn btn-secondary">
+            <a href="{{ url_for('expert.detail_disease', disease_id=disease.id) }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back
             </a>
         </div>
@@ -97,7 +97,7 @@
 
                         <!-- Submit Button -->
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}" class="btn btn-secondary">
+                            <a href="{{ url_for('expert.detail_disease', disease_id=disease.id) }}" class="btn btn-secondary">
                                 Cancel
                             </a>
                             {{ form.submit(class="btn btn-warning") }}

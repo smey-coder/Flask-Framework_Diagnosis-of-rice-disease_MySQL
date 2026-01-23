@@ -10,10 +10,10 @@ class RulesTable(UserMixin, db.Model):
     disease_id = db.Column(db.Integer, db.ForeignKey(DiseaseTable.id), nullable=False)
     certainty = db.Column(db.Float, nullable=False)
     explanation = db.Column(db.Text, nullable=True)
-    image = db.Column(db.String(255), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
+    disease = db.relationship("DiseaseTable", backref="rules")
     def __repr__(self) -> str:
         return f"<Rules {self.rule_name}>"

@@ -1,0 +1,32 @@
+{% extends "layouts/expert_layout/expert.html"%}
+{% block title%} User Detail{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Symptom: {{ symptom.symptom_name }}</h1>
+    <div>
+        <a href="{{ url_for('expert.edit_symptom', symptom_id = symptom.id)}}" class="btn btn-sm btn-outline-secondary">Edit</a>
+        <!-- <a href="{{ url_for('tbl_symptoms.delete', symptom_id = symptom.id)}}" class="btn btn-sm btn-outline-danger">Delete</a> -->
+        <a href="{{ url_for('expert.index_symptom')}}" class="btn btn-sm btn-outline-primary">Back to list</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>ID:</strong> {{ symptom.id }}</p>
+        <p><strong>Symptom Name:</strong> {{ symptom.symptom_name }}</p>
+        <p><strong>Description:</strong> {{ symptom.description }}</p>
+        <p><strong>Group:</strong> {{ symptom.symptom_group }}</p>
+        
+        <p>
+            <strong>Status:</strong>
+            {% if symptom.is_active %}
+            <span class="badge text-bg-success">Active</span>
+            {% else %}
+            <span class="badge text-bg-secondary">Inactive</span>
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endblock %}
+    

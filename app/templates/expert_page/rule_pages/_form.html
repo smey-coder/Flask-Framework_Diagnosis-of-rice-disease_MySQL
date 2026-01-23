@@ -1,0 +1,39 @@
+{# templates/expert_page/rule_pages/_form.html #}
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        {{ form.disease_id.label(class="form-label") }}
+        {{ form.disease_id(class="form-select") }}
+        {% for error in form.disease_id.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        {{ form.certainty.label(class="form-label") }}
+        {{ form.certainty(class="form-control", step="0.01") }}
+        {% for error in form.certainty.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        {{ form.explanation.label(class="form-label") }}
+        {{ form.explanation(class="form-control", rows=3) }}
+        {% for error in form.explanation.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="form-check mb-3">
+        {{ form.is_active(class="form-check-input") }}
+        {{ form.is_active.label(class="form-check-label") }}
+        {% for error in form.is_active.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+    <a href="{{ url_for('expert.index_rule') }}" class="btn btn-secondary ms-2">Back</a>
+</form>

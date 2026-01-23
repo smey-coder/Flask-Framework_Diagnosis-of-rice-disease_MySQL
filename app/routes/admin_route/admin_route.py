@@ -79,7 +79,7 @@ def about():
     about_info = {
         "app_name": "Rice Expert System",
         "version": "1.0.0",
-        "developer": "SanReaksmey",
+        "developer": "San Reaksmey, Try Reaksmey, Pen Panhna, Tath Kongea",
         "email": "sanreaksmey01@gmail.com",
         "description": "This system helps farmers diagnose rice diseases and manage treatments efficiently.",
     }

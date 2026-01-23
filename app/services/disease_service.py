@@ -27,20 +27,21 @@ class DiseaseService:
 
     @staticmethod
     def search_diseases(disease_name=None, disease_type=None, severity_level=None, page=1, per_page=10):
-        """Search and filter diseases"""
-        query = db.select(DiseaseTable)
+        query = DiseaseTable.query
 
         if disease_name:
-            query = query.where(DiseaseTable.disease_name.ilike(f"%{disease_name}%"))
+            query = query.filter(DiseaseTable.disease_name.ilike(f"%{disease_name}%"))
 
         if disease_type:
-            query = query.where(DiseaseTable.disease_type == disease_type)
+            query = query.filter(DiseaseTable.disease_type == disease_type)
 
         if severity_level:
-            query = query.where(DiseaseTable.severity_level == severity_level)
+            query = query.filter(DiseaseTable.severity_level == severity_level)
 
         query = query.order_by(DiseaseTable.id.desc())
-        return db.paginate(query, page=page, per_page=per_page)
+
+        # ✅ MUST return paginate (not .all())
+        return query.paginate(page=page, per_page=per_page, error_out=False)
 
     # ---------- CREATE ---------- #
     @staticmethod

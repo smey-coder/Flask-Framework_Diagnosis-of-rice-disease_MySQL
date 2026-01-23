@@ -1,4 +1,4 @@
-{% extends "layouts/admin_layout/admin.html"%}
+{% extends "layouts/expert_layout/expert.html"%}
 
 {% block title %}{{ disease.disease_name }} - Rice Disease Diagnosis System{% endblock %}
 
@@ -10,14 +10,14 @@
         </div>
         <div class="col-md-4 text-end">
             {% if current_user.has_role("Admin") %}
-            <a href="{{ url_for('tbl_diseases.edit', disease_id=disease.id) }}" class="btn btn-warning">
+            <a href="{{ url_for('expert.edit_disease', disease_id=disease.id) }}" class="btn btn-warning">
                 <i class="fas fa-edit"></i> Edit
             </a>
-            <a href="{{ url_for('tbl_diseases.delete', disease_id=disease.id) }}" class="btn btn-danger">
+            <!-- <a href="{{ url_for('tbl_diseases.delete', disease_id=disease.id) }}" class="btn btn-danger">
                 <i class="fas fa-trash"></i> Delete
-            </a>
+            </a> -->
             {% endif %}
-            <a href="{{ url_for('tbl_diseases.index') }}" class="btn btn-secondary">
+            <a href="{{ url_for('expert.index_disease') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back
             </a>
         </div>
