@@ -1,0 +1,9 @@
+{% extends "layouts/expert_layout/expert.html"%}
+{% block title %}Expert Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Created Symptom</h1>
+<form method="post" action="{{ url_for('expert.create_symptom') }}" novalidate>
+    {% include "expert_page/_form_symptom.html"%}
+</form>
+{% endblock %}

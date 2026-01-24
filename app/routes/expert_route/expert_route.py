@@ -1,8 +1,10 @@
 from venv import logger
 from flask import Blueprint, abort, current_app, render_template, redirect, request, url_for, flash, session
 from flask_login import login_required, current_user, logout_user
+from app.forms.rule_condition_form import RuleConditionCreateForm, RuleConditionEditForm
 from app.forms.rule_form import RuleCreateForm, RuleEditForm
-from app.forms.symptom_forms import SymptomEditForm
+from app.forms.symptom_forms import SymptomCreateForm, SymptomEditForm
+from app.services.rule_condition_service import RuleConditionService
 from app.services.rule_service import RuleService
 from app.services.symptom_service import SymptomService
 from extensions import db
@@ -335,6 +337,24 @@ def edit_symptom(symptom_id: int):
     
     return render_template("expert_page/edit_symptom.html", form=form, symptom=symptom)
 
+@expert_bp.route("/create/create", methods=["GET", "POST"])
+@login_required
+@role_required("Expert")
+@permission_required("CREATE_SYMPTOM")
+def create_symptom():
+    form = SymptomCreateForm()
+    if form.validate_on_submit():
+        data = {
+            "symptom_name": form.symptom_name.data,
+            "symptom_group": form.symptom_group.data,
+            "description": form.description.data,
+            "is_active": form.is_active.data,
+        }
+        symptom = SymptomService.create_symptom(data)
+        flash(f"Symptom '{symptom.symptom_name}' was created successfully.", "success")
+        return redirect(url_for("expert.index_symptom"))
+    
+    return render_template("expert_page/create_symptom.html", form=form)
 
 # ------------- Manager Rule ---------------
 # ========================= INDEX =========================
@@ -408,3 +428,118 @@ def create_rule():
             flash(f"Error creating rule: {e}", "danger")
 
     return render_template("expert_page/rule_pages/create.html", form=form)
+
+# ================== Rule Condition Management ======================
+
+@expert_bp.route("/rule-condition/")
+@login_required
+@role_required("Expert")
+@permission_required("VIEW_RULE_CONDITION")
+def index_rule_condition():
+    page = request.args.get("page", 1, type=int)
+    active_only = request.args.get("active", default=None, type=int)
+    active_only = bool(active_only) if active_only is not None else False
+
+    pagination = RuleConditionService.paginate(
+        page=page,
+        active_only=active_only
+    )
+
+    return render_template(
+        "expert_page/rule_condition_pages/index.html",
+        rule_conditions=pagination.items,
+        pagination=pagination,
+        active_only=active_only
+    )
+
+# ===================== CREATE =====================
+
+@expert_bp.route("/rule-condition/create", methods=["GET", "POST"])
+@login_required
+@role_required("Expert")
+@permission_required("CREATE_RULE_CONDITION")
+def create_rule_condition():
+    form = RuleConditionCreateForm()
+
+    if form.validate_on_submit():
+        try:
+            RuleConditionService.create(form.data)
+            flash("Rule condition created successfully.", "success")
+            return redirect(url_for("expert.index_rule_condition"))
+        except Exception as e:
+            flash(str(e), "danger")
+
+    return render_template(
+        "expert_page/rule_condition_pages/create.html",
+        form=form
+    )
+
+
+# ===================== DETAIL =====================
+
+@expert_bp.route("/rule-condition/<int:id>")
+@login_required
+@role_required("Expert")
+@permission_required("VIEW_RULE_CONDITION")
+def detail_rule_condition(id):
+    rule_condition = RuleConditionService.get_by_id(id)
+
+    if not rule_condition:
+        abort(404)
+
+    return render_template(
+        "expert_page/rule_condition_pages/detail.html",
+        rule_condition=rule_condition
+    )
+
+
+# ===================== EDIT =====================
+
+@expert_bp.route("/rule-condition/<int:id>/edit", methods=["GET", "POST"])
+@login_required
+@role_required("Expert")
+@permission_required("EDIT_RULE_CONDITION")
+def edit_rule_condition(id):
+    rule_condition = RuleConditionService.get_by_id(id)
+
+    if not rule_condition:
+        abort(404)
+
+    form = RuleConditionEditForm(rule_condition=rule_condition)
+
+    if request.method == "GET":
+        form.rule_id.data = rule_condition.rule_id
+        form.symptom_id.data = rule_condition.symptom_id
+        form.is_active.data = rule_condition.is_active
+
+    if form.validate_on_submit():
+        try:
+            RuleConditionService.update(rule_condition, form.data)
+            flash("Rule condition updated successfully.", "success")
+            return redirect(url_for("expert.index_rule_condition"))
+        except Exception as e:
+            flash(str(e), "danger")
+
+    return render_template(
+        "expert_page/rule_condition_pages/edit.html",
+        form=form,
+        rule_condition=rule_condition
+    )
+
+
+# ===================== TOGGLE ACTIVE =====================
+
+@expert_bp.route("/rule-condition/<int:id>/toggle", methods=["POST"])
+@login_required
+@role_required("Expert")
+@permission_required("EDIT_RULE_CONDITION")
+def toggle_rule_condition(id):
+    rule_condition = RuleConditionService.get_by_id(id)
+
+    if not rule_condition:
+        abort(404)
+
+    RuleConditionService.toggle_active(rule_condition)
+
+    flash("Rule condition status updated.", "info")
+    return redirect(url_for("expert.index_rule_condition"))

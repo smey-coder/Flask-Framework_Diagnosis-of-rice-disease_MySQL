@@ -53,3 +53,177 @@ body {
     transform: translateY(-5px);
     box-shadow: 0 10px 24px rgba(0,0,0,0.12);
 }
+/* ===== SIDEBAR UX/UI ===== */
+.sidebar {
+    box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #dee2e6;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+    font-size: 15px;
+}
+
+.sidebar-link i {
+    font-size: 1.1rem;
+    min-width: 20px;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255,255,255,0.08);
+    color: #fff;
+    transform: translateX(4px);
+}
+
+.sidebar-link.active {
+    background: linear-gradient(135deg, #0d6efd, #084298);
+    color: #fff;
+    font-weight: 600;
+}
+
+.sidebar-title {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #adb5bd;
+    padding: 6px 12px;
+    margin-top: 10px;
+}
+
+.sidebar-divider {
+    border-color: rgba(255,255,255,0.15);
+    margin: 12px 0;
+}
+/* =========================
+   GLOBAL
+========================= */
+body {
+    font-family: 'Noto Sans Khmer', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================
+   THEME VARIABLES
+========================= */
+.theme-light {
+    --bg-main: #f8f9fa;
+    --bg-card: #ffffff;
+    --bg-sidebar: #212529;
+    --text-main: #212529;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+}
+
+.theme-dark {
+    --bg-main: #121212;
+    --bg-card: #1e1e1e;
+    --bg-sidebar: #181818;
+    --text-main: #f1f1f1;
+    --text-muted: #adb5bd;
+    --border-color: #2c2c2c;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background-color: var(--bg-sidebar);
+    box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: #dee2e6;
+    transition: all 0.25s ease;
+    text-decoration: none;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255,255,255,0.08);
+    transform: translateX(5px);
+    color: #fff;
+}
+
+.sidebar-link.active {
+    background: linear-gradient(135deg, #0d6efd, #084298);
+    font-weight: 600;
+    color: #fff;
+}
+
+.sidebar-title {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #adb5bd;
+    padding: 10px 14px 4px;
+}
+
+.sidebar-divider {
+    border-color: rgba(255,255,255,0.15);
+    margin: 12px 0;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+.topbar {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+main {
+    background-color: var(--bg-main);
+    min-height: calc(100vh - 70px);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.25s ease;
+}
+
+main.page-enter {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+main.page-exit {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+/* =========================
+   UI ELEMENTS
+========================= */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
+.form-control,
+.form-select {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border-color: var(--border-color);
+}
+
+.alert {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+}

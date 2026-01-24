@@ -1,0 +1,80 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block page_title %}Diagnosis Results{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h3 class="fw-bold text-primary">
+            <i class="bi bi-clipboard-data me-2"></i> Diagnosis Results
+        </h3>
+        <p class="text-muted">
+            The expert system evaluated the selected symptoms and produced the following conclusions.
+        </p>
+    </div>
+
+    {% if conclusions %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-light fw-semibold">
+            <i class="bi bi-bar-chart-fill me-2"></i> Diagnosis Summary
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0 align-middle">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th style="width: 40%">Disease</th>
+                        <th style="width: 30%">Certainty Factor (CF)</th>
+                        <th style="width: 30%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for disease_id, data in conclusions.items() %}
+                    <tr>
+                        <td class="fw-semibold">
+                            {{ data.disease.disease_name }}
+                        </td>
+
+                        <td class="text-center">
+                            <span class="badge bg-success fs-6">
+                                {{ (data.certainty * 100) | round(2) }}%
+                            </span>
+                        </td>
+
+                        <td class="text-center">
+                            <a href="{{ url_for('admin.diagnosis_explain', disease_id=disease_id) }}"
+                               class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-question-circle me-1"></i> Explain
+                            </a>
+                            <a href="{{ url_for('admin.disease_treatment', disease_id=disease_id) }}"
+                               class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-question-circle me-1"></i> Treatment
+                            </a>
+                            <a href="{{ url_for('admin.disease_prevention', disease_id=disease_id) }}"
+                               class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-question-circle me-1"></i> Prevention
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer text-end">
+            <a href="{{ url_for('admin.diagnosis_input') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Diagnosis
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        No matching diseases found. Please select different symptoms and try again.
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -22,11 +22,14 @@ class RuleConditionService:
         return query.order_by(RuleConditionsTable.id.desc()).all()
 
     @staticmethod
-    def paginate(page: int = 1, per_page: int = 10):
-        """Paginated list for admin UI"""
-        return RuleConditionsTable.query.order_by(
-            RuleConditionsTable.id.desc()
-        ).paginate(page=page, per_page=per_page, error_out=False)
+    def paginate(page: int = 1, per_page: int = 10, active_only: bool = False):
+        """Paginated list for admin UI, with optional active_only filter"""
+        query = RuleConditionsTable.query
+        if active_only:
+            query = query.filter_by(is_active=True)
+        return query.order_by(RuleConditionsTable.id.desc()).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
 
     @staticmethod
     def get_by_id(rule_condition_id: int) -> RuleConditionsTable:

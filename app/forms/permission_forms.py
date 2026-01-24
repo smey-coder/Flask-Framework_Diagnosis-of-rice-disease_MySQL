@@ -10,12 +10,17 @@ from app.forms.multi_checkbox_field import MultiCheckboxField
 MODULE_CHOICES = [
     ("Users", "Users"),
     ("Roles", "Roles"),
-    ("Products", "Products"),
     ("Orders", "Orders"),
     ("General", "General"),
     ("Permission", "Permission"),
     ("Fasts", "Fasts"),
     ("Rules", "Rules"),
+    ("Rule Condition", "Rule Condition"),
+    ("Disease", "Disease"),
+    ("Symptom", "Symptom"),
+    ("Prevention", "Prevention"),
+    ("Treatment", "Treatment"),
+    ("System", "System"),
 ]
 class PermissionCreateForm(FlaskForm):
     

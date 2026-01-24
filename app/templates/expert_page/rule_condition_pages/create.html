@@ -1,4 +1,4 @@
-{% extends 'layouts/admin_layout/admin.html' %}
+{% extends "layouts/expert_layout/expert.html" %}
 
 {% block title %}Create Rule Condition{% endblock %}
 
@@ -6,8 +6,8 @@
 <div class="container mt-4">
     <h3 class="mb-3">Create Rule Condition</h3>
 
-    <form method="POST" action="{{ url_for('rule_condition.create')}} " novalidate>
-        {% include 'rule_condition_page/_form.html' %}
+    <form method="POST" action="{{ url_for('expert.create_rule_condition')}} " novalidate>
+        {% include 'expert_page/rule_condition_pages/_form.html' %}
     </form>
 </div>
 {% endblock %}

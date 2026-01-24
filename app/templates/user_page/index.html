@@ -1,0 +1,96 @@
+{% extends "layouts/user_layout/user.html" %}
+
+{% block title %}Diagnosis{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="fw-bold text-primary">
+                <i class="bi bi-heart-pulse me-2"></i> Disease Diagnosis
+            </h3>
+            <p class="text-muted">
+                Select patient symptoms to perform expert system diagnosis.
+            </p>
+        </div>
+    </div>
+
+    <!-- Flash Messages
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %} -->
+
+    <!-- Diagnosis Form -->
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">
+                <i class="bi bi-list-check me-2"></i> Symptoms List
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    {% for value, label in form.symptoms.choices %}
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="form-check">
+                            <input
+                                class="form-check-input symptom-checkbox"
+                                type="checkbox"
+                                name="{{ form.symptoms.name }}"
+                                value="{{ value }}"
+                                id="symptom_{{ value }}"
+                                {% if value in (form.symptoms.data or []) %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="symptom_{{ value }}">
+                                {{ label }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="card-footer d-flex justify-content-between">
+                <button type="reset" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                </button>
+
+                <button type="submit" class="btn btn-primary" id="diagnosisBtn">
+                    <i class="bi bi-check2-circle me-1"></i> Diagnosis
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<!-- JS: Disable Diagnosis Button if no symptom selected -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.symptom-checkbox');
+    const submitBtn = document.getElementById('diagnosisBtn');
+
+    function toggleSubmit() {
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+        submitBtn.disabled = !anyChecked;
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', toggleSubmit));
+    toggleSubmit(); // Initial check on page load
+});
+</script>
+
+{% endblock %}
