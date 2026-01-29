@@ -7,21 +7,21 @@ from app.models.diseases import DiseaseTable
 
 # Disease severity level choices
 SEVERITY_CHOICES = [
-    ("Low", "Low"),
-    ("Medium", "Medium"),
-    ("High", "High"),
-    ("Critical", "Critical"),
+    ("Low(ទាប)", "Low(ទាប)"),
+    ("Medium(មធ្យម)", "Medium(មធ្យម)"),
+    ("High(ខ្ពស់)", "High(ខ្ពស់)"),
+    ("Very high(ខ្ពស់ណាស់)", "Very high(ខ្ពស់ណាស់)"),
 ]
 
 
 # Disease type choices
 DISEASE_TYPE_CHOICES = [
-    ("Fungal", "Fungal"),
-    ("Bacterial", "Bacterial"),
-    ("Viral", "Viral"),
-    ("Nutrient Deficiency", "Nutrient Deficiency"),
-    ("Pest Damage", "Pest Damage"),
-    ("Environmental", "Environmental"),
+    ("Fungal(ផ្សិត)", "Fungal(ផ្សិត)"),
+    ("Bacterial(បាក់តេរី)", "Bacterial(បាក់តេរី)"),
+    ("Viral(មេរោគ)", "Viral(មេរោគ)"),
+    ("Nutrient Deficiency(កង្វះសារធាតុចិញ្ចឹំម)", "Nutrient Deficiency(កង្វះសារធាតុចិញ្ចឹំម)"),
+    ("Nutrient overload(ការលើសសារធាតុចិញ្ចឹម)", "Nutrient overload(ការលើសសារធាតុចិញ្ចឹម)"),
+    ("Poisoning by other substances(ការពុលសារធាតុផ្សេងៗ)", "Poisoning by other substances(ការពុលសារធាតុផ្សេងៗ)"),
 ]
 
 

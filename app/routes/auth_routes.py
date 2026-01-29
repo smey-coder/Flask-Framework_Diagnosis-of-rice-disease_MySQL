@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required
+from decorators import require_permission, require_role, active_user_required
 from app.models.user import UserTable
 from app.models.role import RoleTable
 from app.services.user_service import UserService
@@ -19,30 +20,37 @@ def login():
 
         user = UserTable.query.filter_by(username=username).first()
 
-        if user and user.check_password(password):
-            if not user.is_active:
-                flash("Your account is inactive. Please contact administrator.", "warning")
-                return redirect(url_for("auth.login"))
+        if not user or not user.check_password(password):
+            flash("Invalid username or password.", "danger")
+            return redirect(url_for("auth.login"))
 
+        if not user.is_active:
+            flash("Your account is inactive. Please contact administrator.", "warning")
+            return redirect(url_for("auth.login"))
+
+        # ✅ CHECK ROLE FIRST
+        if user.has_role("Admin"):
             login_user(user)
             flash(f"Welcome back, {user.full_name}!", "success")
-            
-            # Role-based redirection
-            if user.has_role("Admin"):
-                return redirect(url_for("admin.dashboard"))
-            elif user.has_role("Expert"):
-                return redirect(url_for("expert.dashboard"))
-            elif user.has_role("User"):
-                return redirect(url_for("user.dashboard"))
-            
+            return redirect(url_for("admin.dashboard"))
+
+        elif user.has_role("Expert"):
+            login_user(user)
+            flash(f"Welcome back, {user.full_name}!", "success")
+            return redirect(url_for("expert.dashboard"))
+
+        elif user.has_role("User"):
+            login_user(user)
+            flash(f"Welcome back, {user.full_name}!", "success")
+            return redirect(url_for("user.dashboard"))
+
+        else:
+            # ❌ NO ROLE → DO NOT LOGIN
             flash("No role assigned. Contact administrator.", "warning")
             return redirect(url_for("auth.login"))
-                
-            
-        flash("Invalid username or password.", "danger")
-        return redirect(url_for("auth.login"))
 
     return render_template("auth/login.html")
+
 
 
 # ===================== REGISTER =====================

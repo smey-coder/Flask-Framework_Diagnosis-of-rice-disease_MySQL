@@ -3,6 +3,9 @@ import csv
 import os
 from datetime import datetime
 
+from flask_login import login_required
+from app.decorators.access import role_required, permission_required
+
 audit_bp = Blueprint("audit", __name__, url_prefix="/admin/audit")
 
 
@@ -30,6 +33,9 @@ def read_audit_logs():
 
 
 @audit_bp.route("/", methods=["GET"])
+@login_required
+@role_required("Admin")
+@permission_required("PERMISSION_AUDIT")
 def index():
     logs = read_audit_logs()
 

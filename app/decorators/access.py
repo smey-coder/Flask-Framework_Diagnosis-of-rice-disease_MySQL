@@ -28,7 +28,6 @@ def role_required(*role_names):
         return wrapped
     return decorator
 
-
 def permission_required(*permission_codes):
     """Allow multiple permissions for a route."""
     def decorator(f):

@@ -26,7 +26,7 @@
                 </h3>
 
                 <form method="POST" action="{{ url_for('auth.register') }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
                     <!-- Username -->
                     <div class="mb-3">

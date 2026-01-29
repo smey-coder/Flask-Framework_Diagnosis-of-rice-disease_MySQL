@@ -42,7 +42,7 @@ def dashboard():
 @admin_bp.route("/settings", methods=["GET", "POST"])
 @login_required
 @role_required("Admin")
-@permission_required("MANAGER_USER")
+@permission_required("PERMISSION_MANAGER_SYSTEM")
 def settings():
     from app.forms.user_forms import UserEditForm
     
@@ -74,7 +74,7 @@ def settings():
 @admin_bp.route("/about")
 @login_required
 @role_required("Admin")
-@permission_required("MANAGER_USER")
+@permission_required("PERMISSION_MANAGER_SYSTEM")
 def about():
     about_info = {
         "app_name": "Rice Expert System",
@@ -90,7 +90,7 @@ def about():
 @admin_bp.route("/diagnosis", methods=["GET", "POST"])
 @login_required
 @role_required("Admin")
-@permission_required("MANAGER_USER")
+@permission_required("RUN_DIAGNOSIS")
 def diagnosis_input():
     form = DiagnosisForm()
     symptoms = SymptomsTable.query.filter_by(is_active=True).all()
@@ -113,7 +113,7 @@ def diagnosis_input():
 @admin_bp.route("/diagnosis/result")
 @login_required
 @role_required("Admin")
-@permission_required("MANAGER_USER")
+@permission_required("RUN_DIAGNOSIS")
 def diagnosis_result():
     selected_ids = session.get("selected_symptoms")
     if not selected_ids:
@@ -139,7 +139,7 @@ def diagnosis_result():
 @admin_bp.route("/diagnosis/explain/<int:disease_id>")
 @login_required
 @role_required("Admin")
-@permission_required("MANAGER_USER")
+@permission_required("RUN_DIAGNOSIS")
 def diagnosis_explain(disease_id):
     rule_trace = session.get("rule_trace")
     if not rule_trace:
@@ -173,7 +173,7 @@ def diagnosis_explain(disease_id):
 @admin_bp.route("/diagnosis/treatment/<int:disease_id>")
 @login_required
 @role_required("Admin")
-@permission_required("MANAGER_USER")
+@permission_required("RUN_DIAGNOSIS")
 def disease_treatment(disease_id):
     disease = DiseaseTable.query.get_or_404(disease_id)
     treatments = service.treatment_disease(disease_id)
@@ -188,7 +188,7 @@ def disease_treatment(disease_id):
 @admin_bp.route("/diagnosis/prevention/<int:disease_id>")
 @login_required
 @role_required("Admin")
-@permission_required("MANAGER_USER")
+@permission_required("RUN_DIAGNOSIS")
 def disease_prevention(disease_id):
     disease = DiseaseTable.query.get_or_404(disease_id)
     preventions = service.prevention_disease(disease_id)

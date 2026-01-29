@@ -1,0 +1,91 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block title %}Diagnosis History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">My Diagnosis History</h3>
+        <a href="{{ url_for('user.diagnosis_input') }}" class="btn btn-success">
+            <i class="bi bi-plus-lg me-1"></i> New Diagnosis
+        </a>
+    </div>
+
+    <div class="card shadow-sm rounded-4">
+        <div class="card-body p-3">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small">
+                        <tr>
+                            <th>#</th>
+                            <th>Disease</th>
+                            <th>Symptoms</th>
+                            <th>Confidence</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h in histories %}
+                        <tr>
+                            <td>{{ h.id }}</td>
+                            <td>{{ h.disease.disease_name }}</td>
+                            <td>
+                                {% for s in h.get_symptoms() %}
+                                    <span class="badge bg-info text-dark me-1">{{ s }}</span>
+                                {% endfor %}
+                            </td>
+                            <td>{{ (h.confidence * 100)|round(2) }}%</td>
+                            <td>{{ h.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+                            <td>
+                                {% if h.status == 'Completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-warning">{{ h.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                No diagnosis history found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-3">
+                <ul class="pagination justify-content-end mb-0">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('user.diagnosis_history', page=pagination.prev_num) }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if p %}
+                            <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('user.diagnosis_history', page=p) }}">{{ p }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('user.diagnosis_history', page=pagination.next_num) }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
