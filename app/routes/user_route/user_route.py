@@ -1,7 +1,9 @@
+import json
 from flask import Blueprint, render_template, redirect, request, session, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from functools import wraps
 from werkzeug.security import generate_password_hash
+from sqlalchemy import text
 
 from app import services
 from app.decorators.access import role_required, permission_required
@@ -20,6 +22,7 @@ from app.services.rule_condition_service import RuleConditionService
 from app.models.rules import RulesTable
 from app.models.rule_conditions import RuleConditionsTable
 from app.models.symptoms import SymptomsTable
+from app.services.diagnosis_service import DiagnosisService
 
 # Create user blueprint
 user_bp = Blueprint("user", __name__, url_prefix="/user", template_folder="../../templates")
@@ -97,65 +100,124 @@ def about():
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_input():
     form = DiagnosisForm()
+    # Get all active symptoms
     symptoms = SymptomsTable.query.filter_by(is_active=True).all()
+    # Make sure IDs are integers
     form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
 
     if form.validate_on_submit():
-        selected = form.symptoms.data or []
-        if not selected:
+        # Convert submitted data to integers
+        selected_ids = [int(s) for s in form.symptoms.data or []]
+
+        if not selected_ids:
             flash("Please select at least one symptom.", "warning")
             return redirect(url_for("user.diagnosis_input"))
-        
-        session["selected_symptoms"] = selected
+
+        # Store IDs in session
+        session["selected_symptoms"] = selected_ids
+
+        # Store corresponding symptom NAMES for view filtering
+        selected_symptoms = SymptomsTable.query.filter(SymptomsTable.id.in_(selected_ids)).all()
+        session["selected_symptoms_names"] = [s.symptom_name for s in selected_symptoms]
+
         return redirect(url_for("user.diagnosis_result"))
 
     return render_template("user_page/index.html", form=form, user=current_user)
+
+@user_bp.route("/save_diagnosis", methods=["POST"])
+@login_required
+def save_diagnosis_history(conclusions, rule_trace=None):
+    """
+    Save diagnosis results to the database using raw SQL.
+    """
+    if not conclusions:
+        return
+
+    insert_sql = text("""
+        INSERT INTO tbl_diagnosis_history (
+            user_id,
+            user_name,
+            disease_id,
+            confidence,
+            selected_symptoms,
+            status,
+            created_at
+        )
+        VALUES (
+            :user_id,
+            :user_name,
+            :disease_id,
+            :confidence,
+            :selected_symptoms,
+            :status,
+            NOW()
+        )
+    """)
+
+    # Convert selected symptom IDs to comma-separated string
+    selected_symptoms = ",".join(str(s) for s in session.get("selected_symptoms", []))
+
+    for disease_id, data in conclusions.items():
+        confidence = data.get("certainty", 0.0)
+        
+        db.session.execute(
+            insert_sql,
+            {
+                "user_id": current_user.id,
+                "user_name": current_user.username,
+                "disease_id": disease_id,
+                "confidence": confidence,
+                "selected_symptoms": selected_symptoms,
+                "status": "Completed"
+            }
+        )
+
+    db.session.commit()
 
 @user_bp.route("/diagnosis/result")
 @login_required
 @role_required("User")
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_result():
-    selected_ids = session.get("selected_symptoms")
-
+    #Get selected symptoms
+    selected_ids = session.get("selected_symptoms", [])
     if not selected_ids:
         flash("No symptoms selected.", "warning")
         return redirect(url_for("user.diagnosis_input"))
 
+    #Run inference
     conclusions, rule_trace, skipped_rules = DiagnosisService.infer(selected_ids)
 
-    results = []
+    # SAVE IN SESSION
+    session["rule_trace"] = rule_trace
 
+    if not conclusions:
+        flash("No diseases matched your symptoms.", "info")
+        return redirect(url_for("user.diagnosis_input"))
+
+    # Save diagnosis results using raw SQL helper
+    save_diagnosis_history(conclusions, rule_trace)
+
+    #Prepare results for template
+    results = []
     for disease_id, data in conclusions.items():
         disease = data["disease"]
-        cf = data["certainty"]   # ❗ REAL CF (0.0–1.0)
-
-        logs = rule_trace.get(str(disease_id), [])
-
         results.append({
             "disease_id": disease_id,
-            "disease": disease,
-            "confidence": cf,
-            "logs": logs
+            "disease_name": getattr(disease, "disease_name", ""),
+            "image": getattr(disease, "image", ""),
+            "severity_level": getattr(disease, "severity_level", "Low"),
+            "confidence": data.get("certainty", 0.0),
+            "rules": rule_trace.get(str(disease_id), []),
+            "explanation": getattr(disease, "explanation", ""),
         })
 
-        # ✅ SAVE HISTORY (NO 100% DEFAULT)
-        history = DiagnosisHistoryTable(
-            user_id=current_user.id,
-            user_name=current_user.username,
-            disease_id=disease_id,
-            confidence=cf,   # store percentage OR store cf (choose one)
-            status="Completed"
-        )
-        db.session.add(history)
-
-    db.session.commit()
-
+    # Render result template
     return render_template(
         "user_page/result.html",
-        results=results
+        results=results,
+        user=current_user
     )
-
 
 
 @user_bp.route("/history")
@@ -165,13 +227,37 @@ def diagnosis_result():
 def diagnosis_history():
     page = request.args.get("page", 1, type=int)
     per_page = 10
+    offset = (page - 1) * per_page
 
-    pagination = DiagnosisHistoryTable.query.filter_by(user_id=current_user.id)\
-        .order_by(DiagnosisHistoryTable.created_at.desc())\
-        .paginate(page=page, per_page=per_page, error_out=False)
+    # Query history from table or view
+    sql = text("""
+        SELECT *
+        FROM view_diagnosis_history
+        WHERE user_id = :user_id
+        ORDER BY created_at DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    result = db.session.execute(
+        sql,
+        {"user_id": current_user.id, "limit": per_page, "offset": offset}
+    )
+    histories = result.fetchall()
 
-    return render_template("user_page/history.html", histories=pagination.items, pagination=pagination, user=current_user)
+    # Count total rows
+    count_sql = text("""
+        SELECT COUNT(*) 
+        FROM view_diagnosis_history
+        WHERE user_id = :user_id
+    """)
+    total = db.session.execute(count_sql, {"user_id": current_user.id}).scalar()
+    total_pages = (total + per_page - 1) // per_page
 
+    return render_template(
+        "user_page/history.html",
+        histories=histories,
+        page=page,
+        total_pages=total_pages
+    )
 # ---------------- DIAGNOSIS EXPLANATION ----------------
 @user_bp.route("/diagnosis/explain/<int:disease_id>")
 @login_required
@@ -189,8 +275,15 @@ def diagnosis_explain(disease_id):
         return redirect(url_for("user.diagnosis_result"))
 
     disease = DiseaseTable.query.get_or_404(disease_id)
+
     symptom_ids = session.get("selected_symptoms") or []
-    selected_symptoms = [s.symptom_name for s in SymptomsTable.query.filter(SymptomsTable.id.in_(symptom_ids)).all()]
+    selected_symptoms = [
+        s.symptom_name
+        for s in SymptomsTable.query.filter(SymptomsTable.id.in_(symptom_ids)).all()
+    ]
+
+    #ADD THIS (Calculate confidence)
+    overall_cf = logs[-1]["cf_after"] if logs else 0.0
 
     treatments = diagnosis_service.treatment_disease(disease_id)
     preventions = diagnosis_service.prevention_disease(disease_id)
@@ -202,8 +295,10 @@ def diagnosis_explain(disease_id):
         treatments=treatments,
         preventions=preventions,
         selected_symptoms=selected_symptoms,
+        certainty=overall_cf,   # ✅ PASS TO TEMPLATE
         user=current_user
     )
+
 
 # ---------------- TREATMENT & PREVENTION ----------------
 @user_bp.route("/diagnosis/treatment/<int:disease_id>")

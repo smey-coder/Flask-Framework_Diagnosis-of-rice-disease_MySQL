@@ -23,37 +23,61 @@
             <table class="table table-hover table-bordered mb-0 align-middle">
                 <thead class="table-light text-center">
                     <tr>
-                        <th style="width: 40%">Disease</th>
-                        <th style="width: 30%">Certainty Factor (CF)</th>
-                        <th style="width: 30%">Actions</th>
+                        <th style="width: 20%">Image</th>
+                        <th style="width: 25%">Disease</th>
+                        <th style="width: 15%">Severity</th>
+                        <th style="width: 15%">Certainty Factor (CF)</th>
+                        <th style="width: 25%">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in results %}
                     <tr>
-                        <td class="fw-semibold">
-                            {{ item.disease.disease_name }}
+                        <!-- Disease Image -->
+                        <td class="text-center">
+                            {% if item.image %}
+                                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" 
+                                    alt="{{ item.disease_name }}" class="img-thumbnail" style="max-width:100px;">
+                            {% else %}
+                                <span class="text-muted">No image</span>
+                            {% endif %}
                         </td>
 
+                        <!-- Disease Name -->
+                        <td class="fw-semibold">
+                            {{ item.disease_name }}
+                        </td>
+
+                        <!-- Severity with Color -->
+                        <td class="text-center">
+                            {% if item.severity_level == 'High' %}
+                                <span class="badge bg-danger">{{ item.severity_level }}</span>
+                            {% elif item.severity_level == 'Medium' %}
+                                <span class="badge bg-warning text-dark">{{ item.severity_level }}</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ item.severity_level }}</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Certainty Factor -->
                         <td class="text-center">
                             <span class="badge bg-success fs-6">
                                 {{ (item.confidence * 100) | round(2) }}%
                             </span>
                         </td>
 
+                        <!-- Actions -->
                         <td class="text-center">
-                            <a href="{{ url_for('user.diagnosis_explain', disease_id=item.disease.id) }}"
-                               class="btn btn-outline-info btn-sm">
+                            <a href="{{ url_for('user.diagnosis_explain', disease_id=item.disease_id) }}"
+                               class="btn btn-outline-info btn-sm mb-1">
                                 Explain
                             </a>
-
-                            <a href="{{ url_for('user.disease_treatment', disease_id=item.disease.id) }}"
-                               class="btn btn-outline-success btn-sm">
+                            <a href="{{ url_for('user.disease_treatment', disease_id=item.disease_id) }}"
+                               class="btn btn-outline-success btn-sm mb-1">
                                 Treatment
                             </a>
-
-                            <a href="{{ url_for('user.disease_prevention', disease_id=item.disease.id) }}"
-                               class="btn btn-outline-warning btn-sm">
+                            <a href="{{ url_for('user.disease_prevention', disease_id=item.disease_id) }}"
+                               class="btn btn-outline-warning btn-sm mb-1">
                                 Prevention
                             </a>
                         </td>

@@ -16,14 +16,7 @@ class DiagnosisService:
     @staticmethod
     def combine_cfs(cf1: float, cf2: float) -> float:
         """Combine two certainty factors using MYCIN formula."""
-        if cf1 >= 0 and cf2 >= 0:
-            result = cf1 + cf2 * (1 - cf1)
-        elif cf1 < 0 and cf2 < 0:
-            result = cf1 + cf2 * (1 + cf1)
-        else:
-            result = (cf1 + cf2) / (1 - min(abs(cf1), abs(cf2)))
-        # Cap CF to [-0.99, 0.99] for safety
-        return max(min(result, 0.99), -0.99)
+        return cf1 + cf2 * (1 - cf1)
 
     @classmethod
     def infer(cls, selected_symptom_ids: List[int]) -> Tuple[Dict[int, dict], Dict[str, List[dict]], List[dict]]:
@@ -60,14 +53,18 @@ class DiagnosisService:
 
             if matched_count > 0:
                 # Partial CF based on matched symptoms
-                rule_cf = float(getattr(rule, "certainty", 0))  # fixed typo from 'certianty'
+                rule_cf = float(getattr(rule, "certainty", 0))
                 adjusted_cf = rule_cf * (matched_count / total_count)
 
+                # Initialize disease in conclusions if not present
                 if disease.id not in conclusions:
                     conclusions[disease.id] = {"disease": disease, "certainty": 0.0}
                     rule_trace[str(disease.id)] = []
 
+                # Get CF before applying this rule
                 prev_cf = conclusions[disease.id]["certainty"]
+
+                # Combine previous CF with this rule
                 new_cf = cls.combine_cfs(prev_cf, adjusted_cf)
                 conclusions[disease.id]["certainty"] = new_cf
 
@@ -75,11 +72,11 @@ class DiagnosisService:
 
                 rule_trace[str(disease.id)].append({
                     "rule_id": rule.id,
-                    "rule_cf": round(adjusted_cf, 3),
-                    "cf_before": round(prev_cf, 3),
-                    "cf_after": round(new_cf, 3),
-                    "explanation": getattr(rule, "explanation", ""),
-                    "matched": matched_names
+                    "matched": matched_names,
+                    "cf_before": round(prev_cf, 3),   # previous CF before applying rule
+                    "rule_cf": round(adjusted_cf, 3), # this rule's CF contribution
+                    "cf_after": round(new_cf, 3),     # cumulative CF after applying rule
+                    "explanation": getattr(rule, "explanation", "")
                 })
             else:
                 # Track skipped rules
@@ -99,8 +96,10 @@ class DiagnosisService:
 
     @staticmethod
     def explain_disease(disease_id: int, rule_trace: Dict[str, List[dict]]) -> List[dict]:
-        """Return explanation for a disease based on applied rules."""
-        return rule_trace.get(str(disease_id), [])
+        # Make sure ID is string (keys in rule_trace are strings)
+        disease_id = str(disease_id)
+
+        return rule_trace.get(disease_id, [])
 
     # ---- Backward compatible: allow optional rule_trace argument ----
     @staticmethod

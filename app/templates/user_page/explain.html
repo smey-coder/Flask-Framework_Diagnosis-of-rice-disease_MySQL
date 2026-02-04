@@ -1,44 +1,138 @@
 {% extends "layouts/user_layout/user.html" %}
 
-{% block title %}Diagnosis Explanation{% endblock %}
+{% block title %}ការពន្យល់វិនិច្ឆ័យ{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Explanation for {{ disease.disease_name }}</h2>
 
-    <p>Selected Symptoms:</p>
-    <ul>
-        {% for s in selected_symptoms %}
-            <li>{{ s }}</li>
-        {% endfor %}
-    </ul>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="bi bi-info-circle me-2"></i> ពន្យល់សម្រាប់ {{ disease.disease_name }}
+        </h2>
+        {% if disease.image %}
+            <img src="{{ url_for('static', filename='uploads/' + disease.image) }}" 
+                 alt="{{ disease.disease_name }}" class="img-thumbnail" style="max-width:150px;">
+        {% endif %}
+    </div>
 
-    <h4>Rule Application:</h4>
-    <table class="table table-bordered mt-2">
-        <thead>
-            <tr>
-                <th>Rule ID</th>
-                <th>Matched Symptoms</th>
-                <th>CF Before</th>
-                <th>Rule CF</th>
-                <th>CF After</th>
-                <th>Explanation</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in logs %}
-            <tr>
-                <td>{{ log.rule_id }}</td>
-                <td>{{ log.matched | join(', ') }}</td>
-                <td>{{ log.cf_before }}</td>
-                <td>{{ log.rule_cf }}</td>
-                <td>{{ log.cf_after }}</td>
-                <td>{{ log.explanation }}</td>
-            </tr>
+    <!-- Disease Info & Overall Confidence -->
+    <div class="mb-4">
+        <span class="badge 
+            {% if disease.severity_level == 'High' %}bg-danger
+            {% elif disease.severity_level == 'Medium' %}bg-warning text-dark
+            {% else %}bg-success{% endif %} fs-6">
+            កម្រិតការប្រកាស៖ {{ disease.severity_level }}
+        </span>
+
+        <div class="mt-2">
+            <strong>ភាពទំនុកចិត្តសរុប:</strong>
+            <div class="progress" style="height: 20px;">
+                <div class="progress-bar bg-success" role="progressbar" 
+                     style="width: {{ (certainty * 100)|round(2) }}%;">
+                    {{ (certainty * 100)|round(2) }}%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selected Symptoms -->
+    <div class="mb-4">
+        <h5 class="fw-semibold">រោគសញ្ញា​ដែលបានជ្រើសរើស:</h5>
+        <ul class="list-group list-group-flush">
+            {% for s in selected_symptoms %}
+                <li class="list-group-item">{{ s }}</li>
             {% endfor %}
-        </tbody>
-    </table>
+        </ul>
+    </div>
 
-    <a href="{{ url_for('user.diagnosis_result') }}" class="btn btn-secondary mt-3">Back to Results</a>
+    <!-- Rule Application Table -->
+    <div class="mb-4">
+        <h5 class="fw-semibold">ការដាក់អនុវត្តច្បាប់ (Rule Application)</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>លេខច្បាប់</th>
+                        <th>រោគសញ្ញា​ដែលផ្គូផ្គង</th>
+                        <th>CF មុន</th>
+                        <th>CF ច្បាប់</th>
+                        <th>CF បន្ទាប់</th>
+                        <th>ពន្យល់</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr {% if log.cf_after > 0.7 %}class="table-danger"{% endif %}>
+                        <td class="text-center">{{ log.rule_id }}</td>
+                        <td>{{ log.matched | join(', ') }}</td>
+                        <td class="text-center">{{ (log.cf_before * 100) | round(2) }}%</td>
+                        <td class="text-center">{{ (log.rule_cf * 100) | round(2) }}%</td>
+                        <td class="text-center">{{ (log.cf_after * 100) | round(2) }}%</td>
+                        <td>{{ log.explanation }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">គ្មានច្បាប់អនុវត្ត</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Treatments -->
+    <div class="mb-4">
+        <h5 class="fw-semibold">វិធីព្យាបាលសម្រាប់ជំងឺនេះ:</h5>
+        <ul class="list-group list-group-flush">
+            {% for t in treatments %}
+                <li class="list-group-item">
+                    <strong>{{ t.method }}</strong>: {{ t.description }}
+                    <!-- {% if t.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + t.image) }}" 
+                             alt="{{ t.method }}" class="img-thumbnail ms-2" style="max-width:100px;">
+                    {% endif %} -->
+                </li>
+            {% else %}
+                <li class="list-group-item text-muted">មិនមានវិធីព្យាបាល</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Preventive Measures -->
+    <div class="mb-4">
+        <h5 class="fw-semibold">វិធានការការពារ:</h5>
+        <ul class="list-group list-group-flush">
+            {% for p in preventions %}
+                <li class="list-group-item">{{ p.description }}</li>
+            {% else %}
+                <li class="list-group-item text-muted">មិនមានវិធានការការពារ</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Expert Advice -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-danger">អនុសាសន៍ពីអ្នកជំនាញ</h5>
+            <div class="alert alert-warning mb-0">
+                {% if certainty > 0.7 %}
+                    ⚠️ ជំងឺ {{ disease.disease_name }} មានហានិភ័យខ្ពស់! សូមទាក់ទងអ្នកជំនាញភ្លាមៗ។
+                {% elif certainty > 0.4 %}
+                    ⚠️ មានហានិភ័យមធ្យម។ ត្រួតពិនិត្យដំណាំ និងអនុវត្តវិធានការព្យាបាល និងការការពារ។
+                {% else %}
+                    ✅ មានហានិភ័យទាប។ រក្សាព្រឹត្តិការដាំដំណាំល្អ និងអនុវត្តវិធានការការពារ។
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-end">
+        <a href="{{ url_for('user.diagnosis_result') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle me-1"></i> ត្រឡប់ទៅលទ្ធផល
+        </a>
+    </div>
+
 </div>
 {% endblock %}
