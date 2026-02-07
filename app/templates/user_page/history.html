@@ -56,12 +56,14 @@
 
                             <!-- Severity -->
                             <td>
-                                {% if h.severity_level == 'High' %}
-                                    <span class="badge bg-danger">High</span>
-                                {% elif h.severity_level == 'Medium' %}
-                                    <span class="badge bg-warning text-dark">Medium</span>
+                                {% if h.severity_level == 'High(ខ្ពស់)' %}
+                                    <span class="badge bg-danger">High(ខ្ពស់)</span>
+                                {% elif h.severity_level == 'Medium(មធ្យម)' %}
+                                    <span class="badge bg-warning text-dark">Medium(មធ្យម)</span>
+                                {% elif h.severity_level == 'Low(ទាប)' %}
+                                    <span class="badge bg-success">Low(ទាប)</span>
                                 {% else %}
-                                    <span class="badge bg-success">Low</span>
+                                    <span class="badge bg-secondary">Unknown</span>
                                 {% endif %}
                             </td>
 

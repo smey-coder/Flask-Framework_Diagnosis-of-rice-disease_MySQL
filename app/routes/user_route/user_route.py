@@ -206,7 +206,7 @@ def diagnosis_result():
             "disease_id": disease_id,
             "disease_name": getattr(disease, "disease_name", ""),
             "image": getattr(disease, "image", ""),
-            "severity_level": getattr(disease, "severity_level", "Low"),
+            "severity_level":  disease.severity_level if disease else None,
             "confidence": data.get("certainty", 0.0),
             "rules": rule_trace.get(str(disease_id), []),
             "explanation": getattr(disease, "explanation", ""),
