@@ -72,26 +72,29 @@ def dashboard():
     }
 
     form = CitySearchForm()
-    search_results = []
     selected_city_weather = None
 
-    # Check if a city was selected for weather
-    selected_city_id = request.args.get('city_id')
-    if selected_city_id:
-        selected_city_weather = WeatherService.get_weather(selected_city_id)
+    # ✅ Case 1: Get from URL (?city=Phnom Penh)
+    selected_city = request.args.get('city')
+    if selected_city:
+        selected_city_weather = WeatherService.get_weather(selected_city)
 
-    if form.validate_on_submit():
-        selected_city_name = form.city.data
-        if selected_city_name:
-            selected_city_weather = WeatherService.get_weather(selected_city_name)
+    # ✅ Case 2: Form submit
+    elif form.validate_on_submit():
+        selected_city = form.city.data
+        if selected_city:
+            selected_city_weather = WeatherService.get_weather(selected_city)
+
+    # ✅ Case 3: Default
+    else:
+        selected_city_weather = WeatherService.get_weather("Phnom Penh")
 
     return render_template(
         "admin_page/dashboard.html",
         user=current_user,
         stats=stats,
         form=form,
-        search_results=search_results,
-        selected_city_weather=selected_city_weather
+        selected_city_weather=selected_city_weather,
     )
 # ---------- SETTINGS / PROFILE ----------
 @admin_bp.route("/settings", methods=["GET", "POST"])
