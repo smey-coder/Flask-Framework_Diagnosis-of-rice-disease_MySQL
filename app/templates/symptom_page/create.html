@@ -1,0 +1,9 @@
+{% extends "layouts/admin_layout/admin.html"%}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Created Symptom</h1>
+<form method="post" action="{{ url_for('tbl_symptoms.create') }}" novalidate>
+    {% include "symptom_page/_form.html"%}
+</form>
+{% endblock %}

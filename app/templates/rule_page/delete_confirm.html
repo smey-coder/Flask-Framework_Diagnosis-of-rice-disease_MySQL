@@ -1,0 +1,31 @@
+{% extends "layouts/admin_layout/admin.html" %}
+
+{% block title %}Delete Rule #{{ rule.id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-danger">🛑 Delete Rule #{{ rule.id }}</h2>
+        <a href="{{ url_for('rules.index') }}" class="btn btn-secondary">← Back to Rules</a>
+    </div>
+
+    <!-- Delete Confirmation Card -->
+    <div class="card shadow-sm border-danger">
+        <div class="card-body">
+            <p>Are you sure you want to delete this rule?</p>
+            <p><strong>Disease:</strong> {{ rule.disease.disease_name if rule.disease else '-' }}</p>
+            <p><strong>Certainty Factor:</strong> {{ rule.certainty }}</p>
+
+            <!-- Make sure form points to the correct route and uses POST -->
+            <form method="POST" action="{{ url_for('rules.delete', rule_id=rule.id) }}">
+                {{ form.hidden_tag() }}  {# <-- CSRF token included #}
+                <button type="submit" class="btn btn-danger">🗑️ Confirm Delete</button>
+                <a href="{{ url_for('rules.index') }}" class="btn btn-secondary ms-2">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

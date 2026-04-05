@@ -1,0 +1,90 @@
+{% extends "layouts/admin_layout/admin.html"%}
+
+{% block title %}{{ disease.disease_name }} - Rice Disease Diagnosis System{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ disease.disease_name }}</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if current_user.has_role("Admin") %}
+            <a href="{{ url_for('tbl_diseases.edit', disease_id=disease.id) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{{ url_for('tbl_diseases.delete', disease_id=disease.id) }}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+            {% endif %}
+            <a href="{{ url_for('tbl_diseases.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if disease.image %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ disease.image }}" class="card-img-top" alt="{{ disease.disease_name }}">
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Disease Information</h5>
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="fw-bold">Disease Type:</label>
+                            <p><span class="badge bg-secondary">{{ disease.disease_type }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold">Severity Level:</label>
+                            <p>
+                                {% if disease.severity_level == "Critical" %}
+                                    <span class="badge bg-danger">{{ disease.severity_level }}</span>
+                                {% elif disease.severity_level == "High" %}
+                                    <span class="badge bg-warning text-dark">{{ disease.severity_level }}</span>
+                                {% elif disease.severity_level == "Medium" %}
+                                    <span class="badge bg-info">{{ disease.severity_level }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ disease.severity_level }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="fw-bold">Status:</label>
+                            <p>
+                                {% if disease.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold">Created:</label>
+                            <p>{{ disease.created_at.strftime('%Y-%m-%d %H:%M') if disease.created_at else 'N/A' }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <label class="fw-bold">Description:</label>
+                        <p>{{ disease.description or 'No description provided.' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

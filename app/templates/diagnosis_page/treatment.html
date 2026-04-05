@@ -1,0 +1,41 @@
+{% extends 'layouts/admin_layout/admin.html' %}
+
+{% block title %}Treatment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="bi bi-heart-pulse me-2"></i> Treatment for {{ disease.disease_name }}
+        </h2>
+        <a href="{{ url_for('admin.diagnosis_result') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Results
+        </a>
+    </div>
+
+    <!-- Treatment List -->
+    {% if treatments %}
+        {% for t in treatments %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100">
+                    {% if t.image %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ t.image) }}" class="card-img-top" alt="Treatment Image">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ t.method }}</h5>
+                        {% if t.description %}
+                            <p class="card-text">{{ t.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">
+            No treatment information available for this disease.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

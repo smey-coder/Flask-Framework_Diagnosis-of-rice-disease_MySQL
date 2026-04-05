@@ -1,0 +1,168 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block title %}Dashboard | RiceCare AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-7">
+            <h3 class="fw-bold text-dark mb-0" id="dynamic-greeting">សួស្តី!</h3>
+            <p class="text-muted mb-0"><i class="fas fa-user-circle me-1"></i> {{ user.full_name }}</p>
+        </div>
+        <div class="col-md-5 d-flex justify-content-md-end align-items-center mt-3 mt-md-0">
+            <!-- <div class="me-3">
+                <button class="btn btn-white shadow-sm rounded-circle position-relative">
+                    <i class="fas fa-bell text-success"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                </button>
+            </div> -->
+            <div class="bg-white px-3 py-2 rounded-4 shadow-sm border-end border-success border-4 text-end">
+                <div id="khmer-time" class="fw-bold text-success fs-5 lh-1">០០:០០</div>
+                <div id="khmer-date" class="small text-muted" style="font-size: 0.75rem;">ថ្ងៃ... ទី...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 rounded-5 shadow-lg overflow-hidden text-white" 
+                 style="background: linear-gradient(rgba(10, 105, 108, 0.3), rgba(3, 171, 79, 0.3)), url('{{ url_for('static', filename='images/logo_dashboard.jpg') }}'); background-size: cover; background-position: center; min-height: 220px;">
+                <div class="card-body d-flex flex-column justify-content-center p-4 p-md-5">
+                    <h1 class="display-6 fw-bold">ថែទាំដំណាំស្រូវរបស់អ្នក</h1>
+                    <p class="lead opacity-90">ពិនិត្យ និងព្យាបាលជំងឺស្រូវបានរហ័ស ជាមួយបច្ចេកវិទ្យា AI</p>
+                    <div>
+                        <a href="{{ url_for('user.diagnosis_input') }}" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow">
+                            <i class="fas fa-qrcode me-2"></i> ចាប់ផ្តើមស្កេន
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
+                <img src="{{ url_for('static', filename='images/analytics.png') }}" class="card-img-top" alt="Diagnose" style="height: 120px; object-fit: cover;">
+                <div class="card-body text-center p-3">
+                    <h6 class="fw-bold mb-0">វិនិច្ឆ័យជំងឺ</h6>
+                    <a href="{{ url_for('user.diagnosis_input') }}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
+                <img src="{{ url_for('static', filename='images/logo_login.jpg') }}" class="card-img-top" alt="Diseases" style="height: 120px; object-fit: cover;">
+                <div class="card-body text-center p-3">
+                    <h6 class="fw-bold mb-0">បណ្ណាល័យជំងឺ</h6>
+                    <a href="{{ url_for('user.disease_treatment', disease_id=disease.id) }}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
+                <img src="{{ url_for('static', filename='images/treatment.jpg') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: cover;">
+                <div class="card-body text-center p-3">
+                    <h6 class="fw-bold mb-0">វិធីព្យាបាល</h6>
+                    <a href="{{ url_for('user.disease_treatment', disease_id=disease.id) }}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
+                <img src="{{ url_for('static', filename='images/prevention.jpg') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: cover;">
+                <div class="card-body text-center p-3">
+                    <h6 class="fw-bold mb-0">ប្រវត្តិត្រួតពិនិត្យ</h6>
+                    <a href="{{ url_for('user.diagnosis_history') }}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-clipboard-list me-2 text-success"></i>សកម្មភាពថ្មីៗ</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small">
+                        <tr>
+                            <th class="ps-4">ឈ្មោះជំងឺ</th>
+                            <th>កាលបរិច្ឆេទ</th>
+                            <th class="text-end pe-4">ស្ថានភាព</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_activities %}
+                            {% for activity in recent_activities %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-soft-success rounded-circle p-2 me-3">
+                                            <i class="fas fa-leaf text-success"></i>
+                                        </div>
+                                        <span class="fw-bold">{{ activity.disease.disease_name }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted small">{{ activity.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td class="text-end pe-4">
+                                    <span class="badge rounded-pill bg-success-light text-success">រួចរាល់</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="3" class="text-center py-5 text-muted">មិនទាន់មានសកម្មភាពនៅឡើយទេ។</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS Styling for Images and Professional Look */
+    .hover-lift {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+    }
+    .bg-white { background-color: #ffffff !important; }
+    .bg-success-light { background-color: #d1e7dd; }
+    .bg-soft-success { background-color: #f0fdf4; }
+    .rounded-5 { border-radius: 2rem !important; }
+</style>
+
+<script>
+    function updateKhmerUI() {
+        const now = new Date();
+        const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+        const khmerDays = ['អាទិត្យ', 'ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+        const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+
+        const toKhmerNum = (num) => num.toString().padStart(2, '0').split('').map(d => khmerNumbers[d] || d).join('');
+
+        // Update Time
+        document.getElementById('khmer-time').innerText = `${toKhmerNum(now.getHours())}:${toKhmerNum(now.getMinutes())}`;
+
+        // Update Date
+        document.getElementById('khmer-date').innerText = `ថ្ងៃ${khmerDays[now.getDay()]}, ${toKhmerNum(now.getDate())} ${khmerMonths[now.getMonth()]}`;
+
+        // Dynamic Greeting
+        const hours = now.getHours();
+        let greeting = "សួស្តី!";
+        if (hours < 12) greeting = "អរុណសួស្តី (Morning)";
+        else if (hours < 17) greeting = "ទិវាសួស្តី (Afternoon)";
+        else greeting = "សាយ័ណ្ហសួស្តី (Night)";
+        document.getElementById('dynamic-greeting').innerText = greeting;
+    }
+    setInterval(updateKhmerUI, 1000);
+    updateKhmerUI();
+</script>
+{% endblock %}

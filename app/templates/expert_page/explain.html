@@ -1,0 +1,44 @@
+{% extends "layouts/expert_layout/expert.html" %}
+
+{% block title %}Diagnosis Explanation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Explanation for {{ disease.disease_name }}</h2>
+
+    <p>Selected Symptoms:</p>
+    <ul>
+        {% for s in selected_symptoms %}
+            <li>{{ s }}</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Rule Application:</h4>
+    <table class="table table-bordered mt-2">
+        <thead>
+            <tr>
+                <th>Rule ID</th>
+                <th>Matched Symptoms</th>
+                <th>CF Before</th>
+                <th>Rule CF</th>
+                <th>CF After</th>
+                <th>Explanation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.rule_id }}</td>
+                <td>{{ log.matched | join(', ') }}</td>
+                <td>{{ log.cf_before }}</td>
+                <td>{{ log.rule_cf }}</td>
+                <td>{{ log.cf_after }}</td>
+                <td>{{ log.explanation }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('expert.diagnosis_result') }}" class="btn btn-secondary mt-3">Back to Results</a>
+</div>
+{% endblock %}

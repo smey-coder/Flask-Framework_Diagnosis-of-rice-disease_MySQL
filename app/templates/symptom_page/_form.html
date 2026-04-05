@@ -1,0 +1,56 @@
+<form method="post">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        {{ form.symptom_name.label(class="form-label") }}
+        {{ form.symptom_name(class="form-control") }}
+        {% if form.symptom_name.errors %}
+        <div class="text-danger small">
+            {% for error in form.symptom_name.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        {{ form.symptom_group.label(class="form-label") }}
+        {{ form.symptom_group(class="form-select") }}
+        {% if form.symptom_group.errors %}
+        <div class="text-danger small">
+            {% for error in form.symptom_group.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", rows="3") }}
+        {% if form.description.errors %}
+        <div class="text-danger small">
+            {% for error in form.description.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        <div class="form-check">
+            {{ form.is_active(class="form-check-input") }}
+            {{ form.is_active.label(class="form-check-label") }}
+        </div>
+    </div>
+    <div class="mb-3">
+      <button type="submit" class="btn btn-primary">
+         {% if form.submit.label.text == 'Save' %}
+            <i class="bi bi-save me-1"></i>
+         {% else %}
+            <i class="bi bi-check2 me-1"></i>
+         {% endif %}
+         {{ form.submit.label.text }}
+      </button>
+      <a href="{{ url_for('tbl_symptoms.index')}}" class="btn btn-outline-secondary">
+         Cancel
+      </a>
+   </div>
+</form>

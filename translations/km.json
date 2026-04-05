@@ -1,0 +1,62 @@
+{
+  "sidebar": {
+    "rice_expert": "អ្នកជំនាញស្រូវ",
+    "dashboard": "ផ្ទាំងគ្រប់គ្រង",
+    "users": "អ្នកប្រើប្រាស់",
+    "roles": "តួនាទី",
+    "permissions": "សិទ្ធិ",
+    "diseases": "ជំងឺ",
+    "symptoms": "រោគសញ្ញា",
+    "rules": "ច្បាប់",
+    "rule_conditions": "លក្ខខណ្ឌច្បាប់",
+    "diagnosis": "តេស្តវិនិច្ឆ័យ",
+    "settings": "ការកំណត់",
+    "logout": "ចាកចេញ",
+    "management": "ការគ្រប់គ្រង",
+    "disease_management": "គ្រប់គ្រងជំងឺ",
+    "health": "សុខភាព",
+    "reports": "របាយការណ៍",
+    "system": "ប្រព័ន្ធ",
+    "disease": "ជំងឺ",
+    "prevention": "ការបង្ការជំងឺ",
+    "treatment": "ការព្យាបាល",
+    "about": "អំពី",
+    "history_system": "ប្រវត្តិប្រព័ន្ធ",
+    "lang_en": "English",
+    "lang_km": "ខ្មែរ"
+  },
+  "navbar": {
+    "home": "ទំព័រដើម",
+    "about": "អំពី",
+    "contact": "ទំនាក់ទំនង"
+  },
+  "dashboard": {
+    "welcome": "សូមស្វាគមន៍មកកាន់ផ្ទាំងគ្រប់គ្រងអ្នកជំនាញស្រូវ",
+    "Administration & Knowledge Monitoring Panel": "ផ្ទាំងគ្រប់គ្រង និងតាមដានចំណេះដឹង",
+    "total_users": "ចំនួនអ្នកប្រើប្រាស់សរុប",
+    "total_diseases": "ចំនួនជំងឺសរុប",
+    "total_rules": "ចំនួនច្បាប់សរុប",
+    "total_symptoms": "ចំនួនរោគសញ្ញាសរុប",
+    "goodevening": "សួស្តីល្ងាច",
+    "goodafternoon": "សួស្តីរសៀល",
+    "goodmorning": "សួស្តីព្រឹក",
+    "good_morning": "សួស្តីព្រឹក",
+    "good_afternoon": "សួស្តីរសៀល",
+    "good_evening": "សួស្តីល្ងាច"
+  },
+    "chart":{
+        "user": "អ្នកប្រើប្រាស់",
+        "disease": "ជំងឺ",
+        "symptom": "រោគសញ្ញា",
+        "rule": "ច្បាប់",
+        "Knowledge Base Overview": "ទិដ្ឋភាពទូទៅនៃមូលដ្ឋានចំណេះដឹង",
+        "System Data Overview": "ទិដ្ឋភាពទូទៅនៃទិន្នន័យប្រព័ន្ធ"
+    },
+    "city": {
+        "Phnom Penh": "ភ្នំពេញ",
+        "Siem Reap": "សៀមរាប",
+        "Battambang": "បាត់ដំបង",
+        "Kampong Cham": "កំពង់ចាម",
+        "Kampong Speu": "កំពង់ស្ពឺ"
+    }
+}

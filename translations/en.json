@@ -1,0 +1,57 @@
+{
+  "sidebar": {
+    "rice_expert": "Rice Expert",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "diseases": "Diseases",
+    "symptoms": "Symptoms",
+    "rules": "Rules",
+    "rule_conditions": "Rule Conditions",
+    "diagnosis": "Diagnosis Test",
+    "settings": "Settings",
+    "logout": "Logout",
+    "management": "Management",
+    "disease_management": "Disease Management",
+    "health": "Health",
+    "reports": "Reports",
+    "system": "System",
+    "disease": "Disease",
+    "prevention": "Prevention",
+    "treatment": "Treatment",
+    "about": "About",
+    "history_system": "System History",
+    "lang_en": "English",
+    "lang_km": "Khmer"
+  },
+  "dashboard": {
+    "welcome": "Welcome to Rice Expert Dashboard",
+    "Administration & Knowledge Monitoring Panel": "Administration & Knowledge Monitoring Panel",
+    "total_users": "Total Users",
+    "total_diseases": "Total Diseases",
+    "total_rules": "Total Rules",
+    "total_symptoms": "Total Symptoms",
+    "goodevening": "Good Evening",
+    "goodafternoon": "Good Afternoon",
+    "goodmorning": "Good Morning",
+    "good_morning": "Good Morning",
+    "good_afternoon": "Good Afternoon",
+    "good_evening": "Good Evening"
+  },
+  "chart":{
+    "user": "Users",
+    "disease": "Diseases",
+    "symptom": "Symptoms",
+    "rule": "Rules",
+    "Knowledge Base Overview": "Knowledge Base Overview",
+    "System Data Overview": "System Data Overview"
+  },
+  "city": {
+    "Phnom Penh": "Phnom Penh",
+    "Siem Reap": "Siem Reap",
+    "Battambang": "Battambang",
+    "Kampong Cham": "Kampong Cham",
+    "Kampong Speu": "Kampong Speu"
+  }
+}

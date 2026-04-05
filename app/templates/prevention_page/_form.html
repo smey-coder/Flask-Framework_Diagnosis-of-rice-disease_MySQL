@@ -1,0 +1,43 @@
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        {{ form.disease_id.label(class="form-label") }}
+        {{ form.disease_id(class="form-select") }}
+        {% for error in form.disease_id.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        {{ form.prevention_type.label(class="form-label") }}
+        {{ form.prevention_type(class="form-select") }}
+        {% for error in form.prevention_type.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", rows=4) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.image.label(class="form-label") }}
+        {{ form.image(class="form-control") }}
+        {% if prevention and prevention.image %}
+            <img src="{{ url_for('static', filename='images/preventions/' ~ prevention.image) }}" 
+                 alt="Prevention Image" class="img-thumbnail mt-2" style="max-width:150px;">
+        {% endif %}
+    </div>
+
+    <div class="form-check mb-3">
+        {{ form.is_active(class="form-check-input") }}
+        {{ form.is_active.label(class="form-check-label") }}
+    </div>
+
+    <div class="text-end">
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('prevention.index') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

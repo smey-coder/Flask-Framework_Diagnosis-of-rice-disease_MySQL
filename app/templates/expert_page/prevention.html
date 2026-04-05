@@ -1,0 +1,39 @@
+{% extends "layouts/expert_layout/expert.html" %}
+
+{% block title %}Prevention{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-success">
+            <i class="bi bi-shield-check me-2"></i> Prevention for {{ disease.disease_name }}
+        </h2>
+        <a href="{{ url_for('expert.diagnosis_result') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Results
+        </a>
+    </div>
+
+    {% if preventions %}
+        <div class="row g-3">
+            {% for p in preventions %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ p.method if p.method else "Prevention Method" }}</h5>
+                            {% if p.description %}
+                                <p class="card-text">{{ p.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No prevention information available for this disease.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

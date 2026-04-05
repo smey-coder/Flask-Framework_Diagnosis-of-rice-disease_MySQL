@@ -1,0 +1,13 @@
+{% extends "layouts/expert_layout/expert.html" %}
+
+{% block title %}Edit Rule Condition{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">Edit Rule Condition</h3>
+
+    <form method="POST">
+        {% include 'expert_page/rule_condition_pages/_form.html' %}
+    </form>
+</div>
+{% endblock %}

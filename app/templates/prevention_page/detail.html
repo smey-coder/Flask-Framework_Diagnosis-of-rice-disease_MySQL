@@ -1,0 +1,50 @@
+{% extends 'layouts/admin_layout/admin.html' %}
+
+{% block title %}Prevention Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">Prevention Details</h3>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">{{ prevention.id }}</dd>
+
+                <dt class="col-sm-3">Disease</dt>
+                <dd class="col-sm-9">{{ prevention.disease.disease_name }}</dd>
+
+                <dt class="col-sm-3">Prevention Type</dt>
+                <dd class="col-sm-9">{{ prevention.prevention_type }}</dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">{{ prevention.description or '-' }}</dd>
+
+                <dt class="col-sm-3">Image</dt>
+                <dd class="col-sm-9">
+                    {% if prevention.image %}
+                        <img src="{{ url_for('static', filename='images/preventions/' ~ prevention.image) }}" 
+                             alt="Image" class="img-thumbnail" style="max-width:200px;">
+                    {% else %}
+                        -
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    {% if prevention.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                </dd>
+            </dl>
+
+            <div class="text-end">
+                <a href="{{ url_for('prevention.edit', id=prevention.id) }}" class="btn btn-warning">Edit</a>
+                <a href="{{ url_for('prevention.index') }}" class="btn btn-secondary">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
