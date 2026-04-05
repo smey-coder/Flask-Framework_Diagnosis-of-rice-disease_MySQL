@@ -5,7 +5,7 @@ from app.models.user import UserTable
 from app.models.diseases import DiseaseTable
 from app.models.symptoms import SymptomsTable
 from app.models.rules import RulesTable
-from app.forms.weather_form import WeatherForm
+from app.forms.weather_form import CitySearchForm
 from app.services.weather_service import WeatherService
 
 count_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -20,15 +20,19 @@ def dashboard():
         "rules": RulesTable.query.count(),
     }
 
-    form = WeatherForm()
+    form = CitySearchForm()
     weather_data = None
 
+    # Load default weather for Phnom Penh if no form submission
+    if not form.validate_on_submit():
+        weather_data = WeatherService.get_weather("Phnom Penh")
+
     if form.validate_on_submit():
-        weather_data = WeatherService.get_weather(form.city.data, form.country.data)
+        weather_data = WeatherService.get_weather(form.city.data)
 
     return render_template(
         "admin_page/dashboard.html",
         stats=stats,
         form=form,
-        weather_data=weather_data
+        selected_city_weather=weather_data  # Changed variable name to match template
     )
