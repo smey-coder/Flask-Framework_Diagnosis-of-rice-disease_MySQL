@@ -6,6 +6,7 @@ import requests
 from app.forms.diagnosis_form import DiagnosisForm
 from app.models.symptoms import SymptomsTable
 from app.models.diseases import DiseaseTable
+from app.services import diagnosis_service
 from app.services.diagnosis_service import DiagnosisService
 from app.models.user import UserTable
 from app.models.rules import RulesTable
@@ -72,29 +73,26 @@ def dashboard():
     }
 
     form = CitySearchForm()
+    search_results = []
     selected_city_weather = None
 
-    # ✅ Case 1: Get from URL (?city=Phnom Penh)
-    selected_city = request.args.get('city')
-    if selected_city:
-        selected_city_weather = WeatherService.get_weather(selected_city)
+    # Check if a city was selected for weather
+    selected_city_id = request.args.get('city_id')
+    if selected_city_id:
+        selected_city_weather = WeatherService.get_weather(selected_city_id)
 
-    # ✅ Case 2: Form submit
-    elif form.validate_on_submit():
-        selected_city = form.city.data
-        if selected_city:
-            selected_city_weather = WeatherService.get_weather(selected_city)
-
-    # ✅ Case 3: Default
-    else:
-        selected_city_weather = WeatherService.get_weather("Phnom Penh")
+    if form.validate_on_submit():
+        selected_city_name = form.city.data
+        if selected_city_name:
+            selected_city_weather = WeatherService.get_weather(selected_city_name)
 
     return render_template(
         "admin_page/dashboard.html",
         user=current_user,
         stats=stats,
         form=form,
-        selected_city_weather=selected_city_weather,
+        search_results=search_results,
+        selected_city_weather=selected_city_weather
     )
 # ---------- SETTINGS / PROFILE ----------
 @admin_bp.route("/settings", methods=["GET", "POST"])
@@ -151,19 +149,28 @@ def about():
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_input():
     form = DiagnosisForm()
+    # Get all active symptoms
     symptoms = SymptomsTable.query.filter_by(is_active=True).all()
+    # Make sure IDs are integers
     form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
 
     if form.validate_on_submit():
-        selected = form.symptoms.data or []
-        if not selected:
+        # Convert submitted data to integers
+        selected_ids = [int(s) for s in form.symptoms.data or []]
+
+        if not selected_ids:
             flash("Please select at least one symptom.", "warning")
             return redirect(url_for("admin.diagnosis_input"))
 
-        session["selected_symptoms"] = selected
+        # Store IDs in session
+        session["selected_symptoms"] = selected_ids
+
+        # Store corresponding symptom NAMES for view filtering
+        selected_symptoms = SymptomsTable.query.filter(SymptomsTable.id.in_(selected_ids)).all()
+        session["selected_symptoms_names"] = [s.symptom_name for s in selected_symptoms]
+
         return redirect(url_for("admin.diagnosis_result"))
 
-    form.symptoms.data = form.symptoms.data or []
     return render_template("diagnosis_page/index.html", form=form, user=current_user)
 
 
@@ -173,22 +180,43 @@ def diagnosis_input():
 @role_required("Admin")
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_result():
-    selected_ids = session.get("selected_symptoms")
+    #Get selected symptoms
+    selected_ids = session.get("selected_symptoms", [])
     if not selected_ids:
         flash("No symptoms selected.", "warning")
         return redirect(url_for("admin.diagnosis_input"))
 
-    conclusions, rule_trace, skipped_rules = service.infer(selected_ids)
+    #Run inference
+    conclusions, rule_trace, skipped_rules = DiagnosisService.infer(selected_ids)
+
+    # SAVE IN SESSION
+    session["rule_trace"] = rule_trace
+
     if not conclusions:
         flash("No diseases matched your symptoms.", "info")
         return redirect(url_for("admin.diagnosis_input"))
 
-    session["rule_trace"] = rule_trace
-    session["skipped_rules"] = skipped_rules
+    # Save diagnosis results using raw SQL helper
+    #save_diagnosis_history(conclusions, rule_trace)
 
+    #Prepare results for template
+    results = []
+    for disease_id, data in conclusions.items():
+        disease = data["disease"]
+        results.append({
+            "disease_id": disease_id,
+            "disease_name": getattr(disease, "disease_name", ""),
+            "image": getattr(disease, "image", ""),
+            "severity_level":  disease.severity_level if disease else None,
+            "confidence": data.get("certainty", 0.0),
+            "rules": rule_trace.get(str(disease_id), []),
+            "explanation": getattr(disease, "explanation", ""),
+        })
+
+    # Render result template
     return render_template(
         "diagnosis_page/result.html",
-        conclusions=conclusions,
+        results=results,
         user=current_user
     )
 
@@ -204,17 +232,24 @@ def diagnosis_explain(disease_id):
         flash("Please perform diagnosis first.", "warning")
         return redirect(url_for("admin.diagnosis_input"))
 
-    logs = service.explain_disease(disease_id, rule_trace)
+    logs = diagnosis_service.DiagnosisService.explain_disease(disease_id, rule_trace)
     if not logs:
         flash("No explanation available for this disease.", "info")
         return redirect(url_for("admin.diagnosis_result"))
 
     disease = DiseaseTable.query.get_or_404(disease_id)
-    symptom_ids = session.get("selected_symptoms") or []
-    selected_symptoms = [s.symptom_name for s in SymptomsTable.query.filter(SymptomsTable.id.in_(symptom_ids)).all()]
 
-    treatments = service.treatment_disease(disease_id)
-    preventions = service.prevention_disease(disease_id)
+    symptom_ids = session.get("selected_symptoms") or []
+    selected_symptoms = [
+        s.symptom_name
+        for s in SymptomsTable.query.filter(SymptomsTable.id.in_(symptom_ids)).all()
+    ]
+
+    #ADD THIS (Calculate confidence)
+    overall_cf = logs[-1]["cf_after"] if logs else 0.0
+
+    treatments = diagnosis_service.DiagnosisService.treatment_disease(disease_id)
+    preventions = diagnosis_service.DiagnosisService.prevention_disease(disease_id)
 
     return render_template(
         "diagnosis_page/explain.html",
@@ -223,6 +258,7 @@ def diagnosis_explain(disease_id):
         treatments=treatments,
         preventions=preventions,
         selected_symptoms=selected_symptoms,
+        certainty=overall_cf,   # ✅ PASS TO TEMPLATE
         user=current_user
     )
 
