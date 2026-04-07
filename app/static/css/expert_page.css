@@ -224,6 +224,5 @@ main.page-exit {
 }
 
 .alert {
-    background-color: var(--bg-card);
     border-color: var(--border-color);
 }

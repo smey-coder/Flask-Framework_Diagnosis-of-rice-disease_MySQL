@@ -27,7 +27,7 @@
         {% if disease.image %}
         <div class="col-md-4 mb-4">
             <div class="card">
-                <img src="{{ disease.image }}" class="card-img-top" alt="{{ disease.disease_name }}">
+                <img src="{{ url_for('static', filename='images/diseases/' + disease.image) }}" class="card-img-top" alt="{{ disease.disease_name }}">
             </div>
         </div>
         {% endif %}

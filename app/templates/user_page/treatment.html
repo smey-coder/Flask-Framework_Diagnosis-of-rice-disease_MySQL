@@ -21,7 +21,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card shadow-sm h-100">
                     {% if t.image %}
-                        <img src="{{ url_for('static', filename='uploads/' ~ t.image) }}" class="card-img-top" alt="Treatment Image">
+                        <img src="{{ url_for('static', filename='images/diseases/' ~ t.image) }}" class="card-img-top" alt="Treatment Image">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ t.method }}</h5>

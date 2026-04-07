@@ -1,5 +1,7 @@
+import os
 from flask import (
     Blueprint,
+    current_app,
     render_template,
     redirect,
     url_for,
@@ -10,24 +12,28 @@ from flask import (
 )
 from flask_login import login_required, current_user
 import logging
+from werkzeug.utils import secure_filename
 
-from app.forms.diseases import (
+from app.forms.diseases_forms import (
     DiseaseCreateForm,
     DiseaseEditForm,
     DiseaseConfirmDeleteForm,
     DiseaseSearchForm,
 )
 from app.services.disease_service import DiseaseService
-from app.models.diseases import DiseaseTable
-from decorators import require_admin, require_permission, require_role, active_user_required
-from extensions import db
+from decorators import require_admin, active_user_required
 
 logger = logging.getLogger("app")
 
 disease_bp = Blueprint("tbl_diseases", __name__, url_prefix="/diseases")
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+# ------------------ INDEX ------------------
 @disease_bp.route("/")
 @login_required
 @active_user_required()
@@ -37,12 +43,10 @@ def index():
         page = request.args.get("page", 1, type=int)
         search_form = DiseaseSearchForm(request.args, meta={"csrf_enabled": False})
         
-        # Get search parameters
         disease_name = request.args.get("disease_name", "").strip()
         disease_type = request.args.get("disease_type", "").strip()
         severity_level = request.args.get("severity_level", "").strip()
         
-        # Perform search
         diseases = DiseaseService.search_diseases(
             disease_name=disease_name if disease_name else None,
             disease_type=disease_type if disease_type else None,
@@ -63,6 +67,7 @@ def index():
         return redirect(url_for("user.dashboard"))
 
 
+# ------------------ DETAIL ------------------
 @disease_bp.route("/<int:disease_id>")
 @login_required
 @active_user_required()
@@ -85,146 +90,123 @@ def detail(disease_id: int):
         abort(404)
 
 
+# ------------------ CREATE ------------------
 @disease_bp.route("/create", methods=["GET", "POST"])
 @login_required
 @require_admin()
 def create():
-    """Create a new disease"""
-    try:
-        form = DiseaseCreateForm()
-        
-        if form.validate_on_submit():
-            data = {
-                "disease_name": form.disease_name.data.strip(),
-                "disease_type": form.disease_type.data.strip(),
-                "description": form.description.data.strip() if form.description.data else "",
-                "severity_level": form.severity_level.data.strip() if form.severity_level.data else "Low",
-                "image": form.image.data if form.image.data else None,
-                "is_active": form.is_active.data,
-            }
-            
-            # Validate required fields
-            if not data["disease_name"]:
-                flash("Disease name is required.", "danger")
-                return render_template("disease_page/create.html", form=form)
-            
-            if not data["disease_type"]:
-                flash("Disease type is required.", "danger")
-                return render_template("disease_page/create.html", form=form)
-            
-            disease = DiseaseService.create_disease(data)
-            
-            if disease:
-                flash(f"Disease '{disease.disease_name}' was created successfully.", "success")
-                logger.info(f"Disease created: {disease.disease_name} (ID: {disease.id}) by {current_user.username}")
-                return redirect(url_for("tbl_diseases.detail", disease_id=disease.id))
-            else:
-                flash("Failed to create disease. Please try again.", "danger")
-        
-        return render_template("disease_page/create.html", form=form)
+    form = DiseaseCreateForm()
     
-    except Exception as e:
-        logger.error(f"Error creating disease: {e}")
-        flash("An error occurred while creating the disease.", "danger")
-        return render_template("disease_page/create.html", form=form)
+    if form.validate_on_submit():
+        data = {
+            "disease_name": form.disease_name.data.strip(),
+            "disease_type": form.disease_type.data.strip(),
+            "description": form.description.data.strip(),
+            "severity_level": form.severity_level.data.strip(),
+            "is_active": form.is_active.data
+        }
+
+        image_file = form.image.data if form.image.data else None
+
+        try:
+            disease = DiseaseService.create_disease(data, image_file)
+            flash(f"Disease '{disease.disease_name}' created successfully.", "success")
+            return redirect(url_for("tbl_diseases.index"))
+        except ValueError as e:
+            flash(str(e), "danger")
+        except Exception as e:
+            flash("An unexpected error occurred.", "danger")
+
+    return render_template("disease_page/create.html", form=form)
 
 
+# ------------------ EDIT ------------------
 @disease_bp.route("/<int:disease_id>/edit", methods=["GET", "POST"])
 @login_required
 @require_admin()
 def edit(disease_id: int):
-    """Edit an existing disease"""
-    try:
-        disease = DiseaseService.get_disease_by_id(disease_id)
-        if disease is None:
-            flash("Disease not found.", "warning")
-            abort(404)
-        
-        form = DiseaseEditForm(disease)
-        
-        if form.validate_on_submit():
-            data = {
-                "disease_name": form.disease_name.data.strip(),
-                "disease_type": form.disease_type.data.strip(),
-                "description": form.description.data.strip() if form.description.data else "",
-                "severity_level": form.severity_level.data.strip() if form.severity_level.data else "Low",
-                "image": form.image.data if form.image.data else disease.image,
-                "is_active": form.is_active.data,
-            }
-            
-            # Validate required fields
-            if not data["disease_name"]:
-                flash("Disease name is required.", "danger")
-                return render_template("disease_page/edit.html", form=form, disease=disease)
-            
-            if not data["disease_type"]:
-                flash("Disease type is required.", "danger")
-                return render_template("disease_page/edit.html", form=form, disease=disease)
-            
-            updated_disease = DiseaseService.update_disease(disease_id, data)
-            
-            if updated_disease:
-                flash(f"Disease '{updated_disease.disease_name}' was updated successfully.", "success")
-                logger.info(f"Disease updated: {updated_disease.disease_name} (ID: {disease_id}) by {current_user.username}")
-                return redirect(url_for("tbl_diseases.detail", disease_id=disease_id))
-            else:
-                flash("Failed to update disease. Please try again.", "danger")
-        
-        return render_template("disease_page/edit.html", form=form, disease=disease)
-    
-    except Exception as e:
-        logger.error(f"Error editing disease {disease_id}: {e}")
-        flash("An error occurred while editing the disease.", "danger")
-        return render_template("disease_page/edit.html", form=form, disease=disease)
+    disease = DiseaseService.get_disease_by_id(disease_id)
+    if not disease:
+        abort(404)
+
+    # ✅ FIX HERE
+    form = DiseaseEditForm(original_disease=disease, obj=disease)
+
+    if form.validate_on_submit():
+        data = {
+            "disease_name": form.disease_name.data.strip(),
+            "disease_type": form.disease_type.data.strip(),
+            "description": form.description.data.strip() if form.description.data else "",
+            "severity_level": form.severity_level.data.strip() if form.severity_level.data else "Low",
+            "is_active": form.is_active.data
+        }
+
+        image_file = form.image.data if form.image.data and form.image.data.filename != "" else None
+
+        try:
+            DiseaseService.update_disease(disease_id, data, image_file)
+            flash("Disease updated successfully.", "success")
+            return redirect(url_for("tbl_diseases.detail", disease_id=disease_id))
+        except ValueError as e:
+            flash(str(e), "danger")
+
+    return render_template("disease_page/edit.html", form=form, disease=disease)
 
 
+# ------------------ DELETE ------------------
 @disease_bp.route("/<int:disease_id>/delete", methods=["GET", "POST"])
 @login_required
 @require_admin()
 def delete(disease_id: int):
-    """Delete a disease"""
     try:
         disease = DiseaseService.get_disease_by_id(disease_id)
-        if disease is None:
+        if not disease:
             flash("Disease not found.", "warning")
             abort(404)
-        
+
         form = DiseaseConfirmDeleteForm()
-        
-        if form.validate_on_submit():
+
+        # ✅ Handle POST request
+        if request.method == "POST":
             disease_name = disease.disease_name
-            
-            # Check if disease is associated with other records
-            if disease.symptoms or disease.treatments or disease.preventions:
+
+            # ✅ Check relationships (safe)
+            if (disease.treatments and len(disease.treatments) > 0) or \
+               (disease.preventions and len(disease.preventions) > 0):
+
                 flash(
-                    f"Cannot delete '{disease_name}' because it is associated with symptoms, treatments, or preventions. "
-                    "Please remove these associations first.",
+                    f"Cannot delete '{disease_name}' because it is associated with other data.",
                     "danger"
                 )
                 return render_template("disease_page/delete_confirm.html", disease=disease, form=form)
-            
-            DiseaseService.delete_disease(disease_id)
-            flash(f"Disease '{disease_name}' was deleted successfully.", "success")
-            logger.info(f"Disease deleted: {disease_name} (ID: {disease_id}) by {current_user.username}")
-            return redirect(url_for("tbl_diseases.index"))
-        
+
+            try:
+                DiseaseService.delete_disease(disease_id)
+
+                flash(f"Disease '{disease_name}' deleted successfully.", "success")
+                logger.info(f"Disease deleted: {disease_name} (ID: {disease_id}) by {current_user.username}")
+
+                return redirect(url_for("tbl_diseases.index"))
+
+            except Exception as e:
+                logger.error(f"Delete error: {e}")
+                flash(str(e), "danger")  # 🔥 show real error
+
         return render_template("disease_page/delete_confirm.html", disease=disease, form=form)
-    
+
     except Exception as e:
         logger.error(f"Error deleting disease {disease_id}: {e}")
-        flash("An error occurred while deleting the disease.", "danger")
+        flash(str(e), "danger")
         return render_template("disease_page/delete_confirm.html", disease=disease, form=form)
 
 
-# ===================== API ENDPOINTS =====================
-
+# ------------------ API ENDPOINTS ------------------
 @disease_bp.route("/api/<int:disease_id>/json")
 @login_required
 def get_disease_json(disease_id: int):
-    """Get disease details as JSON"""
     try:
         disease = DiseaseService.get_disease_by_id(disease_id)
-        if disease is None:
+        if not disease:
             return jsonify({"error": "Disease not found"}), 404
         
         return jsonify({
@@ -234,6 +216,7 @@ def get_disease_json(disease_id: int):
             "description": disease.description,
             "severity_level": disease.severity_level,
             "is_active": disease.is_active,
+            "image_filename": getattr(disease, "image_filename", None),
             "created_at": disease.created_at.isoformat() if hasattr(disease, 'created_at') else None,
         })
     except Exception as e:
@@ -244,7 +227,6 @@ def get_disease_json(disease_id: int):
 @disease_bp.route("/api/search")
 @login_required
 def search_diseases_api():
-    """Search diseases via API"""
     try:
         disease_name = request.args.get("name", "").strip()
         disease_type = request.args.get("type", "").strip()
@@ -267,6 +249,7 @@ def search_diseases_api():
                     "disease_name": d.disease_name,
                     "disease_type": d.disease_type,
                     "severity_level": d.severity_level,
+                    "image_filename": getattr(d, "image_filename", None)
                 }
                 for d in diseases.items
             ]

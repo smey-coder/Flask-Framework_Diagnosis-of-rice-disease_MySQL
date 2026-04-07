@@ -59,7 +59,7 @@
                 <div class="row g-0">
                     <div class="col-md-4">
                         {% if res.disease.image %}
-                            <img src="{{ url_for('static', filename='images/' + res.disease.image) }}" class="disease-img-thumb">
+                            <img src="{{ url_for('static', filename='uploads/disease/' + res.disease.image) }}" class="disease-img-thumb">
                         {% else %}
                             <div class="bg-light d-flex align-items-center justify-content-center h-100 text-muted">
                                 <i class="bi bi-image fs-1"></i>

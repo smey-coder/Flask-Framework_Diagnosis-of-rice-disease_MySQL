@@ -1,66 +1,119 @@
-<div class="card border-0 shadow-lg rounded-4">
-    <div class="card-body p-4">
+{{ form.hidden_tag() }}
 
-        <!-- Header -->
-        <div class="mb-4 text-center">
-            <h5 class="fw-bold mb-1">Rule Condition Configuration</h5>
-            <p class="text-muted small mb-0">
-                Define which symptom activates a specific rule
-            </p>
-        </div>
+<!-- ========================= -->
+<!-- Rule Selection -->
+<!-- ========================= -->
+<div class="mb-3">
+    {{ form.rule_id.label(class="form-label fw-semibold") }}
 
-        {{ form.hidden_tag() }}
+    <div class="input-group">
+        <span class="input-group-text bg-light">
+            <i class="bi bi-diagram-3"></i>
+        </span>
+        {{ form.rule_id(class="form-select") }}
+    </div>
 
-        <!-- Rule Selection -->
-        <div class="mb-3">
-            {{ form.rule_id.label(class="form-label fw-semibold") }}
-            <div class="input-group">
-                <span class="input-group-text bg-light">
-                    <i class="bi bi-diagram-3"></i>
-                </span>
-                {{ form.rule_id(class="form-select") }}
+    {% for error in form.rule_id.errors %}
+        <div class="text-danger small mt-1">{{ error }}</div>
+    {% endfor %}
+
+    <div class="form-text">Select the rule that will be evaluated</div>
+</div>
+
+
+<!-- ========================= -->
+<!-- Symptoms Selection -->
+<!-- ========================= -->
+<div class="mb-3">
+    <label class="form-label fw-semibold">Symptoms</label>
+
+    <!-- Buttons -->
+    <div class="mb-2 d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-primary" id="select-all">
+            Select All
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="deselect-all">
+            Deselect All
+        </button>
+    </div>
+
+    <!-- Scrollable Checkbox List -->
+    <div class="d-flex flex-wrap gap-2 p-2"
+         style="max-height:260px; overflow-y:auto; border:1px solid #dee2e6; border-radius:.375rem;">
+
+        {% for s_id, s_name in form.symptom_id.choices %}
+            <div class="form-check">
+                <input class="form-check-input symptom-checkbox"
+                       type="checkbox"
+                       name="{{ form.symptom_id.name }}"
+                       value="{{ s_id }}"
+                       id="symptom-{{ s_id }}"
+                       {% if form.symptom_id.data and s_id in (form.symptom_id.data if form.symptom_id.data is iterable else [form.symptom_id.data]) %}
+                            checked
+                        {% endif %}
+                />
+
+                <label class="form-check-label" for="symptom-{{ s_id }}">
+                    {{ s_name }}
+                </label>
             </div>
-            {% for error in form.rule_id.errors %}
-                <div class="text-danger small mt-1">{{ error }}</div>
-            {% endfor %}
-            <div class="form-text">
-                Select the rule that will be evaluated
-            </div>
-        </div>
+        {% endfor %}
+    </div>
 
-        <!-- Symptom Selection -->
-        <div class="mb-3">
-            {{ form.symptom_id.label(class="form-label fw-semibold") }}
-            <div class="input-group">
-                <span class="input-group-text bg-light">
-                    <i class="bi bi-heart-pulse"></i>
-                </span>
-                {{ form.symptom_id(class="form-select") }}
-            </div>
-            {% for error in form.symptom_id.errors %}
-                <div class="text-danger small mt-1">{{ error }}</div>
-            {% endfor %}
-            <div class="form-text">
-                Choose the symptom related to this rule
-            </div>
-        </div>
+    {% for error in form.symptom_id.errors %}
+        <div class="text-danger small mt-1">{{ error }}</div>
+    {% endfor %}
 
-        <!-- Active Switch -->
-        <div class="form-check form-switch mb-4">
-            {{ form.is_active(class="form-check-input", role="switch") }}
-            {{ form.is_active.label(class="form-check-label fw-semibold") }}
-            <div class="form-text">
-                Enable or disable this rule condition
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="d-flex justify-content-end gap-2">
-            <a href="{{ url_for('expert.index_rule_condition') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Cancel
-            </a>
-            {{ form.submit(class="btn btn-primary px-4") }}
-        </div>
-
+    <div class="form-text">
+        Select one or more symptoms for this rule
     </div>
 </div>
+
+
+<!-- ========================= -->
+<!-- Active Switch -->
+<!-- ========================= -->
+<div class="form-check form-switch mb-4">
+    {{ form.is_active(class="form-check-input", role="switch") }}
+    {{ form.is_active.label(class="form-check-label fw-semibold") }}
+
+    <div class="form-text">
+        Enable or disable this rule condition
+    </div>
+</div>
+
+
+<!-- ========================= -->
+<!-- Actions -->
+<!-- ========================= -->
+<div class="d-flex justify-content-end gap-2">
+    <a href="{{ url_for('expert.index_rule_condition') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Cancel
+    </a>
+
+    {{ form.submit(class="btn btn-primary px-4") }}
+</div>
+
+
+<!-- ========================= -->
+<!-- JavaScript -->
+<!-- ========================= -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const selectAllBtn = document.getElementById('select-all');
+        const deselectAllBtn = document.getElementById('deselect-all');
+        const checkboxes = document.querySelectorAll('.symptom-checkbox');
+
+        // Select all
+        selectAllBtn.addEventListener('click', () => {
+            checkboxes.forEach(cb => cb.checked = true);
+        });
+
+        // Deselect all
+        deselectAllBtn.addEventListener('click', () => {
+            checkboxes.forEach(cb => cb.checked = false);
+        });
+
+    });
+</script>

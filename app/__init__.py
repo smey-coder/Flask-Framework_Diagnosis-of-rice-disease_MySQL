@@ -30,7 +30,6 @@ def create_app(config_class: type[Config] = Config):
     @login_manager.user_loader
     def load_user(user_id: int):
         return UserTable.query.get(int(user_id))
-
     # ================= LANGUAGE GLOBAL =================
     # ================= LANGUAGE GLOBAL =================
     @app.context_processor
@@ -82,7 +81,7 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.auth_routes import auth_bp
     from app.routes.admin_route.admin_route import admin_bp
     from app.routes.user_route.user_route import user_bp as user_dashboard_bp
-    from app.routes.disease_route import disease_bp
+    from app.routes.disease_routes import disease_bp
     from app.routes.symptom_routes import symptom_bp
     from app.routes.expert_route.expert_route import expert_bp
     from app.routes.rule_condition_route import rule_condition_bp
@@ -109,5 +108,4 @@ def create_app(config_class: type[Config] = Config):
     # ================= CREATE TABLES =================
     with app.app_context():
         db.create_all()
-
     return app

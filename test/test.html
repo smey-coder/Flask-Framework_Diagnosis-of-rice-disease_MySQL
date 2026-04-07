@@ -1,0 +1,92 @@
+{{ form.hidden_tag() }}
+
+<div class="row">
+
+    <!-- Disease Name -->
+    <div class="col-md-6 mb-3">
+        {{ form.disease_name.label(class="form-label fw-semibold") }}
+        {{ form.disease_name(class="form-control") }}
+        {% for error in form.disease_name.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Disease Type -->
+    <div class="col-md-6 mb-3">
+        {{ form.disease_type.label(class="form-label fw-semibold") }}
+        {{ form.disease_type(class="form-select") }}
+        {% for error in form.disease_type.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Severity Level -->
+    <div class="col-md-6 mb-3">
+        {{ form.severity_level.label(class="form-label fw-semibold") }}
+        {{ form.severity_level(class="form-select") }}
+        {% for error in form.severity_level.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Active Checkbox -->
+    <div class="col-md-6 mb-3 d-flex align-items-center">
+        <div class="form-check mt-4">
+            {{ form.is_active(class="form-check-input") }}
+            {{ form.is_active.label(class="form-check-label") }}
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="col-12 mb-3">
+        {{ form.description.label(class="form-label fw-semibold") }}
+        {{ form.description(class="form-control", rows="4") }}
+        {% for error in form.description.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Image Upload -->
+    <div class="col-12 mb-3">
+        {{ form.image.label(class="form-label fw-semibold") }}
+        {{ form.image(class="form-control", id="imageInput") }}
+        {% for error in form.image.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+
+        <!-- Existing image (Edit) -->
+        {% if disease and disease.image %}
+            <div class="mt-2">
+                <label class="form-label small">Current Image:</label><br>
+                <img src="{{ url_for('static', filename='images/diseases/' ~ disease.image) }}"
+                    alt="Current Image"
+                    class="img-thumbnail"
+                    style="max-width:150px;">
+            </div>
+        {% endif %}
+
+        <!-- Preview for new image -->
+        <img id="preview" class="img-thumbnail mt-2" alt="Selected Image Preview" style="max-width:150px; display:none;">
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("imageInput");
+    if (!input) return;
+
+    input.addEventListener("change", function () {
+        const file = this.files[0];
+        const preview = document.getElementById("preview");
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        } else {
+            preview.src = "";
+            preview.style.display = "none";
+        }
+    });
+});
+</script>

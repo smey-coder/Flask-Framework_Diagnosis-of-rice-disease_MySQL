@@ -1,6 +1,6 @@
 from flask import Flask
 from config import Config
-from extensions import mail
+from test.diseases.extensions import mail
 from flask_mail import Message
 
 app = Flask(__name__)

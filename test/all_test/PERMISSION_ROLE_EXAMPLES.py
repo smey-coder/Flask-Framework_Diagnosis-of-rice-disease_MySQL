@@ -17,7 +17,7 @@ def initialize_default_permissions_and_roles():
     from app.services.permission_role_service import PermissionRoleService
     from app.models.permission import PermissionTable
     from app.models.role import RoleTable
-    from extensions import db
+    from test.diseases.extensions import db
     
     # Step 1: Define all permissions
     PERMISSIONS = {
@@ -523,7 +523,7 @@ def example_form_integration():
     from app.services.permission_service import PermissionService
     from app.services.permission_role_service import PermissionRoleService
     from app.models.role import RoleTable
-    from extensions import db
+    from test.diseases.extensions import db
     
     def assign_permission_view(permission_id):
         """Route to assign permission to a role"""

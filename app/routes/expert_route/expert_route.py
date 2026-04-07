@@ -16,7 +16,7 @@ from app.models.diseases import DiseaseTable
 from app.models.symptoms import SymptomsTable
 from app.models.rules import RulesTable
 from app.forms.user_forms import UserEditForm
-from app.forms.diseases import DiseaseEditForm, DiseaseSearchForm
+from app.forms.diseases_forms import DiseaseEditForm, DiseaseSearchForm
 from app.forms.diagnosis_form import DiagnosisForm
 from app.services.diagnosis_service import DiagnosisService
 from app.services.disease_service import DiseaseService
@@ -282,6 +282,31 @@ def index_disease():
         current_user=current_user
     )
 
+@expert_bp.route("/create/disease", methods=["GET", "POST"])
+@login_required
+@role_required("Expert")
+@permission_required("CREATE_DISEASE")
+def create_disease():
+    form = DiseaseEditForm()
+
+    if form.validate_on_submit():
+        data = {
+            "disease_name": form.disease_name.data.strip(),
+            "disease_type": form.disease_type.data.strip(),
+            "description": form.description.data.strip() if form.description.data else "",
+            "severity_level": form.severity_level.data.strip() if form.severity_level.data else "Low",
+            "is_active": form.is_active.data
+        }
+
+        image_file = form.image.data if form.image.data else None
+        disease = DiseaseService.create_disease(data, image_file)
+        if disease:
+            flash(f"Disease '{disease.disease_name}' created successfully.", "success")
+            return redirect(url_for("expert.detail_disease", disease_id=disease.id))
+        else:
+            flash("Failed to create disease. Try again.", "danger")
+
+    return render_template("expert_page/create_disease.html", form=form)
 
 @expert_bp.route("/detail/disease/<int:disease_id>")
 @login_required
@@ -317,11 +342,11 @@ def edit_disease(disease_id):
             "disease_type": form.disease_type.data.strip(),
             "description": form.description.data.strip() if form.description.data else "",
             "severity_level": form.severity_level.data.strip() if form.severity_level.data else "Low",
-            "image": form.image.data if form.image.data else disease.image,
             "is_active": form.is_active.data
         }
 
-        updated = DiseaseService.update_disease(disease_id, data)
+        image_file = form.image.data if form.image.data else None
+        updated = DiseaseService.update_disease(disease_id, data, image_file)
         if updated:
             flash(f"Disease '{updated.disease_name}' updated successfully.", "success")
             return redirect(url_for("expert.detail_disease", disease_id=disease_id))

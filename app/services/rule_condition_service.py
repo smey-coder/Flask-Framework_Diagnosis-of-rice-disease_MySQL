@@ -1,6 +1,5 @@
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
-
 from extensions import db
 from app.models.rule_conditions import RuleConditionsTable
 from app.services.audit_service import log_audit
@@ -77,7 +76,7 @@ class RuleConditionService:
                 created_items.append(rule_condition)
 
             if not created_items:
-                raise ValueError("All rule conditions already exist.")
+                raise ValueError("Rule conditions already exist.")
 
             db.session.commit()
 

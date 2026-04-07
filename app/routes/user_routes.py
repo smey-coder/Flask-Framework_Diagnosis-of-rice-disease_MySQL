@@ -12,9 +12,7 @@ from app.forms.user_forms import UserCreateForm, UserEditForm, UserConfirmDelete
 from app.services.user_service import UserService
 from app.models.role import RoleTable
 
-
 user_bp = Blueprint("tbl_users", __name__, url_prefix="/users")
-
 @user_bp.route("/")
 @login_required
 def index():

@@ -34,9 +34,9 @@
                     {% for item in results %}
                     <tr>
                         <!-- Disease Image -->
-                        <td class="text-center">
+                        <td class="text-center" style="width: 20%;">
                             {% if item.image %}
-                                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" 
+                                <img src="{{ url_for('static', filename='images/diseases/' + item.image) }}" 
                                     alt="{{ item.disease_name }}" class="img-thumbnail" style="max-width:100px;">
                             {% else %}
                                 <span class="text-muted">No image</span>

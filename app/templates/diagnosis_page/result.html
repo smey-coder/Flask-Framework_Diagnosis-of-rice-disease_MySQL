@@ -36,7 +36,7 @@
                         <!-- Disease Image -->
                         <td class="text-center">
                             {% if item.image %}
-                                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" 
+                                <img src="{{ url_for('static', filename='images/diseases/' + item.image) }}" 
                                     alt="{{ item.disease_name }}" class="img-thumbnail" style="max-width:100px;">
                             {% else %}
                                 <span class="text-muted">No image</span>

@@ -1,9 +1,9 @@
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+from wtforms import BooleanField, SelectField, StringField, SubmitField, TextAreaField, ValidationError
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, SelectField, BooleanField
-from wtforms.validators import DataRequired, Length, ValidationError
-from extensions import db
+from wtforms.validators import DataRequired, Length
 from app.models.diseases import DiseaseTable
-
+from extensions import db
 
 # Disease severity level choices
 SEVERITY_CHOICES = [
@@ -58,11 +58,9 @@ class DiseaseCreateForm(FlaskForm):
         render_kw={"class": "form-control"}
     )
     
-    image = StringField(
-        "Image URL",
-        validators=[Length(max=255)],
-        render_kw={"placeholder": "Path to disease image"}
-    )
+    image = FileField('Image', validators=[
+        FileRequired(message="Image is required."),
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')])
     
     is_active = BooleanField(
         "Active",
@@ -113,11 +111,9 @@ class DiseaseEditForm(FlaskForm):
         render_kw={"class": "form-control"}
     )
     
-    image = StringField(
-        "Image URL",
-        validators=[Length(max=255)],
-        render_kw={"placeholder": "Path to disease image"}
-    )
+    image = FileField("Image (Optional)", validators=[
+        FileAllowed(["jpg", "jpeg", "png", "gif"], "Only images are allowed.")
+    ])
     
     is_active = BooleanField(
         "Active"
@@ -136,7 +132,7 @@ class DiseaseEditForm(FlaskForm):
             self.disease_type.data = original_disease.disease_type
             self.description.data = original_disease.description
             self.severity_level.data = original_disease.severity_level
-            self.image.data = original_disease.image
+            # Note: image field is left empty for editing - user can upload new image if needed
             self.is_active.data = original_disease.is_active
     
     def validate_disease_name(self, field):
