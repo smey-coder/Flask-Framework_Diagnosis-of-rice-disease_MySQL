@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from venv import logger
 from flask import Blueprint, render_template, redirect, request, session, url_for, flash
@@ -37,17 +37,32 @@ diagnosis_service = DiagnosisService()
 @login_required
 @role_required("User")
 def dashboard():
+    # Default disease to display
     default_disease = DiseaseTable.query.first()  # or choose a specific one
-    recent_activities = DiseaseTable.query\
-    .filter_by(is_active=True)\
-    .order_by(DiseaseTable.created_at.desc())\
-    .limit(5)\
-    .all()
+
+    # Recent activities (last 5 active diseases)
+    recent_activities = DiseaseTable.query \
+        .filter_by(is_active=True) \
+        .order_by(DiseaseTable.created_at.desc()) \
+        .limit(5) \
+        .all()
+
+    # New diseases for notifications (added in last 7 days)
+    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    new_diseases = DiseaseTable.query \
+        .filter(DiseaseTable.created_at >= seven_days_ago, DiseaseTable.is_active==True) \
+        .order_by(DiseaseTable.created_at.desc()) \
+        .all()
+    
+    new_diseases_count = len(new_diseases)
+
     return render_template(
         "user_page/dashboard.html", 
-        user=current_user, 
+        user=current_user,
         disease=default_disease,
-        recent_activities= recent_activities
+        recent_activities=recent_activities,
+        new_diseases=new_diseases,
+        new_diseases_count=new_diseases_count
     )
 
 # ---------------- SETTINGS ----------------

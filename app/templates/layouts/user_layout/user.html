@@ -19,45 +19,139 @@
     
     {% block extra_css %}{% endblock %}
 </head>
+<!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ ('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+       Are you sure you want to logout?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
 <body>
 
 <!-- ================= NAVBAR ================= -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{{ url_for('user.dashboard') }}">
-            🌾 Rice Doctor
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm sticky-top">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{{ url_for('user.dashboard') }}">
+            <img src="{{ url_for('static', filename='images/logo_rice.png') }}" 
+                alt="Rice Doctor Logo" 
+                width="40" 
+                height="40" 
+                class="d-inline-block align-text-top rounded-circle shadow-sm">
+            <!-- Rice Doctor -->
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="userNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}" href="{{ url_for('user.dashboard') }}">Home</a>
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}" href="{{ url_for('user.dashboard') }}">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'user.diagnosis_input' %}active{% endif %}" href="{{ url_for('user.diagnosis_input') }}">Diagnosis</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'user.diagnosis_history' %}active{% endif %}" href="{{ url_for('user.diagnosis_history') }}">History</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'user.settings' %}active{% endif %}" href="{{ url_for('user.settings') }}">Settings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'user.about' %}active{% endif %}" href="{{ url_for('user.about') }}">About</a>
+        </li>
+    </ul>
+
+    <!-- Right side: language, notifications, user, logout -->
+    <div class="d-flex align-items-center gap-2 flex-wrap mt-2 mt-lg-0">
+
+        <!-- Language Dropdown -->
+        <div class="dropdown me-3">
+            <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-1" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if session.get('lang') == 'km' %}
+                    <img src="{{ url_for('static', filename='images/flags/kh.png') }}" alt="Khmer" width="20"> ខ្មែរ
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/flags/us.png') }}" alt="English" width="20"> English
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="langDropdown">
+                <li>
+                    <form method="POST" action="{{ url_for('set_language') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="lang" value="en">
+                        <button class="dropdown-item d-flex align-items-center gap-2" type="submit">
+                            <img src="{{ url_for('static', filename='images/flags/us.png') }}" width="20"> English
+                        </button>
+                    </form>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'user.diagnosis_input' %}active{% endif %}" href="{{ url_for('user.diagnosis_input') }}">Diagnosis</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'user.diagnosis_history' %}active{% endif %}" href="{{ url_for('user.diagnosis_history') }}">History</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'user.settings' %}active{% endif %}" href="{{ url_for('user.settings') }}">Settings</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'user.about' %}active{% endif %}" href="{{ url_for('user.about') }}">About</a>
+                <li>
+                    <form method="POST" action="{{ url_for('set_language') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="lang" value="km">
+                        <button class="dropdown-item d-flex align-items-center gap-2" type="submit">
+                            <img src="{{ url_for('static', filename='images/flags/kh.png') }}" width="20"> ខ្មែរ
+                        </button>
+                    </form>
                 </li>
             </ul>
-
-            <div class="d-flex align-items-center">
-                <span class="navbar-text text-white me-3">
-                    👤 {{ current_user.username }}
-                </span>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
-            </div>
         </div>
+
+        <!-- Notification Bell -->
+        <li class="nav-item dropdown list-unstyled me-3">
+            <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-bell fs-5"></i>
+                {% if new_diseases_count > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ new_diseases_count }}
+                    <span class="visually-hidden">new diseases</span>
+                </span>
+                {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown" style="width: 300px;">
+                <li class="dropdown-header fw-bold">New Diseases</li>
+                {% if new_diseases %}
+                    {% for disease in new_diseases %}
+                    <li>
+                        <a class="dropdown-item d-flex justify-content-between align-items-start" href="{{ url_for('user.disease_index', disease_id=disease.id) }}">
+                            <div>
+                                <strong>{{ disease.disease_name }}</strong><br>
+                                <small class="text-muted">{{ disease.created_at.strftime('%d %b %Y') }}</small>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="dropdown-item text-center text-muted">No new diseases</li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-center" href="{{ url_for('user.disease_index') }}">View all diseases</a></li>
+            </ul>
+        </li>
+
+        <!-- User info -->
+        <span class="navbar-text text-white fw-semibold me-2">
+            👤 {{ current_user.username }}
+        </span>
+
+        <!-- Logout Button -->
+        <button type="button" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
+                data-bs-toggle="modal" data-bs-target="#logoutModal">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+
     </div>
+</div>
 </nav>
 
 <!-- ================= CONTENT ================= -->
@@ -82,6 +176,16 @@
 <!-- ================= JS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% block extra_js %}{% endblock %}
+<script>
+function confirmLogout(event) {
+    event.preventDefault();
 
+    if (confirm("Are you sure you want to logout?")) {
+        window.location.href = event.currentTarget.href;
+    }
+
+    return false;
+}
+</script>
 </body>
 </html>
