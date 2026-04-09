@@ -43,7 +43,7 @@
     <div class="row g-4 mb-5">
         <div class="col-6 col-md-3">
             <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/analytics.png') }}" class="card-img-top" alt="Diagnose" style="height: 120px; object-fit: cover;">
+                <img src="{{ url_for('static', filename='images/analytics.png') }}" class="card-img-top" alt="Diagnose" style="height: 120px; object-fit: contain;">
                 <div class="card-body text-center p-3">
                     <h6 class="fw-bold mb-0">វិនិច្ឆ័យជំងឺ</h6>
                     <a href="{{ url_for('user.diagnosis_input') }}" class="stretched-link"></a>
@@ -53,30 +53,30 @@
 
         <div class="col-6 col-md-3">
             <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/logo_login.jpg') }}" class="card-img-top" alt="Diseases" style="height: 120px; object-fit: cover;">
+                <img src="{{ url_for('static', filename='images/Library.png') }}" class="card-img-top" alt="Diseases" style="height: 120px; object-fit: contain;">
                 <div class="card-body text-center p-3">
                     <h6 class="fw-bold mb-0">បណ្ណាល័យជំងឺ</h6>
-                    <a href="{{ url_for('user.disease_treatment', disease_id=disease.id) }}" class="stretched-link"></a>
+                    <a href="{{ url_for('user.disease_index') }}" class="stretched-link"></a>
                 </div>
             </div>
         </div>
 
         <div class="col-6 col-md-3">
             <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/treatment.jpg') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: cover;">
-                <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">វិធីព្យាបាល</h6>
-                    <a href="{{ url_for('user.disease_treatment', disease_id=disease.id) }}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/prevention.jpg') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: cover;">
+                <img src="{{ url_for('static', filename='images/history_disease.avif') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: contain;">
                 <div class="card-body text-center p-3">
                     <h6 class="fw-bold mb-0">ប្រវត្តិត្រួតពិនិត្យ</h6>
                     <a href="{{ url_for('user.diagnosis_history') }}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
+                <img src="{{ url_for('static', filename='images/green_information.jpg') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: contain;">
+                <div class="card-body text-center p-3">
+                    <h6 class="fw-bold mb-0">ព័ត៍មានថ្មី</h6>
+                    <a href="{{url_for('user.new_information')}}" class="stretched-link"></a>
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@
                                         <div class="bg-soft-success rounded-circle p-2 me-3">
                                             <i class="fas fa-leaf text-success"></i>
                                         </div>
-                                        <span class="fw-bold">{{ activity.disease.disease_name }}</span>
+                                        <span class="fw-bold">{{ activity.disease_name }}</span>
                                     </div>
                                 </td>
                                 <td class="text-muted small">{{ activity.created_at.strftime('%Y-%m-%d') }}</td>

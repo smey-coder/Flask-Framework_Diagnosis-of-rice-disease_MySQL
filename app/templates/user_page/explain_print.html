@@ -1,0 +1,192 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block title %}ការពន្យល់វិនិច្ឆ័យ{% endblock %}
+
+{% block content %}
+<div class="container mt-4" id="print-area">
+    <!-- back -->
+    <div class="mb-3 no-print">
+        <a href="{{ url_for('user.diagnosis_explain', disease_id=disease.id) }}" target="_blank"
+           class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-1"></i> Go Back
+        </a>
+    </div>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1">
+                <i class="bi bi-clipboard-data me-2"></i> របាយការណ៍វិនិច្ឆ័យ
+            </h2>
+            <small class="text-muted">Diagnosis Report</small>
+        </div>
+
+        {% if disease.image %}
+        <img src="{{ url_for('static', filename='images/diseases/' + disease.image) }}"
+             alt="{{ disease.disease_name }}"
+             class="img-thumbnail"
+             style="max-width:120px;">
+        {% endif %}
+    </div>
+
+    <!-- Disease Name -->
+    <div class="mb-3">
+        <h4 class="fw-bold text-dark">
+            ជំងឺ៖ {{ disease.disease_name }}
+        </h4>
+    </div>
+
+    <!-- Severity -->
+    <div class="mb-3">
+        <strong>កម្រិតការប្រកាស៖ </strong>
+        <span class="badge 
+            {% if disease.severity_level == 'High' %}bg-danger
+            {% elif disease.severity_level == 'Medium' %}bg-warning text-dark
+            {% else %}bg-success{% endif %}">
+            {{ disease.severity_level }}
+        </span>
+    </div>
+
+    <!-- Confidence -->
+    <div class="mb-4">
+        <strong>ភាពទំនុកចិត្តសរុប៖</strong>
+        <div class="progress mt-2" style="height: 20px;">
+            <div class="progress-bar bg-success"
+                 role="progressbar"
+                 style="width: {{ (certainty * 100)|round(2) }}%;">
+                {{ (certainty * 100)|round(2) }}%
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    {% if disease.description %}
+    <div class="mb-4">
+        <h5 class="fw-bold text-secondary">ពិពណ៌នា</h5>
+        <p class="text-muted" style="text-align: justify;">
+            {{ disease.description }}
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Recommendation -->
+    {% if disease.recommendation %}
+    <div class="mb-4">
+        <h5 class="fw-bold text-secondary">វិធីដោះស្រាយ</h5>
+        <p class="text-muted" style="text-align: justify;">
+            {{ disease.recommendation }}
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="border-top pt-3 mt-4 text-muted small">
+        <p>ប្រព័ន្ធវិនិច្ឆ័យជំងឺដំណាំស្រូវ (AI Expert System)</p>
+        <p>ថ្ងៃបង្កើត៖ {{ now.strftime('%m-%d-%Y') if now else '' }}</p>
+        <p>Time: {{ now.strftime('%H:%M:%S') if now else '' }}</p>
+        <p class="note_p">ចំណាំ៖</p>
+        <ul>
+            <li class="note">របាយការណ៍នេះគ្រាន់តែជាការពន្យល់លទ្ធផលវិនិច្ឆ័យប៉ុណ្ណោះ។</li>
+            <li class="note">សូមពិនិត្យ និងទាក់ទងអ្នកជំនាញសម្រាប់ការវិភាគ និងដោះស្រាយបន្ថែម។</li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Buttons -->
+<div class="text-end mt-4">
+    <button onclick="window.print()" class="btn btn-primary">
+        <i class="bi bi-printer"></i> Print Report
+    </button>
+</div>
+
+<!-- Print Style -->
+<style>
+/* ===== PRINT SETUP ===== */
+@page {
+    size: A4;
+    margin: 20mm;
+}
+
+/* ===== PRINT MODE ===== */
+@media print {
+
+    /* Reset body */
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    /* Hide everything first */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Show only print area */
+    #print-area, 
+    #print-area * {
+        visibility: visible;
+    }
+
+    /* Center content on page */
+    #print-area {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;   /* vertical center */
+        align-items: center;       /* horizontal center */
+        min-height: 50vh;         /* full page height */
+        width: 100%;
+    }
+
+    /* Hide buttons & no-print elements */
+    button,
+    .no-print {
+        display: none !important;
+    }
+
+    /* Improve text readability */
+    p {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    h2, h3, h4, h5 {
+        page-break-after: avoid;
+    }
+
+    /* Avoid breaking inside sections */
+    .mb-3,
+    .mb-4 {
+        page-break-inside: avoid;
+    }
+
+    /* Progress bar fix */
+    .progress {
+        border: 1px solid #000;
+    }
+
+    .progress-bar {
+        background-color: #000 !important;
+        color: #fff;
+    }
+
+    /* Notes styling */
+    .note {
+        color: red;
+        font-size: 13px;
+    }
+
+    .note_p {
+        color: rgb(19, 19, 196);
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* Image fix */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+</style>
+
+{% endblock %}

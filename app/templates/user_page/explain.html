@@ -127,6 +127,14 @@
         </div>
     </div>
 
+    <!-- Print Diagnosis  -->
+     <div class="mb-3">
+        <a href="{{ url_for('user.diagnosis_print', disease_id=disease.id) }}" target="_blank"
+           class="btn btn-outline-primary">
+            <i class="bi bi-printer me-1"></i> បោះពុម្ពលទ្ធផល
+        </a>
+     </div>
+
     <!-- Back Button -->
     <div class="text-end">
         <a href="{{ url_for('user.diagnosis_result') }}" class="btn btn-secondary">

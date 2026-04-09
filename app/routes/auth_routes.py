@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, current_app, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required
 from decorators import require_permission, require_role, active_user_required
 from app.models.user import UserTable
@@ -122,36 +122,90 @@ def logout():
 @auth_bp.route("/forget-password", methods=["GET", "POST"])
 @csrf.exempt
 def forget_password():
-    if request.method == "POST":
-        email = request.form.get("email")
-        if AuthService.send_reset_code(email):
-            flash("OTP sent to your email", "success")
-            return redirect(url_for("auth.verify_email", email=email))
-        flash("Email not found", "danger")
-    return render_template("auth/forget_password.html")
+    try:
+        if request.method == "POST":
+            email = request.form.get("email")
 
+            if not email:
+                flash("Email is required", "warning")
+                return redirect(request.url)
+
+            if AuthService.send_reset_code(email):
+                flash("OTP sent to your email", "success")
+                return redirect(url_for("auth.verify_email", email=email))
+
+            flash("Email not found", "danger")
+
+        return render_template("auth/forget_password.html")
+
+    except Exception as e:
+        current_app.logger.error(f"Forget Password Error: {str(e)}")
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect(request.url)
+
+
+# ===================== VERIFY EMAIL =====================
 @auth_bp.route("/verify-email", methods=["GET", "POST"])
 @csrf.exempt
 def verify_email():
-    email = request.args.get("email")
-    if request.method == "POST":
-        otp = request.form.get("otp")
-        if AuthService.verify_reset_code(email, otp):
-            return redirect(url_for("auth.reset_password", email=email))
-        flash("Invalid or expired OTP", "danger")
-    return render_template("auth/verify_email.html", email=email)
+    try:
+        email = request.args.get("email")
 
+        if not email:
+            flash("Invalid request", "danger")
+            return redirect(url_for("auth.forget_password"))
+
+        if request.method == "POST":
+            otp = request.form.get("otp")
+
+            if not otp:
+                flash("OTP is required", "warning")
+                return redirect(request.url)
+
+            if AuthService.verify_reset_code(email, otp):
+                return redirect(url_for("auth.reset_password", email=email))
+
+            flash("Invalid or expired OTP", "danger")
+
+        return render_template("auth/verify_email.html", email=email)
+
+    except Exception as e:
+        current_app.logger.error(f"Verify Email Error: {str(e)}")
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect(url_for("auth.forget_password"))
+
+
+# ===================== RESET PASSWORD =====================
 @auth_bp.route("/reset-password", methods=["GET", "POST"])
 @csrf.exempt
 def reset_password():
-    email = request.args.get("email")
-    if request.method == "POST":
-        password = request.form.get("password")
-        confirm = request.form.get("confirm_password")
-        if password != confirm:
-            flash("Passwords do not match", "danger")
-        else:
+    try:
+        email = request.args.get("email")
+
+        if not email:
+            flash("Invalid request", "danger")
+            return redirect(url_for("auth.forget_password"))
+
+        if request.method == "POST":
+            password = request.form.get("password")
+            confirm = request.form.get("confirm_password")
+
+            if not password or not confirm:
+                flash("All fields are required", "warning")
+                return redirect(request.url)
+
+            if password != confirm:
+                flash("Passwords do not match", "danger")
+                return redirect(request.url)
+
             AuthService.reset_password(email, password)
+
             flash("Password reset successful", "success")
             return redirect(url_for("auth.login"))
-    return render_template("auth/reset_password.html", email=email)
+
+        return render_template("auth/reset_password.html", email=email)
+
+    except Exception as e:
+        current_app.logger.error(f"Reset Password Error: {str(e)}")
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect(url_for("auth.forget_password"))

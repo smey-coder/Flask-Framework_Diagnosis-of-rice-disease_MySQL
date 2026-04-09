@@ -1,0 +1,176 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block title %}ព័ត៌មានថ្មី | ដំណាំស្រូវក្នុងប្រទេសកម្ពុជា{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-primary mb-1">
+                <i class="bi bi-info-circle me-2"></i> ព័ត៌មានថ្មី
+            </h2>
+            <small class="text-muted">ដំណាំស្រូវក្នុងប្រទេសកម្ពុជា</small>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-1"></i> ត្រឡប់ទៅផ្ទាំងទូទៅ
+            </a>
+        </div>
+    </div>
+
+    <!-- Image Carousel -->
+    <div id="riceCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div class="carousel-inner rounded-4 shadow-sm">
+            <div class="carousel-item active">
+                <img src="https://www.khmertimeskh.com/wp-content/uploads/2025/03/99605.jpg" class="d-block w-100" alt="Rice Production"​ style="width: 100%;object-fit: cover;">
+            </div>
+            <div class="carousel-item">
+                <img src="https://khmer7news.com/wp-content/uploads/2021/08/239881460_4122341874487348_4122655741211169409_n.jpeg" class="d-block w-100" alt="Rice Season">
+            </div>
+            <div class="carousel-item">
+                <img src="https://www.khmertimeskh.com/wp-content/uploads/2025/02/97205.jpg" class="d-block w-100" alt="Rice Disease">
+            </div>
+            <div class="carousel-item">
+                <img src="https://kptmedia.ap-south-1.linodeobjects.com/2025/10/photo_2025-10-16_14-03-22-709x600.jpg" class="d-block w-100" alt="Rice Technology">
+            </div>
+            <div class="carousel-item">
+                <img src="https://scontent.fpnh20-1.fna.fbcdn.net/v/t39.30808-6/487417986_1046602754159401_1868727908715232924_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=105&ccb=1-7&_nc_sid=13d280&_nc_ohc=-e3ecVaXLF8Q7kNvwEzr22z&_nc_oc=Adrl9NXTE9EmTVsATcu3TL1l-oF3qkk5xRWkx9tePhx6mDDlU0ZM581mB2VO2IeCvDk&_nc_zt=23&_nc_ht=scontent.fpnh20-1.fna&_nc_gid=a2Yy4AJknjcXT27M7cHkrg&_nc_ss=7a389&oh=00_Af0fNzNFe5oNzMn4bUgRf-QYdG71GuTXNSQnKcOH75x6dg&oe=69DD0A17" class="d-block w-100" alt="Export & Market" style="width: 100%;object-fit: contain;">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#riceCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#riceCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <!-- Content Cards -->
+    <div class="row g-4">
+        <!-- Card 1: Rice Production -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                <img src="{{ url_for('static', filename='images/new_information/product_result.png') }}" 
+                     class="card-img-top card-img-fit" alt="Rice Production">
+                <div class="card-body">
+                    <h5 class="fw-bold">ការផលិតស្រូវ</h5>
+                    <p class="text-muted" style="text-align: justify;">
+                        ប្រទេសកម្ពុជា ផលិតស្រូវជាចម្បងនៅតំបន់ខេត្តកណ្តាល និងជើងភាគខាងត្បូង។ វាជាដំណាំសំខាន់សម្រាប់ស្បៀងស្រុក និងនាំចេញ។
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Cultivation Seasons -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                <img src="{{ url_for('static', filename='images/new_information/rice_season.jpg') }}" 
+                     class="card-img-top card-img-fit" alt="Cultivation Seasons">
+                <div class="card-body">
+                    <h5 class="fw-bold">រដូវដាំស្រូវ</h5>
+                    <p class="text-muted" style="text-align: justify;">
+                        ប្រទេសកម្ពុជា មានរដូវដាំស្រូវសំខាន់ ២ រដូវ៖
+                        <br>1. រដូវភ្លៀង (June–November)
+                        <br>2. រដូវស្ងួត (December–May)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Common Diseases -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                <img src="{{ url_for('static', filename='images/new_information/rice_disease.webp') }}" 
+                     class="card-img-top card-img-fit" alt="Rice Diseases">
+                <div class="card-body">
+                    <h5 class="fw-bold">ជំងឺស្រូវសំខាន់</h5>
+                    <p class="text-muted" style="text-align: justify;">
+                        ជំងឺស្រូវដូចជា Leaf Blast, Brown Spot និង Rice Tungro Virus ជាជំងឺសំខាន់ដែលប៉ះពាល់ដល់ផលិតផល និងគុណភាពស្រូវ។
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Modern Techniques -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                <img src="{{ url_for('static', filename='images/new_information/AIwebp.webp') }}" 
+                     class="card-img-top card-img-fit" alt="Modern Technology" style="width: 100%; object-fit: contain;">
+                <div class="card-body">
+                    <h5 class="fw-bold">បច្ចេកវិទ្យា និងវិធីសាស្រ្តទំនើប</h5>
+                    <p class="text-muted" style="text-align: justify;">
+                        ការប្រើប្រាស់បច្ចេកវិទ្យា AI និងឧបករណ៍ទំនើបសម្រាប់ស្វែងរកជំងឺ និងគ្រប់គ្រងស្រូវ។
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 5: Export & Market -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                <img src="{{ url_for('static', filename='images/new_information/market.avif') }}" 
+                     class="card-img-top card-img-fit" alt="Export & Market" style="width: 100%; object-fit: contain;">
+                <div class="card-body">
+                    <h5 class="fw-bold">ទីផ្សារ និងនាំចេញ</h5>
+                    <p class="text-muted" style="text-align: justify;">
+                        កម្ពុជានាំចេញស្រូវទៅប្រទេសជាច្រើន ដូចជា វៀតណាម, ហុងកុង, និងសិង្ហបុរី។
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Video Section -->
+    <!-- Video Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h4 class="fw-bold mb-3">វីដេអូព័ត៌មានស្តីពីស្រូវ</h4>
+
+        <!-- YouTube Video -->
+        <div class="ratio ratio-16x9 mb-4">
+            <iframe src="https://www.youtube.com/embed/ATSGOumWTjk" 
+            title="Rice Video" 
+            allowfullscreen></iframe>
+        </div>
+        <!-- Google Drive Video -->
+        <div class="ratio ratio-16x9 mb-4">
+            <iframe src="https://www.youtube.com/embed/VpS_bap6qRE" 
+                    title="Rice Video" 
+                    allowfullscreen></iframe>
+        </div>
+        <!-- Optional: Local video -->
+        <!--
+        <video controls class="w-100 rounded-4 shadow-sm">
+            <source src="{{ url_for('static', filename='videos/rice_video.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        -->
+    </div>
+</div>
+
+</div>
+
+<!-- Custom CSS -->
+<style>
+.card-img-fit {
+    height: 180px;
+    object-fit: cover;
+    background-color: #f8f9fa;
+    padding: 10px;
+}
+.hover-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+}
+.carousel-inner img {
+    height: 400px;
+    object-fit: cover;
+}
+</style>
+
+{% endblock %}

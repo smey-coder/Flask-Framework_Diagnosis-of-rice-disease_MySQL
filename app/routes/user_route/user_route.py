@@ -1,4 +1,6 @@
+from datetime import datetime
 import json
+from venv import logger
 from flask import Blueprint, render_template, redirect, request, session, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from functools import wraps
@@ -8,12 +10,14 @@ from sqlalchemy import text
 from app import services
 from app.decorators.access import role_required, permission_required
 from app.forms.diagnosis_form import DiagnosisForm
+from app.forms.diseases_forms import DiseaseSearchForm
 from app.forms.user_forms import UserEditForm
 from app.models.diagnosis_history import DiagnosisHistoryTable
 from app.models.diseases import DiseaseTable
 from app.models.rule_conditions import RuleConditionsTable
 from app.models.rules import RulesTable
 from app.models.symptoms import SymptomsTable
+from app.services.disease_service import DiseaseService
 from extensions import db
 from app.services.diagnosis_service import DiagnosisService
 from app.services.rule_service import RuleService
@@ -34,7 +38,17 @@ diagnosis_service = DiagnosisService()
 @role_required("User")
 def dashboard():
     default_disease = DiseaseTable.query.first()  # or choose a specific one
-    return render_template("user_page/dashboard.html", user=current_user, disease=default_disease)
+    recent_activities = DiseaseTable.query\
+    .filter_by(is_active=True)\
+    .order_by(DiseaseTable.created_at.desc())\
+    .limit(5)\
+    .all()
+    return render_template(
+        "user_page/dashboard.html", 
+        user=current_user, 
+        disease=default_disease,
+        recent_activities= recent_activities
+    )
 
 # ---------------- SETTINGS ----------------
 @user_bp.route("/settings", methods=["GET", "POST"])
@@ -43,7 +57,6 @@ def dashboard():
 @permission_required("USER_EDIT_ACCOUNT")
 def settings():
     form = UserEditForm(original_user=current_user)
-
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.full_name = form.full_name.data
@@ -318,3 +331,86 @@ def disease_prevention(disease_id):
     disease = DiseaseTable.query.get_or_404(disease_id)
     preventions = diagnosis_service.prevention_disease(disease_id)
     return render_template("user_page/prevention.html", disease=disease, preventions=preventions, user=current_user)
+
+@user_bp.route("/diagnosisPrint/<int:disease_id>")
+@login_required
+@role_required("User")
+@permission_required("RUN_DIAGNOSIS")
+def diagnosis_print(disease_id):
+    try:
+        rule_trace = session.get("rule_trace")
+        if not rule_trace:
+            flash("Please perform diagnosis first.", "warning")
+            return redirect(url_for("user.diagnosis_input"))
+
+        logs = diagnosis_service.explain_disease(disease_id, rule_trace)
+        if not logs:
+            flash("No explanation available for this disease.", "info")
+            return redirect(url_for("user.diagnosis_result"))
+
+        disease = DiseaseTable.query.get_or_404(disease_id)
+
+        symptom_ids = session.get("selected_symptoms") or []
+        selected_symptoms = [
+            s.symptom_name
+            for s in SymptomsTable.query.filter(SymptomsTable.id.in_(symptom_ids)).all()
+        ]
+
+        overall_cf = logs[-1]["cf_after"] if logs else 0.0
+
+        treatments = diagnosis_service.treatment_disease(disease_id)
+        preventions = diagnosis_service.prevention_disease(disease_id)
+
+        return render_template(
+            "user_page/explain_print.html",
+            disease=disease,
+            logs=logs,
+            treatments=treatments,
+            preventions=preventions,
+            selected_symptoms=selected_symptoms,
+            certainty=overall_cf,
+            user=current_user,
+            now=datetime.now()
+        )
+
+    except Exception as e:
+        flash("Failed to generate printable diagnosis. Try again later.", "danger")
+        return redirect(url_for("user.diagnosis_explain", disease_id=disease_id))
+    
+@user_bp.route("/diseases/show")
+@login_required
+@role_required("User")
+def disease_index():
+    """List all diseases with search functionality"""
+    try:
+        page = request.args.get("page", 1, type=int)
+        search_form = DiseaseSearchForm(request.args, meta={"csrf_enabled": False})
+        
+        disease_name = request.args.get("disease_name", "").strip()
+        disease_type = request.args.get("disease_type", "").strip()
+        severity_level = request.args.get("severity_level", "").strip()
+        
+        diseases = DiseaseService.search_diseases(
+            disease_name=disease_name if disease_name else None,
+            disease_type=disease_type if disease_type else None,
+            severity_level=severity_level if severity_level else None,
+            page=page,
+            per_page=10
+        )
+        
+        return render_template(
+            "user_page/disease_index.html",
+            diseases=diseases,
+            search_form=search_form,
+            current_user=current_user
+        )
+    except Exception as e:
+        logger.error(f"Error listing diseases: {e}")
+        flash("An error occurred while loading diseases.", "danger")
+        return redirect(url_for("user.dashboard"))
+
+@user_bp.route("/information")
+@login_required
+@role_required("User")
+def new_information():
+    return render_template('user_page/new_information.html')
