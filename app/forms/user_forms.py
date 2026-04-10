@@ -1,7 +1,7 @@
 import re
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField, SubmitField, PasswordField, SelectField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional, ValidationError
 from extensions import db
 from app.models.user import UserTable
 from app.models.role import RoleTable
@@ -131,3 +131,19 @@ class LoginForm(FlaskForm):
 #     password = PasswordField("New Password", validators=[DataRequired(), strong_password])
 #     confirm_password = PasswordField("Confirm New Password", validators=[DataRequired(), EqualTo("password")])
 #     submit = SubmitField("Reset Password")
+
+class UserProfileForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(min=3, max=50)])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    full_name = StringField("Full Name", validators=[DataRequired(), Length(min=3, max=100)])
+    old_password = PasswordField("Old Password", validators=[Optional(), Length(min=6)])
+    password = PasswordField("New Password", validators=[Optional(), Length(min=6)])
+    confirm_password = PasswordField(
+        "Confirm Password",
+        validators=[Optional(), EqualTo("password", message="Passwords must match")]
+    )
+
+    submit = SubmitField("Save Changes")
+
+class DeleteAccountForm(FlaskForm):
+    password = PasswordField(validators=[DataRequired()])

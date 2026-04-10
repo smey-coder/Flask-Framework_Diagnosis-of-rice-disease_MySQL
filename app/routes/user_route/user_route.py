@@ -1,27 +1,31 @@
 from datetime import datetime, timedelta
 import json
 from venv import logger
-from flask import Blueprint, render_template, redirect, request, session, url_for, flash
+from flask import Blueprint, abort, render_template, redirect, request, session, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from functools import wraps
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import text
 
 from app import services
 from app.decorators.access import role_required, permission_required
 from app.forms.diagnosis_form import DiagnosisForm
 from app.forms.diseases_forms import DiseaseSearchForm
-from app.forms.user_forms import UserEditForm
+from app.forms.user_forms import DeleteAccountForm, UserEditForm, UserProfileForm
 from app.models.diagnosis_history import DiagnosisHistoryTable
 from app.models.diseases import DiseaseTable
+from app.models.role import RoleTable
 from app.models.rule_conditions import RuleConditionsTable
 from app.models.rules import RulesTable
 from app.models.symptoms import SymptomsTable
+from app.models.user import UserTable
 from app.services.disease_service import DiseaseService
+from app.services.user_service import UserService
 from extensions import db
 from app.services.diagnosis_service import DiagnosisService
 from app.services.rule_service import RuleService
 from app.services.rule_condition_service import RuleConditionService
+from app.services.user_service import UserService
 
 from app.models.rules import RulesTable
 from app.models.rule_conditions import RuleConditionsTable
@@ -69,42 +73,116 @@ def dashboard():
 @user_bp.route("/settings", methods=["GET", "POST"])
 @login_required
 @role_required("User")
-@permission_required("USER_EDIT_ACCOUNT")
-def settings():
-    form = UserEditForm(original_user=current_user)
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.full_name = form.full_name.data
-        current_user.email = form.email.data
+def setting_index():
+    form = UserProfileForm(original_user=current_user, obj=current_user)
+    return render_template('user_page/settings.html', form=form, user=current_user )
 
-        if form.password.data:
-            current_user.password_hash = generate_password_hash(form.password.data)
+@user_bp.route("/edit-profile", methods=["GET", "POST"])
+@login_required
+@role_required("User")
+def edit_profile():
 
-        db.session.commit()
-        flash("Profile updated successfully!", "success")
-        return redirect(url_for("user.settings"))
+    form = UserProfileForm(obj=current_user)
 
-    if request.method == "GET":
-        form.username.data = current_user.username
-        form.full_name.data = current_user.full_name
-        form.email.data = current_user.email
+    if request.method == "POST":
+        try:
+            # =========================
+            # BASIC INFO UPDATE
+            # =========================
+            current_user.username = form.username.data.strip()
+            current_user.email = form.email.data.strip()
+            current_user.full_name = form.full_name.data.strip()
 
-    return render_template("user_page/settings.html", form=form, user=current_user)
+            # =========================
+            # PASSWORD VALUES (USE ONLY FORM, NOT request.form)
+            # =========================
+            old_password = form.old_password.data
+            new_password = form.password.data
+            confirm_password = form.confirm_password.data
+
+            # =========================
+            # PASSWORD CHANGE LOGIC
+            # =========================
+            if new_password:
+
+                # check confirm password (IMPORTANT)
+                if new_password != confirm_password:
+                    flash("Passwords do not match", "danger")
+                    return redirect(url_for("user.edit_profile"))
+
+                # must enter old password
+                if not old_password:
+                    flash("You must enter your old password", "danger")
+                    return redirect(url_for("user.edit_profile"))
+
+                # verify old password
+                if not check_password_hash(current_user.password_hash, old_password):
+                    flash("Old password is incorrect", "danger")
+                    return redirect(url_for("user.edit_profile"))
+
+                # update password
+                current_user.password_hash = generate_password_hash(new_password)
+
+            # =========================
+            # SAVE DATABASE
+            # =========================
+            db.session.commit()
+
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for("user.setting_index"))
+
+        except Exception as e:
+            db.session.rollback()
+            flash("Something went wrong while updating profile.", "danger")
+            print("[ERROR]:", e)
+
+    return render_template(
+        "user_page/settings.html",
+        form=form,
+        user=current_user
+    )
+from werkzeug.security import check_password_hash
 
 @user_bp.route("/settings/delete", methods=["POST"])
 @login_required
 @role_required("User")
 @permission_required("USER_DELETE_ACCOUNT")
 def delete_account():
+    form = DeleteAccountForm()
+
     try:
-        db.session.delete(current_user)
+        if not form.validate_on_submit():
+            flash("Invalid request.", "danger")
+            return redirect(url_for("user.setting_index"))
+
+        password = form.password.data.strip()
+
+        # get REAL user object from DB (IMPORTANT FIX)
+        user = UserTable.query.get(current_user.get_id())
+
+        if not user:
+            flash("User not found.", "danger")
+            return redirect(url_for("auth.login"))
+
+        # check password
+        if not check_password_hash(user.password_hash, password):
+            flash("Password incorrect. Account not deleted.", "danger")
+            return redirect(url_for("user.setting_index"))
+
+        # delete user safely
+        db.session.delete(user)
         db.session.commit()
+
         logout_user()
+
         flash("Your account has been deleted successfully.", "success")
-    except Exception:
+        return redirect(url_for("auth.login"))
+
+    except Exception as e:
         db.session.rollback()
+        print("[ERROR delete_account]:", e)
         flash("Failed to delete account. Try again later.", "danger")
-    return redirect(url_for("auth.login"))
+        return redirect(url_for("user.setting_index"))
 
 # ---------------- ABOUT ----------------
 @user_bp.route("/about")
@@ -120,7 +198,20 @@ def about():
         "description": "Helps farmers diagnose rice diseases and manage treatments efficiently.",
     }
     return render_template("user_page/about.html", about=about_info)
+# @user_bp.route("/change-password", methods=["POST"])
+# @login_required
+# def change_password():
+#     form = ChangePasswordForm()
 
+#     if form.validate_on_submit():
+#         if check_password_hash(current_user.password_hash, form.old_password.data):
+#             current_user.password_hash = generate_password_hash(form.password.data)
+#             db.session.commit()
+#             flash("Password updated successfully", "success")
+#         else:
+#             flash("Old password is incorrect", "danger")
+
+#     return redirect(url_for("user.setting_index"))
 # ---------------- DIAGNOSIS ----------------
 @user_bp.route("/diagnosis", methods=["GET", "POST"])
 @login_required
@@ -429,3 +520,25 @@ def disease_index():
 @role_required("User")
 def new_information():
     return render_template('user_page/new_information.html')
+
+@user_bp.route("/information/<int:disease_id>")
+@login_required
+@role_required("User")
+def disease_detail(disease_id):
+    disease = DiseaseTable.query.get_or_404(disease_id)
+
+    # New diseases for navbar
+    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    new_diseases = DiseaseTable.query.filter(
+        DiseaseTable.created_at >= seven_days_ago,
+        DiseaseTable.is_active == True
+    ).order_by(DiseaseTable.created_at.desc()).all()
+    new_diseases_count = len(new_diseases)
+
+    return render_template(
+        "user_page/disease_detail.html",
+        disease=disease,
+        new_diseases=new_diseases,
+        new_diseases_count=new_diseases_count
+    )
+

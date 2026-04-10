@@ -93,7 +93,6 @@ def delete(user_id: int):
     user = UserService.get_user_by_id(user_id)
     if user is None:
         abort(404)
-        
     UserService.delete_user(user)
     flash("User was deleted successfully.", "success")
     return redirect(url_for("tbl_users.index"))

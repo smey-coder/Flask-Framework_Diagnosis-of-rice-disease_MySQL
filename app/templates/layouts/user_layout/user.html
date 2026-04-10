@@ -44,11 +44,11 @@
     <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
         <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{{ url_for('user.dashboard') }}">
             <img src="{{ url_for('static', filename='images/logo_rice.png') }}" 
-                alt="Rice Doctor Logo" 
+                alt="RiceCare AI Logo" 
                 width="40" 
                 height="40" 
                 class="d-inline-block align-text-top rounded-circle shadow-sm">
-            <!-- Rice Doctor -->
+            ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -66,7 +66,7 @@
             <a class="nav-link {% if request.endpoint == 'user.diagnosis_history' %}active{% endif %}" href="{{ url_for('user.diagnosis_history') }}">History</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'user.settings' %}active{% endif %}" href="{{ url_for('user.settings') }}">Settings</a>
+            <a class="nav-link {% if request.endpoint == 'user.settings' %}active{% endif %}" href="{{ url_for('user.setting_index') }}">Settings</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'user.about' %}active{% endif %}" href="{{ url_for('user.about') }}">About</a>
@@ -111,7 +111,7 @@
         <li class="nav-item dropdown list-unstyled me-3">
             <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-bell fs-5"></i>
-                {% if new_diseases_count > 0 %}
+                {% if (new_diseases_count or 0) > 0 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                     {{ new_diseases_count }}
                     <span class="visually-hidden">new diseases</span>
@@ -120,22 +120,25 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown" style="width: 300px;">
                 <li class="dropdown-header fw-bold">New Diseases</li>
-                {% if new_diseases %}
-                    {% for disease in new_diseases %}
-                    <li>
-                        <a class="dropdown-item d-flex justify-content-between align-items-start" href="{{ url_for('user.disease_index', disease_id=disease.id) }}">
-                            <div>
-                                <strong>{{ disease.disease_name }}</strong><br>
-                                <small class="text-muted">{{ disease.created_at.strftime('%d %b %Y') }}</small>
-                            </div>
-                        </a>
-                    </li>
-                    {% endfor %}
-                {% else %}
-                    <li class="dropdown-item text-center text-muted">No new diseases</li>
-                {% endif %}
+                {% for disease in new_diseases %}
+                <li>
+                    <a class="dropdown-item d-flex justify-content-between align-items-start"
+                    href="{{ url_for('user.disease_detail', disease_id=disease.id) }}">
+                        <div>
+                            <strong>{{ disease.disease_name }}</strong><br>
+                            <small class="text-muted">{{ disease.created_at.strftime('%d %b %Y') }}</small>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-center" href="{{ url_for('user.disease_index') }}">View all diseases</a></li>
+
+                <li>
+                    <a class="dropdown-item text-center" href="{{ url_for('user.disease_index') }}">
+                        View all diseases
+                    </a>
+                </li>
             </ul>
         </li>
 
@@ -153,10 +156,8 @@
     </div>
 </div>
 </nav>
-
 <!-- ================= CONTENT ================= -->
 <main class="container py-4">
-    
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
