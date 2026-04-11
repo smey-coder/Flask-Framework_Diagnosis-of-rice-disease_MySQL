@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Rice Disease Diagnosis{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,6 +19,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/user_page.css') }}">
     
     {% block extra_css %}{% endblock %}
+    <style>
+        .notif-item:hover {
+            background: #f1f5ff;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        #notif-count {
+            font-size: 10px;
+        }
+    </style>
 </head>
 <!-- Logout Confirmation Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
@@ -75,7 +87,6 @@
 
     <!-- Right side: language, notifications, user, logout -->
     <div class="d-flex align-items-center gap-2 flex-wrap mt-2 mt-lg-0">
-
         <!-- Language Dropdown -->
         <div class="dropdown me-3">
             <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-1" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -106,39 +117,38 @@
                 </li>
             </ul>
         </div>
-
         <!-- Notification Bell -->
-        <li class="nav-item dropdown list-unstyled me-3">
-            <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <li class="nav-item dropdown me-3">
+            <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown">
                 <i class="bi bi-bell fs-5"></i>
-                {% if (new_diseases_count or 0) > 0 %}
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    {{ new_diseases_count }}
-                    <span class="visually-hidden">new diseases</span>
-                </span>
-                {% endif %}
+                <span id="notif-count"
+                    class="position-absolute top-0 start-100 translate-middle badge bg-danger"></span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown" style="width: 300px;">
-                <li class="dropdown-header fw-bold">New Diseases</li>
-                {% for disease in new_diseases %}
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg p-0"
+                style="width:320px;border-radius:12px;overflow:hidden;">
+
+                <!-- Header -->
+                <li class="d-flex justify-content-between px-3 py-2 border-bottom">
+                    <strong>Notifications</strong>
+                    <!-- <button type="button"
+                            onclick="deleteAll()"
+                            class="btn btn-sm btn-outline-danger">
+                        🗑 Clear all
+                    </button> -->
+                </li>
+
+                <!-- List (FIXED) -->
                 <li>
-                    <a class="dropdown-item d-flex justify-content-between align-items-start"
-                    href="{{ url_for('user.disease_detail', disease_id=disease.id) }}">
-                        <div>
-                            <strong>{{ disease.disease_name }}</strong><br>
-                            <small class="text-muted">{{ disease.created_at.strftime('%d %b %Y') }}</small>
-                        </div>
+                    <div id="notif-list" style="max-height:300px;overflow:auto;"></div>
+                </li>
+
+                <!-- Footer -->
+                <li class="text-center border-top">
+                    <a class="dropdown-item" href="{{ url_for('user.disease_index') }}">
+                        View all
                     </a>
                 </li>
-                {% endfor %}
 
-                <li><hr class="dropdown-divider"></li>
-
-                <li>
-                    <a class="dropdown-item text-center" href="{{ url_for('user.disease_index') }}">
-                        View all diseases
-                    </a>
-                </li>
             </ul>
         </li>
 
@@ -178,15 +188,144 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% block extra_js %}{% endblock %}
 <script>
-function confirmLogout(event) {
-    event.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
 
-    if (confirm("Are you sure you want to logout?")) {
-        window.location.href = event.currentTarget.href;
+    // ================= CSRF =================
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    // ================= URLS =================
+    const notifUrl = "{{ url_for('user.get_notifications') }}";
+    const deleteUrl = "{{ url_for('user.delete_notification', id=0) }}";
+    const deleteAllUrl = "{{ url_for('user.delete_all_notifications') }}";
+    const readNotifUrl = "{{ url_for('user.read_notification', id=0) }}";
+    const diseaseDetailUrl = "{{ url_for('user.disease_detail', id=0) }}";
+
+    // ================= TIME FORMAT =================
+    function timeAgo(time) {
+        let now = new Date();
+        let past = new Date(time);
+        let diff = Math.floor((now - past) / 1000);
+
+        if (diff < 60) return "Just now";
+        if (diff < 3600) return Math.floor(diff / 60) + " min ago";
+        if (diff < 86400) return Math.floor(diff / 3600) + " hrs ago";
+        return Math.floor(diff / 86400) + " days ago";
     }
 
-    return false;
-}
+    // ================= LOAD NOTIFICATIONS =================
+    function loadNotifications() {
+        fetch(notifUrl)
+        .then(res => res.json())
+        .then(data => {
+
+            let list = document.getElementById("notif-list");
+            let count = document.getElementById("notif-count");
+
+            if (!list || !count) return;
+
+            list.innerHTML = "";
+            count.innerText = data.length || "";
+
+            if (data.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center p-3 text-muted">
+                        No notifications
+                    </div>`;
+                return;
+            }
+
+            data.forEach(n => {
+
+                const openId = n.disease_id || n.id;
+                const deleteId = n.notification_id || n.id;
+
+                list.innerHTML += `
+                <div class="dropdown-item d-flex justify-content-between align-items-start notif-item">
+
+                    <div onclick="openNotif(${openId})" style="cursor:pointer;">
+                        <strong>${n.name}</strong><br>
+                        <small class="text-muted">${timeAgo(n.time)}</small>
+                    </div>
+
+                    <button onclick="deleteNotif(${deleteId})"
+                            class="btn btn-sm text-danger">
+                        ×
+                    </button>
+
+                </div>`;
+            });
+        })
+        .catch(err => console.error("Load error:", err));
+    }
+
+    // expose
+    window.loadNotifications = loadNotifications;
+
+    // ================= OPEN NOTIFICATION =================
+    window.openNotif = function(id) {
+
+        const readUrl = readNotifUrl.replace("0", id);
+        const detailUrl = diseaseDetailUrl.replace("0", id);
+
+        fetch(readUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken
+            }
+        })
+        .then(() => {
+            window.location.href = detailUrl;
+        })
+        .catch(err => {
+            console.error("Open error:", err);
+            window.location.href = detailUrl;
+        });
+    };
+
+    // ================= DELETE ONE =================
+    window.deleteNotif = function(id) {
+
+        fetch(deleteUrl.replace("0", id), {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken
+            }
+        })
+        .then(() => loadNotifications())
+        .catch(err => console.error("Delete error:", err));
+    };
+
+    // ================= DELETE ALL =================
+    window.deleteAll = function () {
+
+        console.log("DELETE ALL CLICKED");
+
+        if (!confirm("Are you sure you want to delete all notifications?")) return;
+
+        fetch(deleteAllUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken
+            }
+        })
+        .then(res => {
+
+            console.log("STATUS:", res.status);
+
+            if (res.status === 204) {
+                loadNotifications(); // refresh UI
+            } else {
+                console.error("Delete all failed");
+            }
+        })
+        .catch(err => console.error("Network error:", err));
+    };
+
+    // ================= INIT =================
+    loadNotifications();
+    setInterval(loadNotifications, 5000);
+
+});
 </script>
 </body>
 </html>

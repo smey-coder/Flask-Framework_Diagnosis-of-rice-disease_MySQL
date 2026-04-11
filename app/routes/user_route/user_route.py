@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import json
 from venv import logger
-from flask import Blueprint, abort, render_template, redirect, request, session, url_for, flash
+from flask import Blueprint, abort, jsonify, render_template, redirect, request, session, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -12,6 +12,7 @@ from app.decorators.access import role_required, permission_required
 from app.forms.diagnosis_form import DiagnosisForm
 from app.forms.diseases_forms import DiseaseSearchForm
 from app.forms.user_forms import DeleteAccountForm, UserEditForm, UserProfileForm
+from app.models.UserNotification import UserNotification
 from app.models.diagnosis_history import DiagnosisHistoryTable
 from app.models.diseases import DiseaseTable
 from app.models.role import RoleTable
@@ -521,18 +522,19 @@ def disease_index():
 def new_information():
     return render_template('user_page/new_information.html')
 
-@user_bp.route("/information/<int:disease_id>")
+@user_bp.route("/information/<int:id>")
 @login_required
 @role_required("User")
-def disease_detail(disease_id):
-    disease = DiseaseTable.query.get_or_404(disease_id)
+def disease_detail(id):
+    disease = DiseaseTable.query.get_or_404(id)
 
-    # New diseases for navbar
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
+
     new_diseases = DiseaseTable.query.filter(
         DiseaseTable.created_at >= seven_days_ago,
         DiseaseTable.is_active == True
     ).order_by(DiseaseTable.created_at.desc()).all()
+
     new_diseases_count = len(new_diseases)
 
     return render_template(
@@ -542,3 +544,94 @@ def disease_detail(disease_id):
         new_diseases_count=new_diseases_count
     )
 
+@user_bp.route("/notifications")
+@login_required
+@role_required("User")
+def get_notifications():
+
+    user_id = current_user.id
+
+    results = db.session.query(DiseaseTable).all()
+
+    data = []
+
+    for d in results:
+        notif = UserNotification.query.filter_by(
+            user_id=user_id,
+            disease_id=d.id,
+            is_deleted=True
+        ).first()
+
+        if not notif:
+            data.append({
+                "id": d.id,
+                "name": d.disease_name,
+                "time": d.created_at.isoformat()
+            })
+
+    return jsonify(data)
+
+@user_bp.route("/notifications/read/<int:id>", methods=["POST"])
+@login_required
+@role_required("User")
+def read_notification(id):
+    user_id = current_user.id
+
+    notif = UserNotification.query.filter_by(
+        user_id=user_id,
+        disease_id=id
+    ).first()
+
+    if not notif:
+        notif = UserNotification(
+            user_id=user_id,
+            disease_id=id,
+            is_read=True
+        )
+        db.session.add(notif)
+    else:
+        notif.is_read = True
+
+    db.session.commit()
+    return "", 204
+
+@user_bp.route("/notifications/delete-all", methods=["POST"])
+@login_required
+@role_required("User")
+def delete_all_notifications():
+    try:
+        user_id = current_user.id
+        UserNotification.query.filter_by(user_id=user_id).update({
+            "is_deleted": True
+        })
+        db.session.commit()
+        return "", 204
+    except Exception as e:
+        db.session.rollback()
+        print("[ERROR delete_all_notifications]:", e)
+        return {"error": "Failed to delete"}, 500
+    
+@user_bp.route("/notifications/delete/<int:id>", methods=["POST"])
+@login_required
+@role_required("User")
+def delete_notification(id):
+
+    user_id = current_user.id
+
+    notif = UserNotification.query.filter_by(
+        user_id=user_id,
+        disease_id=id
+    ).first()
+
+    if not notif:
+        notif = UserNotification(
+            user_id=user_id,
+            disease_id=id,
+            is_deleted=True
+        )
+        db.session.add(notif)
+    else:
+        notif.is_deleted = True
+
+    db.session.commit()
+    return "", 204

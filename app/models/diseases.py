@@ -12,6 +12,7 @@ class DiseaseTable(UserMixin, db.Model):
     description = db.Column(db.Text, nullable=True)
     severity_level = db.Column(db.String(100), nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_new = db.Column(db.Boolean, default=True) 
     image = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
