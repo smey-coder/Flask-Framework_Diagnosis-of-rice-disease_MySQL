@@ -12,7 +12,7 @@ from app.models.rule_conditions import RuleConditionsTable
 # ------------------------
 def _rule_choices():
     return [
-        (rule.id, f"Rule #{rule.id} - Disease {rule.disease_id}")
+        (rule.id, f"Rule #{rule.id} - {rule.disease.disease_name}")
         for rule in db.session.scalars(
             db.select(RulesTable).order_by(RulesTable.id)
         )

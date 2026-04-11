@@ -19,7 +19,10 @@
                 <dd class="col-sm-9">{{ rule_condition.id }}</dd>
 
                 <dt class="col-sm-3 fw-semibold">Rule</dt>
-                <dd class="col-sm-9">{{ rule_condition.rule_id if rule_condition.rule_id else '-' }}</dd>
+                <dd class="col-sm-9" style="color: red;">{{ rule_condition.rule_id if rule_condition.rule_id else '-' }}</dd>
+
+                <dt class="col-sm-3 fw-semibold">Disease</dt>
+                <dd class="col-sm-9" style="color: blue;">{{ rule_condition.rule.disease.disease_name}}</dd>
 
                 <dt class="col-sm-3 fw-semibold">Symptom</dt>
                 <dd class="col-sm-9">{{ rule_condition.symptom.symptom_name if rule_condition.symptom else '-' }}</dd>

@@ -23,6 +23,7 @@
                         <tr>
                             <th>#</th>
                             <th>Rule</th>
+                            <th>Disease</th>
                             <th>Symptom</th>
                             <th>Status</th>
                             <th class="text-end">Actions</th>
@@ -33,6 +34,7 @@
                             <tr>
                                 <td>{{ rc.id }}</td>
                                 <td>{{ rc.rule_id }}</td>
+                                <td>{{ rc.rule.disease.disease_name}}</td>
                                 <td>{{ rc.symptom.symptom_name }}</td> <!-- Display symptom name -->
                                 <td>
                                     <form method="POST" action="{{ url_for('rule_condition.toggle', id=rc.id) }}">

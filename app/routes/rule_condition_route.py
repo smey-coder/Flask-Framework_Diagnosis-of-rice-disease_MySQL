@@ -1,6 +1,10 @@
+from collections import defaultdict
+from app.models.rule_conditions import RuleConditionsTable
+from extensions import db
+
 from flask import (
     Blueprint, abort, render_template,
-    redirect, url_for, flash, request
+    redirect, session, url_for, flash, request
 )
 from flask_login import login_required
 
@@ -9,6 +13,7 @@ from app.forms.rule_condition_form import (
     RuleConditionEditForm,
     RuleConditionConfirmDeleteForm
 )
+from app.models.symptoms import SymptomsTable
 from app.services.rule_condition_service import RuleConditionService
 
 rule_condition_bp = Blueprint(
@@ -32,7 +37,8 @@ def index():
         "rule_condition_page/index.html",
         rule_conditions=rule_conditions,
         pagination=pagination,
-        active_only=active_only
+        active_only=active_only,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 # ===================== CREATE =====================
@@ -52,7 +58,8 @@ def create():
 
     return render_template(
         "rule_condition_page/create.html",
-        form=form
+        form=form,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 # ===================== DETAIL =====================
@@ -63,7 +70,8 @@ def detail(id: int):
     rule_condition = RuleConditionService.get_by_id(id)
     return render_template(
         "rule_condition_page/detail.html",
-        rule_condition=rule_condition
+        rule_condition=rule_condition,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 # ===================== EDIT =====================
@@ -95,7 +103,8 @@ def edit(id: int):
     return render_template(
         "rule_condition_page/edit.html",
         form=form,
-        rule_condition=rule_condition
+        rule_condition=rule_condition,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 # ===================== DELETE =====================
@@ -117,7 +126,8 @@ def delete(id: int):
     return render_template(
         "rule_condition_page/delete_confirm.html",
         form=form,
-        rule_condition=rule_condition
+        rule_condition=rule_condition,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 # ===================== TOGGLE ACTIVE =====================
@@ -130,3 +140,52 @@ def toggle(id: int):
 
     flash("Rule condition status updated.", "info")
     return redirect(url_for("rule_condition.index"))
+
+def get_grouped_symptoms():
+    symptoms = db.session.execute(
+        db.select(SymptomsTable).order_by(SymptomsTable.symptom_group)
+    ).scalars().all()
+
+    grouped = defaultdict(list)
+
+    for s in symptoms:
+        grouped[s.symptom_group].append((s.id, s.symptom_name))
+
+    return grouped
+
+
+@rule_condition_bp.route("/preview", methods=["GET", "POST"])
+@login_required
+def preview_rule_condition():
+
+    data = session.get("rule_data")
+
+    if not data:
+        return redirect(url_for("rule_condition.create_rule_condition"))
+
+    symptoms = db.session.execute(
+        db.select(SymptomsTable).where(SymptomsTable.id.in_(data["symptoms"]))
+    ).scalars().all()
+
+    if request.method == "POST":
+
+        new_rule = RuleConditionsTable(
+            name=data["name"]
+        )
+
+        db.session.add(new_rule)
+        db.session.flush()
+
+        # link symptoms
+        for s in symptoms:
+            new_rule.symptoms.append(s)
+
+        db.session.commit()
+        session.pop("rule_data", None)
+
+        return redirect(url_for("rule_condition.index"))
+    return render_template(
+        "rule_condition_page/preview.html",
+        rule=data,
+        symptoms=symptoms
+    )
