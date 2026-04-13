@@ -80,7 +80,82 @@
             </div>
         </div>
     </div>
-
+    <!-- 🔍 CITY SELECTION SECTION -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">🌤️ Select your City in Cambodia</h5>
+                    <form method="POST" class="row g-3">
+                        {{ form.hidden_tag() }}
+                        <div class="col-md-8">
+                            <label>Select Your City</label>
+                            {{ form.city(class="form-select") }}
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            {{ form.submit(class="btn btn-primary w-100") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 🌤️ WEATHER DISPLAY SECTION -->
+    {% if selected_city_weather %}
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">🌤️ Current Weather</h5>
+                    <div class="row text-center">
+                        <div class="col-md-6">
+                            <h3>{{ selected_city_weather.city }}, Cambodia</h3>
+                            <img src="http://openweathermap.org/img/wn/{{ selected_city_weather.icon }}@2x.png" alt="{{ selected_city_weather.description }}" class="img-fluid mb-3" style="max-width: 100px;">
+                            <h1 class="display-4 fw-bold">{{ selected_city_weather.temperature }}°C</h1>
+                            <p class="lead">{{ selected_city_weather.description }}</p>
+                            <p class="text-muted">Feels like {{ selected_city_weather.feels_like }}°C</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <i class="fas fa-tint text-info"></i>
+                                        <div class="fw-bold">{{ selected_city_weather.humidity }}%</div>
+                                        <small class="text-muted">Humidity</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <i class="fas fa-wind text-success"></i>
+                                        <div class="fw-bold">{{ selected_city_weather.wind_speed }} m/s</div>
+                                        <small class="text-muted">Wind Speed</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <i class="fas fa-eye text-warning"></i>
+                                        <div class="fw-bold">{{ selected_city_weather.visibility }} km</div>
+                                        <small class="text-muted">Visibility</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <i class="fas fa-cloud text-secondary"></i>
+                                        <div class="fw-bold">{{ selected_city_weather.clouds }}%</div>
+                                        <small class="text-muted">Cloudiness</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">Back to Search</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-header bg-white py-3">
             <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-clipboard-list me-2 text-success"></i>សកម្មភាពថ្មីៗ</h5>

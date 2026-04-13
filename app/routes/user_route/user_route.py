@@ -12,6 +12,7 @@ from app.decorators.access import role_required, permission_required
 from app.forms.diagnosis_form import DiagnosisForm
 from app.forms.diseases_forms import DiseaseSearchForm
 from app.forms.user_forms import DeleteAccountForm, UserEditForm, UserProfileForm
+from app.forms.weather_form import CitySearchForm
 from app.models.UserNotification import UserNotification
 from app.models.diagnosis_history import DiagnosisHistoryTable
 from app.models.diseases import DiseaseTable
@@ -22,6 +23,7 @@ from app.models.symptoms import SymptomsTable
 from app.models.user import UserTable
 from app.services.disease_service import DiseaseService
 from app.services.user_service import UserService
+from app.services.weather_service import WeatherService
 from extensions import db
 from app.services.diagnosis_service import DiagnosisService
 from app.services.rule_service import RuleService
@@ -37,11 +39,49 @@ from app.services.diagnosis_service import DiagnosisService
 user_bp = Blueprint("user", __name__, url_prefix="/user", template_folder="../../templates")
 diagnosis_service = DiagnosisService()
 
+# Use city IDs instead of names
+CAMBODIA_CITIES = [
+    {"id": 1821305, "name": "Phnom Penh"},
+    {"id": 1821479, "name": "Siem Reap"},
+    {"id": 1820855, "name": "Battambang"},
+    {"id": 1820848, "name": "Sihanoukville"},
+    {"id": 1821383, "name": "Kampong Cham"},
+    {"id": 1821381, "name": "Kampong Speu"},
+    {"id": 1821378, "name": "Kampong Thom"},
+    {"id": 1821358, "name": "Kandal"},
+    {"id": 1821416, "name": "Takeo"},
+    {"id": 1821399, "name": "Prey Veng"},
+    {"id": 1821407, "name": "Kampot"},
+    {"id": 1821400, "name": "Kratie"},
+    {"id": 1821391, "name": "Banteay Meanchey"},
+    {"id": 1821390, "name": "Pursat"},
+    {"id": 1821389, "name": "Oddar Meanchey"},
+    {"id": 1821388, "name": "Kep"},
+    {"id": 1821387, "name": "Mondulkiri"},
+    {"id": 1821386, "name": "Ratanakiri"},
+    {"id": 1821385, "name": "Stung Treng"},
+    {"id": 1821384, "name": "Svay Rieng"},
+]
+
 # ---------------- DASHBOARD ----------------
-@user_bp.route("/dashboard", methods=["GET"])
+@user_bp.route("/dashboard", methods=["GET", "POST"])
 @login_required
 @role_required("User")
 def dashboard():
+    form = CitySearchForm()
+    search_results = []
+    selected_city_weather = None
+
+    # Check if a city was selected for weather
+    selected_city_id = request.args.get('city_id')
+    if selected_city_id:
+        selected_city_weather = WeatherService.get_weather(selected_city_id)
+
+    if form.validate_on_submit():
+        selected_city_name = form.city.data
+        if selected_city_name:
+            selected_city_weather = WeatherService.get_weather(selected_city_name)
+
     # Default disease to display
     default_disease = DiseaseTable.query.first()  # or choose a specific one
 
@@ -67,7 +107,10 @@ def dashboard():
         disease=default_disease,
         recent_activities=recent_activities,
         new_diseases=new_diseases,
-        new_diseases_count=new_diseases_count
+        new_diseases_count=new_diseases_count,
+        search_results=search_results,
+        selected_city_weather=selected_city_weather,
+        form=form
     )
 
 # ---------------- SETTINGS ----------------
@@ -192,8 +235,9 @@ def delete_account():
 @permission_required("USER_ABOUT")
 def about():
     about_info = {
-        "app_name": "Rice Expert System",
+        "app_name": "Rice disease diagnostic system",
         "version": "1.0.0",
+        "type_app": "Expert System(AI)",
         "developer": "San Reaksmey, Try Reaksmey, Pen Panhna, Tath Kongea",
         "email": "sanreaksmey01@gmail.com",
         "description": "Helps farmers diagnose rice diseases and manage treatments efficiently.",

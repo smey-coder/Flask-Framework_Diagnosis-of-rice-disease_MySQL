@@ -1,0 +1,38 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block title %}Weather Dashboard{% endblock %}
+{% block content %}
+<!-- Display main city weather -->
+<!-- templates/admin_page/dashboard_weather.html -->
+<div class="container mt-4">
+    <!-- Current city (Phnom Penh) -->
+    <div class="card p-4 mb-4 shadow-sm text-center">
+        <h4>{{ main_city.city }}</h4>
+        {% if main_city.icon %}
+            <img src="{{ main_city.icon }}" alt="Weather Icon" width="80">
+        {% endif %}
+        <h2>{{ main_city.temp }}°C</h2>
+        <p class="text-muted">{{ main_city.desc }}</p>
+        <div class="d-flex justify-content-around mt-3">
+            <small>Humidity: {{ main_city.humidity }}%</small>
+            <small>Wind: {{ main_city.wind }} km/h</small>
+            <small>Pressure: {{ main_city.pressure }} mb</small>
+            <small>Visibility: {{ main_city.visibility }} km</small>
+        </div>
+    </div>
+    <!-- Other cities -->
+    <div class="row row-cols-1 row-cols-md-4 g-3">
+        {% for w in all_weather[1:] %}
+        <div class="col">
+            <div class="card p-2 text-center shadow-sm">
+                <h6>{{ w.city }}</h6>
+                {% if w.icon %}
+                    <img src="{{ w.icon }}" alt="icon" width="50">
+                {% endif %}
+                <p>{{ w.temp }}°C</p>
+                <small>{{ w.desc }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
