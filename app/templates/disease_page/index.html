@@ -67,14 +67,14 @@
                                 <span class="badge bg-secondary">{{ disease.disease_type }}</span>
                             </td>
                             <td>
-                                {% if disease.severity_level == "Critical" %}
+                                {% if disease.severity_level == 'High(ខ្ពស់)' %}
                                     <span class="badge bg-danger">{{ disease.severity_level }}</span>
-                                {% elif disease.severity_level == "High" %}
+                                {% elif disease.severity_level == 'Medium(មធ្យម)' %}
                                     <span class="badge bg-warning">{{ disease.severity_level }}</span>
-                                {% elif disease.severity_level == "Medium" %}
-                                    <span class="badge bg-info">{{ disease.severity_level }}</span>
-                                {% else %}
+                                {% elif disease.severity_level == 'Low(ទាប)' %}
                                     <span class="badge bg-success">{{ disease.severity_level }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ disease.severity_level }}</span>
                                 {% endif %}
                             </td>
                             <td>

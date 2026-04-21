@@ -50,9 +50,9 @@
 
                         <!-- Severity with Color -->
                         <td class="text-center">
-                            {% if item.severity_level == 'High' %}
+                            {% if item.severity_level == 'High(ខ្ពស់)' %}
                                 <span class="badge bg-danger">{{ item.severity_level }}</span>
-                            {% elif item.severity_level == 'Medium' %}
+                            {% elif item.severity_level == 'Medium(មធ្យម)' %}
                                 <span class="badge bg-warning text-dark">{{ item.severity_level }}</span>
                             {% else %}
                                 <span class="badge bg-success">{{ item.severity_level }}</span>

@@ -2,8 +2,17 @@
 {% block title %}Edit Profile {{ current_user.username }}{% endblock %}
 
 {% block content %}
-<h1 class="h3 mb-3">Edit Profile: {{ current_user.username }}</h1>
-<form method="post">
-    {% include "admin_page/_form.html"%}
-</form>
+<!-- Profile -->
+<div class="tab-pane fade show active" id="profile">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 style="text-align: center;color: blue;">Profile Information</h5>
+            <h1 class="h5 mb-3">Edit User: <strong style="color: red;">{{ user.username}}</strong></h1>
+            <form method="POST" action="{{url_for('admin.settings')}}">
+                {{ form.hidden_tag() }}
+                {% include "user_page/_form.html" %}
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

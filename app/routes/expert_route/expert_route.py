@@ -1,22 +1,24 @@
+from collections import defaultdict
 from venv import logger
 from flask import Blueprint, abort, current_app, render_template, redirect, request, url_for, flash, session
 from flask_login import login_required, current_user, logout_user
 from app.forms.rule_condition_form import RuleConditionCreateForm, RuleConditionEditForm
 from app.forms.rule_form import RuleCreateForm, RuleEditForm
 from app.forms.symptom_forms import SymptomCreateForm, SymptomEditForm
+from app.models.user import UserTable
 from app.services import diagnosis_service
 from app.services.rule_condition_service import RuleConditionService
 from app.services.rule_service import RuleService
 from app.services.symptom_service import SymptomService
 from extensions import db
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from app.decorators.access import role_required, permission_required
 from app.models.rule_conditions import RuleConditionsTable
 from app.models.diseases import DiseaseTable
 from app.models.symptoms import SymptomsTable
 from app.models.rules import RulesTable
-from app.forms.user_forms import UserEditForm
-from app.forms.diseases_forms import DiseaseEditForm, DiseaseSearchForm
+from app.forms.user_forms import DeleteAccountForm, UserEditForm, UserProfileForm
+from app.forms.diseases_forms import DiseaseCreateForm, DiseaseEditForm, DiseaseSearchForm
 from app.forms.diagnosis_form import DiagnosisForm
 from app.services.diagnosis_service import DiagnosisService
 from app.services.disease_service import DiseaseService
@@ -25,6 +27,18 @@ expert_bp = Blueprint(
     "expert", __name__, url_prefix="/expert", template_folder="../../templates"
 )
 service = DiagnosisService()
+
+def get_grouped_symptoms():
+    symptoms = db.session.execute(
+        db.select(SymptomsTable).order_by(SymptomsTable.symptom_group)
+    ).scalars().all()
+
+    grouped = defaultdict(list)
+
+    for s in symptoms:
+        grouped[s.symptom_group].append((s.id, s.symptom_name))
+
+    return grouped
 
 # ---------------- DASHBOARD ----------------
 @expert_bp.route("/dashboard")
@@ -39,50 +53,113 @@ def dashboard():
     }
     return render_template("expert_page/dashboard.html", user=current_user, stats=stats)
 
+@expert_bp.route("/settings", methods=["GET", "POST"])
+@login_required
+@role_required("Expert")
+def setting_index():
+    form = UserProfileForm(original_user=current_user, obj=current_user)
+    return render_template('expert_page/settings.html', form=form, user=current_user)
 
 # ---------------- SETTINGS / PROFILE ----------------
 @expert_bp.route("/settings", methods=["GET", "POST"])
 @login_required
 @role_required("Expert")
 @permission_required("EDIT_PROFILE")
-def settings():
-    form = UserEditForm(original_user=current_user)
-
-    if form.validate_on_submit():
+def edit_profile():
+    form = UserProfileForm(obj=current_user)
+    if request.method == "POST":
         try:
-            current_user.username = form.username.data
-            current_user.full_name = form.full_name.data
-            if form.password.data:
-                current_user.password_hash = generate_password_hash(form.password.data)
+            # =========================
+            # BASIC INFO UPDATE
+            # =========================
+            current_user.username = form.username.data.strip()
+            current_user.email = form.email.data.strip()
+            current_user.full_name = form.full_name.data.strip()
+            # =========================
+            # PASSWORD VALUES (USE ONLY FORM, NOT request.form)
+            # =========================
+            old_password = form.old_password.data
+            new_password = form.password.data
+            confirm_password = form.confirm_password.data
+            # =========================
+            # PASSWORD CHANGE LOGIC
+            # =========================
+            if new_password:
+                # check confirm password (IMPORTANT)
+                if new_password != confirm_password:
+                    flash("Passwords do not match", "danger")
+                    return redirect(url_for("expert.setting_index"))
+
+                # must enter old password
+                if not old_password:
+                    flash("You must enter your old password", "danger")
+                    return redirect(url_for("expert.setting_index"))
+
+                # verify old password
+                if not check_password_hash(current_user.password_hash, old_password):
+                    flash("Old password is incorrect", "danger")
+                    return redirect(url_for("expert.setting_index"))
+
+                # update password
+                current_user.password_hash = generate_password_hash(new_password)
+
+            # =========================
+            # SAVE DATABASE
+            # =========================
             db.session.commit()
+
             flash("Profile updated successfully!", "success")
+            return redirect(url_for("expert.setting_index"))
+
         except Exception as e:
             db.session.rollback()
-            flash("Failed to update profile. Try again later.", "danger")
-        return redirect(url_for("expert.settings"))
+            flash("Something went wrong while updating profile.", "danger")
+            print("[ERROR]:", e)
 
-    # Pre-fill form fields on GET
-    if request.method == "GET":
-        form.username.data = current_user.username
-        form.full_name.data = current_user.full_name
-
-    return render_template("expert_page/settings.html", form=form, user=current_user)
-
+    return render_template(
+        "expert_page/settings.html",
+        form=form,
+        user=current_user
+    )
 
 @expert_bp.route("/settings/delete", methods=["POST"])
 @login_required
 @role_required("Expert")
-@permission_required("DELETE_USER_ACCOUNT")
+@permission_required("USER_DELETE_ACCOUNT")
 def delete_account():
+    form = DeleteAccountForm()
     try:
-        db.session.delete(current_user)
+        if not form.validate_on_submit():
+            flash("Invalid request.", "danger")
+            return redirect(url_for("expert.setting_index"))
+        password = form.password.data.strip()
+        
+        # get REAL user object from DB (IMPORTANT FIX)
+        user = UserTable.query.get(current_user.get_id())
+
+        if not user:
+            flash("User not found.", "danger")
+            return redirect(url_for("auth.login"))
+
+        # check password
+        if not check_password_hash(user.password_hash, password):
+            flash("Password incorrect. Account not deleted.", "danger")
+            return redirect(url_for("expert.setting_index"))
+
+        # delete user safely
+        db.session.delete(user)
         db.session.commit()
+
         logout_user()
+
         flash("Your account has been deleted successfully.", "success")
+        return redirect(url_for("auth.login"))
+
     except Exception as e:
         db.session.rollback()
+        print("[ERROR delete_account]:", e)
         flash("Failed to delete account. Try again later.", "danger")
-    return redirect(url_for("auth.login"))
+        return redirect(url_for("expert.setting_index"))
 
 
 # ---------------- ABOUT ----------------
@@ -287,24 +364,26 @@ def index_disease():
 @role_required("Expert")
 @permission_required("CREATE_DISEASE")
 def create_disease():
-    form = DiseaseEditForm()
-
+    form = DiseaseCreateForm()
     if form.validate_on_submit():
         data = {
             "disease_name": form.disease_name.data.strip(),
             "disease_type": form.disease_type.data.strip(),
-            "description": form.description.data.strip() if form.description.data else "",
-            "severity_level": form.severity_level.data.strip() if form.severity_level.data else "Low",
+            "description": form.description.data.strip(),
+            "severity_level": form.severity_level.data.strip(),
             "is_active": form.is_active.data
         }
 
         image_file = form.image.data if form.image.data else None
-        disease = DiseaseService.create_disease(data, image_file)
-        if disease:
+
+        try:
+            disease = DiseaseService.create_disease(data, image_file)
             flash(f"Disease '{disease.disease_name}' created successfully.", "success")
-            return redirect(url_for("expert.detail_disease", disease_id=disease.id))
-        else:
-            flash("Failed to create disease. Try again.", "danger")
+            return redirect(url_for("expert.index_disease"))
+        except ValueError as e:
+            flash(str(e), "danger")
+        except Exception as e:
+            flash("An unexpected error occurred.", "danger")
 
     return render_template("expert_page/create_disease.html", form=form)
 
@@ -518,7 +597,8 @@ def index_rule_condition():
         "expert_page/rule_condition_pages/index.html",
         rule_conditions=pagination.items,
         pagination=pagination,
-        active_only=active_only
+        active_only=active_only,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 # ===================== CREATE =====================
@@ -540,7 +620,8 @@ def create_rule_condition():
 
     return render_template(
         "expert_page/rule_condition_pages/create.html",
-        form=form
+        form=form,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 
@@ -558,7 +639,8 @@ def detail_rule_condition(id):
 
     return render_template(
         "expert_page/rule_condition_pages/detail.html",
-        rule_condition=rule_condition
+        rule_condition=rule_condition,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 
@@ -592,7 +674,8 @@ def edit_rule_condition(id):
     return render_template(
         "expert_page/rule_condition_pages/edit.html",
         form=form,
-        rule_condition=rule_condition
+        rule_condition=rule_condition,
+        grouped_symptoms=get_grouped_symptoms()
     )
 
 

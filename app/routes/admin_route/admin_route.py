@@ -12,8 +12,8 @@ from app.models.user import UserTable
 from app.models.rules import RulesTable
 from app.services.user_service import UserService
 from extensions import db
-from werkzeug.security import generate_password_hash
-from app.forms.user_forms import UserEditForm
+from werkzeug.security import check_password_hash, generate_password_hash
+from app.forms.user_forms import UserEditForm, UserProfileForm
 from app.models.role import RoleTable
 from app.decorators.access import role_required, permission_required
 
@@ -100,31 +100,64 @@ def dashboard():
 @role_required("Admin")
 @permission_required("PERMISSION_MANAGER_SYSTEM")
 def settings():
-    from app.forms.user_forms import UserEditForm
-    
-    # Pass the current_user as original_user
-    form = UserEditForm(original_user=current_user)
+    form = UserProfileForm(obj=current_user)
+    if request.method == "POST":
+        try:
+            # =========================
+            # BASIC INFO UPDATE
+            # =========================
+            current_user.username = form.username.data.strip()
+            current_user.email = form.email.data.strip()
+            current_user.full_name = form.full_name.data.strip()
 
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.full_name = form.full_name.data
-        current_user.email = form.email.data
+            # =========================
+            # PASSWORD VALUES (USE ONLY FORM, NOT request.form)
+            # =========================
+            old_password = form.old_password.data
+            new_password = form.password.data
+            confirm_password = form.confirm_password.data
 
-        if form.password.data:
-            from werkzeug.security import generate_password_hash
-            current_user.password_hash = generate_password_hash(form.password.data)
+            # =========================
+            # PASSWORD CHANGE LOGIC
+            # =========================
+            if new_password:
 
-        db.session.commit()
-        flash("Profile updated successfully!", "success")
-        return redirect(url_for("admin.settings"))
+                # check confirm password (IMPORTANT)
+                if new_password != confirm_password:
+                    flash("Passwords do not match", "danger")
+                    return redirect(url_for("admin.settings"))
 
-    # Pre-fill the form fields
-    if request.method == "GET":
-        form.username.data = current_user.username
-        form.full_name.data = current_user.full_name
-        form.email.data = current_user.email
+                # must enter old password
+                if not old_password:
+                    flash("You must enter your old password", "danger")
+                    return redirect(url_for("admin.settings"))
 
-    return render_template("admin_page/settings.html", form=form)
+                # verify old password
+                if not check_password_hash(current_user.password_hash, old_password):
+                    flash("Old password is incorrect", "danger")
+                    return redirect(url_for("admin.settings"))
+
+                # update password
+                current_user.password_hash = generate_password_hash(new_password)
+
+            # =========================
+            # SAVE DATABASE
+            # =========================
+            db.session.commit()
+
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for("admin.settings"))
+
+        except Exception as e:
+            db.session.rollback()
+            flash("Something went wrong while updating profile.", "danger")
+            print("[ERROR]:", e)
+
+    return render_template(
+        "admin_page/settings.html",
+        form=form,
+        user=current_user
+    )
 
 # ---------- ABOUT PAGE ----------
 @admin_bp.route("/about")

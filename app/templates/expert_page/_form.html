@@ -1,95 +1,65 @@
-<form method="post">
-   {{ form.hidden_tag() }}
+<!-- Username -->
+<div class="mb-3">
+    {{ form.username.label(class="form-label") }}
+    {{ form.username(class="form-control", placeholder="Enter username") }}
 
-   <div class="mb-3">
-      {{ form.username.label(class="form-label")}}
-      {{ form.username(class="form-control")}}
-      {% if form.username.errors %}
-      <div class="text-danger small">
-         {% for error in form.username.errors %}
-            <div>{{ error }}</div>
-         {% endfor %}
-      </div>
-      {% endif %}
-   </div>
+    {% for error in form.username.errors %}
+        <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+</div>
 
-   <div class="mb-3">
-      {{ form.email.label(class="form-label")}}
-      {{ form.email(class="form-control")}}
-      {% if form.email.errors %}
-      <div class="text-danger small">
-         {% for error in form.email.errors %}
-            <div>{{ error }}</div>
-         {% endfor %}
-      </div>
-      {% endif %}
-   </div>
+<!-- Email -->
+<div class="mb-3">
+    {{ form.email.label(class="form-label") }}
+    {{ form.email(class="form-control", placeholder="Enter email") }}
 
-   <div class="mb-3">
-      {{ form.full_name.label(class="form-label")}}
-      {{ form.full_name(class="form-control")}}
-      {% if form.full_name.errors %}
-      <div class="text-danger small">
-         {% for error in form.full_name.errors %}
-            <div>{{ error }}</div>
-         {% endfor %}
-      </div>
-      {% endif %}
-   </div>
+    {% for error in form.email.errors %}
+        <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+</div>
 
-   <div class="mb-3">
-      {{ form.is_active(class="form-check-input")}}
-      {{ form.is_active.label(class="form-check-label")}}
-   </div>
+<!-- Full Name -->
+<div class="mb-3">
+    {{ form.full_name.label(class="form-label") }}
+    {{ form.full_name(class="form-control", placeholder="Enter full name") }}
 
-   <div class="mb-3">
-      {{form.role_id.label(class="form-label")}}
-      {{ form.role_id(class="form-select")}}
-      {% if form.role_id.errors %}
-      <div class="text-danger small">
-         {% for error in form.role_id.errors %}
-            <div>{{ error }}</div>
-         {% endfor %}
-      </div>
-      {% endif %}
-   </div>
-   {# Password fields (may be required or optional)#}
+    {% for error in form.full_name.errors %}
+        <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+</div>
 
-   <div class="mb-3">
-      {{ form.password.label(class="form-label")}}
-      {{ form.password(class="form-control")}}
-      {% if form.password.errors %}
-      <div class="text-danger small">
-         {% for error in form.password.errors %}
-            <div>{{ error }}</div>
-         {% endfor %}
-      </div>
-      {% endif %}
-   </div>
+<hr>
 
-   <div class="mb-3">
-      {{ form.confirm_password.label(class="form-label")}}
-      {{ form.confirm_password(class="form-control")}}
-      {% if form.confirm_password.errors %}
-      <div class="text-danger small">
-         {% for error in form.confirm_password.errors %}
-            <div>{{ error }}</div>
-         {% endfor %}
-      </div>
-      {% endif %}
-   </div>
+<h6 class="text-muted">Change Password (optional)</h6>
+<div class="mb-3">
+    {{ form.old_password.label(class="form-label") }}
+    {{ form.old_password(class="form-control", placeholder="Enter old password", autocomplete="off") }}
 
-   <div class="mb-3">
-      <button type="submit" class="btn btn-primary">
-         {% if form.submit.label.text == 'Save' %}
-            <i class="bi bi-save me-1"></i>
-         {% else %}
-            <i class="bi bi-check2 me-1"></i>
-         {% endif %}
-         {{ form.submit.label.text }}
-      </button>
-      <a href="{{ url_for('tbl_users.index')}}" class="btn btn-outline-secondary">
-         Cancel
-      </a>
-   </div>
-</form>
+    {% for error in form.old_password.errors %}
+        <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+</div>
+<!-- Password -->
+<div class="mb-3">
+    {{ form.password.label(class="form-label") }}
+    {{ form.password(class="form-control", placeholder="New password", autocomplete="new-password") }}
+
+    {% for error in form.password.errors %}
+        <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+</div>
+
+<!-- Confirm Password -->
+<div class="mb-3">
+    {{ form.confirm_password.label(class="form-label") }}
+    {{ form.confirm_password(class="form-control", placeholder="Confirm password", autocomplete="new-password") }}
+
+    {% for error in form.confirm_password.errors %}
+        <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+</div>
+
+<!-- Submit -->
+<div class="d-flex justify-content-end">
+    {{ form.submit(class="btn btn-primary px-4") }}
+</div>

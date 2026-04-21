@@ -1,5 +1,5 @@
 import importlib
-from flask import Flask, redirect, request, session, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 from flask_login import current_user
 from config import Config
 from extensions import db, csrf, login_manager, mail

@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_page.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis_page.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="icon" href="{{ url_for('static', filename='images/logo_rice.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo_rice.png') }}">
+    
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -51,7 +54,6 @@
 
     <!-- ================= SIDEBAR (UX/UI Redesign) ================= -->
     <nav id="sidebar" class="sidebar bg-success text-white p-4 shadow-sm">
-
         <!-- Logo Section -->
         <div class="text-center mb-4">
             <img src="{{ url_for('static', filename='images/logo_rice.png') }}"
@@ -561,7 +563,6 @@ body {
     border-radius: 10px;
 }
 </style>
-
 {% block extra_js %}{% endblock %}
 </body>
 </html>

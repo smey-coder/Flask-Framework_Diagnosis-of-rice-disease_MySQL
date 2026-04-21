@@ -1,5 +1,4 @@
 {{ form.hidden_tag() }}
-
 <!-- ========================= -->
 <!-- Rule Selection -->
 <!-- ========================= -->
@@ -38,26 +37,52 @@
     </div>
 
     <!-- Scrollable Checkbox List -->
-    <div class="d-flex flex-wrap gap-2 p-2"
-         style="max-height:260px; overflow-y:auto; border:1px solid #dee2e6; border-radius:.375rem;">
+    <div style="max-height:260px; overflow-y:auto; border:1px solid #dee2e6; border-radius:.375rem; padding:10px;">
 
-        {% for s_id, s_name in form.symptom_id.choices %}
-            <div class="form-check">
-                <input class="form-check-input symptom-checkbox"
-                       type="checkbox"
-                       name="{{ form.symptom_id.name }}"
-                       value="{{ s_id }}"
-                       id="symptom-{{ s_id }}"
-                       {% if form.symptom_id.data and s_id in (form.symptom_id.data if form.symptom_id.data is iterable else [form.symptom_id.data]) %}
-                            checked
-                        {% endif %}
-                />
+        {% for category, symptoms in grouped_symptoms.items() %}
 
-                <label class="form-check-label" for="symptom-{{ s_id }}">
-                    {{ s_name }}
-                </label>
+            <!-- CATEGORY HEADER -->
+            <div class="fw-bold text-success mt-2 mb-2 border-bottom pb-1">
+
+                {% if category == 'leaf' %}
+                    🍃 ស្លឹក
+                {% elif category == 'stem' %}
+                    🌿 ដើម
+                {% elif category == 'seed' %}
+                    🌾 គ្រាប់
+                {% elif category == 'root' %}
+                    🌱 ឬស
+                {% else %}
+                    {{ category }}
+                {% endif %}
+
             </div>
+
+            <!-- SYMPTOMS LIST -->
+            <div class="d-flex flex-wrap gap-2">
+
+                {% for s_id, s_name in symptoms %}
+                    <div class="form-check">
+                        <input class="form-check-input symptom-checkbox"
+                               type="checkbox"
+                               name="{{ form.symptom_id.name }}"
+                               value="{{ s_id }}"
+                               id="symptom-{{ s_id }}"
+                               {% if form.symptom_id.data and s_id in (form.symptom_id.data if form.symptom_id.data is iterable else [form.symptom_id.data]) %}
+                                    checked
+                               {% endif %}
+                        />
+
+                        <label class="form-check-label" for="symptom-{{ s_id }}">
+                            {{ s_name }}
+                        </label>
+                    </div>
+                {% endfor %}
+
+            </div>
+
         {% endfor %}
+
     </div>
 
     {% for error in form.symptom_id.errors %}

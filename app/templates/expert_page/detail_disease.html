@@ -46,14 +46,14 @@
                         <div class="col-md-6">
                             <label class="fw-bold">Severity Level:</label>
                             <p>
-                                {% if disease.severity_level == "Critical" %}
+                                {% if disease.severity_level == 'High(ខ្ពស់)' %}
                                     <span class="badge bg-danger">{{ disease.severity_level }}</span>
-                                {% elif disease.severity_level == "High" %}
-                                    <span class="badge bg-warning text-dark">{{ disease.severity_level }}</span>
-                                {% elif disease.severity_level == "Medium" %}
-                                    <span class="badge bg-info">{{ disease.severity_level }}</span>
-                                {% else %}
+                                {% elif disease.severity_level == 'Medium(មធ្យម)' %}
+                                    <span class="badge bg-warning">{{ disease.severity_level }}</span>
+                                {% elif disease.severity_level == 'Low(ទាប)' %}
                                     <span class="badge bg-success">{{ disease.severity_level }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ disease.severity_level }}</span>
                                 {% endif %}
                             </p>
                         </div>

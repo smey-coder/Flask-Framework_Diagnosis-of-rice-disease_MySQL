@@ -17,9 +17,14 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/user_page.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo_rice.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo_rice.png') }}">
     
     {% block extra_css %}{% endblock %}
     <style>
+        body, .card, .navbar, .list-group-item {
+            transition: background 0.3s, color 0.3s;
+        }
         .notif-item:hover {
             background: #f1f5ff;
             border-radius: 8px;
@@ -28,6 +33,49 @@
 
         #notif-count {
             font-size: 10px;
+        }
+        /* DARK MODE GLOBAL */
+        .dark-mode {
+            background-color: #121212 !important;
+            color: #ffffff !important;
+        }
+
+        /* Cards */
+        .dark-mode .card {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        /* Navbar */
+        .dark-mode .navbar {
+            background-color: #1db2d7 !important;
+        }
+
+        /* Sidebar */
+        .dark-mode .list-group-item {
+            background-color: #0e0f10;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        /* Active item */
+        .dark-mode .list-group-item.active {
+            background-color: #0d6efd;
+        }
+
+        /* Inputs */
+        .dark-mode input,
+        .dark-mode select,
+        .dark-mode textarea {
+            background-color: #2a2a2a;
+            color: white;
+            border: 1px solid #444;
+        }
+
+        /* Modal */
+        .dark-mode .modal-content {
+            background-color: #1e1e1e;
+            color: white;
         }
     </style>
 </head>
@@ -49,7 +97,7 @@
     </div>
   </div>
 </div>
-<body>
+<body id="mainBody">
 
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm sticky-top">
@@ -324,6 +372,33 @@ document.addEventListener("DOMContentLoaded", function () {
     // ================= INIT =================
     loadNotifications();
     setInterval(loadNotifications, 5000);
+
+});
+document.addEventListener("DOMContentLoaded", function () {
+
+    const toggle = document.getElementById("darkModeToggle");
+
+    // ✅ Apply saved mode on ALL pages
+    if (localStorage.getItem("darkMode") === "enabled") {
+        document.body.classList.add("dark-mode");
+    }
+
+    // ✅ Only attach event if toggle exists (settings page)
+    if (toggle) {
+
+        // sync toggle state
+        toggle.checked = localStorage.getItem("darkMode") === "enabled";
+
+        toggle.addEventListener("change", function () {
+            if (this.checked) {
+                document.body.classList.add("dark-mode");
+                localStorage.setItem("darkMode", "enabled");
+            } else {
+                document.body.classList.remove("dark-mode");
+                localStorage.setItem("darkMode", "disabled");
+            }
+        });
+    }
 
 });
 </script>

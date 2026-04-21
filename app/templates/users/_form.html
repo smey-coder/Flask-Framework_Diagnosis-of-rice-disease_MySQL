@@ -57,7 +57,7 @@
 
    <div class="mb-3">
       {{ form.password.label(class="form-label")}}
-      {{ form.password(class="form-control")}}
+      {{ form.password(class="form-control", autocomplete="new-password")}}
       {% if form.password.errors %}
       <div class="text-danger small">
          {% for error in form.password.errors %}
@@ -69,7 +69,7 @@
 
    <div class="mb-3">
       {{ form.confirm_password.label(class="form-label")}}
-      {{ form.confirm_password(class="form-control")}}
+      {{ form.confirm_password(class="form-control", autocomplete="new-password")}}
       {% if form.confirm_password.errors %}
       <div class="text-danger small">
          {% for error in form.confirm_password.errors %}

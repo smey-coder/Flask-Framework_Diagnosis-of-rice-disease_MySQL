@@ -9,7 +9,7 @@
             <h1>Create New Disease</h1>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{{ url_for('tbl_diseases.index') }}" class="btn btn-secondary">
+            <a href="{{ url_for('expert.index_disease') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back
             </a>
         </div>
@@ -97,7 +97,7 @@
 
                         <!-- Submit Button -->
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ url_for('tbl_diseases.index') }}" class="btn btn-secondary">
+                            <a href="{{ url_for('expert.index_disease') }}" class="btn btn-secondary">
                                 Cancel
                             </a>
                             {{ form.submit(class="btn btn-primary") }}

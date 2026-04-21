@@ -125,9 +125,7 @@ def setting_index():
 @login_required
 @role_required("User")
 def edit_profile():
-
     form = UserProfileForm(obj=current_user)
-
     if request.method == "POST":
         try:
             # =========================
@@ -193,7 +191,6 @@ from werkzeug.security import check_password_hash
 @permission_required("USER_DELETE_ACCOUNT")
 def delete_account():
     form = DeleteAccountForm()
-
     try:
         if not form.validate_on_submit():
             flash("Invalid request.", "danger")
@@ -263,30 +260,70 @@ def about():
 @role_required("User")
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_input():
-    form = DiagnosisForm()
-    # Get all active symptoms
-    symptoms = SymptomsTable.query.filter_by(is_active=True).all()
-    # Make sure IDs are integers
-    form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
+    try:
+        form = DiagnosisForm()
 
-    if form.validate_on_submit():
-        # Convert submitted data to integers
-        selected_ids = [int(s) for s in form.symptoms.data or []]
+        # ✅ Get all active symptoms
+        symptoms = SymptomsTable.query.filter_by(is_active=True).all()
 
-        if not selected_ids:
-            flash("Please select at least one symptom.", "warning")
-            return redirect(url_for("user.diagnosis_input"))
+        # WTForms choices (for validation)
+        form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
 
-        # Store IDs in session
-        session["selected_symptoms"] = selected_ids
+        # ✅ Group symptoms by type
+        grouped_symptoms = {
+            "Grain(គ្រាប់)": [],
+            "Leaf(ស្លឹក)": [],
+            "Root(ឬស)": [],
+            "Stem(ដើម)": []
+        }
 
-        # Store corresponding symptom NAMES for view filtering
-        selected_symptoms = SymptomsTable.query.filter(SymptomsTable.id.in_(selected_ids)).all()
-        session["selected_symptoms_names"] = [s.symptom_name for s in selected_symptoms]
+        for s in symptoms:
+            if s.symptom_group == "Grain(គ្រាប់)":
+                grouped_symptoms["Grain(គ្រាប់)"].append(s)
+            elif s.symptom_group == "Leaf(ស្លឹក)":
+                grouped_symptoms["Leaf(ស្លឹក)"].append(s)
+            elif s.symptom_group == "Root(ឬស)":
+                grouped_symptoms["Root(ឬស)"].append(s)
+            elif s.symptom_group == "Stem(ដើម)":
+                grouped_symptoms["Stem(ដើម)"].append(s)
 
-        return redirect(url_for("user.diagnosis_result"))
+        # ✅ Handle form submit
+        if form.validate_on_submit():
+            try:
+                selected_ids = [int(s) for s in form.symptoms.data or []]
 
-    return render_template("user_page/index.html", form=form, user=current_user)
+                if not selected_ids:
+                    flash("Please select at least one symptom.", "warning")
+                    return redirect(url_for("user.diagnosis_input"))
+
+                # Store in session
+                session["selected_symptoms"] = selected_ids
+
+                selected_symptoms = SymptomsTable.query.filter(
+                    SymptomsTable.id.in_(selected_ids)
+                ).all()
+
+                session["selected_symptoms_names"] = [
+                    s.symptom_name for s in selected_symptoms
+                ]
+
+                return redirect(url_for("user.diagnosis_result"))
+
+            except Exception as form_error:
+                flash("Error processing selected symptoms.", "danger")
+                print(f"[FORM ERROR]: {form_error}")
+                return redirect(url_for("user.diagnosis_input"))
+
+        return render_template(
+            "user_page/index.html",
+            form=form,
+            grouped_symptoms=grouped_symptoms,
+            user=current_user
+        )
+    except Exception as e:
+        flash("System error: Unable to load diagnosis page.", "danger")
+        print(f"[DIAGNOSIS ERROR]: {e}")
+        return redirect(url_for("user.diagnosis_input"))
 
 @user_bp.route("/save_diagnosis", methods=["POST"])
 @login_required
