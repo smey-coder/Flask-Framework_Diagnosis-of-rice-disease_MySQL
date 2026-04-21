@@ -23,7 +23,11 @@
     "about": "About",
     "history_system": "System History",
     "lang_en": "English",
-    "lang_km": "Khmer"
+    "lang_km": "Khmer",
+    "home" : "Home",
+    "history": "History",
+    "diagnostics" : "Diagnostics",
+    "ricediseasediagnosticsystem": "Rice disease diagnostic system"
   },
   "dashboard": {
     "welcome": "Welcome to Rice Expert Dashboard",
@@ -54,4 +58,5 @@
     "Kampong Cham": "Kampong Cham",
     "Kampong Speu": "Kampong Speu"
   }
+
 }

@@ -108,7 +108,7 @@
                 width="40" 
                 height="40" 
                 class="d-inline-block align-text-top rounded-circle shadow-sm">
-            ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ
+            {{lang.sidebar.ricediseasediagnosticsystem}}
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -117,19 +117,19 @@
         <div class="collapse navbar-collapse" id="userNavbar">
     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}" href="{{ url_for('user.dashboard') }}">Home</a>
+            <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}" href="{{ url_for('user.dashboard') }}">{{lang.sidebar.home}}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'user.diagnosis_input' %}active{% endif %}" href="{{ url_for('user.diagnosis_input') }}">Diagnosis</a>
+            <a class="nav-link {% if request.endpoint == 'user.diagnosis_input' %}active{% endif %}" href="{{ url_for('user.diagnosis_input') }}">{{lang.sidebar.diagnostics}}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'user.diagnosis_history' %}active{% endif %}" href="{{ url_for('user.diagnosis_history') }}">History</a>
+            <a class="nav-link {% if request.endpoint == 'user.diagnosis_history' %}active{% endif %}" href="{{ url_for('user.diagnosis_history') }}">{{lang.sidebar.history}}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'user.settings' %}active{% endif %}" href="{{ url_for('user.setting_index') }}">Settings</a>
+            <a class="nav-link {% if request.endpoint == 'user.settings' %}active{% endif %}" href="{{ url_for('user.setting_index') }}">{{lang.sidebar.settings}}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'user.about' %}active{% endif %}" href="{{ url_for('user.about') }}">About</a>
+            <a class="nav-link {% if request.endpoint == 'user.about' %}active{% endif %}" href="{{ url_for('user.about') }}">{{lang.sidebar.about}}</a>
         </li>
     </ul>
 
@@ -208,7 +208,7 @@
         <!-- Logout Button -->
         <button type="button" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
                 data-bs-toggle="modal" data-bs-target="#logoutModal">
-            <i class="bi bi-box-arrow-right"></i> Logout
+            <i class="bi bi-box-arrow-right"></i> {{lang.sidebar.logout}}
         </button>
 
     </div>

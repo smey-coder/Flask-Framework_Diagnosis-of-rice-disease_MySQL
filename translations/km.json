@@ -23,7 +23,11 @@
     "about": "អំពី",
     "history_system": "ប្រវត្តិប្រព័ន្ធ",
     "lang_en": "English",
-    "lang_km": "ខ្មែរ"
+    "lang_km": "ខ្មែរ",
+    "history": "ប្រវត្តិ",
+    "home": "ទំព័រដើម",
+    "diagnostics": "ការធ្វើរោគវិនិច្ឆ័យ",
+    "ricediseasediagnosticsystem" : "ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ"
   },
   "navbar": {
     "home": "ទំព័រដើម",

@@ -1,7 +1,5 @@
 {% extends "layouts/admin_layout/admin.html"%}
-
 {% block title %}Delete Disease - Rice Disease Diagnosis System{% endblock %}
-
 {% block content %}
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">
@@ -27,7 +25,7 @@
                     <form method="POST">
                         {{ form.hidden_tag() }}
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}" 
+                            <a href="{{ url_for('tbl_diseases.index', disease_id=disease.id) }}" 
                                class="btn btn-secondary">
                                 Cancel
                             </a>
