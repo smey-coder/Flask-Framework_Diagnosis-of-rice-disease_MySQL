@@ -41,7 +41,8 @@
     "goodmorning": "Good Morning",
     "good_morning": "Good Morning",
     "good_afternoon": "Good Afternoon",
-    "good_evening": "Good Evening"
+    "good_evening": "Good Evening",
+    "good_night": "Good Night"
   },
   "chart":{
     "user": "Users",
@@ -57,6 +58,30 @@
     "Battambang": "Battambang",
     "Kampong Cham": "Kampong Cham",
     "Kampong Speu": "Kampong Speu"
+  },
+
+  "home": {
+    "careforyourricecrop" : "Care for your rice crop",
+    "QuicklydiagnoseandtreatricediseaseswithAItechnology" : "Quickly diagnose and treat rice diseases with AI technology",
+    "Start_diagnosing_the_disease" : "Start diagnosing the disease",
+    "Diagnose_the_disease" : "Diagnose the disease",
+    "Library_the_disease" : "Library the diseases",
+    "Diagnostics_history" : "Diagnostics History",
+    "New_information" : "New Informations",
+    "Select_your_city_in_cambodia" : "Select your City in Cambodia",
+    "Select_your_city": "Select your city",
+    "show_weather" : "Show Weather",
+    "New_action" : "New Actions",
+    "Disease_Name" : "Disease Name",
+    "Date" : "Date",
+    "Situation" : "Situation"
+  },
+  "diagnosis" : {
+    "disease_diagnosis" : "Disease Diagnosis",
+    "Please_select_symptoms_to_diagnose_rice_disease" : "Please select symptoms to diagnose rice disease",
+    "My_Diagnosis_History" : "My Diagnosis History",
+    "Account_Settings" : "Account Settings",
+    "About_This_System" : "About This Syste"
   }
 
 }

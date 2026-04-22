@@ -71,6 +71,7 @@ def dashboard():
     form = CitySearchForm()
     search_results = []
     selected_city_weather = None
+    current_date = datetime.now().strftime("%d-%m-%Y %H:%M")
 
     # Check if a city was selected for weather
     selected_city_id = request.args.get('city_id')
@@ -110,7 +111,8 @@ def dashboard():
         new_diseases_count=new_diseases_count,
         search_results=search_results,
         selected_city_weather=selected_city_weather,
-        form=form
+        form=form,
+        current_date=current_date
     )
 
 # ---------------- SETTINGS ----------------
@@ -601,7 +603,8 @@ def disease_index():
 @login_required
 @role_required("User")
 def new_information():
-    return render_template('user_page/new_information.html')
+    current_date = datetime.now().strftime("%d-%m-%Y %H:%M")
+    return render_template('user_page/new_information.html', current_date = current_date)
 
 @user_bp.route("/information/<int:id>")
 @login_required

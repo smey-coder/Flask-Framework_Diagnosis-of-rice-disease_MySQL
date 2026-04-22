@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/user_page.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='images/logo_rice.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo_rice.png') }}">
-    
+
     {% block extra_css %}{% endblock %}
     <style>
         body, .card, .navbar, .list-group-item {
@@ -76,6 +76,14 @@
         .dark-mode .modal-content {
             background-color: #1e1e1e;
             color: white;
+        }
+        .btn-close {
+            opacity: 0.7;
+            transition: 0.2s ease;
+        }
+        .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.2);
         }
     </style>
 </head>

@@ -2,8 +2,31 @@
 {% block page_title %}Diagnosis Results{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark border-0 rounded-4 shadow-lg position-relative">
 
+            <!-- Modal Body -->
+            <div class="modal-body text-center p-3">
+                <img id="modalImage"
+                     src=""
+                     class="img-fluid rounded-3 shadow"
+                     style="max-height: 80vh; object-fit: contain;">
+            </div>
+
+            <!-- Footer (optional close button) -->
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button"
+                        class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
     <div class="mb-4">
         <h3 class="fw-bold text-primary">
             <i class="bi bi-clipboard-data me-2"></i> Diagnosis Results
@@ -34,10 +57,15 @@
                     {% for item in results %}
                     <tr>
                         <!-- Disease Image -->
-                        <td class="text-center">
+                        <td class="text-center" style="width: 20%;">
                             {% if item.image %}
                                 <img src="{{ url_for('static', filename='images/diseases/' + item.image) }}" 
-                                    alt="{{ item.disease_name }}" class="img-thumbnail" style="max-width:100px;">
+                                    alt="{{ item.disease_name }}"
+                                    class="img-thumbnail"
+                                    style="max-width:100px; cursor:pointer;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#imageModal"
+                                    onclick="showImage(this.src)">
                             {% else %}
                                 <span class="text-muted">No image</span>
                             {% endif %}
@@ -99,4 +127,9 @@
     </div>
     {% endif %}
 </div>
+<script>
+    function showImage(src) {
+        document.getElementById("modalImage").src = src;
+    }
+</script>
 {% endblock %}

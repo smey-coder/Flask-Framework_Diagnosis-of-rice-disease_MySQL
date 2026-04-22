@@ -27,11 +27,11 @@
             <div class="card border-0 rounded-5 shadow-lg overflow-hidden text-white" 
                  style="background: linear-gradient(rgba(10, 105, 108, 0.3), rgba(3, 171, 79, 0.3)), url('{{ url_for('static', filename='images/logo_dashboard.jpg') }}'); background-size: cover; background-position: center; min-height: 220px;">
                 <div class="card-body d-flex flex-column justify-content-center p-4 p-md-5">
-                    <h1 class="display-6 fw-bold">ថែទាំដំណាំស្រូវរបស់អ្នក</h1>
-                    <p class="lead opacity-90">ពិនិត្យ និងព្យាបាលជំងឺស្រូវបានរហ័ស ជាមួយបច្ចេកវិទ្យា AI</p>
+                    <h1 class="display-6 fw-bold">{{lang.home.careforyourricecrop}}</h1>
+                    <p class="lead opacity-90">{{lang.home.QuicklydiagnoseandtreatricediseaseswithAItechnology}}</p>
                     <div>
                         <a href="{{ url_for('user.diagnosis_input') }}" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow">
-                            <i class="fas fa-qrcode me-2"></i> ចាប់ផ្តើមស្កេន
+                            <i class="fas fa-qrcode me-2"></i> {{lang.home.Start_diagnosing_the_disease}}
                         </a>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
             <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
                 <img src="{{ url_for('static', filename='images/analytics.png') }}" class="card-img-top" alt="Diagnose" style="height: 120px; object-fit: contain;">
                 <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">វិនិច្ឆ័យជំងឺ</h6>
+                    <h6 class="fw-bold mb-0">{{lang.home.Diagnose_the_disease}}</h6>
                     <a href="{{ url_for('user.diagnosis_input') }}" class="stretched-link"></a>
                 </div>
             </div>
@@ -54,7 +54,7 @@
             <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
                 <img src="{{ url_for('static', filename='images/Library.png') }}" class="card-img-top" alt="Diseases" style="height: 120px; object-fit: contain;">
                 <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">បណ្ណាល័យជំងឺ</h6>
+                    <h6 class="fw-bold mb-0">{{lang.home.Library_the_disease}}</h6>
                     <a href="{{ url_for('user.disease_index') }}" class="stretched-link"></a>
                 </div>
             </div>
@@ -64,7 +64,7 @@
             <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
                 <img src="{{ url_for('static', filename='images/history_disease.avif') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: contain;">
                 <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">ប្រវត្តិត្រួតពិនិត្យ</h6>
+                    <h6 class="fw-bold mb-0">{{lang.home.Diagnostics_history}}</h6>
                     <a href="{{ url_for('user.diagnosis_history') }}" class="stretched-link"></a>
                 </div>
             </div>
@@ -74,7 +74,7 @@
             <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
                 <img src="{{ url_for('static', filename='images/green_information.jpg') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: contain;">
                 <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">ព័ត៍មានថ្មី</h6>
+                    <h6 class="fw-bold mb-0">{{lang.home.New_information}}</h6>
                     <a href="{{url_for('user.new_information')}}" class="stretched-link"></a>
                 </div>
             </div>
@@ -85,11 +85,11 @@
         <div class="col-12">
             <div class="card stat-card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">🌤️ Select your City in Cambodia</h5>
+                    <h5 class="card-title fw-bold mb-3">🌤️ {{lang.home.Select_your_city_in_cambodia}}</h5>
                     <form method="POST" class="row g-3">
                         {{ form.hidden_tag() }}
                         <div class="col-md-8">
-                            <label>Select Your City</label>
+                            <label>{{lang.home.Select_your_city}}</label>
                             {{ form.city(class="form-select") }}
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
@@ -158,16 +158,16 @@
     {% endif %}
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-header bg-white py-3">
-            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-clipboard-list me-2 text-success"></i>សកម្មភាពថ្មីៗ</h5>
+            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-clipboard-list me-2 text-success"></i>{{lang.home.New_action}}</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light text-muted small">
                         <tr>
-                            <th class="ps-4">ឈ្មោះជំងឺ</th>
-                            <th>កាលបរិច្ឆេទ</th>
-                            <th class="text-end pe-4">ស្ថានភាព</th>
+                            <th class="ps-4">{{lang.home.Disease_Name}}</th>
+                            <th>{{lang.home.Date}}</th>
+                            <th class="text-end pe-4">{{lang.home.Situation}}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -249,13 +249,13 @@ function updateGreeting() {
     let greeting = "សួស្តី"; // Default
 
     if (hour >= 5 && hour < 12) {
-        greeting = "អរុណសួស្តី"; // Good Morning
+        greeting = "{{ lang.dashboard.good_morning }}"; // Good Morning
     } else if (hour >= 12 && hour < 17) {
-        greeting = "ពេលរសៀលសួស្តី"; // Good Afternoon
+        greeting = "{{ lang.dashboard.good_afternoon }}"; // Good Afternoon
     } else if (hour >= 17 && hour < 20) {
-        greeting = "ល្ងាចសួស្តី"; // Good Evening
+        greeting = "{{ lang.dashboard.good_evening }}"; // Good Evening
     } else {
-        greeting = "រាត្រីសួស្តី"; // Good Night
+        greeting = "{{ lang.dashboard.good_night }}"; // Good Night
     }
 
     const userName = "{{ user.full_name }}"; // Injected from Flask

@@ -41,12 +41,13 @@
     "total_diseases": "ចំនួនជំងឺសរុប",
     "total_rules": "ចំនួនច្បាប់សរុប",
     "total_symptoms": "ចំនួនរោគសញ្ញាសរុប",
-    "goodevening": "សួស្តីល្ងាច",
-    "goodafternoon": "សួស្តីរសៀល",
-    "goodmorning": "សួស្តីព្រឹក",
-    "good_morning": "សួស្តីព្រឹក",
-    "good_afternoon": "សួស្តីរសៀល",
-    "good_evening": "សួស្តីល្ងាច"
+    "goodevening": "ល្ងាចសួស្តី",
+    "goodafternoon": "ពេលរសៀលសួស្តី",
+    "goodmorning": "អរុណសួស្ដី",
+    "good_morning": "អរុណសួស្ដី",
+    "good_afternoon": "ពេលរសៀលសួស្តី",
+    "good_evening": "ល្ងាចសួស្តី",
+    "good_night": "រាត្រីសួស្ដី"
   },
     "chart":{
         "user": "អ្នកប្រើប្រាស់",
@@ -62,5 +63,29 @@
         "Battambang": "បាត់ដំបង",
         "Kampong Cham": "កំពង់ចាម",
         "Kampong Speu": "កំពង់ស្ពឺ"
+    },
+    "home" : {
+      "careforyourricecrop": "ថែទាំដំណាំស្រូវរបស់អ្នក",
+      "QuicklydiagnoseandtreatricediseaseswithAItechnology" : "ពិនិត្យ និងព្យាបាលជំងឺស្រូវបានរហ័ស ជាមួយបច្ចេកវិទ្យា AI",
+      "Start_diagnosing_the_disease" : "ចាប់ផ្តើមវិនិច្ឆ័យជំងឺ",
+      "Diagnose_the_disease" : "វិនិច្ឆ័យជំងឺ",
+      "Library_the_disease" : "បណ្ណាល័យជំងឺ",
+      "Diagnostics_history" : "ប្រវត្តិធ្វើការវិនិច្ឆ័យ",
+      "New_information" : "ព័ត៏មានថ្មីៗ",
+      "Select_your_city_in_cambodia" : "សូមជ្រើសរើសខេត្តរបស់អ្នកនៅក្នុងប្រទេសកម្ពុជា",
+      "Select_your_city" : "សូមជ្រើសរើសខេត្តរបស់អ្នក",
+      "show_weather" : "បង្ហាញអាកាសធាតុ",
+      "New_action" : "សមក្មភាពថ្មីៗ",
+      "Disease_Name" : "ឈ្មោះជំងឺ",
+      "Date" : "កាលបរិច្ឆេទ",
+      "Situation": "ស្ថានភាព"
+    },
+
+    "diagnosis" :{
+      "disease_diagnosis" : "ការធ្វើរោគវិនិច្ឆ័យជំងឺ",
+      "Please_select_symptoms_to_diagnose_rice_disease" : "សូមជ្រើសរើសរោគសញ្ញា ដើម្បីធ្វើរោគវិនិច្ឆ័យជំងឺស្រូវ",
+      "My_Diagnosis_History": "ប្រវត្តិរោគវិនិច្ឆ័យរបស់ខ្ញុំ",
+      "Account_Settings": "ការកំណត់គណនី",
+      "About_This_System" : "អំពីប្រព័ន្ធនេះ"
     }
 }
