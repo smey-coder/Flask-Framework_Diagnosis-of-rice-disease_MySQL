@@ -8,6 +8,27 @@ from app.services.audit_service import log_audit
 
 class RoleService:
 
+    @staticmethod
+    def seed_default_roles():
+        default_roles = [
+            {
+                "name": "Admin",
+                "description": "System administrator"
+            },
+            {
+                "name": "User",
+                "description": "Normal user"
+            }
+        ]
+
+        for role_data in default_roles:
+            exists = db.session.query(RoleTable).filter_by(
+                name=role_data["name"]
+            ).first()
+
+            if not exists:
+                RoleService.create_role(role_data)
+
     # ===================== READ =====================
     @staticmethod
     def get_role_all() -> List[RoleTable]:

@@ -1,12 +1,41 @@
 from typing import List, Optional
 from app.models.user import UserTable
 from app.models.role import RoleTable
+from app.models.associations import tbl_user_roles
 from extensions import db
 from app.services.audit_service import log_audit 
 
 class UserService:
 
     # ---------- READ ---------- #
+    @staticmethod
+    def seed_default_user_role():
+        default_user_roles = [
+            {
+                "user_id": 2,
+                "role_id": 1
+            }
+        ]
+
+        for data in default_user_roles:
+
+            # check existence using raw table
+            exists = db.session.execute(
+                db.select(tbl_user_roles).where(
+                    (tbl_user_roles.c.user_id == data["user_id"]) &
+                    (tbl_user_roles.c.role_id == data["role_id"])
+                )
+            ).first()
+
+            if not exists:
+                db.session.execute(
+                    tbl_user_roles.insert().values(
+                        user_id=data["user_id"],
+                        role_id=data["role_id"]
+                    )
+                )
+
+        db.session.commit()
 
     @staticmethod
     def get_user_all() -> List[UserTable]:
