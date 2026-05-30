@@ -122,14 +122,15 @@ class DiseaseService:
         }
 
         # Handle image upload
-        old_image = disease.image
-        if image_file:
-            if not allowed_file(image_file.filename):
-                raise ValueError("Invalid image format. Allowed: png, jpg, jpeg, gif")
-            new_filename = save_image(image_file)
-            disease.image = new_filename
-            if old_image:
-                delete_image(old_image)
+        old_image = disease.image  # store old image name for potential delete
+        if image_file and hasattr(image_file, 'filename') and image_file.filename:
+            if image_file:
+                if not allowed_file(image_file.filename):
+                    raise ValueError("Invalid image format. Allowed: png, jpg, jpeg, gif")
+                new_filename = save_image(image_file)
+                disease.image = new_filename
+                if old_image:
+                    delete_image(old_image)
 
         # Update fields
         disease.disease_name = data.get("disease_name", disease.disease_name)

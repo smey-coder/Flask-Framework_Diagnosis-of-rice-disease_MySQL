@@ -1,0 +1,3 @@
+On date: 05/30/2026
+System have updated
+- System can login auto when user login finised , when used login agin by don't input username and password agin

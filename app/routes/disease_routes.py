@@ -141,7 +141,7 @@ def edit(disease_id: int):
             "is_active": form.is_active.data
         }
 
-        image_file = form.image.data if form.image.data and form.image.data.filename != "" else None
+        image_file = form.image.data if form.image.data and form.image.data != "" else None
 
         try:
             DiseaseService.update_disease(disease_id, data, image_file)

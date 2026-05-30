@@ -14,12 +14,16 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
+        remember = True if request.form.get("remember") else False 
 
         user = UserTable.query.filter_by(username=username).first()
 
         if not user or not user.check_password(password):
             flash("Invalid username or password.", "danger")
             return redirect(url_for("auth.login"))
+        
+         # LOGIN WITH REMEMBER ME ⭐ FIX HERE
+        login_user(user, remember=remember)
 
         if not user.is_active:
             flash("Your account is inactive. Please contact administrator.", "warning")

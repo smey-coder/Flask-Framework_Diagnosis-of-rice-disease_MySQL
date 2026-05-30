@@ -43,6 +43,12 @@
                         placeholder="Enter your password"
                         required>
                 </div>
+                <div class="mb-3 form-check text-start">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <label class="form-check-label" for="remember">
+                        Remember me
+                    </label>
+                </div>
 
                 <div class="text-end mb-3">
                     <a href="{{ url_for('auth.forget_password') }}" class="small text-decoration-none">
