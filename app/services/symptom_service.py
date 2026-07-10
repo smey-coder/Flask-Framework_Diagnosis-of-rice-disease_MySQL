@@ -2,7 +2,7 @@ from typing import Optional, List
 from extensions import db
 from app.models.symptoms import SymptomsTable
 from sqlalchemy.exc import SQLAlchemyError
-from app.services.audit_service import log_audit  # ✅ Audit CSV
+from app.services.audit_service import log_audit  # Audit CSV
 
 
 class SymptomService:

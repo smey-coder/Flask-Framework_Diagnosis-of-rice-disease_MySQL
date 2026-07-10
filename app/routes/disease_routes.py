@@ -129,7 +129,7 @@ def edit(disease_id: int):
     if not disease:
         abort(404)
 
-    # ✅ FIX HERE
+    #  FIX HERE
     form = DiseaseEditForm(original_disease=disease, obj=disease)
 
     if form.validate_on_submit():

@@ -8,13 +8,11 @@ from app.decorators.access import role_required, permission_required
 
 audit_bp = Blueprint("audit", __name__, url_prefix="/admin/audit")
 
-
 def get_audit_file_path():
     """Return absolute path to audit CSV file"""
     folder = os.path.join(current_app.root_path, "audit_logs")
     os.makedirs(folder, exist_ok=True)
     return os.path.join(folder, "audit_log.csv")
-
 
 def read_audit_logs():
     """Read all audit logs from CSV"""
@@ -38,7 +36,6 @@ def read_audit_logs():
 @permission_required("PERMISSION_AUDIT")
 def index():
     logs = read_audit_logs()
-
     # Simple search/filter
     search_user = request.args.get("user_id", "").strip()
     search_action = request.args.get("action", "").strip().lower()

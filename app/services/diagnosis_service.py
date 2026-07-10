@@ -5,7 +5,7 @@ from app.models.rule_conditions import RuleConditionsTable
 from app.models.symptoms import SymptomsTable
 from app.models.treatments import TreatmentTable
 from app.models.preventions import PreventionTable
-
+from app.services.audit_service import log_audit
 
 class DiagnosisService:
     """
@@ -92,8 +92,33 @@ class DiagnosisService:
             sorted(conclusions.items(), key=lambda item: item[1]['certainty'], reverse=True)
         )
 
-        return sorted_conclusions, rule_trace, skipped_rules
+        # ==========================
+        # Audit Log
+        # ==========================
+        try:
+            diagnosis_results = []
+            for disease_id, result in sorted_conclusions.items():
+                diagnosis_results.append({
+                    "disease_id": disease_id,
+                    "disease_name": result["disease"].disease_name,
+                    "certainty": round(result["certainty"] * 100, 2)
+                })
 
+            log_audit(
+                action="Diagnosis",
+                table_name="diagnosis_history",
+                record_id=0,
+                before_data=None,
+                after_data={
+                    "description": "User diagnosed rice disease.",
+                    "selected_symptoms": selected_symptom_ids,
+                    "diagnosis_results": diagnosis_results
+                }
+            )
+
+        except Exception as e:
+            print(f"Audit Error: {e}")
+        return sorted_conclusions, rule_trace, skipped_rules
     @staticmethod
     def explain_disease(disease_id: int, rule_trace: Dict[str, List[dict]]) -> List[dict]:
         # Make sure ID is string (keys in rule_trace are strings)

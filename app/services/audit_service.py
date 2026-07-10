@@ -38,35 +38,57 @@ def get_audit_file_path():
 
 
 def log_audit(action: str,
-              table_name: str,
-              record_id: int,
+              table_name: str = None,
+              record_id: int = None,
               before_data: dict = None,
-              after_data: dict = None):
+              after_data: dict = None,
+              description: str = None,
+              details: dict = None):
     """
-    Log audit event to CSV
+    Log audit event to CSV.
+    Supports both the existing structured signature and diagnosis-style payloads.
     """
+    if table_name is None:
+        table_name = "diagnosis_history"
+    if record_id is None:
+        record_id = 0
+
+    if details is not None and after_data is None:
+        after_data = {"description": description, "details": details}
+    elif details is not None and after_data is not None:
+        after_data = {**after_data, "description": description, "details": details}
+
     file_path = get_audit_file_path()
     timestamp = datetime.now(CAMBODIA_TZ).isoformat()
 
     # User info
-    if current_user.is_authenticated:
-        user_id = getattr(current_user, "id", "unknown")
-        email = getattr(current_user, "email", "unknown")
-        try:
-            role_list = [role.name for role in getattr(current_user, "roles", [])]
-            role = ", ".join(role_list) if role_list else "unknown"
-        except Exception:
-            role = "unknown"
-    else:
+    try:
+        if current_user.is_authenticated:
+            user_id = getattr(current_user, "id", "unknown")
+            email = getattr(current_user, "email", "unknown")
+            try:
+                role_list = [role.name for role in getattr(current_user, "roles", [])]
+                role = ", ".join(role_list) if role_list else "unknown"
+            except Exception:
+                role = "unknown"
+        else:
+            user_id = "anonymous"
+            email = "anonymous"
+            role = "anonymous"
+    except Exception:
         user_id = "anonymous"
         email = "anonymous"
         role = "anonymous"
 
     # Request info
-    if has_request_context():
-        ip_address = request.remote_addr
-        user_agent = (request.headers.get("User-Agent") or "N/A")[:300]
-    else:
+    try:
+        if has_request_context():
+            ip_address = request.remote_addr
+            user_agent = (request.headers.get("User-Agent") or "N/A")[:300]
+        else:
+            ip_address = "N/A"
+            user_agent = "N/A"
+    except Exception:
         ip_address = "N/A"
         user_agent = "N/A"
 

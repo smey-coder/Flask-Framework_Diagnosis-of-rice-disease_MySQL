@@ -16,9 +16,7 @@ class UserService:
                 "role_id": 1
             }
         ]
-
         for data in default_user_roles:
-
             # check existence using raw table
             exists = db.session.execute(
                 db.select(tbl_user_roles).where(
@@ -26,7 +24,6 @@ class UserService:
                     (tbl_user_roles.c.role_id == data["role_id"])
                 )
             ).first()
-
             if not exists:
                 db.session.execute(
                     tbl_user_roles.insert().values(
@@ -137,7 +134,7 @@ class UserService:
             "roles": [role.name for role in user.roles] if user.roles else []
         }
 
-        # ✅ Audit log
+        # Audit log
         log_audit("UPDATE", "users", user.id, before_data, after_data)
 
         return user
@@ -162,5 +159,5 @@ class UserService:
             db.session.rollback()
             raise ValueError(f"Database error: {str(e)}")
 
-        # ✅ Audit log
+        # Audit log
         log_audit("DELETE", "users", user.id, before_data, after_data=None)

@@ -22,14 +22,14 @@ def login():
             flash("Invalid username or password.", "danger")
             return redirect(url_for("auth.login"))
         
-         # LOGIN WITH REMEMBER ME ⭐ FIX HERE
+        # LOGIN WITH REMEMBER ME  FIX HERE
         login_user(user, remember=remember)
 
         if not user.is_active:
             flash("Your account is inactive. Please contact administrator.", "warning")
             return redirect(url_for("auth.login"))
 
-        # ✅ CHECK ROLE FIRST
+        #  CHECK ROLE FIRST
         if user.has_role("Admin"):
             login_user(user)
             flash(f"Welcome back, {user.full_name}!", "success")
@@ -46,13 +46,11 @@ def login():
             return redirect(url_for("user.dashboard"))
 
         else:
-            # ❌ NO ROLE → DO NOT LOGIN
+            #  NO ROLE → DO NOT LOGIN
             flash("No role assigned. Contact administrator.", "warning")
             return redirect(url_for("auth.login"))
 
     return render_template("auth/login.html")
-
-
 
 # ===================== REGISTER =====================
 @auth_bp.route("/register", methods=["GET", "POST"])

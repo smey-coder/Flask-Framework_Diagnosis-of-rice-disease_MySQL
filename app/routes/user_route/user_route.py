@@ -29,6 +29,7 @@ from app.services.diagnosis_service import DiagnosisService
 from app.services.rule_service import RuleService
 from app.services.rule_condition_service import RuleConditionService
 from app.services.user_service import UserService
+from app.services.audit_service import log_audit
 
 from app.models.rules import RulesTable
 from app.models.rule_conditions import RuleConditionsTable
@@ -170,7 +171,24 @@ def edit_profile():
             # =========================
             # SAVE DATABASE
             # =========================
+            before_data = {
+                "username": current_user.username,
+                "email": current_user.email,
+                "full_name": current_user.full_name,
+            }
             db.session.commit()
+            after_data = {
+                "username": current_user.username,
+                "email": current_user.email,
+                "full_name": current_user.full_name,
+            }
+            log_audit(
+                "UPDATE",
+                "users",
+                current_user.id,
+                before_data=before_data,
+                after_data=after_data,
+            )
 
             flash("Profile updated successfully!", "success")
             return redirect(url_for("user.setting_index"))

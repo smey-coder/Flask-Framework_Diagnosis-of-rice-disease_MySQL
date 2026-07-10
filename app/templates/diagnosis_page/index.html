@@ -34,6 +34,13 @@
                            placeholder="🔍 Search symptom...">
                 </div>
             </div>
+            <!-- Selected Symptoms Panel -->
+            <div class="px-3 pt-3">
+                <div class="alert alert-info d-none" id="selectedBox">
+                    <strong>Selected Symptoms:</strong>
+                    <div id="selectedList" class="mt-2"></div>
+                </div>
+            </div>
 
             <div class="card-body">
                 <div class="row" id="symptomContainer">
@@ -83,11 +90,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('symptomSearch');
     const items = document.querySelectorAll('.symptom-item');
 
+    const selectedBox = document.getElementById('selectedBox');
+    const selectedList = document.getElementById('selectedList');
     // Enable / Disable diagnosis button
+     //Enable / Disable button + Selected panel
     function toggleSubmit() {
-        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-        submitBtn.disabled = !anyChecked;
+        const checked = document.querySelectorAll('.symptom-checkbox:checked');
+
+        submitBtn.disabled = checked.length === 0;
+
+        if (checked.length > 0) {
+            selectedBox.classList.remove('d-none');
+            selectedList.innerHTML = "";
+
+            checked.forEach(cb => {
+                const label = document.querySelector(`label[for="${cb.id}"]`).innerText;
+
+                const badge = document.createElement("span");
+                badge.className = "badge bg-primary me-1 mb-1";
+                badge.innerText = label;
+
+                selectedList.appendChild(badge);
+            });
+
+        } else {
+            selectedBox.classList.add('d-none');
+        }
     }
+    // function toggleSubmit() {
+    //     const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+    //     submitBtn.disabled = !anyChecked;
+    // }
 
     checkboxes.forEach(cb => cb.addEventListener('change', toggleSubmit));
     toggleSubmit();

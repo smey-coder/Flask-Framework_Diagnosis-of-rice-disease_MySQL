@@ -12,6 +12,7 @@ from app.models.user import UserTable
 from app.models.rules import RulesTable
 from app.services.user_service import UserService
 from extensions import db
+from app.services.audit_service import log_audit
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.forms.user_forms import UserEditForm, UserProfileForm
 from app.models.role import RoleTable
@@ -143,7 +144,24 @@ def settings():
             # =========================
             # SAVE DATABASE
             # =========================
+            before_data = {
+                "username": current_user.username,
+                "email": current_user.email,
+                "full_name": current_user.full_name,
+            }
             db.session.commit()
+            after_data = {
+                "username": current_user.username,
+                "email": current_user.email,
+                "full_name": current_user.full_name,
+            }
+            log_audit(
+                "UPDATE",
+                "users",
+                current_user.id,
+                before_data=before_data,
+                after_data=after_data,
+            )
 
             flash("Profile updated successfully!", "success")
             return redirect(url_for("admin.settings"))

@@ -22,6 +22,7 @@ from app.forms.diseases_forms import DiseaseCreateForm, DiseaseEditForm, Disease
 from app.forms.diagnosis_form import DiagnosisForm
 from app.services.diagnosis_service import DiagnosisService
 from app.services.disease_service import DiseaseService
+from app.services.audit_service import log_audit
 
 expert_bp = Blueprint(
     "expert", __name__, url_prefix="/expert", template_folder="../../templates"
@@ -106,7 +107,24 @@ def edit_profile():
             # =========================
             # SAVE DATABASE
             # =========================
+            before_data = {
+                "username": current_user.username,
+                "email": current_user.email,
+                "full_name": current_user.full_name,
+            }
             db.session.commit()
+            after_data = {
+                "username": current_user.username,
+                "email": current_user.email,
+                "full_name": current_user.full_name,
+            }
+            log_audit(
+                "UPDATE",
+                "users",
+                current_user.id,
+                before_data=before_data,
+                after_data=after_data,
+            )
 
             flash("Profile updated successfully!", "success")
             return redirect(url_for("expert.setting_index"))
