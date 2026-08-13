@@ -1,15 +1,27 @@
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
+from urllib.parse import quote_plus
 
 load_dotenv()
 
 class Config:
+    
+    DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
+    DB_PORT = os.environ.get("DB_PORT", "3306")
+    DB_DATABASE = os.environ.get("DB_DATABASE")
+    DB_USERNAME = os.environ.get("DB_USERNAME")
+    DB_PASSWORD = quote_plus(os.environ.get("DB_PASSWORD", ""))
+
     # ================= SECURITY =================
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 
     # ================= DATABASE =================
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///app.db")
+    #SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///app.db")
+    SQLALCHEMY_DATABASE_URI = (
+        f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}"
+        f"@{DB_HOST}:{DB_PORT}/{DB_DATABASE}"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # ================= SESSION / LOGIN =================
