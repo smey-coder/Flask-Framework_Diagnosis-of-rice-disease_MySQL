@@ -1,0 +1,253 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} Fields {%
+endblock %} {% block page_title %} Field Management {% endblock %} {% block
+styles %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/field.css') }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="container-fluid">
+  <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-1">
+        <i class="bi bi-grid-3x3-gap-fill text-success me-2"></i>
+        Field Management
+      </h4>
+
+      <p class="text-muted mb-0">Manage your rice fields</p>
+    </div>
+
+    <a href="{{ url_for('fields.create') }}" class="btn btn-success">
+      <i class="bi bi-plus-circle me-1"></i>
+
+      Add Field
+    </a>
+  </div>
+
+  <!-- =====================================================
+         FIELD CARD
+    ====================================================== -->
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-0 fw-bold">Fields</h5>
+
+          <small class="text-muted">
+            Total:
+            <strong> {{ fields|length }} </strong>
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================
+             TABLE
+        ================================================== -->
+
+    <div class="card-body p-0">
+      {% if fields %}
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="text-center">#</th>
+
+              <th>Field Name</th>
+
+              <th>Farm</th>
+
+              <th>Area</th>
+
+              <th>Soil Type</th>
+
+              <th>Location</th>
+
+              <th class="text-center">Status</th>
+
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for field in fields %}
+
+            <tr>
+              <!-- NUMBER -->
+
+              <td class="text-center text-muted">{{ loop.index }}</td>
+
+              <!-- FIELD NAME -->
+
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="field-icon me-2">
+                    <i class="bi bi-grid-fill"></i>
+                  </div>
+
+                  <div>
+                    <strong> {{ field.field_name }} </strong>
+
+                    <div class="small text-muted">ID: #{{ field.id }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- FARM -->
+
+              <td>
+                {% if field.farm %}
+
+                <a
+                  href="{{ url_for('farms.detail',farm_id=field.farm.id) }}"
+                  class="text-decoration-none"
+                >
+                  <i class="bi bi-tree-fill me-1"></i>
+
+                  {{ field.farm.farm_name }}
+                </a>
+
+                {% else %}
+
+                <span class="text-muted"> — </span>
+
+                {% endif %}
+              </td>
+
+              <!-- AREA -->
+
+              <td>
+                {% if field.area %}
+
+                <strong> {{ field.area }} </strong>
+
+                <small class="text-muted"> ha </small>
+
+                {% else %}
+
+                <span class="text-muted"> — </span>
+
+                {% endif %}
+              </td>
+
+              <!-- SOIL TYPE -->
+
+              <td>
+                {% if field.soil_type %} {{ field.soil_type }} {% else %}
+
+                <span class="text-muted"> — </span>
+
+                {% endif %}
+              </td>
+
+              <!-- LOCATION -->
+
+              <td>
+                {% if field.location %}
+
+                <span title="{{ field.location }}">
+                  <i class="bi bi-geo-alt me-1"></i>
+
+                  {{ field.location }}
+                </span>
+
+                {% else %}
+
+                <span class="text-muted"> — </span>
+
+                {% endif %}
+              </td>
+
+              <!-- STATUS -->
+
+              <td class="text-center">
+                {% if field.status == "Active" %}
+
+                <span class="badge bg-success">
+                  <i class="bi bi-check-circle me-1"></i>
+                  Active
+                </span>
+
+                {% else %}
+
+                <span class="badge bg-secondary">
+                  <i class="bi bi-dash-circle me-1"></i>
+                  Inactive
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- ACTION -->
+
+              <td class="text-center">
+                <div class="btn-group">
+                  <a
+                    href="{{ url_for('fields.detail',field_id=field.id) }}"
+                    class="btn btn-sm btn-outline-info"
+                    title="View"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </a>
+
+                  <a
+                    href="{{ url_for('fields.edit',field_id=field.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                    title="Edit"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+
+                  <a
+                    href="{{ url_for('fields.delete_confirm',field_id=field.id) }}"
+                    class="btn btn-sm btn-outline-danger"
+                    title="Delete"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% else %}
+
+      <!-- =================================================
+                 EMPTY STATE
+            ================================================== -->
+
+      <div class="empty-state text-center">
+        <div class="empty-icon">
+          <i class="bi bi-grid-3x3-gap"></i>
+        </div>
+
+        <h5 class="fw-bold mt-3">No Fields Found</h5>
+
+        <p class="text-muted">You have not created any field yet.</p>
+
+        <a href="{{ url_for('fields.create') }}" class="btn btn-success">
+          <i class="bi bi-plus-circle me-1"></i>
+
+          Create Your First Field
+        </a>
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

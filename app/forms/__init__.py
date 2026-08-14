@@ -4,6 +4,9 @@ from app.forms.permission_forms import PermissionCreateForm, PermissionEditForm,
 from app.forms.diagnosis_form import DiagnosisForm
 from app.forms.weather_form import CitySearchForm
 from app.forms.diseases_forms import DiseaseCreateForm, DiseaseEditForm, DiseaseConfirmDeleteForm, DiseaseSearchForm
+from app.forms.farm_forms import FarmCreateForm, FarmEditForm, FarmConfirmDeleteForm
+from app.forms.field_forms import FieldForm, FieldConfirmDeleteForm
+from app.forms.field_crop_form import FieldCropForm, FieldCropDeleteForm
 __all__ = [
     "UserCreateForm",
     "UserEditForm",
@@ -21,6 +24,13 @@ __all__ = [
     "DiseaseConfirmDeleteForm",
     "DiseaseSearchForm",
     "UserProfileForm",
-    "DeleteAccountForm"
+    "DeleteAccountForm",
+    "FarmCreateForm",
+    "FarmEditForm",
+    "FarmConfirmDeleteForm",
+    "FieldForm",
+    "FieldConfirmDeleteForm",
+    "FieldCropForm",
+    "FieldCropDeleteForm"
     # "CitySearchForm"
 ]

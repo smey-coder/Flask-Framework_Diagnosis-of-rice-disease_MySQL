@@ -1,272 +1,942 @@
-{% extends "layouts/user_layout/user.html" %}
-{% block title %}Dashboard | RiceCare AI{% endblock %}
-
-{% block content %}
+{% extends "layouts/user_layout/user.html" %} {% block title %}Dashboard |
+RiceCare AI{% endblock %} {% block content %}
 <div class="container py-4">
-
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-7">
-            <h3 class="fw-bold text-dark mb-0" id="dynamic-greeting">សួស្តី!</h3>
-        </div>
-        <div class="col-md-5 d-flex justify-content-md-end align-items-center mt-3 mt-md-0">
-            <!-- <div class="me-3">
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-7">
+      <h3 class="fw-bold text-dark mb-0" id="dynamic-greeting">សួស្តី!</h3>
+    </div>
+    <div
+      class="col-md-5 d-flex justify-content-md-end align-items-center mt-3 mt-md-0"
+    >
+      <!-- <div class="me-3">
                 <button class="btn btn-white shadow-sm rounded-circle position-relative">
                     <i class="fas fa-bell text-success"></i>
                     <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
                 </button>
             </div> -->
-            <div class="bg-white px-3 py-2 rounded-4 shadow-sm border-end border-success border-4 text-end">
-                <div id="khmer-time" class="fw-bold text-success fs-5 lh-1">០០:០០</div>
-                <div id="khmer-date" class="small text-muted" style="font-size: 0.75rem;">ថ្ងៃ... ទី...</div>
-            </div>
+      <div
+        class="bg-white px-3 py-2 rounded-4 shadow-sm border-end border-success border-4 text-end"
+      >
+        <div id="khmer-time" class="fw-bold text-success fs-5 lh-1">០០:០០</div>
+        <div
+          id="khmer-date"
+          class="small text-muted"
+          style="font-size: 0.75rem"
+        >
+          ថ្ងៃ... ទី...
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12">
+      <div
+        class="card border-0 rounded-5 shadow-lg overflow-hidden text-white"
+        style="background: linear-gradient(rgba(10, 105, 108, 0.3), rgba(3, 171, 79, 0.3)), url('{{ url_for('static', filename='images/logo_dashboard.jpg') }}'); background-size: cover; background-position: center; min-height: 220px;"
+      >
+        <div
+          class="card-body d-flex flex-column justify-content-center p-4 p-md-5"
+        >
+          <h1 class="display-6 fw-bold">{{lang.home.careforyourricecrop}}</h1>
+          <p class="lead opacity-90">
+            {{lang.home.QuicklydiagnoseandtreatricediseaseswithAItechnology}}
+          </p>
+          <div>
+            <a
+              href="{{ url_for('user.diagnosis_input') }}"
+              class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow"
+            >
+              <i class="fas fa-qrcode me-2"></i>
+              {{lang.home.Start_diagnosing_the_disease}}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-6 col-md-3">
+      <div
+        class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden"
+      >
+        <img
+          src="{{ url_for('static', filename='images/analytics.png') }}"
+          class="card-img-top"
+          alt="Diagnose"
+          style="height: 120px; object-fit: contain"
+        />
+        <div class="card-body text-center p-3">
+          <h6 class="fw-bold mb-0">{{lang.home.Diagnose_the_disease}}</h6>
+          <a
+            href="{{ url_for('user.diagnosis_input') }}"
+            class="stretched-link"
+          ></a>
+        </div>
+      </div>
     </div>
 
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card border-0 rounded-5 shadow-lg overflow-hidden text-white" 
-                 style="background: linear-gradient(rgba(10, 105, 108, 0.3), rgba(3, 171, 79, 0.3)), url('{{ url_for('static', filename='images/logo_dashboard.jpg') }}'); background-size: cover; background-position: center; min-height: 220px;">
-                <div class="card-body d-flex flex-column justify-content-center p-4 p-md-5">
-                    <h1 class="display-6 fw-bold">{{lang.home.careforyourricecrop}}</h1>
-                    <p class="lead opacity-90">{{lang.home.QuicklydiagnoseandtreatricediseaseswithAItechnology}}</p>
-                    <div>
-                        <a href="{{ url_for('user.diagnosis_input') }}" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow">
-                            <i class="fas fa-qrcode me-2"></i> {{lang.home.Start_diagnosing_the_disease}}
-                        </a>
+    <div class="col-6 col-md-3">
+      <div
+        class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden"
+      >
+        <img
+          src="{{ url_for('static', filename='images/Library.png') }}"
+          class="card-img-top"
+          alt="Diseases"
+          style="height: 120px; object-fit: contain"
+        />
+        <div class="card-body text-center p-3">
+          <h6 class="fw-bold mb-0">{{lang.home.Library_the_disease}}</h6>
+          <a
+            href="{{ url_for('user.disease_index') }}"
+            class="stretched-link"
+          ></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div
+        class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden"
+      >
+        <img
+          src="{{ url_for('static', filename='images/history_disease.avif') }}"
+          class="card-img-top"
+          alt="Treatment"
+          style="height: 120px; object-fit: contain"
+        />
+        <div class="card-body text-center p-3">
+          <h6 class="fw-bold mb-0">{{lang.home.Diagnostics_history}}</h6>
+          <a
+            href="{{ url_for('user.diagnosis_history') }}"
+            class="stretched-link"
+          ></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div
+        class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden"
+      >
+        <img
+          src="{{ url_for('static', filename='images/green_information.jpg') }}"
+          class="card-img-top"
+          alt="Treatment"
+          style="height: 120px; object-fit: contain"
+        />
+        <div class="card-body text-center p-3">
+          <h6 class="fw-bold mb-0">{{lang.home.New_information}}</h6>
+          <a
+            href="{{url_for('user.new_information')}}"
+            class="stretched-link"
+          ></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =====================================================
+     CROP MONITORING
+    ====================================================== -->
+  <div class="row g-4 mb-5">
+    <!-- TOTAL CROPS -->
+    <div class="col-6 col-md-3">
+      <div class="card monitoring-stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="monitoring-icon monitoring-icon-green me-3">
+              <i class="fas fa-seedling"></i>
+            </div>
+
+            <div>
+              <div class="monitoring-stat-number">{{ total_field_crops }}</div>
+
+              <div class="monitoring-stat-label">Total Field Crops</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVE CROPS -->
+    <div class="col-6 col-md-3">
+      <div class="card monitoring-stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="monitoring-icon monitoring-icon-blue me-3">
+              <i class="fas fa-leaf"></i>
+            </div>
+
+            <div>
+              <div class="monitoring-stat-number">{{ active_crops }}</div>
+
+              <div class="monitoring-stat-label">Active Crops</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HARVESTED -->
+    <div class="col-6 col-md-3">
+      <div class="card monitoring-stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="monitoring-icon monitoring-icon-yellow me-3">
+              <i class="fas fa-wheat-awn"></i>
+            </div>
+
+            <div>
+              <div class="monitoring-stat-number">{{ harvested_crops }}</div>
+
+              <div class="monitoring-stat-label">Harvested</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLETED -->
+    <div class="col-6 col-md-3">
+      <div class="card monitoring-stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="monitoring-icon monitoring-icon-green me-3">
+              <i class="fas fa-check-circle"></i>
+            </div>
+
+            <div>
+              <div class="monitoring-stat-number">{{ completed_crops }}</div>
+
+              <div class="monitoring-stat-label">Completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =====================================================
+     RECENT CROP MONITORING
+====================================================== -->
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="card-header bg-white py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0 text-dark">
+          <i class="fas fa-seedling text-success me-2"></i>
+
+          Recent Crop Monitoring
+        </h5>
+
+        <a
+          href="{{ url_for('crop_monitoring.index') }}"
+          class="btn btn-sm btn-outline-success rounded-pill"
+        >
+          View All
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4">Field</th>
+
+              <th>Rice Variety</th>
+
+              <th>Growth Stage</th>
+
+              <th>Health</th>
+
+              <th>Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% if recent_monitorings %} {% for monitoring in recent_monitorings
+            %}
+
+            <tr>
+              <!-- FIELD -->
+
+              <td class="ps-4">
+                <div class="fw-bold">
+                  {{ monitoring.field_crop.field.field_name }}
+                </div>
+
+                <small class="text-muted">
+                  {{ monitoring.field_crop.field.farm.farm_name }}
+                </small>
+              </td>
+
+              <!-- RICE VARIETY -->
+
+              <td>
+                {% if monitoring.field_crop.rice_variety %} {{
+                monitoring.field_crop.rice_variety.variety_name }} {% else %}
+
+                <span class="text-muted"> - </span>
+
+                {% endif %}
+              </td>
+
+              <!-- GROWTH STAGE -->
+
+              <td>
+                {% if monitoring.growth_stage %}
+
+                <span class="badge rounded-pill bg-success-subtle text-success">
+                  {{ monitoring.growth_stage.stage_name }}
+                </span>
+
+                {% else %}
+
+                <span class="text-muted"> - </span>
+
+                {% endif %}
+              </td>
+
+              <!-- HEALTH -->
+
+              <td>
+                {% if monitoring.plant_health == "Good" %}
+
+                <span class="badge rounded-pill bg-success"> Good </span>
+
+                {% elif monitoring.plant_health == "Warning" %}
+
+                <span class="badge rounded-pill bg-warning text-dark">
+                  Warning
+                </span>
+
+                {% elif monitoring.plant_health == "Poor" %}
+
+                <span class="badge rounded-pill bg-danger"> Poor </span>
+
+                {% else %}
+
+                <span class="badge rounded-pill bg-secondary">
+                  {{ monitoring.plant_health }}
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- DATE -->
+
+              <td class="text-muted">
+                {{ monitoring.monitoring_date.strftime('%d-%m-%Y') }}
+              </td>
+            </tr>
+
+            {% endfor %} {% else %}
+
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted">
+                <i class="fas fa-seedling fs-2 mb-2 d-block"></i>
+
+                No crop monitoring records yet.
+              </td>
+            </tr>
+
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- =====================================================
+     CROP OVERVIEW
+====================================================== -->
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-8">
+      <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body">
+          <h5 class="fw-bold mb-4">
+            <i class="fas fa-chart-line text-success me-2"></i>
+
+            Crop Overview
+          </h5>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted"> Active Crops </span>
+
+              <strong> {{ active_crops }} </strong>
+            </div>
+
+            <div class="progress" style="height: 8px">
+              {% if total_field_crops > 0 %}
+
+              <div
+                class="progress-bar bg-success"
+                style="width: {{ (active_crops / total_field_crops * 100)|round }}%;"
+              ></div>
+
+              {% else %}
+
+              <div class="progress-bar bg-success" style="width: 0%"></div>
+
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted"> Harvested </span>
+
+              <strong> {{ harvested_crops }} </strong>
+            </div>
+
+            <div class="progress" style="height: 8px">
+              {% if total_field_crops > 0 %}
+
+              <div
+                class="progress-bar bg-warning"
+                style="width: {{ (harvested_crops / total_field_crops * 100)|round }}%;"
+              ></div>
+
+              {% else %}
+
+              <div class="progress-bar bg-warning" style="width: 0%"></div>
+
+              {% endif %}
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted"> Completed </span>
+
+              <strong> {{ completed_crops }} </strong>
+            </div>
+
+            <div class="progress" style="height: 8px">
+              {% if total_field_crops > 0 %}
+
+              <div
+                class="progress-bar bg-primary"
+                style="width: {{ (completed_crops / total_field_crops * 100)|round }}%;"
+              ></div>
+
+              {% else %}
+
+              <div class="progress-bar bg-primary" style="width: 0%"></div>
+
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTION -->
+
+    <div class="col-md-4">
+      <div
+        class="card border-0 shadow-sm rounded-4 h-100"
+        style="background: linear-gradient(135deg, #198754, #20c997)"
+      >
+        <div
+          class="card-body text-white d-flex flex-column justify-content-center"
+        >
+          <div class="mb-3">
+            <i class="fas fa-seedling fs-1"></i>
+          </div>
+
+          <h5 class="fw-bold">Monitor Your Crops</h5>
+
+          <p class="opacity-75">
+            Keep track of your rice crop health, growth stages and field
+            conditions.
+          </p>
+
+          <div>
+            <a
+              href="{{ url_for('crop_monitoring.create') }}"
+              class="btn btn-light rounded-pill px-4"
+            >
+              <i class="fas fa-plus me-1"></i>
+
+              Add Monitoring
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--CITY SELECTION SECTION -->
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="card stat-card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title fw-bold mb-3">
+            🌤️ {{lang.home.Select_your_city_in_cambodia}}
+          </h5>
+          <form method="POST" class="row g-3">
+            {{ form.hidden_tag() }}
+            <div class="col-md-8">
+              <label>{{lang.home.Select_your_city}}</label>
+              {{ form.city(class="form-select") }}
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              {{ form.submit(class="btn btn-primary w-100") }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEATHER DISPLAY SECTION -->
+  {% if selected_city_weather %}
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="card stat-card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title fw-bold mb-3">🌤️ Current Weather</h5>
+          <div class="row text-center">
+            <div class="col-md-6">
+              <h3>{{ selected_city_weather.city }}, Cambodia</h3>
+              <img
+                src="http://openweathermap.org/img/wn/{{ selected_city_weather.icon }}@2x.png"
+                alt="{{ selected_city_weather.description }}"
+                class="img-fluid mb-3"
+                style="max-width: 100px"
+              />
+              <h1 class="display-4 fw-bold">
+                {{ selected_city_weather.temperature }}°C
+              </h1>
+              <p class="lead">{{ selected_city_weather.description }}</p>
+              <p class="text-muted">
+                Feels like {{ selected_city_weather.feels_like }}°C
+              </p>
+            </div>
+            <div class="col-md-6">
+              <div class="row g-3">
+                <div class="col-6">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-tint text-info"></i>
+                    <div class="fw-bold">
+                      {{ selected_city_weather.humidity }}%
                     </div>
+                    <small class="text-muted">Humidity</small>
+                  </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mb-5">
-        <div class="col-6 col-md-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/analytics.png') }}" class="card-img-top" alt="Diagnose" style="height: 120px; object-fit: contain;">
-                <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">{{lang.home.Diagnose_the_disease}}</h6>
-                    <a href="{{ url_for('user.diagnosis_input') }}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/Library.png') }}" class="card-img-top" alt="Diseases" style="height: 120px; object-fit: contain;">
-                <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">{{lang.home.Library_the_disease}}</h6>
-                    <a href="{{ url_for('user.disease_index') }}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/history_disease.avif') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: contain;">
-                <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">{{lang.home.Diagnostics_history}}</h6>
-                    <a href="{{ url_for('user.diagnosis_history') }}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
-                <img src="{{ url_for('static', filename='images/green_information.jpg') }}" class="card-img-top" alt="Treatment" style="height: 120px; object-fit: contain;">
-                <div class="card-body text-center p-3">
-                    <h6 class="fw-bold mb-0">{{lang.home.New_information}}</h6>
-                    <a href="{{url_for('user.new_information')}}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- 🔍 CITY SELECTION SECTION -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card stat-card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">🌤️ {{lang.home.Select_your_city_in_cambodia}}</h5>
-                    <form method="POST" class="row g-3">
-                        {{ form.hidden_tag() }}
-                        <div class="col-md-8">
-                            <label>{{lang.home.Select_your_city}}</label>
-                            {{ form.city(class="form-select") }}
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            {{ form.submit(class="btn btn-primary w-100") }}
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- 🌤️ WEATHER DISPLAY SECTION -->
-    {% if selected_city_weather %}
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card stat-card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">🌤️ Current Weather</h5>
-                    <div class="row text-center">
-                        <div class="col-md-6">
-                            <h3>{{ selected_city_weather.city }}, Cambodia</h3>
-                            <img src="http://openweathermap.org/img/wn/{{ selected_city_weather.icon }}@2x.png" alt="{{ selected_city_weather.description }}" class="img-fluid mb-3" style="max-width: 100px;">
-                            <h1 class="display-4 fw-bold">{{ selected_city_weather.temperature }}°C</h1>
-                            <p class="lead">{{ selected_city_weather.description }}</p>
-                            <p class="text-muted">Feels like {{ selected_city_weather.feels_like }}°C</p>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row g-3">
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <i class="fas fa-tint text-info"></i>
-                                        <div class="fw-bold">{{ selected_city_weather.humidity }}%</div>
-                                        <small class="text-muted">Humidity</small>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <i class="fas fa-wind text-success"></i>
-                                        <div class="fw-bold">{{ selected_city_weather.wind_speed }} m/s</div>
-                                        <small class="text-muted">Wind Speed</small>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <i class="fas fa-eye text-warning"></i>
-                                        <div class="fw-bold">{{ selected_city_weather.visibility }} km</div>
-                                        <small class="text-muted">Visibility</small>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <i class="fas fa-cloud text-secondary"></i>
-                                        <div class="fw-bold">{{ selected_city_weather.clouds }}%</div>
-                                        <small class="text-muted">Cloudiness</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-6">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-wind text-success"></i>
+                    <div class="fw-bold">
+                      {{ selected_city_weather.wind_speed }} m/s
                     </div>
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">Back to Search</a>
-                    </div>
+                    <small class="text-muted">Wind Speed</small>
+                  </div>
                 </div>
+                <div class="col-6">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-eye text-warning"></i>
+                    <div class="fw-bold">
+                      {{ selected_city_weather.visibility }} km
+                    </div>
+                    <small class="text-muted">Visibility</small>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-cloud text-secondary"></i>
+                    <div class="fw-bold">
+                      {{ selected_city_weather.clouds }}%
+                    </div>
+                    <small class="text-muted">Cloudiness</small>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+          <div class="text-center mt-3">
+            <a
+              href="{{ url_for('user.dashboard') }}"
+              class="btn btn-outline-secondary"
+              >Back to Search</a
+            >
+          </div>
         </div>
+      </div>
     </div>
-    {% endif %}
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-white py-3">
-            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-clipboard-list me-2 text-success"></i>{{lang.home.New_action}}</h5>
+  </div>
+  {% endif %}
+  <!-- =====================================================
+     FARM MANAGEMENT
+    ====================================================== -->
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <!-- HEADER -->
+
+    <div class="card-header bg-white py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="fw-bold mb-1 text-dark">
+            <i class="fas fa-tractor me-2 text-success"></i>
+
+            Farm Management
+          </h5>
+
+          <small class="text-muted">
+            Overview of your farms, fields and rice crops
+          </small>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-muted small">
-                        <tr>
-                            <th class="ps-4">{{lang.home.Disease_Name}}</th>
-                            <th>{{lang.home.Date}}</th>
-                            <th class="text-end pe-4">{{lang.home.Situation}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if recent_activities %}
-                            {% for activity in recent_activities %}
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-soft-success rounded-circle p-2 me-3">
-                                            <i class="fas fa-leaf text-success"></i>
-                                        </div>
-                                        <span class="fw-bold">{{ activity.disease_name }}</span>
-                                    </div>
-                                </td>
-                                <td class="text-muted small">{{ activity.created_at.strftime('%Y-%m-%d') }}</td>
-                                <td class="text-end pe-4">
-                                    <span class="badge rounded-pill bg-success-light text-success">រួចរាល់</span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr><td colspan="3" class="text-center py-5 text-muted">មិនទាន់មានសកម្មភាពនៅឡើយទេ។</td></tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+
+        <a
+          href="{{ url_for('farms.index') }}"
+          class="btn btn-outline-success btn-sm rounded-pill px-3"
+        >
+          View Farms
+
+          <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- BODY -->
+
+    <div class="card-body">
+      <div class="row g-3">
+        <!-- =================================================
+                    TOTAL FARMS
+                ================================================== -->
+
+        <div class="col-6 col-xl-3">
+          <div class="farm-stat-card farm-stat-green">
+            <div class="farm-stat-icon">
+              <i class="fas fa-tree"></i>
             </div>
+
+            <div>
+              <div class="farm-stat-label">Total Farms</div>
+
+              <div class="farm-stat-value">
+                {{ farm_statistics.total_farms }}
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- =================================================
+                    TOTAL FIELDS
+                ================================================== -->
+
+        <div class="col-6 col-xl-3">
+          <div class="farm-stat-card farm-stat-blue">
+            <div class="farm-stat-icon">
+              <i class="fas fa-border-all"></i>
+            </div>
+
+            <div>
+              <div class="farm-stat-label">Total Fields</div>
+
+              <div class="farm-stat-value">
+                {{ farm_statistics.total_fields }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================================================
+                    TOTAL CROPS
+                ================================================== -->
+
+        <div class="col-6 col-xl-3">
+          <div class="farm-stat-card farm-stat-yellow">
+            <div class="farm-stat-icon">
+              <i class="fas fa-seedling"></i>
+            </div>
+
+            <div>
+              <div class="farm-stat-label">Field Crops</div>
+
+              <div class="farm-stat-value">
+                {{ farm_statistics.total_crops }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================================================
+                    TOTAL AREA
+                ================================================== -->
+
+        <div class="col-6 col-xl-3">
+          <div class="farm-stat-card farm-stat-cyan">
+            <div class="farm-stat-icon">
+              <i class="fas fa-vector-square"></i>
+            </div>
+
+            <div>
+              <div class="farm-stat-label">Total Area</div>
+
+              <div class="farm-stat-value">
+                {{ "%.2f"|format( farm_statistics.total_area ) }}
+
+                <small>ha</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================
+                STATUS
+            ====================================================== -->
+
+      <div class="row g-3 mt-2">
+        <!-- ACTIVE FARMS -->
+
+        <div class="col-md-4">
+          <div class="farm-status-item">
+            <div class="farm-status-icon text-success">
+              <i class="fas fa-check-circle"></i>
+            </div>
+
+            <div>
+              <div class="small text-muted">Active Farms</div>
+
+              <strong> {{ farm_statistics.active_farms }} </strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVE FIELDS -->
+
+        <div class="col-md-4">
+          <div class="farm-status-item">
+            <div class="farm-status-icon text-primary">
+              <i class="fas fa-check-square"></i>
+            </div>
+
+            <div>
+              <div class="small text-muted">Active Fields</div>
+
+              <strong> {{ farm_statistics.active_fields }} </strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVE CROPS -->
+
+        <div class="col-md-4">
+          <div class="farm-status-item">
+            <div class="farm-status-icon text-warning">
+              <i class="fas fa-leaf"></i>
+            </div>
+
+            <div>
+              <div class="small text-muted">Active Crops</div>
+
+              <strong> {{ farm_statistics.active_crops }} </strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================
+                QUICK ACTION
+            ====================================================== -->
+
+      <div class="border-top mt-4 pt-3">
+        <div class="d-flex flex-wrap gap-2">
+          <a
+            href="{{ url_for('farms.create') }}"
+            class="btn btn-success rounded-pill px-3"
+          >
+            <i class="fas fa-plus me-1"></i>
+
+            Add Farm
+          </a>
+
+          <a
+            href="{{ url_for('fields.create') }}"
+            class="btn btn-outline-primary rounded-pill px-3"
+          >
+            <i class="fas fa-plus me-1"></i>
+
+            Add Field
+          </a>
+
+          <a
+            href="{{ url_for('field_crops.create') }}"
+            class="btn btn-outline-warning rounded-pill px-3"
+          >
+            <i class="fas fa-seedling me-1"></i>
+
+            Add Field Crop
+          </a>
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-header bg-white py-3">
+      <h5 class="fw-bold mb-0 text-dark">
+        <i class="fas fa-clipboard-list me-2 text-success"></i
+        >{{lang.home.New_action}}
+      </h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light text-muted small">
+            <tr>
+              <th class="ps-4">{{lang.home.Disease_Name}}</th>
+              <th>{{lang.home.Date}}</th>
+              <th class="text-end pe-4">{{lang.home.Situation}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if recent_activities %} {% for activity in recent_activities %}
+            <tr>
+              <td class="ps-4">
+                <div class="d-flex align-items-center">
+                  <div class="bg-soft-success rounded-circle p-2 me-3">
+                    <i class="fas fa-leaf text-success"></i>
+                  </div>
+                  <span class="fw-bold">{{ activity.disease_name }}</span>
+                </div>
+              </td>
+              <td class="text-muted small">
+                {{ activity.created_at.strftime('%Y-%m-%d') }}
+              </td>
+              <td class="text-end pe-4">
+                <span class="badge rounded-pill bg-success-light text-success"
+                  >រួចរាល់</span
+                >
+              </td>
+            </tr>
+            {% endfor %} {% else %}
+            <tr>
+              <td colspan="3" class="text-center py-5 text-muted">
+                មិនទាន់មានសកម្មភាពនៅឡើយទេ។
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>
-    /* CSS Styling for Images and Professional Look */
-    .hover-lift {
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .hover-lift:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
-    }
-    .bg-white { background-color: #ffffff !important; }
-    .bg-success-light { background-color: #d1e7dd; }
-    .bg-soft-success { background-color: #f0fdf4; }
-    .rounded-5 { border-radius: 2rem !important; }
+  /* CSS Styling for Images and Professional Look */
+  .hover-lift {
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important;
+  }
+  .bg-white {
+    background-color: #ffffff !important;
+  }
+  .bg-success-light {
+    background-color: #d1e7dd;
+  }
+  .bg-soft-success {
+    background-color: #f0fdf4;
+  }
+  .rounded-5 {
+    border-radius: 2rem !important;
+  }
 </style>
 
 <script>
-const khmerNumbers = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
-function toKhmerNumber(number) {
-    return number.toString().split('').map(d => khmerNumbers[d] || d).join('');
-}
-
-function updateKhmerTime() {
+  const khmerNumbers = ["០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"];
+  function toKhmerNumber(number) {
+    return number
+      .toString()
+      .split("")
+      .map((d) => khmerNumbers[d] || d)
+      .join("");
+  }
+  //update Khmer time
+  function updateKhmerTime() {
     const now = new Date();
     let hours = now.getHours();
     const minutes = now.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    
+    const ampm = hours >= 12 ? "PM" : "AM";
+
     hours = hours % 12;
     hours = hours ? hours : 12; // 0 -> 12
-    const khmerHours = toKhmerNumber(hours.toString().padStart(2, '0'));
-    const khmerMinutes = toKhmerNumber(minutes.toString().padStart(2, '0'));
+    const khmerHours = toKhmerNumber(hours.toString().padStart(2, "0"));
+    const khmerMinutes = toKhmerNumber(minutes.toString().padStart(2, "0"));
 
-    document.getElementById('khmer-time').innerText = `${khmerHours}:${khmerMinutes} ${ampm}`;
-    
+    document.getElementById("khmer-time").innerText =
+      `${khmerHours}:${khmerMinutes} ${ampm}`;
+
     // Khmer date (weekday and month)
-    const khmerWeekdays = ['អាទិត្យ', 'ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
-    const khmerMonths = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
-    
+    const khmerWeekdays = [
+      "អាទិត្យ",
+      "ច័ន្ទ",
+      "អង្គារ",
+      "ពុធ",
+      "ព្រហស្បតិ៍",
+      "សុក្រ",
+      "សៅរ៍",
+    ];
+    const khmerMonths = [
+      "មករា",
+      "កុម្ភៈ",
+      "មីនា",
+      "មេសា",
+      "ឧសភា",
+      "មិថុនា",
+      "កក្កដា",
+      "សីហា",
+      "កញ្ញា",
+      "តុលា",
+      "វិច្ឆិកា",
+      "ធ្នូ",
+    ];
+
     const weekday = khmerWeekdays[now.getDay()];
     const day = toKhmerNumber(now.getDate());
     const month = khmerMonths[now.getMonth()];
     const year = toKhmerNumber(now.getFullYear());
-    
-    document.getElementById('khmer-date').innerText = `ថ្ងៃ${weekday} ទី${day} ខែ${month} ឆ្នាំ${year}`;
-}
-function updateGreeting() {
+
+    document.getElementById("khmer-date").innerText =
+      `ថ្ងៃ${weekday} ទី${day} ខែ${month} ឆ្នាំ${year}`;
+  }
+  function updateGreeting() {
     const now = new Date();
     const hour = now.getHours();
     let greeting = "សួស្តី"; // Default
 
     if (hour >= 5 && hour < 12) {
-        greeting = "{{ lang.dashboard.good_morning }}"; // Good Morning
+      greeting = "{{ lang.dashboard.good_morning }}"; // Good Morning
     } else if (hour >= 12 && hour < 17) {
-        greeting = "{{ lang.dashboard.good_afternoon }}"; // Good Afternoon
+      greeting = "{{ lang.dashboard.good_afternoon }}"; // Good Afternoon
     } else if (hour >= 17 && hour < 20) {
-        greeting = "{{ lang.dashboard.good_evening }}"; // Good Evening
+      greeting = "{{ lang.dashboard.good_evening }}"; // Good Evening
     } else {
-        greeting = "{{ lang.dashboard.good_night }}"; // Good Night
+      greeting = "{{ lang.dashboard.good_night }}"; // Good Night
     }
 
     const userName = "{{ user.full_name }}"; // Injected from Flask
-    document.getElementById("dynamic-greeting").innerText = `${greeting}, ${userName} 🌾`;
-}
+    document.getElementById("dynamic-greeting").innerText =
+      `${greeting}, ${userName} 🌾`;
+  }
 
-// Update every second
-setInterval(updateKhmerTime, 1000);
-updateKhmerTime(); // initial call
-updateGreeting();
-// Optional: update every 10 minutes
-setInterval(updateGreeting, 600000);
+  // Update every second
+  setInterval(updateKhmerTime, 1000);
+  updateKhmerTime(); // initial call
+  updateGreeting();
+  // Optional: update every 10 minutes
+  setInterval(updateGreeting, 600000);
 </script>
 {% endblock %}

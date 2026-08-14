@@ -1,0 +1,144 @@
+<form method="POST" action="{{ form_action }}" novalidate>
+  {{ form.hidden_tag() }}
+
+  <!-- =====================================================
+       FARM
+  ====================================================== -->
+
+  <div class="mb-3">
+    <label for="farm_id" class="form-label fw-semibold">
+      Farm
+      <span class="text-danger">*</span>
+    </label>
+    <select id="farm_id" name="farm_id" class="form-select" required>
+      <option value="">-- Select Farm --</option>
+      {% for farm in farms %}
+      <option value="{{ farm.id }}"{% if field is defined and field.farm_id == farm.id %}
+            selected
+        {% endif %}
+      >
+        {{ farm.farm_name }}
+      </option>
+
+      {% endfor %}
+    </select>
+
+    <div class="form-text">Select the farm where this field belongs.</div>
+  </div>
+
+  <!-- =====================================================
+       FIELD NAME
+  ====================================================== -->
+
+  <div class="mb-3">
+    {{ form.field_name.label( class="form-label fw-semibold" ) }}
+
+    <span class="text-danger">*</span>
+
+    {{ form.field_name( class="form-control", placeholder="Example: Field A" )
+    }} {% for error in form.field_name.errors %}
+
+    <div class="text-danger small mt-1">
+      <i class="bi bi-exclamation-circle me-1"></i>
+
+      {{ error }}
+    </div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =====================================================
+       AREA
+  ====================================================== -->
+
+  <div class="mb-3">
+    {{ form.area.label( class="form-label fw-semibold" ) }} {{ form.area(
+    class="form-control", placeholder="Example: 2.50", step="0.01", min="0" ) }}
+
+    <div class="form-text">Unit: hectare (ha)</div>
+
+    {% for error in form.area.errors %}
+
+    <div class="text-danger small">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =====================================================
+       SOIL TYPE
+  ====================================================== -->
+
+  <div class="mb-3">
+    {{ form.soil_type.label( class="form-label fw-semibold" ) }} {{
+    form.soil_type( class="form-control", placeholder="Example: Clay" ) }} {%
+    for error in form.soil_type.errors %}
+
+    <div class="text-danger small">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =====================================================
+       LOCATION
+  ====================================================== -->
+
+  <div class="mb-3">
+    {{ form.location.label( class="form-label fw-semibold" ) }}
+
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="bi bi-geo-alt"></i>
+      </span>
+
+      {{ form.location( class="form-control", placeholder="Example: Phnom Penh"
+      ) }}
+    </div>
+
+    {% for error in form.location.errors %}
+
+    <div class="text-danger small">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =====================================================
+       DESCRIPTION
+  ====================================================== -->
+
+  <div class="mb-3">
+    {{ form.description.label( class="form-label fw-semibold" ) }} {{
+    form.description( class="form-control", rows="4", placeholder="Enter field
+    description..." ) }} {% for error in form.description.errors %}
+
+    <div class="text-danger small">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =====================================================
+       STATUS
+  ====================================================== -->
+
+  <div class="mb-4">
+    {{ form.status.label( class="form-label fw-semibold" ) }} {{ form.status(
+    class="form-select" ) }} {% for error in form.status.errors %}
+
+    <div class="text-danger small">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =====================================================
+       BUTTON
+  ====================================================== -->
+
+  <div class="d-flex justify-content-between">
+    <a href="{{ cancel_url }}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left me-1"></i>
+
+      Cancel
+    </a>
+
+    {{ form.submit( class="btn btn-success px-4" ) }}
+  </div>
+</form>

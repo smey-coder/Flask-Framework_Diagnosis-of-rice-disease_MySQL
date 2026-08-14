@@ -1,0 +1,204 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} Farms {%
+endblock %} {% block page_title %} Farm Management {% endblock %} {% block
+styles %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+        'static',
+        filename='css/farm.css'
+    ) }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="container-fluid">
+  <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-1">
+        <i class="bi bi-tree-fill text-success me-2"></i>
+
+        Farm Management
+      </h4>
+
+      <p class="text-muted mb-0">Manage your farms and rice production.</p>
+    </div>
+
+    <a href="{{ url_for('farms.create') }}" class="btn btn-success">
+      <i class="bi bi-plus-circle me-1"></i>
+
+      Add Farm
+    </a>
+  </div>
+
+  <!-- =====================================================
+         FLASH MESSAGE
+         ===================================================== -->
+
+  {% with messages = get_flashed_messages( with_categories=true ) %} {% if
+  messages %} {% for category, message in messages %}
+
+  <div
+    class="alert
+                           alert-{{ category }}
+                           alert-dismissible
+                           fade show"
+    role="alert"
+  >
+    {{ message }}
+
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  {% endfor %} {% endif %} {% endwith %}
+
+  <!-- =====================================================
+         FARM LIST
+         ===================================================== -->
+
+  <div class="row g-4">
+    {% if farms %} {% for farm in farms %}
+
+    <div class="col-xl-4 col-lg-6 col-md-6">
+      <div class="card shadow-sm h-100 farm-card">
+        <!-- CARD HEADER -->
+
+        <div class="farm-card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="farm-card-title">
+              <i class="bi bi-tree-fill text-success"></i>
+
+              {{ farm.farm_name }}
+            </h5>
+
+            {% if farm.status == "Active" %}
+
+            <span class="farm-status farm-status-active"> Active </span>
+
+            {% else %}
+
+            <span class="farm-status farm-status-inactive"> Inactive </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- CARD BODY -->
+
+        <div class="farm-card-body">
+          <!-- LOCATION -->
+
+          <div class="farm-info">
+            <span class="farm-info-label">
+              <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+
+              Location
+            </span>
+
+            <div class="farm-info-value">
+              {{ farm.location or "Not specified" }}
+            </div>
+          </div>
+
+          <!-- AREA -->
+
+          <div class="farm-info">
+            <span class="farm-info-label">
+              <i class="bi bi-bounding-box text-primary me-1"></i>
+
+              Farm Area
+            </span>
+
+            <div class="farm-info-value">
+              {% if farm.area %} {{ farm.area }} ha {% else %} Not specified {%
+              endif %}
+            </div>
+          </div>
+
+          <!-- FIELDS -->
+
+          <div class="farm-info">
+            <span class="farm-info-label">
+              <i class="bi bi-grid-3x3-gap-fill text-success me-1"></i>
+              Fields
+            </span>
+            <div class="farm-info-value">{{ farm.fields|length }} field(s)</div>
+          </div>
+          <!-- DESCRIPTION -->
+          {% if farm.description %}
+          <p class="farm-description">{{ farm.description }}</p>
+          {% endif %}
+        </div>
+        <!-- CARD FOOTER -->
+        <div class="farm-card-footer">
+          <div class="farm-card-actions">
+            <!-- VIEW -->
+            <a
+              href="{{ url_for('farms.detail',farm_id=farm.id) }}"
+              class="btn btn-sm btn-outline-success"
+            >
+              <i class="bi bi-eye me-1"></i>
+
+              View
+            </a>
+            <!-- EDIT -->
+            <a
+              href="{{ url_for('farms.edit',farm_id=farm.id) }}"
+              class="btn btn-sm btn-outline-warning"
+            >
+              <i class="bi bi-pencil-square me-1"></i>
+
+              Edit
+            </a>
+            <!-- DELETE -->
+            <a
+              href="{{ url_for('farms.delete_confirm',farm_id=farm.id) }}"
+              class="btn btn-sm btn-outline-danger"
+            >
+              <i class="bi bi-trash me-1"></i>
+
+              Delete
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %} {% else %}
+
+    <!-- =================================================
+                 EMPTY STATE
+                 ================================================= -->
+
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="farm-empty-state">
+          <i class="bi bi-tree farm-empty-icon"></i>
+
+          <h5 class="farm-empty-title">No Farms Found</h5>
+
+          <p class="farm-empty-description">
+            You haven't created any farm yet.
+          </p>
+
+          <a
+            href="{{ url_for('farms.create') }}"
+            class="btn btn-success"
+          >
+            <i class="bi bi-plus-circle me-1"></i>
+
+            Create Your First Farm
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

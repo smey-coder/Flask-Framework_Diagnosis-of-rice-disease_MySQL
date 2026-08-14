@@ -1,0 +1,50 @@
+.field-crop-card {
+    border-radius: 12px;
+}
+
+.field-crop-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.field-crop-header i {
+    font-size: 1.4rem;
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.delete-icon {
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f8d7da;
+
+    color: #dc3545;
+
+    font-size: 2rem;
+}
+
+.delete-info {
+    background: #f8f9fa;
+
+    border-radius: 10px;
+
+    padding: 20px;
+
+    border: 1px solid #dee2e6;
+}

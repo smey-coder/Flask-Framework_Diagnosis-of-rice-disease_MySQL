@@ -6,18 +6,16 @@ from app.models.symptoms import SymptomsTable
 from app.models.treatments import TreatmentTable
 from app.models.preventions import PreventionTable
 from app.services.audit_service import log_audit
-
 class DiagnosisService:
     """
     Expert system service using MYCIN certainty factor.
     Supports partial matches and explanation logs.
     """
-
     @staticmethod
     def combine_cfs(cf1: float, cf2: float) -> float:
         """Combine two certainty factors using MYCIN formula."""
         return cf1 + cf2 * (1 - cf1)
-
+    
     @classmethod
     def infer(cls, selected_symptom_ids: List[int]) -> Tuple[Dict[int, dict], Dict[str, List[dict]], List[dict]]:
         """
@@ -46,7 +44,6 @@ class DiagnosisService:
             condition_ids = {c.symptom_id for c in conditions}
             if not condition_ids:
                 continue
-
             matched_ids = condition_ids & facts
             matched_count = len(matched_ids)
             total_count = len(condition_ids)
@@ -103,7 +100,6 @@ class DiagnosisService:
                     "disease_name": result["disease"].disease_name,
                     "certainty": round(result["certainty"] * 100, 2)
                 })
-
             log_audit(
                 action="Diagnosis",
                 table_name="diagnosis_history",
@@ -115,10 +111,10 @@ class DiagnosisService:
                     "diagnosis_results": diagnosis_results
                 }
             )
-
         except Exception as e:
             print(f"Audit Error: {e}")
         return sorted_conclusions, rule_trace, skipped_rules
+    
     @staticmethod
     def explain_disease(disease_id: int, rule_trace: Dict[str, List[dict]]) -> List[dict]:
         # Make sure ID is string (keys in rule_trace are strings)

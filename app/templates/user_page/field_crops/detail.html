@@ -1,0 +1,360 @@
+{% extends "layouts/user_layout/user.html" %}
+
+{% block title %}
+Field Crop Detail
+{% endblock %}
+
+{% block page_title %}
+Field Crop Detail
+{% endblock %}
+
+{% block styles %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for(
+        'static',
+        filename='css/field_crop.css'
+    ) }}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-xl-9">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-success text-white">
+
+                <h5 class="mb-0 fw-bold">
+
+                    <i class="bi bi-flower1 me-2"></i>
+
+                    Field Crop Details
+
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <!-- Field -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Field
+                        </label>
+
+                        <div class="fw-semibold">
+
+                            <i class="bi bi-grid me-1 text-success"></i>
+
+                            {% if crop.field %}
+
+                                {{ crop.field.field_name }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Farm -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Farm
+                        </label>
+
+                        <div class="fw-semibold">
+
+                            <i class="bi bi-tree me-1 text-success"></i>
+
+                            {% if crop.field and crop.field.farm %}
+
+                                {{ crop.field.farm.farm_name }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Rice Variety -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Rice Variety
+                        </label>
+
+                        <div class="fw-semibold">
+
+                            {% if crop.rice_variety %}
+
+                                {{ crop.rice_variety.variety_name }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Growth Stage -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Growth Stage
+                        </label>
+
+                        <div class="fw-semibold">
+
+                            {% if crop.growth_stage %}
+
+                                {{ crop.growth_stage.stage_name }}
+
+                            {% else %}
+
+                                Not Set
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Planting Date -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Planting Date
+                        </label>
+
+                        <div>
+
+                            {% if crop.planting_date %}
+
+                                {{ crop.planting_date.strftime('%Y-%m-%d') }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Expected Harvest -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Expected Harvest
+                        </label>
+
+                        <div>
+
+                            {% if crop.expected_harvest_date %}
+
+                                {{ crop.expected_harvest_date.strftime('%Y-%m-%d') }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Actual Harvest -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Actual Harvest
+                        </label>
+
+                        <div>
+
+                            {% if crop.actual_harvest_date %}
+
+                                {{ crop.actual_harvest_date.strftime('%Y-%m-%d') }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Area -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Area
+                        </label>
+
+                        <div class="fw-semibold">
+
+                            {% if crop.area %}
+
+                                {{ crop.area }} ha
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div class="col-md-6">
+
+                        <label class="text-muted small">
+                            Status
+                        </label>
+
+                        <div>
+
+                            <span class="badge bg-success">
+
+                                {{ crop.status }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Description -->
+
+                    <div class="col-12">
+
+                        <label class="text-muted small">
+                            Description
+                        </label>
+
+                        <div class="border rounded p-3 bg-light">
+
+                            {% if crop.description %}
+
+                                {{ crop.description }}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    No description available.
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-footer d-flex justify-content-between">
+
+                <a
+                    href="{{ url_for('field_crops.index') }}"
+                    class="btn btn-secondary"
+                >
+
+                    <i class="bi bi-arrow-left me-1"></i>
+
+                    Back
+
+                </a>
+
+
+                <div>
+
+                    <a
+                        href="{{ url_for(
+                            'field_crops.edit',
+                            crop_id=crop.id
+                        ) }}"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="bi bi-pencil me-1"></i>
+
+                        Edit
+
+                    </a>
+
+
+                    <a
+                        href="{{ url_for(
+                            'field_crops.delete_confirm',
+                            crop_id=crop.id
+                        ) }}"
+                        class="btn btn-danger"
+                    >
+
+                        <i class="bi bi-trash me-1"></i>
+
+                        Delete
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

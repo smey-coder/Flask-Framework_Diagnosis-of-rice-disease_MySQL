@@ -1,0 +1,67 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} Edit Crop
+Monitoring {% endblock %} {% block page_title %} Edit Crop Monitoring {%
+endblock %} {% block styles %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+        'static',
+        filename='css/crop_monitoring.css'
+    ) }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+      <div class="mb-4">
+        <a
+          href="{{ url_for('crop_monitoring.index') }}"
+          class="text-decoration-none text-muted"
+        >
+          <i class="bi bi-arrow-left me-1"></i>
+
+          Back to Crop Monitoring
+        </a>
+
+        <h3 class="fw-bold mt-3 mb-1">
+          <i class="bi bi-pencil-square text-primary me-2"></i>
+
+          Edit Crop Monitoring
+        </h3>
+
+        <p class="text-muted">
+          Update the monitoring information for your rice crop.
+        </p>
+      </div>
+
+      <!-- =================================================
+                 FORM CARD
+            ================================================== -->
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+          <h5 class="mb-0 fw-bold">
+            <i class="bi bi-clipboard2-pulse me-2"></i>
+
+            Update Monitoring Information
+          </h5>
+        </div>
+
+        <div class="card-body p-4">
+          <form method="POST" action="{{ form_action }}">
+            {{ form.hidden_tag() }} {% include
+            "user_page/crop_monitorings/_form.html" %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

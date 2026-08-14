@@ -5,10 +5,24 @@
 <!-- Image Preview Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-info">
-            <div class="modal-body text-center">
-                <img id="modalImage" src="" class="img-fluid rounded">
+        <div class="modal-content bg-dark border-0 rounded-4 shadow-lg position-relative">
+
+            <!-- Modal Body -->
+            <div class="modal-body text-center p-3">
+                <img id="modalImage"
+                     src=""
+                     class="img-fluid rounded-3 shadow"
+                     style="max-height: 80vh; object-fit: contain;">
             </div>
+
+            <!-- Footer (optional close button) -->
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button"
+                        class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
         </div>
     </div>
 </div>

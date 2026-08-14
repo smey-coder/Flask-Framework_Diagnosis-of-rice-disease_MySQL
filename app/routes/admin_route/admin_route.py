@@ -192,39 +192,87 @@ def about():
     }
     return render_template("admin_page/about.html", about=about_info)
 
-
 # ---------- DIAGNOSIS INPUT ----------
 @admin_bp.route("/diagnosis", methods=["GET", "POST"])
 @login_required
 @role_required("Admin")
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_input():
-    form = DiagnosisForm()
-    # Get all active symptoms
-    symptoms = SymptomsTable.query.filter_by(is_active=True).all()
-    # Make sure IDs are integers
-    form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
-
-    if form.validate_on_submit():
-        # Convert submitted data to integers
-        selected_ids = [int(s) for s in form.symptoms.data or []]
-
-        if not selected_ids:
-            flash("Please select at least one symptom.", "warning")
-            return redirect(url_for("admin.diagnosis_input"))
-
-        # Store IDs in session
-        session["selected_symptoms"] = selected_ids
-
-        # Store corresponding symptom NAMES for view filtering
-        selected_symptoms = SymptomsTable.query.filter(SymptomsTable.id.in_(selected_ids)).all()
-        session["selected_symptoms_names"] = [s.symptom_name for s in selected_symptoms]
-
-        return redirect(url_for("admin.diagnosis_result"))
-
-    return render_template("diagnosis_page/index.html", form=form, user=current_user)
-
-
+    # form = DiagnosisForm()
+    # # Get all active symptoms
+    # symptoms = SymptomsTable.query.filter_by(is_active=True).all()
+    # # Make sure IDs are integers
+    # form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
+    # if form.validate_on_submit():
+    #     # Convert submitted data to integers
+    #     selected_ids = [int(s) for s in form.symptoms.data or []]
+    #     if not selected_ids:
+    #         flash("Please select at least one symptom.", "warning")
+    #         return redirect(url_for("admin.diagnosis_input"))
+    #     # Store IDs in session
+    #     session["selected_symptoms"] = selected_ids
+    #     # Store corresponding symptom NAMES for view filtering
+    #     selected_symptoms = SymptomsTable.query.filter(SymptomsTable.id.in_(selected_ids)).all()
+    #     session["selected_symptoms_names"] = [s.symptom_name for s in selected_symptoms]
+    #     return redirect(url_for("admin.diagnosis_result"))
+    # return render_template("diagnosis_page/index.html", form=form, user=current_user)
+    try:
+        form = DiagnosisForm()
+        # Get all active symptoms
+        symptoms = SymptomsTable.query.filter_by(is_active=True).all()
+        # WTForms choices (for validation)
+        form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
+    
+        # Group symptoms by type
+        grouped_symptoms = {
+            "Grain(គ្រាប់)": [],
+            "Leaf(ស្លឹក)": [],
+            "Root(ឬស)": [],
+            "Stem(ដើម)": []
+        }
+    
+        for s in symptoms:
+            if s.symptom_group == "Grain(គ្រាប់)":
+                grouped_symptoms["Grain(គ្រាប់)"].append(s)
+            elif s.symptom_group == "Leaf(ស្លឹក)":
+                grouped_symptoms["Leaf(ស្លឹក)"].append(s)
+            elif s.symptom_group == "Root(ឬស)":
+                grouped_symptoms["Root(ឬស)"].append(s)
+            elif s.symptom_group == "Stem(ដើម)":
+                grouped_symptoms["Stem(ដើម)"].append(s)
+    
+        #Handle form submit
+        if form.validate_on_submit():
+            try:
+                selected_ids = [int(s) for s in form.symptoms.data or []]
+                if not selected_ids:
+                    flash("Please select at least one symptom.", "warning")
+                    return redirect(url_for("admin.diagnosis_input"))
+                    # Store in session
+                session["selected_symptoms"] = selected_ids
+    
+                selected_symptoms = SymptomsTable.query.filter(
+                    SymptomsTable.id.in_(selected_ids)
+                ).all()
+    
+                session["selected_symptoms_names"] = [
+                    s.symptom_name for s in selected_symptoms
+                ]
+                return redirect(url_for("admin.diagnosis_result"))
+            except Exception as form_error:
+                    flash("Error processing selected symptoms.", "danger")
+                    print(f"[FORM ERROR]: {form_error}")
+                    return redirect(url_for("admin.diagnosis_input"))
+        return render_template(
+            "diagnosis_page/index.html",
+            form=form,
+            grouped_symptoms=grouped_symptoms,
+            user=current_user
+        )
+    except Exception as e:
+        flash("System error: Unable to load diagnosis page.", "danger")
+        print(f"[DIAGNOSIS ERROR]: {e}")
+        return redirect(url_for("admin.diagnosis_input"))
 # ---------- DIAGNOSIS RESULT ----------
 @admin_bp.route("/diagnosis/result")
 @login_required
@@ -270,8 +318,6 @@ def diagnosis_result():
         results=results,
         user=current_user
     )
-
-
 # ---------- DIAGNOSIS EXPLANATION ----------
 @admin_bp.route("/diagnosis/explain/<int:disease_id>")
 @login_required
@@ -309,11 +355,9 @@ def diagnosis_explain(disease_id):
         treatments=treatments,
         preventions=preventions,
         selected_symptoms=selected_symptoms,
-        certainty=overall_cf,   # ✅ PASS TO TEMPLATE
+        certainty=overall_cf,   #PASS TO TEMPLATE
         user=current_user
     )
-
-
 # ---------- TREATMENT & PREVENTION ----------
 @admin_bp.route("/diagnosis/treatment/<int:disease_id>")
 @login_required
@@ -328,8 +372,6 @@ def disease_treatment(disease_id):
         treatments=treatments,
         user=current_user
     )
-
-
 @admin_bp.route("/diagnosis/prevention/<int:disease_id>")
 @login_required
 @role_required("Admin")

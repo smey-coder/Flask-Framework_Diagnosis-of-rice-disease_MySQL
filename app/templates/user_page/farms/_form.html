@@ -1,0 +1,70 @@
+<form method="POST" action="{{ form_action }}" novalidate>
+  {{ form.hidden_tag() }}
+
+  <!-- Farm Name -->
+  <div class="mb-3">
+    {{ form.farm_name.label( class="form-label fw-semibold" ) }}
+
+    <span class="text-danger">*</span>
+
+    {{ form.farm_name( class="form-control" ~ (" is-invalid" if
+    form.farm_name.errors else ""), placeholder="Enter farm name" ) }} {% for
+    error in form.farm_name.errors %}
+
+    <div class="invalid-feedback">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- Location -->
+  <div class="mb-3">
+    {{ form.location.label( class="form-label fw-semibold" ) }}
+
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="bi bi-geo-alt-fill text-danger"></i>
+      </span>
+
+      {{ form.location( class="form-control", placeholder="Enter farm location"
+      ) }}
+    </div>
+
+    {% for error in form.location.errors %}
+
+    <div class="text-danger small mt-1">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- Status -->
+  <div class="mb-3">
+    {{ form.status.label( class="form-label fw-semibold" ) }} {{ form.status(
+    class="form-select" ) }} {% for error in form.status.errors %}
+
+    <div class="text-danger small mt-1">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- Description -->
+  <div class="mb-3">
+    {{ form.description.label( class="form-label fw-semibold" ) }} {{
+    form.description( class="form-control", rows="5", placeholder="Enter farm
+    description..." ) }} {% for error in form.description.errors %}
+
+    <div class="text-danger small mt-1">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- Actions -->
+  <div class="farm-form-actions">
+    <a href="{{ cancel_url }}" class="btn btn-secondary">
+      <i class="bi bi-x-circle me-1"></i>
+
+      Cancel
+    </a>
+
+    {{ form.submit( class="btn btn-success" ) }}
+  </div>
+</form>

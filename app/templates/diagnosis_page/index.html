@@ -45,22 +45,37 @@
             <div class="card-body">
                 <div class="row" id="symptomContainer">
 
-                    {% for value, label in form.symptoms.choices %}
-                    <div class="col-md-6 col-lg-4 mb-2 symptom-item">
-                        <div class="form-check">
-                            <input
-                                class="form-check-input symptom-checkbox"
-                                type="checkbox"
-                                name="{{ form.symptoms.name }}"
-                                value="{{ value }}"
-                                id="symptom_{{ value }}"
-                                {% if value in (form.symptoms.data or []) %}checked{% endif %}
-                            >
-                            <label class="form-check-label symptom-label" for="symptom_{{ value }}">
-                                {{ label }}
-                            </label>
+                    {% for group, symptoms in grouped_symptoms.items() %}
+                        {% if symptoms %}
+                        <div class="mb-3 symptom-group">
+
+                            <!-- Group Title -->
+                            <h6 class="fw-bold text-primary border-start border-3 ps-2">
+                                {{ group }}
+                            </h6>
+
+                            <div class="row">
+                                {% for s in symptoms %}
+                                <div class="col-md-6 col-lg-4 mb-2 symptom-item">
+                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input symptom-checkbox"
+                                            type="checkbox"
+                                            name="{{ form.symptoms.name }}"
+                                            value="{{ s.id }}"
+                                            id="symptom_{{ s.id }}"
+                                            {% if s.id in (form.symptoms.data or []) %}checked{% endif %}
+                                        >
+                                        <label class="form-check-label symptom-label" for="symptom_{{ s.id }}">
+                                            {{ s.symptom_name }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
                         </div>
-                    </div>
+                        {% endif %}
                     {% endfor %}
 
                 </div>

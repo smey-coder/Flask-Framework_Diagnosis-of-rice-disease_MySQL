@@ -24,6 +24,11 @@ class UserTable(UserMixin, db.Model):
 
     
     roles = db.relationship("RoleTable", secondary=tbl_user_roles, back_populates="users")
+    farms = db.relationship(
+        "FarmTable",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
     
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)

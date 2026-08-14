@@ -1,0 +1,301 @@
+{% extends "layouts/user_layout/user.html" %}
+
+{% block title %}
+Field Crops
+{% endblock %}
+
+{% block page_title %}
+Field Crops
+{% endblock %}
+
+{% block styles %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for(
+        'static',
+        filename='css/field_crop.css'
+    ) }}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-flower1 text-success me-2"></i>
+
+            Field Crops
+
+        </h5>
+
+        <a
+            href="{{ url_for('field_crops.create') }}"
+            class="btn btn-success"
+        >
+
+            <i class="bi bi-plus-circle me-1"></i>
+
+            Add Field Crop
+
+        </a>
+
+    </div>
+
+
+    <div class="card-body">
+
+        {% if crops %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Field</th>
+
+                        <th>Rice Variety</th>
+
+                        <th>Growth Stage</th>
+
+                        <th>Planting Date</th>
+
+                        <th>Area</th>
+
+                        <th>Status</th>
+
+                        <th class="text-end">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for crop in crops %}
+                    <tr>
+                        <td>
+                            {{ loop.index }}
+                        </td>
+                        <td>
+                            {% if crop.field %}
+                                <strong>
+                                    {{ crop.field.field_name }}
+                                </strong>
+                                {% if crop.field.farm %}
+                                    <small class="d-block text-muted">
+                                        <i class="bi bi-tree me-1"></i>
+                                        {{ crop.field.farm.farm_name }}
+
+                                    </small>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    N/A
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if crop.rice_variety %}
+
+                                {{ crop.rice_variety.variety_name }} - {{crop.rice_variety.name_kh}}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    N/A
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if crop.growth_stage %}
+
+                                {{ crop.growth_stage.stage_name }} - {{ crop.growth_stage.stage_name_kh}}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    Not Set
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if crop.planting_date %}
+
+                                {{ crop.planting_date.strftime('%Y-%m-%d') }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if crop.area %}
+
+                                {{ crop.area }} ha
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if crop.status == "Active" %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% elif crop.status == "Completed" %}
+
+                                <span class="badge bg-primary">
+                                    Completed
+                                </span>
+
+                            {% elif crop.status == "Harvested" %}
+
+                                <span class="badge bg-info">
+                                    Harvested
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    {{ crop.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="text-end">
+
+                            <div class="btn-group">
+
+                                <a
+                                    href="{{ url_for(
+                                        'field_crops.detail',
+                                        crop_id=crop.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-info"
+                                    title="View"
+                                >
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'field_crops.edit',
+                                        crop_id=crop.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Edit"
+                                >
+
+                                    <i class="bi bi-pencil"></i>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'field_crops.delete_confirm',
+                                        crop_id=crop.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    title="Delete"
+                                >
+
+                                    <i class="bi bi-trash"></i>
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="text-center py-5">
+
+            <i class="bi bi-flower1 display-4 text-muted"></i>
+
+            <h5 class="mt-3">
+                No Field Crops Found
+            </h5>
+
+            <p class="text-muted">
+                Create your first field crop.
+            </p>
+
+            <a
+                href="{{ url_for('field_crops.create') }}"
+                class="btn btn-success"
+            >
+
+                <i class="bi bi-plus-circle me-1"></i>
+
+                Create Field Crop
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

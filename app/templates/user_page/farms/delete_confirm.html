@@ -1,0 +1,93 @@
+{% extends "layouts/user_layout/user.html" %}
+{% block title %} Delete Farm {%endblock %} 
+{% block page_title %} Delete Farm {% endblock %} {% block styles %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+        'static',
+        filename='css/farm.css'
+    ) }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-6 col-md-8">
+    <div class="card shadow-sm border-0">
+      <!-- =================================================
+                 HEADER
+                 ================================================= -->
+
+      <div class="card-header bg-danger text-white d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+
+        <h5 class="mb-0 fw-bold">Delete Farm</h5>
+      </div>
+
+      <!-- =================================================
+                 BODY
+                 ================================================= -->
+
+      <div class="card-body text-center py-4">
+        <i class="bi bi-trash3-fill text-danger" style="font-size: 4rem"></i>
+
+        <h5 class="fw-bold mt-3">Are you sure?</h5>
+
+        <p class="text-muted">You are about to delete:</p>
+
+        <!-- FARM NAME -->
+
+        <div class="alert alert-warning fw-bold">
+          <i class="bi bi-tree-fill me-2"></i>
+
+          {{ farm.farm_name }}
+        </div>
+
+        <!-- WARNING -->
+
+        <div class="alert alert-danger text-start">
+          <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+          <strong>Warning:</strong>
+
+          Deleting this farm may also affect its related fields and crop
+          records.
+        </div>
+
+        <!-- =================================================
+                     DELETE FORM
+                     ================================================= -->
+
+        <form
+          method="POST"
+          action="{{ url_for(
+                        'farms.delete_confirm',
+                        farm_id=farm.id
+                    ) }}"
+        >
+          {{ form.hidden_tag() }}
+
+          <div class="d-flex justify-content-center gap-2 mt-4">
+            <a
+              href="{{ url_for(
+                                'farms.detail',
+                                farm_id=farm.id
+                            ) }}"
+              class="btn btn-secondary"
+            >
+              <i class="bi bi-arrow-left me-1"></i>
+
+              Cancel
+            </a>
+
+            {{ form.submit( class="btn btn-danger", value="Yes, Delete Farm" )
+            }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

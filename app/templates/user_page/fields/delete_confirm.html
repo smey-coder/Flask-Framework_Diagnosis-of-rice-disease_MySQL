@@ -1,0 +1,103 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} Delete Field {%
+endblock %} {% block page_title %} Delete Field {% endblock %} {% block styles
+%}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/field.css') }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0 fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+          Delete Field
+        </h5>
+      </div>
+
+      <!-- =================================================
+                 BODY
+            ================================================== -->
+
+      <div class="card-body text-center">
+        <div class="delete-icon">
+          <i class="bi bi-trash3-fill"></i>
+        </div>
+
+        <h5 class="fw-bold mt-3">Are you sure?</h5>
+
+        <p class="text-muted">You are about to delete the following field:</p>
+
+        <div class="delete-info">
+          <h5 class="fw-bold mb-2">
+            <i class="bi bi-grid-fill text-success me-1"></i>
+
+            {{ field.field_name }}
+          </h5>
+
+          {% if field.farm %}
+
+          <div class="text-muted">
+            <i class="bi bi-tree-fill me-1"></i>
+
+            Farm:
+
+            <strong> {{ field.farm.farm_name }} </strong>
+          </div>
+
+          {% endif %} {% if field.area %}
+
+          <div class="text-muted mt-1">
+            Area:
+
+            <strong> {{ field.area }} ha </strong>
+          </div>
+
+          {% endif %}
+        </div>
+
+        <div class="alert alert-warning mt-4">
+          <i class="bi bi-exclamation-circle me-1"></i>
+
+          <strong>Warning:</strong>
+
+          This action cannot be undone.
+        </div>
+
+        <!-- =================================================
+                     DELETE FORM
+                ================================================== -->
+
+        <form
+          method="POST"
+          action="{{ url_for(
+                        'fields.delete_confirm',
+                        field_id=field.id
+                    ) }}"
+        >
+          {{ form.hidden_tag() }}
+
+          <div class="d-flex justify-content-center gap-2">
+            <a href="{{ url_for('fields.index') }}" class="btn btn-secondary">
+              <i class="bi bi-x-circle me-1"></i>
+              Cancel
+            </a>
+
+            {{ form.submit( class="btn btn-danger" ) }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

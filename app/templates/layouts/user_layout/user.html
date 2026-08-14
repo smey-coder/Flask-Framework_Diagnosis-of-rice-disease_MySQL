@@ -116,7 +116,7 @@
                 width="40" 
                 height="40" 
                 class="d-inline-block align-text-top rounded-circle shadow-sm">
-            {{lang.sidebar.ricediseasediagnosticsystem}}
+            <!-- {{lang.sidebar.ricediseasediagnosticsystem}} -->
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -126,6 +126,96 @@
     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}" href="{{ url_for('user.dashboard') }}">{{lang.sidebar.home}}</a>
+        </li>
+        <!-- ================= FARM MANAGEMENT ================= -->
+        <li class="nav-item dropdown">
+
+            <a
+                class="nav-link dropdown-toggle
+                {% if request.endpoint and request.endpoint.startswith('farms.') %}
+                    active
+                {% endif %}"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                <i class="bi bi-tree me-1"></i>
+                Farm Management
+            </a>
+
+
+            <ul class="dropdown-menu">
+
+                <!-- Farms -->
+                <li>
+                    <a
+                        class="dropdown-item
+                        {% if request.endpoint in [
+                            'farms.index',
+                            'farms.detail',
+                            'farms.create',
+                            'farms.edit',
+                            'farms.delete'
+                        ] %}
+                            active
+                        {% endif %}"
+                        href="{{ url_for('farms.index') }}"
+                    >
+                        <i class="bi bi-house-heart me-2"></i>
+                        Farms
+                    </a>
+                </li>
+
+
+                <!-- Fields -->
+                <li>
+                    <a
+                        class="dropdown-item {% if request.endpoint.startswith('fields.') %}active{% endif %}"
+                        href="{{ url_for('fields.index') }}"
+                    >
+                        <i class="bi bi-grid-3x3-gap me-2"></i>
+                        Fields
+                    </a>
+                </li>
+                <li>
+                    <a
+                        class="dropdown-item {% if request.endpoint.startswith('field_crops.') %}active{% endif %}"
+                        href="{{ url_for('field_crops.index') }}"
+                    >
+                        <i class="bi bi-flower1 me-2"></i>
+                        Field Crops
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+
+                <!-- Rice Varieties -->
+                <li>
+                    <a
+                        class="dropdown-item {% if request.endpoint.startswith('farms.') %}active{% endif %}"
+                        href="{{ url_for('farms.index') }}"
+                    >
+                        <i class="bi bi-flower1 me-2"></i>
+                        Rice Varieties
+                    </a>
+                </li>
+
+
+                <!-- Growth Stages -->
+                <li>
+                    <a
+                        class="dropdown-item {% if request.endpoint.startswith('farms.') %}active{% endif %}"
+                        href="{{ url_for('farms.index') }}"
+                    >
+                        <i class="bi bi-bar-chart-steps me-2"></i>
+                        Growth Stages
+                    </a>
+                </li>
+
+            </ul>
+
         </li>
         <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'user.diagnosis_input' %}active{% endif %}" href="{{ url_for('user.diagnosis_input') }}">{{lang.sidebar.diagnostics}}</a>

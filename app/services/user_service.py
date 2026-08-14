@@ -67,7 +67,7 @@ class UserService:
             db.session.rollback()
             raise ValueError(f"Database error: {str(e)}")
 
-        # ✅ Audit log
+        # Audit log
         log_audit(
             "CREATE",
             "users",

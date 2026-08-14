@@ -1,0 +1,254 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} {{
+farm.farm_name }} {% endblock %} {% block page_title %} Farm Details {% endblock
+%} {% block styles %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+        'static',
+        filename='css/farm.css'
+    ) }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="container-fluid">
+  <!-- =====================================================
+         FARM INFORMATION
+         ===================================================== -->
+
+  <div class="card shadow-sm farm-detail-card mb-4">
+    <!-- HEADER -->
+
+    <div class="farm-detail-header">
+      <div class="farm-detail-title">
+        <i class="bi bi-tree-fill"></i>
+
+        {{ farm.farm_name }}
+      </div>
+
+      {% if farm.status == "Active" %}
+
+      <span class="farm-status bg-light text-success"> Active </span>
+
+      {% else %}
+
+      <span class="farm-status bg-secondary text-white"> Inactive </span>
+
+      {% endif %}
+    </div>
+
+    <!-- BODY -->
+
+    <div class="farm-detail-body">
+      <div class="row g-3">
+        <!-- FARM ID -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="farm-detail-info">
+            <span class="farm-detail-info-label"> Farm ID </span>
+
+            <div class="farm-detail-info-value">#{{ farm.id }}</div>
+          </div>
+        </div>
+
+        <!-- LOCATION -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="farm-detail-info">
+            <span class="farm-detail-info-label">
+              <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+
+              Location
+            </span>
+
+            <div class="farm-detail-info-value">
+              {{ farm.location or "Not specified" }}
+            </div>
+          </div>
+        </div>
+
+        <!-- AREA -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="farm-detail-info">
+            <span class="farm-detail-info-label">
+              <i class="bi bi-bounding-box text-primary me-1"></i>
+
+              Farm Area
+            </span>
+
+            <div class="farm-detail-info-value">
+              {% if farm.area %} {{ farm.area }} ha {% else %} Not specified {%
+              endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- FIELDS -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="farm-detail-info">
+            <span class="farm-detail-info-label">
+              <i class="bi bi-grid-3x3-gap-fill text-success me-1"></i>
+
+              Fields
+            </span>
+
+            <div class="farm-detail-info-value">
+              {{ farm.fields|length }} field(s)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESCRIPTION -->
+
+      {% if farm.description %}
+
+      <div class="farm-detail-description">
+        <span class="farm-detail-description-label"> Description </span>
+
+        <p class="farm-detail-description-text">{{ farm.description }}</p>
+      </div>
+
+      {% endif %}
+
+      <!-- ACTIONS -->
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <a
+          href="{{ url_for(
+                        'farms.edit',
+                        farm_id=farm.id
+                    ) }}"
+          class="btn btn-warning"
+        >
+          <i class="bi bi-pencil-square me-1"></i>
+
+          Edit
+        </a>
+
+        <a
+          href="{{ url_for(
+                        'farms.index'
+                    ) }}"
+          class="btn btn-secondary"
+        >
+          <i class="bi bi-arrow-left me-1"></i>
+
+          Back
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         FIELDS
+         ===================================================== -->
+
+  <div class="card shadow-sm farm-fields-card">
+    <!-- HEADER -->
+
+    <div class="farm-fields-header">
+      <div class="farm-fields-title">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+
+        Farm Fields
+      </div>
+
+      <a href="{{ url_for('fields.create') }}" class="btn btn-sm btn-success">
+        <i class="bi bi-plus-circle me-1"></i>
+
+        Add Field
+      </a>
+    </div>
+
+    <!-- BODY -->
+
+    <div class="farm-fields-body">
+      {% if farm.fields %}
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle farm-field-table">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+
+              <th>Field Name</th>
+
+              <th>Area</th>
+
+              <th>Status</th>
+
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for field in farm.fields %}
+
+            <tr>
+              <td>{{ loop.index }}</td>
+
+              <td>
+                <span class="farm-field-name">
+                  <i class="bi bi-grid-fill"></i>
+
+                  {{ field.field_name }}
+                </span>
+              </td>
+
+              <td>
+                {% if field.area %} {{ field.area }} ha {% else %} N/A {% endif
+                %}
+              </td>
+
+              <td>
+                {% if field.status == "Active" %}
+
+                <span class="badge bg-success"> Active </span>
+
+                {% else %}
+
+                <span class="badge bg-secondary"> {{ field.status }} </span>
+
+                {% endif %}
+              </td>
+
+              <td class="text-end">
+                <a href="{{ url_for('fields.detail',field_id=field.id) }}" class="btn btn-sm btn-outline-success">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% else %}
+
+      <!-- EMPTY -->
+
+      <div class="farm-fields-empty">
+        <i class="bi bi-grid"></i>
+
+        <h6>No Fields Yet</h6>
+
+        <p>This farm does not have any fields yet.</p>
+
+        <a href="{{ url_for('fields.create') }}" class="btn btn-success">
+          <i class="bi bi-plus-circle me-1"></i>
+
+          Add First Field
+        </a>
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

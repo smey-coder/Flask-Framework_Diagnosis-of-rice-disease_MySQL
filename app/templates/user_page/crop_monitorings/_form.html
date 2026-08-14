@@ -1,0 +1,158 @@
+<!-- =====================================================
+     FIELD CROP
+====================================================== -->
+
+<div class="mb-3">
+  {{ form.field_crop_id.label( class="form-label fw-semibold" ) }}
+
+  <span class="text-danger">*</span>
+
+  {{ form.field_crop_id( class="form-select" ) }} {% for error in
+  form.field_crop_id.errors %}
+
+  <div class="text-danger small mt-1">
+    <i class="bi bi-exclamation-circle me-1"></i>
+    {{ error }}
+  </div>
+
+  {% endfor %}
+</div>
+
+<!-- =====================================================
+     MONITORING DATE
+====================================================== -->
+
+<div class="mb-3">
+  {{ form.monitoring_date.label( class="form-label fw-semibold" ) }}
+
+  <span class="text-danger">*</span>
+
+  {{ form.monitoring_date( class="form-control" ) }} {% for error in
+  form.monitoring_date.errors %}
+
+  <div class="text-danger small mt-1">
+    <i class="bi bi-exclamation-circle me-1"></i>
+    {{ error }}
+  </div>
+
+  {% endfor %}
+</div>
+
+<!-- =====================================================
+     GROWTH STAGE
+====================================================== -->
+
+<div class="mb-3">
+  {{ form.growth_stage_id.label( class="form-label fw-semibold" ) }} {{
+  form.growth_stage_id( class="form-select" ) }} {% for error in
+  form.growth_stage_id.errors %}
+
+  <div class="text-danger small mt-1">{{ error }}</div>
+
+  {% endfor %}
+</div>
+
+<div class="row">
+  <!-- =================================================
+         PLANT HEIGHT
+    ================================================== -->
+
+  <div class="col-md-6 mb-3">
+    {{ form.plant_height.label( class="form-label fw-semibold" ) }} {{
+    form.plant_height( class="form-control", placeholder="e.g. 35.50" ) }}
+
+    <small class="text-muted"> Unit: cm </small>
+
+    {% for error in form.plant_height.errors %}
+
+    <div class="text-danger small mt-1">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =================================================
+         WATER STATUS
+    ================================================== -->
+
+  <div class="col-md-6 mb-3">
+    {{ form.water_status.label( class="form-label fw-semibold" ) }} {{
+    form.water_status( class="form-select" ) }} {% for error in
+    form.water_status.errors %}
+
+    <div class="text-danger small mt-1">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+</div>
+
+<!-- =====================================================
+     PLANT CONDITION
+====================================================== -->
+
+<div class="mb-3">
+  {{ form.plant_condition.label( class="form-label fw-semibold" ) }} {{
+  form.plant_condition( class="form-select" ) }} {% for error in
+  form.plant_condition.errors %}
+
+  <div class="text-danger small mt-1">{{ error }}</div>
+
+  {% endfor %}
+</div>
+
+<div class="row">
+  <!-- =================================================
+         PEST STATUS
+    ================================================== -->
+
+  <div class="col-md-6 mb-3">
+    {{ form.pest_status.label( class="form-label fw-semibold" ) }} {{
+    form.pest_status( class="form-select" ) }} {% for error in
+    form.pest_status.errors %}
+
+    <div class="text-danger small mt-1">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =================================================
+         DISEASE STATUS
+    ================================================== -->
+
+  <div class="col-md-6 mb-3">
+    {{ form.disease_status.label( class="form-label fw-semibold" ) }} {{
+    form.disease_status( class="form-select" ) }} {% for error in
+    form.disease_status.errors %}
+
+    <div class="text-danger small mt-1">{{ error }}</div>
+
+    {% endfor %}
+  </div>
+</div>
+
+<!-- =====================================================
+     DESCRIPTION
+====================================================== -->
+
+<div class="mb-3">
+  {{ form.description.label( class="form-label fw-semibold" ) }} {{
+  form.description( class="form-control", rows="4", placeholder="Enter
+  monitoring notes..." ) }} {% for error in form.description.errors %}
+
+  <div class="text-danger small mt-1">{{ error }}</div>
+
+  {% endfor %}
+</div>
+
+<!-- =====================================================
+     SUBMIT
+====================================================== -->
+
+<div class="d-flex justify-content-end gap-2">
+  <a href="{{ cancel_url }}" class="btn btn-secondary">
+    <i class="bi bi-x-circle me-1"></i>
+
+    Cancel
+  </a>
+
+  {{ form.submit( class="btn btn-success" ) }}
+</div>

@@ -1,0 +1,332 @@
+<form method="POST" action="{{ form_action }}" novalidate>
+
+    {{ form.hidden_tag() }}
+
+    <!-- =====================================================
+         FIELD
+    ====================================================== -->
+    <div class="mb-3">
+
+        {{ form.field_id.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        <span class="text-danger">*</span>
+
+        {{ form.field_id(
+            class="form-select"
+        ) }}
+
+        {% for error in form.field_id.errors %}
+
+            <div class="text-danger small mt-1">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         RICE VARIETY
+    ====================================================== -->
+
+    <div class="mb-3">
+
+    {{ form.rice_variety_id.label(
+        class="form-label fw-semibold"
+    ) }}
+
+    <span class="text-danger">*</span>
+
+    {{ form.rice_variety_id(
+        class="form-select"
+    ) }}
+
+    {% for error in form.rice_variety_id.errors %}
+
+        <div class="text-danger small mt-1">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            {{ error }}
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+    <!-- =====================================================
+         GROWTH STAGE
+    ====================================================== -->
+
+    <div class="mb-3">
+
+    {{ form.growth_stage_id.label(
+        class="form-label fw-semibold"
+    ) }}
+
+    {{ form.growth_stage_id(
+        class="form-select"
+    ) }}
+
+    {% for error in form.growth_stage_id.errors %}
+
+        <div class="text-danger small mt-1">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            {{ error }}
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+    <!-- =====================================================
+         PLANTING DATE
+    ====================================================== -->
+
+    <div class="mb-3">
+
+        {{ form.planting_date.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        <span class="text-danger">*</span>
+
+        {{ form.planting_date(
+            class="form-control",
+            type="date"
+        ) }}
+
+        {% for error in form.planting_date.errors %}
+
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         EXPECTED HARVEST DATE
+    ====================================================== -->
+
+    <div class="mb-3">
+
+        {{ form.expected_harvest_date.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        {{ form.expected_harvest_date(
+            class="form-control",
+            type="date"
+        ) }}
+
+        {% for error in form.expected_harvest_date.errors %}
+
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         ACTUAL HARVEST DATE
+    ====================================================== -->
+
+    <div class="mb-3">
+
+        {{ form.actual_harvest_date.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        {{ form.actual_harvest_date(
+            class="form-control",
+            type="date"
+        ) }}
+
+        {% for error in form.actual_harvest_date.errors %}
+
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         AREA
+    ====================================================== -->
+
+    <div class="mb-3">
+
+        {{ form.area.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        <div class="input-group">
+
+            {{ form.area(
+                class="form-control",
+                placeholder="Example: 3.50",
+                step="0.01",
+                min="0"
+            ) }}
+
+            <span class="input-group-text">
+                ha
+            </span>
+
+        </div>
+
+        <div class="form-text">
+            Area of rice crop in hectare.
+        </div>
+
+        {% for error in form.area.errors %}
+
+            <div class="text-danger small">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         STATUS
+    ====================================================== -->
+
+    <div class="mb-3">
+
+        {{ form.status.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        {{ form.status(
+            class="form-select"
+        ) }}
+
+        {% for error in form.status.errors %}
+
+            <div class="text-danger small">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- =====================================================
+     SEASON
+  ====================================================== -->
+
+  <div class="mb-3">
+
+      {{ form.season.label(
+          class="form-label fw-semibold"
+      ) }}
+
+      {{ form.season(
+          class="form-select"
+      ) }}
+
+      {% for error in form.season.errors %}
+
+          <div class="text-danger small mt-1">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              {{ error }}
+          </div>
+
+      {% endfor %}
+
+  </div>
+  <!-- =====================================================
+     YEAR
+    ====================================================== -->
+
+    <div class="mb-3">
+
+        {{ form.year.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        {{ form.year(
+            class="form-control",
+            placeholder="Example: 2026",
+            min="2000",
+            max="2100"
+        ) }}
+
+        {% for error in form.year.errors %}
+
+            <div class="text-danger small mt-1">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- =====================================================
+         DESCRIPTION
+    ====================================================== -->
+
+    <div class="mb-4">
+
+        {{ form.description.label(
+            class="form-label fw-semibold"
+        ) }}
+
+        {{ form.description(
+            class="form-control",
+            rows="4",
+            placeholder="Enter crop description..."
+        ) }}
+
+        {% for error in form.description.errors %}
+
+            <div class="text-danger small">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         BUTTON
+    ====================================================== -->
+
+    <div class="d-flex justify-content-between">
+
+        <a
+            href="{{ cancel_url }}"
+            class="btn btn-secondary"
+        >
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Cancel
+
+        </a>
+
+        {{ form.submit(
+            class="btn btn-success px-4"
+        ) }}
+
+    </div>
+
+</form>

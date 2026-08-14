@@ -1,0 +1,33 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} Create Farm 
+{%endblock %} {% block page_title %} Create Farm {% endblock %} {% block styles %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static',filename='css/farm.css') }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-xl-8 col-lg-10">
+    <div class="card shadow-sm farm-form-card">
+      <!-- =================================================
+        HEADER
+        ================================================= -->
+      <div class="farm-form-header">
+        <i class="bi bi-tree-fill"></i>
+
+        <h5>Create New Farm</h5>
+      </div>
+      <!-- =================================================
+                 BODY
+                 ================================================= -->
+
+      <div class="farm-form-body">
+        {% include "user_page/farms/_form.html" %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

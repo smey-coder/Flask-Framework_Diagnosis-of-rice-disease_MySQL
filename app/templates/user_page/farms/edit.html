@@ -1,0 +1,38 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} Edit Farm {%
+endblock %} {% block page_title %} Edit Farm {% endblock %} {% block styles %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+        'static',
+        filename='css/farm.css'
+    ) }}"
+/>
+
+{% endblock %} {% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-xl-8 col-lg-10">
+    <div class="card shadow-sm farm-form-card">
+      <!-- =================================================
+                 HEADER
+                 ================================================= -->
+
+      <div class="farm-form-header" style="background: #ffc107; color: #212529">
+        <i class="bi bi-pencil-square"></i>
+
+        <h5>Edit Farm</h5>
+      </div>
+
+      <!-- =================================================
+                 BODY
+                 ================================================= -->
+
+      <div class="farm-form-body">
+        {% include "user_page/farms/_form.html" with context %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "layouts/user_layout/user.html" %}
+
+{% block title %}
+Edit Field Crop
+{% endblock %}
+
+{% block page_title %}
+Edit Field Crop
+{% endblock %}
+
+{% block styles %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for(
+        'static',
+        filename='css/field_crop.css'
+    ) }}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-xl-8 col-lg-10">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-primary text-white">
+
+                <h5 class="mb-0 fw-bold">
+
+                    <i class="bi bi-pencil-square me-2"></i>
+
+                    Edit Field Crop
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% include
+                "user_page/field_crops/_form.html"
+                %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

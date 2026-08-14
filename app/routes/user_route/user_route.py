@@ -14,8 +14,10 @@ from app.forms.diseases_forms import DiseaseSearchForm
 from app.forms.user_forms import DeleteAccountForm, UserEditForm, UserProfileForm
 from app.forms.weather_form import CitySearchForm
 from app.models.UserNotification import UserNotification
+from app.models.crop_monitoring import CropMonitoringTable
 from app.models.diagnosis_history import DiagnosisHistoryTable
 from app.models.diseases import DiseaseTable
+from app.models.field_crop import FieldCropTable
 from app.models.role import RoleTable
 from app.models.rule_conditions import RuleConditionsTable
 from app.models.rules import RulesTable
@@ -35,6 +37,7 @@ from app.models.rules import RulesTable
 from app.models.rule_conditions import RuleConditionsTable
 from app.models.symptoms import SymptomsTable
 from app.services.diagnosis_service import DiagnosisService
+from app.services.farm_dashboard_service import FarmDashboardService
 
 # Create user blueprint
 user_bp = Blueprint("user", __name__, url_prefix="/user", template_folder="../../templates")
@@ -74,48 +77,177 @@ def dashboard():
     selected_city_weather = None
     current_date = datetime.now().strftime("%d-%m-%Y %H:%M")
 
-    # Check if a city was selected for weather
-    selected_city_id = request.args.get('city_id')
-    if selected_city_id:
-        selected_city_weather = WeatherService.get_weather(selected_city_id)
+    try:
 
-    if form.validate_on_submit():
-        selected_city_name = form.city.data
-        if selected_city_name:
-            selected_city_weather = WeatherService.get_weather(selected_city_name)
+        selected_city_id = request.args.get('city_id')
+        if selected_city_id:
+            selected_city_weather = WeatherService.get_weather(selected_city_id)
+        
+        if form.validate_on_submit():
+            selected_city_name = form.city.data
+            if selected_city_name:
+                selected_city_weather = WeatherService.get_weather(selected_city_name)
+        
+        # Default disease to display
+        default_disease = DiseaseTable.query.first()  # or choose a specific one
+        
+        # Recent activities (last 5 active diseases)
+        recent_activities = DiseaseTable.query \
+            .filter_by(is_active=True) \
+            .order_by(DiseaseTable.created_at.desc()) \
+            .limit(5) \
+            .all()
+        
+        # New diseases for notifications (added in last 7 days)
+        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        new_diseases = DiseaseTable.query \
+            .filter(DiseaseTable.created_at >= seven_days_ago, DiseaseTable.is_active==True) \
+            .order_by(DiseaseTable.created_at.desc()) \
+            .all()
+            
+        new_diseases_count = len(new_diseases)
+        # =====================================================
+        # FARM MANAGEMENT
+        # =====================================================
 
-    # Default disease to display
-    default_disease = DiseaseTable.query.first()  # or choose a specific one
+        farm_statistics = (
+            FarmDashboardService.get_statistics(
+                user_id=current_user.id
+            )
+        )
+        # =====================================================
+        # CROP MONITORING
+        # =====================================================
 
-    # Recent activities (last 5 active diseases)
-    recent_activities = DiseaseTable.query \
-        .filter_by(is_active=True) \
-        .order_by(DiseaseTable.created_at.desc()) \
-        .limit(5) \
-        .all()
+        # Get all field crops belonging to current user
+        field_crops = (
+            db.session.scalars(
 
-    # New diseases for notifications (added in last 7 days)
-    seven_days_ago = datetime.utcnow() - timedelta(days=7)
-    new_diseases = DiseaseTable.query \
-        .filter(DiseaseTable.created_at >= seven_days_ago, DiseaseTable.is_active==True) \
-        .order_by(DiseaseTable.created_at.desc()) \
-        .all()
-    
-    new_diseases_count = len(new_diseases)
+                db.select(FieldCropTable)
+                .where(
+                    FieldCropTable.field.has(
+                        FieldCropTable.field.property
+                        .mapper.class_.farm.has(
+                            user_id=current_user.id
+                        )
+                    )
+                )
+                .order_by(
+                    FieldCropTable.id.desc()
+                )
 
-    return render_template(
-        "user_page/dashboard.html", 
-        user=current_user,
-        disease=default_disease,
-        recent_activities=recent_activities,
-        new_diseases=new_diseases,
-        new_diseases_count=new_diseases_count,
-        search_results=search_results,
-        selected_city_weather=selected_city_weather,
-        form=form,
-        current_date=current_date
-    )
+            ).all()
+        )
 
+        # =====================================================
+        # CROP STATISTICS
+        # =====================================================
+
+        total_field_crops = len(
+            field_crops
+        )
+
+        active_crops = sum(
+            1
+            for crop in field_crops
+            if crop.status == "Active"
+            or crop.status == "Growing"
+        )
+
+        harvested_crops = sum(
+            1
+            for crop in field_crops
+            if crop.status == "Harvested"
+        )
+
+        completed_crops = sum(
+            1
+            for crop in field_crops
+            if crop.status == "Completed"
+        )
+
+        # =====================================================
+        # RECENT CROP MONITORING
+        # =====================================================
+
+        recent_monitorings = (
+            db.session.scalars(
+
+                db.select(CropMonitoringTable)
+                .join(
+                    CropMonitoringTable.field_crop
+                )
+                .where(
+                    CropMonitoringTable.field_crop.has(
+                        FieldCropTable.field.has(
+                            FieldCropTable.field.property
+                            .mapper.class_.farm.has(
+                                user_id=current_user.id
+                            )
+                        )
+                    )
+                )
+                .order_by(
+                    CropMonitoringTable.monitoring_date.desc()
+                )
+                .limit(5)
+
+            ).all()
+        )
+        # =====================================================
+        # RETURN DASHBOARD
+        # =====================================================
+        return render_template(
+            "user_page/dashboard.html", 
+            user=current_user,
+            disease=default_disease,
+            recent_activities=recent_activities,
+            new_diseases=new_diseases,
+            new_diseases_count=new_diseases_count,
+            search_results=search_results,
+            selected_city_weather=selected_city_weather,
+            form=form,
+            current_date=current_date,
+            # Farm Management
+            farm_statistics=farm_statistics,
+            # Crop Monitoring
+            field_crops=field_crops,
+            total_field_crops=total_field_crops,
+            active_crops=active_crops,
+            harvested_crops=harvested_crops,
+            completed_crops=completed_crops,
+            recent_monitorings=recent_monitorings
+            )
+    except Exception as e:
+        print(f"Dashboard error: {e}")
+        flash("Unable to load dashboard data.","danger")
+        # -----------------------------------------------------
+        # Default Farm Statistics
+        # -----------------------------------------------------
+        farm_statistics = {
+            "total_farms": 0,
+            "active_farms": 0,
+            "total_fields": 0,
+            "active_fields": 0,
+            "total_area": 0,
+            "total_crops": 0,
+            "active_crops": 0,
+            "harvested_crops": 0
+
+        }
+        return render_template(
+            "user_page/dashboard.html",
+            user=current_user,
+            disease=None,
+            recent_activities=[],
+            new_diseases=[],
+            new_diseases_count=0,
+            search_results=search_results,
+            selected_city_weather=selected_city_weather,
+            form=form,
+            current_date=current_date,
+            farm_statistics=farm_statistics
+        )
 # ---------------- SETTINGS ----------------
 @user_bp.route("/settings", methods=["GET", "POST"])
 @login_required
@@ -283,13 +415,13 @@ def diagnosis_input():
     try:
         form = DiagnosisForm()
 
-        # ✅ Get all active symptoms
+        # Get all active symptoms
         symptoms = SymptomsTable.query.filter_by(is_active=True).all()
 
         # WTForms choices (for validation)
         form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
 
-        # ✅ Group symptoms by type
+        # Group symptoms by type
         grouped_symptoms = {
             "Grain(គ្រាប់)": [],
             "Leaf(ស្លឹក)": [],
@@ -307,7 +439,7 @@ def diagnosis_input():
             elif s.symptom_group == "Stem(ដើម)":
                 grouped_symptoms["Stem(ដើម)"].append(s)
 
-        # ✅ Handle form submit
+        #Handle form submit
         if form.validate_on_submit():
             try:
                 selected_ids = [int(s) for s in form.symptoms.data or []]
@@ -353,7 +485,6 @@ def save_diagnosis_history(conclusions, rule_trace=None):
     """
     if not conclusions:
         return
-
     insert_sql = text("""
         INSERT INTO tbl_diagnosis_history (
             user_id,
