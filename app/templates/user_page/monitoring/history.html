@@ -1,0 +1,182 @@
+{% extends "user_page/base.html" %} 
+{% block content %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/monitoring_history.css') }}"
+>
+
+<div class="container-fluid py-4">
+  <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">
+        <i class="bi bi-clock-history text-success me-2"></i>
+
+        Monitoring History
+      </h3>
+
+      <p class="text-muted mb-0">View your crop monitoring records</p>
+    </div>
+
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>
+
+      Dashboard
+    </a>
+  </div>
+
+  <!-- =====================================================
+         MONITORING TABLE
+    ====================================================== -->
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Date</th>
+
+              <th>Farm</th>
+
+              <th>Field</th>
+
+              <th>Crop</th>
+
+              <th>Growth Stage</th>
+
+              <th>Height</th>
+
+              <th>Condition</th>
+
+              <th>Water</th>
+
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for monitoring in monitorings %}
+
+            <tr>
+              <!-- Date -->
+
+              <td>{{ monitoring.monitoring_date.strftime("%d-%m-%Y") }}</td>
+
+              <!-- Farm -->
+
+              <td>{{ monitoring.field_crop.field.farm.farm_name }}</td>
+
+              <!-- Field -->
+
+              <td>{{ monitoring.field_crop.field.field_name }}</td>
+
+              <!-- Crop -->
+
+              <td>{{ monitoring.field_crop.rice_variety.variety_name }}</td>
+
+              <!-- Growth Stage -->
+
+              <td>
+                {% if monitoring.growth_stage %} {{
+                monitoring.growth_stage.stage_name }} {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </td>
+
+              <!-- Height -->
+
+              <td>
+                {% if monitoring.plant_height %} {{ monitoring.plant_height }}
+                cm {% else %} - {% endif %}
+              </td>
+
+              <!-- Condition -->
+
+              <td>
+                {% if monitoring.plant_condition == "Healthy" %}
+
+                <span class="badge bg-success"> Healthy </span>
+
+                {% elif monitoring.plant_condition in ["Warning", "Unhealthy"]
+                %}
+
+                <span class="badge bg-warning text-dark">
+                  {{ monitoring.plant_condition }}
+                </span>
+
+                {% else %}
+
+                <span class="badge bg-secondary">
+                  {{ monitoring.plant_condition or "N/A" }}
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- Water -->
+
+              <td>
+                {% if monitoring.water_status == "Good" %}
+
+                <span class="text-success">
+                  <i class="bi bi-droplet-fill"></i>
+
+                  Good
+                </span>
+
+                {% elif monitoring.water_status == "Low" %}
+
+                <span class="text-warning">
+                  <i class="bi bi-droplet"></i>
+
+                  Low
+                </span>
+
+                {% else %}
+
+                <span class="text-muted">
+                  {{ monitoring.water_status or "N/A" }}
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- Action -->
+
+              <td>
+                <a href="#" class="btn btn-sm btn-outline-success">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </td>
+            </tr>
+
+            {% else %}
+
+            <tr>
+              <td colspan="9" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
+
+                  <h6 class="fw-bold">No Monitoring History</h6>
+
+                  <p class="small mb-0">No crop monitoring records found.</p>
+                </div>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

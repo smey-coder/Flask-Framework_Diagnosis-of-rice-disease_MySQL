@@ -137,83 +137,82 @@ RiceCare AI{% endblock %} {% block content %}
       </div>
     </div>
   </div>
-  <!-- =====================================================
-     CROP MONITORING
-    ====================================================== -->
-  <div class="row g-4 mb-5">
-    <!-- TOTAL CROPS -->
-    <div class="col-6 col-md-3">
-      <div class="card monitoring-stat-card h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="monitoring-icon monitoring-icon-green me-3">
-              <i class="fas fa-seedling"></i>
-            </div>
-
-            <div>
-              <div class="monitoring-stat-number">{{ total_field_crops }}</div>
-
-              <div class="monitoring-stat-label">Total Field Crops</div>
-            </div>
-          </div>
-        </div>
+  <!-- ===================================================== FARM STATISTICS ====================================================== -->
+  <div class="statistics-grid">
+    <!-- Total Farms -->
+    <div class="stat-card">
+      <div class="stat-icon farm-icon">
+        <i class="bi bi-house-door-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span> Total Farms </span>
+        <strong> {{ farm_statistics.total_farms or 0 }} </strong>
       </div>
     </div>
-
-    <!-- ACTIVE CROPS -->
-    <div class="col-6 col-md-3">
-      <div class="card monitoring-stat-card h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="monitoring-icon monitoring-icon-blue me-3">
-              <i class="fas fa-leaf"></i>
-            </div>
-
-            <div>
-              <div class="monitoring-stat-number">{{ active_crops }}</div>
-
-              <div class="monitoring-stat-label">Active Crops</div>
-            </div>
-          </div>
-        </div>
+    <!-- Active Farms -->
+    <div class="stat-card">
+      <div class="stat-icon active-icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span> Active Farms </span>
+        <strong> {{ farm_statistics.active_farms or 0 }} </strong>
       </div>
     </div>
-
-    <!-- HARVESTED -->
-    <div class="col-6 col-md-3">
-      <div class="card monitoring-stat-card h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="monitoring-icon monitoring-icon-yellow me-3">
-              <i class="fas fa-wheat-awn"></i>
-            </div>
-
-            <div>
-              <div class="monitoring-stat-number">{{ harvested_crops }}</div>
-
-              <div class="monitoring-stat-label">Harvested</div>
-            </div>
-          </div>
-        </div>
+    <!-- Total Fields -->
+    <div class="stat-card">
+      <div class="stat-icon field-icon"><i class="bi bi-bounding-box"></i></div>
+      <div class="stat-content">
+        <span> Total Fields </span>
+        <strong> {{ farm_statistics.total_fields or 0 }} </strong>
       </div>
     </div>
-
-    <!-- COMPLETED -->
-    <div class="col-6 col-md-3">
-      <div class="card monitoring-stat-card h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="monitoring-icon monitoring-icon-green me-3">
-              <i class="fas fa-check-circle"></i>
-            </div>
-
-            <div>
-              <div class="monitoring-stat-number">{{ completed_crops }}</div>
-
-              <div class="monitoring-stat-label">Completed</div>
-            </div>
-          </div>
-        </div>
+    <!-- Total Area -->
+    <div class="stat-card">
+      <div class="stat-icon area-icon"><i class="bi bi-rulers"></i></div>
+      <div class="stat-content">
+        <span> Total Area </span>
+        <strong> {{ farm_statistics.total_area or 0 }} </strong>
+      </div>
+    </div>
+  </div>
+  <!-- ===================================================== CROP STATISTICS ====================================================== -->
+  <div class="section-title">
+    <div>
+      <h3><i class="bi bi-flower1"></i> Crop Overview</h3>
+      <p>Current crop production status</p>
+    </div>
+  </div>
+  <div class="crop-statistics-grid">
+    <!-- Total Crops -->
+    <div class="crop-stat-card">
+      <div class="crop-stat-icon"><i class="bi bi-flower2"></i></div>
+      <div>
+        <span> Total Crops </span> <strong> {{ total_field_crops }} </strong>
+      </div>
+    </div>
+    <!-- Active -->
+    <div class="crop-stat-card">
+      <div class="crop-stat-icon"><i class="bi bi-play-circle-fill"></i></div>
+      <div><span> Active </span> <strong> {{ active_crops }} </strong></div>
+    </div>
+    <!-- Growing -->
+    <div class="crop-stat-card">
+      <div class="crop-stat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+      <div><span> Growing </span> <strong> {{ growing_crops }} </strong></div>
+    </div>
+    <!-- Harvested -->
+    <div class="crop-stat-card">
+      <div class="crop-stat-icon"><i class="bi bi-basket-fill"></i></div>
+      <div>
+        <span> Harvested </span> <strong> {{ harvested_crops }} </strong>
+      </div>
+    </div>
+    <!-- Completed -->
+    <div class="crop-stat-card">
+      <div class="crop-stat-icon"><i class="bi bi-check2-all"></i></div>
+      <div>
+        <span> Completed </span> <strong> {{ completed_crops }} </strong>
       </div>
     </div>
   </div>
@@ -303,24 +302,32 @@ RiceCare AI{% endblock %} {% block content %}
               <!-- HEALTH -->
 
               <td>
-                {% if monitoring.plant_health == "Good" %}
+                {% if monitoring.plant_condition == "Healthy" %}
 
-                <span class="badge rounded-pill bg-success"> Good </span>
-
-                {% elif monitoring.plant_health == "Warning" %}
-
-                <span class="badge rounded-pill bg-warning text-dark">
-                  Warning
+                <span class="badge rounded-pill bg-success">
+                  Healthy / មានសុខភាពល្អ
                 </span>
 
-                {% elif monitoring.plant_health == "Poor" %}
+                {% elif monitoring.plant_condition == "Moderate" %}
 
-                <span class="badge rounded-pill bg-danger"> Poor </span>
+                <span class="badge rounded-pill bg-warning text-dark">
+                  Moderate / មធ្យម
+                </span>
+
+                {% elif monitoring.plant_condition == "Poor" %}
+
+                <span class="badge rounded-pill bg-danger"> Poor / ខ្សោយ </span>
+
+                {% elif monitoring.plant_condition == "Critical" %}
+
+                <span class="badge rounded-pill bg-danger">
+                  Critical / ធ្ងន់ធ្ងរ
+                </span>
 
                 {% else %}
 
                 <span class="badge rounded-pill bg-secondary">
-                  {{ monitoring.plant_health }}
+                  {{ monitoring.plant_condition }}
                 </span>
 
                 {% endif %}
@@ -470,22 +477,55 @@ RiceCare AI{% endblock %} {% block content %}
       </div>
     </div>
   </div>
-  <!--CITY SELECTION SECTION -->
+  <!-- =========================================================
+     WEATHER / CITY SELECTION
+========================================================= -->
+
   <div class="row g-4 mb-4">
     <div class="col-12">
-      <div class="card stat-card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title fw-bold mb-3">
-            🌤️ {{lang.home.Select_your_city_in_cambodia}}
-          </h5>
-          <form method="POST" class="row g-3">
-            {{ form.hidden_tag() }}
-            <div class="col-md-8">
-              <label>{{lang.home.Select_your_city}}</label>
-              {{ form.city(class="form-select") }}
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <!-- HEADER -->
+
+        <div class="card-header bg-white border-0 p-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="weather-header-icon">
+              <i class="fas fa-cloud-sun"></i>
             </div>
-            <div class="col-md-4 d-flex align-items-end">
-              {{ form.submit(class="btn btn-primary w-100") }}
+
+            <div>
+              <h5 class="fw-bold mb-1">Weather Information</h5>
+
+              <p class="text-muted mb-0">
+                Check current weather conditions for your farm area
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CITY FORM -->
+
+        <div class="card-body p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="row g-3 align-items-end">
+              <!-- CITY -->
+
+              <div class="col-md-8">
+                <label class="form-label fw-semibold">
+                  <i class="fas fa-location-dot text-danger me-1"></i>
+
+                  {{ lang.home.Select_your_city }}
+                </label>
+
+                {{ form.city( class="form-select form-select-lg" ) }}
+              </div>
+
+              <!-- SUBMIT -->
+
+              <div class="col-md-4">
+                {{ form.submit( class="btn btn-primary btn-lg w-100" ) }}
+              </div>
             </div>
           </form>
         </div>
@@ -493,89 +533,193 @@ RiceCare AI{% endblock %} {% block content %}
     </div>
   </div>
 
-  <!-- WEATHER DISPLAY SECTION -->
+  <!-- =========================================================
+     WEATHER RESULT
+========================================================= -->
+
   {% if selected_city_weather %}
-  <div class="row g-4 mb-4">
-    <div class="col-12">
-      <div class="card stat-card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title fw-bold mb-3">🌤️ Current Weather</h5>
-          <div class="row text-center">
-            <div class="col-md-6">
-              <h3>{{ selected_city_weather.city }}, Cambodia</h3>
-              <img
-                src="http://openweathermap.org/img/wn/{{ selected_city_weather.icon }}@2x.png"
-                alt="{{ selected_city_weather.description }}"
-                class="img-fluid mb-3"
-                style="max-width: 100px"
-              />
-              <h1 class="display-4 fw-bold">
-                {{ selected_city_weather.temperature }}°C
-              </h1>
-              <p class="lead">{{ selected_city_weather.description }}</p>
-              <p class="text-muted">
-                Feels like {{ selected_city_weather.feels_like }}°C
-              </p>
+
+  <div class="row g-4 mb-5">
+    <!-- MAIN WEATHER -->
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 h-100 weather-main-card">
+        <div class="card-body p-4 text-center">
+          <!-- LOCATION -->
+
+          <div class="mb-3">
+            <i class="fas fa-location-dot text-danger me-1"></i>
+
+            <span class="fw-semibold">
+              {{ selected_city_weather.city }}, Cambodia
+            </span>
+          </div>
+
+          <!-- WEATHER ICON -->
+
+          <img
+            src="http://openweathermap.org/img/wn/{{ selected_city_weather.icon }}@2x.png"
+            alt="{{ selected_city_weather.description }}"
+            class="weather-icon mb-2"
+          />
+
+          <!-- TEMPERATURE -->
+
+          <h1 class="display-3 fw-bold mb-1">
+            {{ selected_city_weather.temperature }}°C
+          </h1>
+
+          <!-- DESCRIPTION -->
+
+          <p class="lead text-capitalize mb-2">
+            {{ selected_city_weather.description }}
+          </p>
+
+          <!-- FEELS LIKE -->
+
+          <p class="text-muted mb-0">
+            Feels like
+            <strong> {{ selected_city_weather.feels_like }}°C </strong>
+          </p>
+
+          <!-- DATE -->
+
+          <div class="mt-4 pt-3 border-top">
+            <small class="text-muted">
+              <i class="far fa-clock me-1"></i>
+
+              {{ current_date }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEATHER DETAILS -->
+
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-4">
+            <i class="fas fa-cloud-sun text-primary me-2"></i>
+
+            Weather Details
+          </h5>
+
+          <div class="row g-3">
+            <!-- HUMIDITY -->
+
+            <div class="col-6 col-md-6">
+              <div class="weather-detail-card">
+                <div class="weather-detail-icon humidity-icon">
+                  <i class="fas fa-tint"></i>
+                </div>
+
+                <div>
+                  <span>Humidity(សំណើម)</span>
+
+                  <strong> {{ selected_city_weather.humidity }}% </strong>
+                </div>
+              </div>
             </div>
-            <div class="col-md-6">
-              <div class="row g-3">
-                <div class="col-6">
-                  <div class="p-3 bg-light rounded">
-                    <i class="fas fa-tint text-info"></i>
-                    <div class="fw-bold">
-                      {{ selected_city_weather.humidity }}%
-                    </div>
-                    <small class="text-muted">Humidity</small>
-                  </div>
+
+            <!-- WIND -->
+
+            <div class="col-6 col-md-6">
+              <div class="weather-detail-card">
+                <div class="weather-detail-icon wind-icon">
+                  <i class="fas fa-wind"></i>
                 </div>
-                <div class="col-6">
-                  <div class="p-3 bg-light rounded">
-                    <i class="fas fa-wind text-success"></i>
-                    <div class="fw-bold">
-                      {{ selected_city_weather.wind_speed }} m/s
-                    </div>
-                    <small class="text-muted">Wind Speed</small>
-                  </div>
+
+                <div>
+                  <span>Wind Speed(ល្បឿនខ្យល់)</span>
+
+                  <strong> {{ selected_city_weather.wind_speed }} m/s </strong>
                 </div>
-                <div class="col-6">
-                  <div class="p-3 bg-light rounded">
-                    <i class="fas fa-eye text-warning"></i>
-                    <div class="fw-bold">
-                      {{ selected_city_weather.visibility }} km
-                    </div>
-                    <small class="text-muted">Visibility</small>
-                  </div>
+              </div>
+            </div>
+
+            <!-- VISIBILITY -->
+
+            <div class="col-6 col-md-6">
+              <div class="weather-detail-card">
+                <div class="weather-detail-icon visibility-icon">
+                  <i class="fas fa-eye"></i>
                 </div>
-                <div class="col-6">
-                  <div class="p-3 bg-light rounded">
-                    <i class="fas fa-cloud text-secondary"></i>
-                    <div class="fw-bold">
-                      {{ selected_city_weather.clouds }}%
-                    </div>
-                    <small class="text-muted">Cloudiness</small>
-                  </div>
+
+                <div>
+                  <span>Visibility(ភាពមើលឃើញ)</span>
+
+                  <strong> {{ selected_city_weather.visibility }} km </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- CLOUD -->
+
+            <div class="col-6 col-md-6">
+              <div class="weather-detail-card">
+                <div class="weather-detail-icon cloud-icon">
+                  <i class="fas fa-cloud"></i>
+                </div>
+
+                <div>
+                  <span>Cloudiness(ភាព​មាន​ពពក)</span>
+
+                  <strong> {{ selected_city_weather.clouds }}% </strong>
                 </div>
               </div>
             </div>
           </div>
-          <div class="text-center mt-3">
-            <a
-              href="{{ url_for('user.dashboard') }}"
-              class="btn btn-outline-secondary"
-              >Back to Search</a
-            >
+
+          <!-- FARM WEATHER NOTE -->
+
+          <div class="alert alert-success border-0 rounded-3 mt-4 mb-0">
+            <i class="fas fa-seedling me-2"></i>
+
+            <strong>Farm Monitoring:</strong>
+
+            Weather information can help you monitor crop water requirements and
+            field conditions.
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  {% else %}
+
+  <!-- =========================================================
+     NO WEATHER SELECTED
+========================================================= -->
+
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body text-center py-5">
+          <div class="mb-3">
+            <i class="fas fa-cloud-sun-rain display-4 text-muted"></i>
+          </div>
+
+          <h5 class="fw-bold">Select a city to view weather</h5>
+
+          <p class="text-muted mb-0">
+            Choose your farm location above to see current weather conditions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   {% endif %}
   <!-- =====================================================
      FARM MANAGEMENT
-    ====================================================== -->
+====================================================== -->
 
   <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-    <!-- HEADER -->
+    <!-- =====================================================
+       HEADER
+  ====================================================== -->
 
     <div class="card-header bg-white py-3">
       <div class="d-flex justify-content-between align-items-center">
@@ -602,13 +746,17 @@ RiceCare AI{% endblock %} {% block content %}
       </div>
     </div>
 
-    <!-- BODY -->
+    <!-- =====================================================
+       BODY
+  ====================================================== -->
 
     <div class="card-body">
+      <!-- =================================================
+         MAIN STATISTICS
+    ================================================== -->
+
       <div class="row g-3">
-        <!-- =================================================
-                    TOTAL FARMS
-                ================================================== -->
+        <!-- TOTAL FARMS -->
 
         <div class="col-6 col-xl-3">
           <div class="farm-stat-card farm-stat-green">
@@ -626,9 +774,7 @@ RiceCare AI{% endblock %} {% block content %}
           </div>
         </div>
 
-        <!-- =================================================
-                    TOTAL FIELDS
-                ================================================== -->
+        <!-- TOTAL FIELDS -->
 
         <div class="col-6 col-xl-3">
           <div class="farm-stat-card farm-stat-blue">
@@ -646,9 +792,7 @@ RiceCare AI{% endblock %} {% block content %}
           </div>
         </div>
 
-        <!-- =================================================
-                    TOTAL CROPS
-                ================================================== -->
+        <!-- TOTAL CROPS -->
 
         <div class="col-6 col-xl-3">
           <div class="farm-stat-card farm-stat-yellow">
@@ -666,9 +810,7 @@ RiceCare AI{% endblock %} {% block content %}
           </div>
         </div>
 
-        <!-- =================================================
-                    TOTAL AREA
-                ================================================== -->
+        <!-- TOTAL AREA -->
 
         <div class="col-6 col-xl-3">
           <div class="farm-stat-card farm-stat-cyan">
@@ -680,7 +822,7 @@ RiceCare AI{% endblock %} {% block content %}
               <div class="farm-stat-label">Total Area</div>
 
               <div class="farm-stat-value">
-                {{ "%.2f"|format( farm_statistics.total_area ) }}
+                {{ "%.2f"|format(farm_statistics.total_area or 0) }}
 
                 <small>ha</small>
               </div>
@@ -689,9 +831,9 @@ RiceCare AI{% endblock %} {% block content %}
         </div>
       </div>
 
-      <!-- =====================================================
-                STATUS
-            ====================================================== -->
+      <!-- =================================================
+         STATUS
+    ================================================== -->
 
       <div class="row g-3 mt-2">
         <!-- ACTIVE FARMS -->
@@ -743,9 +885,175 @@ RiceCare AI{% endblock %} {% block content %}
         </div>
       </div>
 
-      <!-- =====================================================
-                QUICK ACTION
-            ====================================================== -->
+      <!-- =================================================
+         MY FARMS
+    ================================================== -->
+
+      <div class="border-top mt-4 pt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="fw-bold mb-1">
+              <i class="fas fa-tree text-success me-2"></i>
+
+              My Farms
+            </h6>
+
+            <small class="text-muted">
+              Select a farm to view its details
+            </small>
+          </div>
+
+          {% if farms|length > 0 %}
+
+          <span class="badge bg-success-subtle text-success">
+            {{ farms|length }} Farm{% if farms|length != 1 %}s{% endif %}
+          </span>
+
+          {% endif %}
+        </div>
+
+        <!-- =================================================
+           FARM LIST
+      ================================================== -->
+
+        <div class="row g-3">
+          {% for farm in farms %}
+
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="farm-dashboard-card h-100">
+              <!-- Farm Header -->
+
+              <div
+                class="d-flex justify-content-between align-items-start mb-3"
+              >
+                
+
+                  <div class="d-flex align-items-center gap-2">
+                      <div class="farm-name-icon">
+                          <i class="bi bi-tree-fill"></i>
+                      </div>
+
+                      <div>
+                          <h6 class="fw-bold mb-0">
+                              {{ farm.farm_name }}
+                          </h6>
+
+                          <small class="text-muted">
+                              Farm #{{ farm.id }}
+                          </small>
+                      </div>
+
+                    </div>
+                {% if farm.status == "Active" %}
+
+                <span class="badge bg-success"> Active </span>
+
+                {% else %}
+
+                <span class="badge bg-secondary"> {{ farm.status }} </span>
+
+                {% endif %}
+              </div>
+
+              <!-- Location -->
+
+              <div class="small text-muted mb-3">
+                <i class="fas fa-location-dot me-1"></i>
+
+                {{ farm.location or "No location provided" }}
+              </div>
+
+              <!-- Farm Statistics -->
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div class="farm-mini-stat">
+                    <i class="fas fa-border-all text-primary"></i>
+
+                    <div>
+                      <small>Fields</small>
+
+                      <strong> {{ farm.fields|length }} </strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="farm-mini-stat">
+                    <i class="fas fa-calendar text-success"></i>
+
+                    <div>
+                      <small>Created</small>
+
+                      <strong>
+                        {% if farm.created_at %} {{
+                        farm.created_at.strftime('%d-%m-%Y') }} {% else %} - {%
+                        endif %}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Farm Description -->
+
+              {% if farm.description %}
+
+              <p class="small text-muted mb-3">
+                {{ farm.description|truncate(80) }}
+              </p>
+
+              {% endif %}
+
+              <!-- Farm Detail Button -->
+
+              <a
+                href="{{ url_for('user.farm_detail', farm_id=farm.id) }}"
+                class="btn btn-success btn-sm w-100 rounded-pill"
+              >
+                <i class="fas fa-chart-line me-1"></i>
+
+                Farm Detail
+              </a>
+            </div>
+          </div>
+
+          {% else %}
+
+          <!-- =================================================
+               NO FARM
+          ================================================== -->
+
+          <div class="col-12">
+            <div class="farm-empty-state text-center py-4">
+              <div class="farm-empty-icon">
+                <i class="fas fa-tractor"></i>
+              </div>
+
+              <h6 class="fw-bold mt-3">No Farms Yet</h6>
+
+              <p class="text-muted small mb-3">
+                You have not created a farm yet.
+              </p>
+
+              <a
+                href="{{ url_for('farms.create') }}"
+                class="btn btn-success btn-sm rounded-pill px-4"
+              >
+                <i class="fas fa-plus me-1"></i>
+
+                Add Farm
+              </a>
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- =================================================
+         QUICK ACTIONS
+    ================================================== -->
 
       <div class="border-top mt-4 pt-3">
         <div class="d-flex flex-wrap gap-2">

@@ -1,4 +1,6 @@
 from typing import Optional, List
+from app.models.UserNotification import UserNotification
+from app.models.user import UserTable
 from extensions import db
 from app.models.diseases import DiseaseTable
 from sqlalchemy.exc import SQLAlchemyError
@@ -65,43 +67,122 @@ class DiseaseService:
         return query.paginate(page=page, per_page=per_page, error_out=False)
 
     # ---------- CREATE ---------- #
-
     @staticmethod
     def create_disease(data: dict, image_file=None) -> DiseaseTable:
         """Create a new disease with optional image upload"""
-        filename = ""
-        if image_file:
-            if not allowed_file(image_file.filename):
-                raise ValueError("Invalid image format. Allowed: png, jpg, jpeg, gif")
-            filename = save_image(image_file)
 
-        disease = DiseaseTable(
-            disease_name=data["disease_name"],
-            disease_type=data["disease_type"],
-            description=data.get("description", ""),
-            severity_level=data.get("severity_level", "Low"),
-            image=filename,
-            is_active=data.get("is_active", True)
-        )
+        filename = ""
+
         try:
+            # ==========================================
+            # 1. Upload image
+            # ==========================================
+            if image_file:
+
+                if not allowed_file(image_file.filename):
+                    raise ValueError(
+                        "Invalid image format. Allowed: png, jpg, jpeg, gif"
+                    )
+
+                filename = save_image(image_file)
+
+            # ==========================================
+            # 2. Create disease
+            # ==========================================
+            disease = DiseaseTable(
+                disease_name=data["disease_name"],
+                disease_type=data["disease_type"],
+                description=data.get("description", ""),
+                severity_level=data.get("severity_level", "Low"),
+                image=filename,
+                is_active=data.get("is_active", True)
+            )
+
             db.session.add(disease)
+
+            # IMPORTANT:
+            # Generate disease.id before creating notification
+            db.session.flush()
+
+            print("Disease created:", disease.id)
+
+            # ==========================================
+            # 3. Get all users
+            # ==========================================
+            users = UserTable.query.all()
+
+            print("Total users:", len(users))
+
+            # ==========================================
+            # 4. Create notification for ALL users
+            # ==========================================
+            for user in users:
+
+                notification = UserNotification(
+                    user_id=user.id,
+                    disease_id=disease.id,
+                    monitoring_id=None,
+                    category="disease",
+                    is_read=False,
+                    is_deleted=False
+                )
+
+                # IMPORTANT:
+                # Add notification INSIDE the loop
+                db.session.add(notification)
+
+                print(
+                    f"Notification created "
+                    f"for user {user.id}, "
+                    f"disease {disease.id}"
+                )
+
+            # ==========================================
+            # 5. Commit disease + notifications
+            # ==========================================
             db.session.commit()
+
+            # ==========================================
+            # 6. Audit log
+            # ==========================================
+            log_audit(
+                "CREATE",
+                "diseases",
+                disease.id,
+                before_data=None,
+                after_data={
+                    "disease_name": disease.disease_name,
+                    "disease_type": disease.disease_type,
+                    "description": disease.description,
+                    "severity_level": disease.severity_level,
+                    "image": disease.image,
+                    "is_active": disease.is_active
+                }
+            )
+
+            return disease
+
         except SQLAlchemyError as e:
+
             db.session.rollback()
+
             if filename:
                 delete_image(filename)
-            raise ValueError(f"Database error: {str(e)}")
 
-        # ✅ Audit log
-        log_audit("CREATE", "diseases", disease.id, before_data=None, after_data={
-            "disease_name": disease.disease_name,
-            "disease_type": disease.disease_type,
-            "description": disease.description,
-            "severity_level": disease.severity_level,
-            "image": disease.image,
-            "is_active": disease.is_active
-        })
-        return disease
+            raise ValueError(
+                f"Database error: {str(e)}"
+            )
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            if filename:
+                delete_image(filename)
+
+            raise
+
+
 
     # ---------- UPDATE ---------- #
 

@@ -51,10 +51,13 @@ def index():
         monitorings = CropMonitoringService.get_all(
             user_id=current_user.id
         )
-
+        latest_monitorings = CropMonitoringService.get_latest_by_field_crop(
+            current_user.id
+        )
         return render_template(
             "user_page/crop_monitorings/index.html",
-            monitorings=monitorings
+            monitorings=monitorings,
+            latest_monitorings=latest_monitorings
         )
 
     except Exception as e:
@@ -127,7 +130,7 @@ def create():
         ] + [
             (
                 stage.id,
-                stage.stage_name
+                f"{stage.stage_name} - {stage.stage_name_kh}"
             )
             for stage in growth_stages
         ]

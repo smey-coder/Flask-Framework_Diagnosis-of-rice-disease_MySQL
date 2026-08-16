@@ -1,0 +1,929 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} {{
+farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/farm_detail.css') }}"
+/>
+
+<div class="farm-detail-page">
+  <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+  <div class="farm-page-header">
+    <div class="farm-header-left">
+      <a href="{{ url_for('user.dashboard') }}" class="back-button">
+        ← Back to Dashboard
+      </a>
+
+      <div class="farm-title-wrapper">
+        <div class="farm-title-icon">🌾</div>
+
+        <div>
+          <h1>{{ farm.farm_name }}</h1>
+
+          <p>Farm Management & Overview</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="farm-header-actions">
+      <span
+        class="status-badge {% if farm.status == 'Active' %} status-active {% else %} status-inactive {% endif %}"
+      >
+        <span class="status-dot"></span>
+
+        {{ farm.status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         FARM INFORMATION
+    ====================================================== -->
+
+  <div class="farm-info-card">
+    <div class="card-header">
+      <div class="card-title-wrapper">
+        <div class="card-icon farm-icon">🌾</div>
+
+        <div>
+          <h2>Farm Information</h2>
+
+          <p>Basic information about this farm</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="farm-info-grid">
+      <!-- Farm Name -->
+
+      <div class="info-item">
+        <span class="info-label"> Farm Name </span>
+
+        <span class="info-value"> {{ farm.farm_name }} </span>
+      </div>
+
+      <!-- Location -->
+
+      <div class="info-item">
+        <span class="info-label"> Location </span>
+
+        <span class="info-value">
+          {% if farm.location %} 📍 {{ farm.location }} {% else %}
+
+          <span class="empty-value"> Not provided </span>
+
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- Created -->
+
+      <div class="info-item">
+        <span class="info-label"> Created Date </span>
+
+        <span class="info-value">
+          {% if farm.created_at %} {{ farm.created_at.strftime('%d-%m-%Y') }} {%
+          else %} - {% endif %}
+        </span>
+      </div>
+
+      <!-- Updated -->
+
+      <div class="info-item">
+        <span class="info-label"> Last Updated </span>
+
+        <span class="info-value">
+          {% if farm.updated_at %} {{ farm.updated_at.strftime('%d-%m-%Y') }} {%
+          else %} - {% endif %}
+        </span>
+      </div>
+
+      <!-- Description -->
+
+      <div class="info-item description-item">
+        <span class="info-label"> Description </span>
+
+        <span class="info-value">
+          {% if farm.description %} {{ farm.description }} {% else %}
+
+          <span class="empty-value"> No description available </span>
+
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+  <div class="statistics-section">
+    <div class="section-heading">
+      <h2>Farm Statistics</h2>
+
+      <p>Overview of farming activities</p>
+    </div>
+
+    <div class="statistics-grid">
+      <!-- TOTAL FIELDS -->
+
+      <div class="stat-card">
+        <div class="stat-icon field-icon">📍</div>
+
+        <div class="stat-content">
+          <span class="stat-label"> Total Fields </span>
+
+          <strong class="stat-number"> {{ total_fields }} </strong>
+
+          <span class="stat-description"> {{ active_fields }} active </span>
+        </div>
+      </div>
+
+      <!-- FIELD CROPS -->
+
+      <div class="stat-card">
+        <div class="stat-icon crop-icon">🌱</div>
+
+        <div class="stat-content">
+          <span class="stat-label"> Field Crops </span>
+
+          <strong class="stat-number"> {{ total_field_crops }} </strong>
+
+          <span class="stat-description"> {{ growing_crops }} growing </span>
+        </div>
+      </div>
+
+      <!-- MONITORING -->
+
+      <div class="stat-card">
+        <div class="stat-icon monitoring-icon">📊</div>
+
+        <div class="stat-content">
+          <span class="stat-label"> Monitoring </span>
+
+          <strong class="stat-number"> {{ total_monitorings }} </strong>
+
+          <span class="stat-description"> monitoring records </span>
+        </div>
+      </div>
+
+      <!-- ALERTS -->
+
+      <div class="stat-card">
+        <div class="stat-icon alert-icon">🔔</div>
+
+        <div class="stat-content">
+          <span class="stat-label"> Alerts </span>
+
+          <strong class="stat-number">
+            {{ pest_alert_count + disease_alert_count }}
+          </strong>
+
+          <span class="stat-description">
+            🐛 {{ pest_alert_count }} &nbsp;&nbsp; 🦠 {{ disease_alert_count }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         FIELDS
+    ====================================================== -->
+
+  <div class="content-card">
+    <div class="content-card-header">
+      <div class="content-title">
+        <div class="content-icon field-content-icon">📍</div>
+
+        <div>
+          <h2>Fields</h2>
+
+          <p>Fields belonging to this farm</p>
+        </div>
+      </div>
+
+      <span class="record-count"> {{ total_fields }} Fields </span>
+    </div>
+
+    {% if fields %}
+
+    <div class="table-wrapper">
+      <table class="farm-table">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+
+            <th>Area</th>
+
+            <th>Soil Type</th>
+
+            <th>Location</th>
+
+            <th>Crops</th>
+
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for field in fields %}
+
+          <tr>
+            <td>
+              <div class="field-name-cell">
+                <div class="small-icon">📍</div>
+
+                <strong> {{ field.field_name }} </strong>
+              </div>
+            </td>
+
+            <td>
+              {% if field.area %} {{ field.area }} {% else %} - {% endif %}
+            </td>
+
+            <td>{{ field.soil_type or '-' }}</td>
+
+            <td>{{ field.location or '-' }}</td>
+
+            <td>
+              <span class="count-badge"> {{ field.field_crops|length }} </span>
+            </td>
+
+            <td>
+              {% if field.status == "Active" %}
+
+              <span class="table-status active"> Active </span>
+
+              {% else %}
+
+              <span class="table-status inactive"> Inactive </span>
+
+              {% endif %}
+            </td>
+          </tr>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+      <div class="empty-icon">📍</div>
+
+      <h3>No Fields Found</h3>
+
+      <p>This farm does not have any fields yet.</p>
+    </div>
+
+    {% endif %}
+  </div>
+
+  <!-- =====================================================
+         FIELD CROPS
+    ====================================================== -->
+
+  <div class="content-card">
+    <div class="content-card-header">
+      <div class="content-title">
+        <div class="content-icon crop-content-icon">🌱</div>
+
+        <div>
+          <h2>Field Crops</h2>
+
+          <p>Crops registered in this farm</p>
+        </div>
+      </div>
+
+      <span class="record-count"> {{ total_field_crops }} Crops </span>
+    </div>
+
+    {% if field_crops %}
+
+    <div class="table-wrapper">
+      <table class="farm-table crop-table">
+        <thead>
+          <tr>
+            <th>Field</th>
+
+            <th>Rice Variety</th>
+
+            <th>Growth Stage</th>
+
+            <th>Planting Date</th>
+
+            <th>Expected Harvest</th>
+
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for crop in field_crops %}
+
+          <tr>
+            <!-- FIELD -->
+
+            <td>
+              <strong> {{ crop.field.field_name }} </strong>
+            </td>
+
+            <!-- RICE VARIETY -->
+
+            <td>
+              {% if crop.rice_variety %} {{ crop.rice_variety }} {% else %} - {%
+              endif %}
+            </td>
+
+            <!-- GROWTH STAGE -->
+
+            <td>
+              {% if crop.growth_stage %}
+
+              <div class="growth-stage">
+                <strong> {{ crop.growth_stage.stage_name }} </strong>
+
+                {% if crop.growth_stage.stage_name_kh %}
+
+                <small> {{ crop.growth_stage.stage_name_kh }} </small>
+
+                {% endif %}
+              </div>
+
+              {% else %} - {% endif %}
+            </td>
+
+            <!-- PLANTING DATE -->
+
+            <td>
+              {% if crop.planting_date %} {{
+              crop.planting_date.strftime('%d-%m-%Y') }} {% else %} - {% endif
+              %}
+            </td>
+
+            <!-- HARVEST -->
+
+            <td>
+              {% if crop.expected_harvest_date %} {{
+              crop.expected_harvest_date.strftime('%d-%m-%Y') }} {% else %} - {%
+              endif %}
+            </td>
+
+            <!-- STATUS -->
+
+            <td>
+              {% if crop.status == "Growing" %}
+
+              <span class="crop-status growing"> Growing </span>
+
+              {% elif crop.status == "Harvested" %}
+
+              <span class="crop-status harvested"> Harvested </span>
+
+              {% elif crop.status == "Completed" %}
+
+              <span class="crop-status completed"> Completed </span>
+
+              {% else %}
+
+              <span class="crop-status default"> {{ crop.status }} </span>
+
+              {% endif %}
+            </td>
+          </tr>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+      <div class="empty-icon">🌱</div>
+
+      <h3>No Field Crops Found</h3>
+
+      <p>No crops have been registered in this farm yet.</p>
+    </div>
+
+    {% endif %}
+  </div>
+
+  <!-- =====================================================
+         RECENT MONITORING
+    ====================================================== -->
+
+  <div class="content-card">
+    <div class="content-card-header">
+      <div class="content-title">
+        <div class="content-icon monitoring-content-icon">📊</div>
+
+        <div>
+          <h2>Recent Monitoring</h2>
+
+          <p>Latest crop monitoring activities</p>
+        </div>
+      </div>
+
+      <span class="record-count"> Latest {{ recent_monitorings|length }} </span>
+    </div>
+
+    {% if recent_monitorings %}
+
+    <div class="table-wrapper">
+      <table class="farm-table monitoring-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+
+            <th>Field</th>
+
+            <th>Growth Stage</th>
+
+            <th>Height</th>
+
+            <th>Condition</th>
+
+            <th>Water</th>
+
+            <th>Pest</th>
+
+            <th>Disease</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for monitoring in recent_monitorings %}
+
+          <tr>
+            <!-- DATE -->
+
+            <td>
+              <strong>
+                {{ monitoring.monitoring_date.strftime('%d-%m-%Y') }}
+              </strong>
+            </td>
+
+            <!-- FIELD -->
+
+            <td>{{ monitoring.field_crop.field.field_name }}</td>
+
+            <!-- GROWTH STAGE -->
+
+            <td>
+              {% if monitoring.growth_stage %}
+
+              <div class="growth-stage">
+                <strong> {{ monitoring.growth_stage.stage_name }} </strong>
+
+                {% if monitoring.growth_stage.stage_name_kh %}
+
+                <small> {{ monitoring.growth_stage.stage_name_kh }} </small>
+
+                {% endif %}
+              </div>
+
+              {% else %} - {% endif %}
+            </td>
+
+            <!-- HEIGHT -->
+
+            <td>
+              {% if monitoring.plant_height %} {{ monitoring.plant_height }} cm
+              {% else %} - {% endif %}
+            </td>
+
+            <!-- CONDITION -->
+
+            <td>
+              {% if monitoring.plant_condition == "Healthy" %}
+
+              <span class="monitor-badge healthy"> Healthy </span>
+
+              {% elif monitoring.plant_condition %}
+
+              <span class="monitor-badge warning">
+                {{ monitoring.plant_condition }}
+              </span>
+
+              {% else %} - {% endif %}
+            </td>
+
+            <!-- WATER -->
+
+            <td>
+              {% if monitoring.water_status == "Good" %}
+
+              <span class="monitor-badge healthy"> Good </span>
+
+              {% elif monitoring.water_status %}
+
+              <span class="monitor-badge warning">
+                {{ monitoring.water_status }}
+              </span>
+
+              {% else %} - {% endif %}
+            </td>
+
+            <!-- PEST -->
+
+            <td>
+              {% if monitoring.pest_status and monitoring.pest_status not in
+              ["None", "Low"] %}
+
+              <span class="monitor-badge danger">
+                🐛 {{ monitoring.pest_status }}
+              </span>
+
+              {% else %}
+
+              <span class="monitor-badge healthy"> None </span>
+
+              {% endif %}
+            </td>
+
+            <!-- DISEASE -->
+
+            <td>
+              {% if monitoring.disease_status and monitoring.disease_status not
+              in ["None", "Low"] %}
+
+              <span class="monitor-badge danger">
+                🦠 {{ monitoring.disease_status }}
+              </span>
+
+              {% else %}
+
+              <span class="monitor-badge healthy"> None </span>
+
+              {% endif %}
+            </td>
+          </tr>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+
+      <h3>No Monitoring Records</h3>
+
+      <p>No crop monitoring has been recorded for this farm.</p>
+    </div>
+
+    {% endif %}
+  </div>
+
+  <!-- =====================================================
+     MONITORING HISTORY
+====================================================== -->
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <!-- HEADER -->
+
+    <div class="card-header bg-white py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="fw-bold mb-1 text-dark">
+            <i class="bi bi-clock-history text-success me-2"></i>
+
+            Monitoring History
+          </h5>
+
+          <small class="text-muted">
+            Complete crop monitoring records for this farm
+          </small>
+        </div>
+
+        <span class="badge bg-success-subtle text-success rounded-pill">
+          {{ monitoring_history|length }} Records
+        </span>
+      </div>
+    </div>
+
+    <!-- BODY -->
+
+    <div class="card-body p-0">
+      {% if monitoring_history %}
+
+      <div class="table-responsive">
+        <table class="table align-middle mb-0 monitoring-history-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+
+              <th>Field</th>
+
+              <th>Rice Variety</th>
+
+              <th>Growth Stage</th>
+
+              <th>Height</th>
+
+              <th>Condition</th>
+
+              <th>Water</th>
+
+              <th>Pest</th>
+
+              <th>Disease</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for monitoring in monitoring_history %}
+
+            <tr>
+              <!-- DATE -->
+
+              <td>
+                <div class="monitoring-date">
+                  <i class="bi bi-calendar3"></i>
+
+                  {{ monitoring.monitoring_date.strftime("%d-%m-%Y") }}
+                </div>
+              </td>
+
+              <!-- FIELD -->
+
+              <td>
+                <div class="monitoring-field">
+                  <i class="bi bi-bounding-box"></i>
+
+                  {{ monitoring.field_crop.field.field_name }}
+                </div>
+              </td>
+
+              <!-- RICE VARIETY -->
+
+              <td>
+                <div class="monitoring-crop">
+                  <i class="bi bi-flower1"></i>
+
+                  {{ monitoring.field_crop.rice_variety.variety_name }}
+                </div>
+              </td>
+
+              <!-- GROWTH STAGE -->
+
+              <td>
+                {% if monitoring.growth_stage %}
+
+                <span class="growth-stage-badge">
+                  {{ monitoring.growth_stage.stage_name }}
+                </span>
+
+                {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </td>
+
+              <!-- HEIGHT -->
+
+              <td>
+                {% if monitoring.plant_height %}
+
+                <strong> {{ monitoring.plant_height }} </strong>
+
+                <small class="text-muted"> cm </small>
+
+                {% else %} - {% endif %}
+              </td>
+
+              <!-- CONDITION -->
+
+              <td>
+                {% if monitoring.plant_condition == "Healthy" %}
+
+                <span class="monitoring-condition healthy">
+                  <i class="bi bi-check-circle-fill"></i>
+
+                  Healthy
+                </span>
+
+                {% elif monitoring.plant_condition == "Warning" %}
+
+                <span class="monitoring-condition warning">
+                  <i class="bi bi-exclamation-circle-fill"></i>
+
+                  Warning
+                </span>
+
+                {% elif monitoring.plant_condition == "Unhealthy" %}
+
+                <span class="monitoring-condition unhealthy">
+                  <i class="bi bi-x-circle-fill"></i>
+
+                  Unhealthy
+                </span>
+
+                {% else %}
+
+                <span class="monitoring-condition default">
+                  {{ monitoring.plant_condition or "N/A" }}
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- WATER -->
+
+              <td>
+                {% if monitoring.water_status == "Good" %}
+
+                <span class="monitoring-water good">
+                  <i class="bi bi-droplet-fill"></i>
+
+                  Good
+                </span>
+
+                {% elif monitoring.water_status == "Low" %}
+
+                <span class="monitoring-water low">
+                  <i class="bi bi-droplet"></i>
+
+                  Low
+                </span>
+
+                {% else %}
+
+                <span class="text-muted">
+                  {{ monitoring.water_status or "N/A" }}
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- PEST -->
+
+              <td>
+                {% if monitoring.pest_status and monitoring.pest_status not in
+                ["None", "Low"] %}
+
+                <span class="badge rounded-pill bg-danger">
+                  <i class="bi bi-bug-fill me-1"></i>
+
+                  {{ monitoring.pest_status }}
+                </span>
+
+                {% else %}
+
+                <span class="text-success small">
+                  <i class="bi bi-check-circle me-1"></i>
+
+                  None
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- DISEASE -->
+
+              <td>
+                {% if monitoring.disease_status and monitoring.disease_status
+                not in ["None", "Low"] %}
+
+                <span class="badge rounded-pill bg-danger">
+                  <i class="bi bi-virus me-1"></i>
+
+                  {{ monitoring.disease_status }}
+                </span>
+
+                {% else %}
+
+                <span class="text-success small">
+                  <i class="bi bi-check-circle me-1"></i>
+
+                  None
+                </span>
+
+                {% endif %}
+              </td>
+              <td class="text-center">
+
+                    <a
+                        href="{{ url_for(
+                            'user.monitoring_detail',
+                            farm_id=farm.id,
+                            monitoring_id=monitoring.id
+                        ) }}"
+                        class="monitoring-view-btn"
+                        title="View Monitoring Detail"
+                    >
+
+                        <i class="bi bi-eye"></i>
+
+                    </a>
+
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% else %}
+
+      <!-- EMPTY STATE -->
+
+      <div class="text-center py-5">
+        <div class="mb-3">
+          <i class="bi bi-clock-history text-muted" style="font-size: 3rem"></i>
+        </div>
+
+        <h6 class="fw-bold">No Monitoring History</h6>
+
+        <p class="text-muted small mb-0">
+          This farm does not have any monitoring records yet.
+        </p>
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- =====================================================
+         CROP STATUS SUMMARY
+    ====================================================== -->
+
+  <div class="content-card">
+    <div class="content-card-header">
+      <div class="content-title">
+        <div class="content-icon">📈</div>
+
+        <div>
+          <h2>Crop Status Summary</h2>
+
+          <p>Current crop status in this farm</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="crop-summary-grid">
+      <!-- Growing -->
+
+      <div class="summary-item">
+        <div class="summary-icon growing">🌱</div>
+
+        <div>
+          <span> Growing </span>
+
+          <strong> {{ growing_crops }} </strong>
+        </div>
+      </div>
+
+      <!-- Harvested -->
+
+      <div class="summary-item">
+        <div class="summary-icon harvested">🌾</div>
+
+        <div>
+          <span> Harvested </span>
+
+          <strong> {{ harvested_crops }} </strong>
+        </div>
+      </div>
+
+      <!-- Completed -->
+
+      <div class="summary-item">
+        <div class="summary-icon completed">✅</div>
+
+        <div>
+          <span> Completed </span>
+
+          <strong> {{ completed_crops }} </strong>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+
+      <div class="summary-item">
+        <div class="summary-icon alerts">🔔</div>
+
+        <div>
+          <span> Total Alerts </span>
+
+          <strong> {{ pest_alert_count + disease_alert_count }} </strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

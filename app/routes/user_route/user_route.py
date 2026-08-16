@@ -17,6 +17,8 @@ from app.models.UserNotification import UserNotification
 from app.models.crop_monitoring import CropMonitoringTable
 from app.models.diagnosis_history import DiagnosisHistoryTable
 from app.models.diseases import DiseaseTable
+from app.models.farm import FarmTable
+from app.models.field import FieldTable
 from app.models.field_crop import FieldCropTable
 from app.models.role import RoleTable
 from app.models.rule_conditions import RuleConditionsTable
@@ -38,6 +40,9 @@ from app.models.rule_conditions import RuleConditionsTable
 from app.models.symptoms import SymptomsTable
 from app.services.diagnosis_service import DiagnosisService
 from app.services.farm_dashboard_service import FarmDashboardService
+from app.services.crop_monitoring_service import (CropMonitoringService)
+# from app.models.field_crop import FieldCropTable
+
 
 # Create user blueprint
 user_bp = Blueprint("user", __name__, url_prefix="/user", template_folder="../../templates")
@@ -72,42 +77,87 @@ CAMBODIA_CITIES = [
 @login_required
 @role_required("User")
 def dashboard():
+
     form = CitySearchForm()
+
     search_results = []
+
     selected_city_weather = None
+
     current_date = datetime.now().strftime("%d-%m-%Y %H:%M")
 
     try:
 
-        selected_city_id = request.args.get('city_id')
-        if selected_city_id:
-            selected_city_weather = WeatherService.get_weather(selected_city_id)
-        
-        if form.validate_on_submit():
-            selected_city_name = form.city.data
-            if selected_city_name:
-                selected_city_weather = WeatherService.get_weather(selected_city_name)
-        
-        # Default disease to display
-        default_disease = DiseaseTable.query.first()  # or choose a specific one
-        
-        # Recent activities (last 5 active diseases)
-        recent_activities = DiseaseTable.query \
-            .filter_by(is_active=True) \
-            .order_by(DiseaseTable.created_at.desc()) \
-            .limit(5) \
-            .all()
-        
-        # New diseases for notifications (added in last 7 days)
-        seven_days_ago = datetime.utcnow() - timedelta(days=7)
-        new_diseases = DiseaseTable.query \
-            .filter(DiseaseTable.created_at >= seven_days_ago, DiseaseTable.is_active==True) \
-            .order_by(DiseaseTable.created_at.desc()) \
-            .all()
-            
-        new_diseases_count = len(new_diseases)
         # =====================================================
-        # FARM MANAGEMENT
+        # WEATHER
+        # =====================================================
+
+        selected_city_id = request.args.get("city_id")
+
+        if selected_city_id:
+
+            selected_city_weather = WeatherService.get_weather(
+                selected_city_id
+            )
+
+        if form.validate_on_submit():
+
+            selected_city_name = form.city.data
+
+            if selected_city_name:
+
+                selected_city_weather = WeatherService.get_weather(
+                    selected_city_name
+                )
+
+
+        # =====================================================
+        # DISEASE
+        # =====================================================
+
+        default_disease = DiseaseTable.query.first()
+
+
+        # =====================================================
+        # RECENT DISEASE ACTIVITIES
+        # =====================================================
+
+        recent_activities = (
+            DiseaseTable.query
+            .filter_by(is_active=True)
+            .order_by(
+                DiseaseTable.created_at.desc()
+            )
+            .limit(5)
+            .all()
+        )
+
+
+        # =====================================================
+        # NEW DISEASES
+        # =====================================================
+
+        seven_days_ago = (
+            datetime.utcnow() - timedelta(days=7)
+        )
+
+        new_diseases = (
+            DiseaseTable.query
+            .filter(
+                DiseaseTable.created_at >= seven_days_ago,
+                DiseaseTable.is_active == True
+            )
+            .order_by(
+                DiseaseTable.created_at.desc()
+            )
+            .all()
+        )
+
+        new_diseases_count = len(new_diseases)
+
+
+        # =====================================================
+        # FARM MANAGEMENT STATISTICS
         # =====================================================
 
         farm_statistics = (
@@ -115,23 +165,31 @@ def dashboard():
                 user_id=current_user.id
             )
         )
+
+
         # =====================================================
-        # CROP MONITORING
+        # FIELD CROPS
+        # Get only crops belonging to current user
         # =====================================================
 
-        # Get all field crops belonging to current user
         field_crops = (
             db.session.scalars(
 
                 db.select(FieldCropTable)
+
                 .where(
+
                     FieldCropTable.field.has(
+
                         FieldCropTable.field.property
                         .mapper.class_.farm.has(
+
                             user_id=current_user.id
+
                         )
                     )
                 )
+
                 .order_by(
                     FieldCropTable.id.desc()
                 )
@@ -139,19 +197,385 @@ def dashboard():
             ).all()
         )
 
+
         # =====================================================
         # CROP STATISTICS
         # =====================================================
 
-        total_field_crops = len(
-            field_crops
-        )
+        total_field_crops = len(field_crops)
+
 
         active_crops = sum(
+
+            1
+
+            for crop in field_crops
+
+            if crop.status in [
+                "Active",
+                "Growing"
+            ]
+
+        )
+
+
+        growing_crops = sum(
+
+            1
+
+            for crop in field_crops
+
+            if crop.status == "Growing"
+
+        )
+
+
+        harvested_crops = sum(
+
+            1
+
+            for crop in field_crops
+
+            if crop.status == "Harvested"
+
+        )
+
+
+        completed_crops = sum(
+
+            1
+
+            for crop in field_crops
+
+            if crop.status == "Completed"
+
+        )
+
+
+        # =====================================================
+        # RECENT CROP MONITORING
+        # =====================================================
+
+        recent_monitorings = (
+            db.session.scalars(
+
+                db.select(CropMonitoringTable)
+
+                .join(
+                    CropMonitoringTable.field_crop
+                )
+
+                .where(
+
+                    CropMonitoringTable.field_crop.has(
+
+                        FieldCropTable.field.has(
+
+                            FieldCropTable.field.property
+                            .mapper.class_.farm.has(
+
+                                user_id=current_user.id
+
+                            )
+                        )
+                    )
+                )
+
+                .order_by(
+
+                    CropMonitoringTable.monitoring_date.desc(),
+
+                    CropMonitoringTable.id.desc()
+
+                )
+
+                .limit(5)
+
+            ).all()
+        )
+        # ===================================================== # 9. MONITORING STATISTICS # ===================================================== 
+        total_monitorings = len(recent_monitorings) 
+        healthy_monitorings = sum( 1 for monitoring in recent_monitorings if monitoring.plant_condition == "Healthy" ) 
+        warning_monitorings = sum( 1 for monitoring in recent_monitorings if monitoring.plant_condition in [ "Warning", "Unhealthy" ] ) 
+        # ===================================================== # 10. WATER STATUS # ===================================================== 
+        good_water_count = sum( 1 for monitoring in recent_monitorings if monitoring.water_status == "Good" ) 
+        low_water_count = sum( 1 for monitoring in recent_monitorings if monitoring.water_status == "Low" ) 
+        # ===================================================== # 11. PEST STATUS # ===================================================== 
+        pest_alert_count = sum( 1 for monitoring in recent_monitorings if monitoring.pest_status not in [ None, "", "None", "Low" ] )
+        #===================================================== # 12. DISEASE STATUS # ===================================================== 
+        disease_alert_count = sum( 1 for monitoring in recent_monitorings if monitoring.disease_status not in [ None, "", "None", "Low" ] )
+
+        farms = (
+            FarmTable.query
+            .filter(
+                FarmTable.user_id == current_user.id
+            )
+            .order_by(
+                FarmTable.id.desc()
+            )
+            .all()
+        )
+        # =====================================================
+        # RETURN DASHBOARD
+        # =====================================================
+
+        return render_template(
+
+            "user_page/dashboard.html",
+
+            user=current_user,
+
+            farms=farms,
+
+            # Disease
+            disease=default_disease,
+
+            recent_activities=recent_activities,
+
+            new_diseases=new_diseases,
+
+            new_diseases_count=new_diseases_count,
+
+            # Weather
+            search_results=search_results,
+
+            selected_city_weather=selected_city_weather,
+
+            form=form,
+
+            current_date=current_date,
+
+            # Farm
+            farm_statistics=farm_statistics,
+
+            # Field Crops
+            field_crops=field_crops,
+
+            total_field_crops=total_field_crops,
+
+            active_crops=active_crops,
+
+            growing_crops=growing_crops,
+
+            harvested_crops=harvested_crops,
+
+            completed_crops=completed_crops,
+
+            # Monitoring
+            recent_monitorings=recent_monitorings,
+            total_monitorings=total_monitorings, 
+            healthy_monitorings=healthy_monitorings, 
+            warning_monitorings=warning_monitorings, 
+            good_water_count=good_water_count, 
+            low_water_count=low_water_count, 
+            #Pest / Disease Alerts 
+            pest_alert_count=pest_alert_count, 
+            disease_alert_count=disease_alert_count
+
+        )
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            f"Dashboard error: {e}"
+        )
+
+        flash(
+            "Unable to load dashboard data.",
+            "danger"
+        )
+
+
+        # =====================================================
+        # DEFAULT FARM STATISTICS
+        # =====================================================
+
+        farm_statistics = {
+
+            "total_farms": 0,
+
+            "active_farms": 0,
+
+            "total_fields": 0,
+
+            "active_fields": 0,
+
+            "total_area": 0,
+
+            "total_crops": 0,
+
+            "active_crops": 0,
+
+            "harvested_crops": 0
+
+        }
+
+
+        return render_template(
+            "user_page/dashboard.html",
+
+            user=current_user,
+
+            disease=None,
+
+            recent_activities=[],
+
+            new_diseases=[],
+
+            new_diseases_count=0,
+
+            search_results=search_results,
+
+            selected_city_weather=selected_city_weather,
+
+            form=form,
+
+            current_date=current_date,
+
+            farm_statistics=farm_statistics,
+
+            field_crops=[],
+
+            total_field_crops=0,
+
+            active_crops=0,
+
+            growing_crops=0,
+
+            harvested_crops=0,
+
+            completed_crops=0,
+
+            recent_monitorings=[],
+            total_monitorings=0, 
+            healthy_monitorings=0, 
+            warning_monitorings=0, 
+            # Water 
+            good_water_count=0, 
+            low_water_count=0, 
+            # Alerts
+            pest_alert_count=0, 
+            disease_alert_count=0
+
+        )
+@user_bp.route("/farm/<int:farm_id>", methods=["GET"])
+@login_required
+@role_required("User")
+def farm_detail(farm_id):
+
+    try:
+
+        # =====================================================
+        # 1. GET FARM
+        # =====================================================
+
+        farm = (
+            FarmTable.query
+            .filter(
+                FarmTable.id == farm_id,
+                FarmTable.user_id == current_user.id
+            )
+            .first_or_404()
+        )
+
+        # =====================================================
+        # 2. GET FIELDS
+        # =====================================================
+
+        fields = (
+            FieldTable.query
+            .filter(
+                FieldTable.farm_id == farm.id
+            )
+            .order_by(
+                FieldTable.id.asc()
+            )
+            .all()
+        )
+
+        # =====================================================
+        # 3. GET FIELD CROPS
+        # =====================================================
+
+        field_crops = (
+            FieldCropTable.query
+            .join(
+                FieldCropTable.field
+            )
+            .filter(
+                FieldTable.farm_id == farm.id
+            )
+            .order_by(
+                FieldCropTable.id.desc()
+            )
+            .all()
+        )
+
+        # =====================================================
+        # 4. GET RECENT MONITORINGS
+        # =====================================================
+
+        recent_monitorings = (
+            CropMonitoringTable.query
+            .join(
+                CropMonitoringTable.field_crop
+            )
+            .join(
+                FieldCropTable.field
+            )
+            .filter(
+                FieldTable.farm_id == farm.id
+            )
+            .order_by(
+                CropMonitoringTable.monitoring_date.desc(),
+                CropMonitoringTable.id.desc()
+            )
+            .limit(5)
+            .all()
+        )
+        # =====================================================
+        # 4.1 GET MONITORING HISTORY
+        # =====================================================
+
+        monitoring_history = (
+            CropMonitoringTable.query
+            .join(
+                CropMonitoringTable.field_crop
+            )
+            .join(
+                FieldCropTable.field
+            )
+            .filter(
+                FieldTable.farm_id == farm.id
+            )
+            .order_by(
+                CropMonitoringTable.monitoring_date.desc(),
+                CropMonitoringTable.id.desc()
+            )
+            .all()
+        )
+
+        # =====================================================
+        # 5. STATISTICS
+        # =====================================================
+
+        total_fields = len(fields)
+
+        active_fields = sum(
+            1
+            for field in fields
+            if field.status == "Active"
+        )
+
+        total_field_crops = len(field_crops)
+
+        growing_crops = sum(
             1
             for crop in field_crops
-            if crop.status == "Active"
-            or crop.status == "Growing"
+            if crop.status == "Growing"
         )
 
         harvested_crops = sum(
@@ -167,86 +591,99 @@ def dashboard():
         )
 
         # =====================================================
-        # RECENT CROP MONITORING
+        # 6. MONITORING STATISTICS
         # =====================================================
 
-        recent_monitorings = (
-            db.session.scalars(
-
-                db.select(CropMonitoringTable)
-                .join(
-                    CropMonitoringTable.field_crop
-                )
-                .where(
-                    CropMonitoringTable.field_crop.has(
-                        FieldCropTable.field.has(
-                            FieldCropTable.field.property
-                            .mapper.class_.farm.has(
-                                user_id=current_user.id
-                            )
-                        )
-                    )
-                )
-                .order_by(
-                    CropMonitoringTable.monitoring_date.desc()
-                )
-                .limit(5)
-
-            ).all()
+        total_monitorings = (
+            CropMonitoringTable.query
+            .join(
+                CropMonitoringTable.field_crop
+            )
+            .join(
+                FieldCropTable.field
+            )
+            .filter(
+                FieldTable.farm_id == farm.id
+            )
+            .count()
         )
+
         # =====================================================
-        # RETURN DASHBOARD
+        # 7. PEST ALERTS
         # =====================================================
+
+        pest_alert_count = sum(
+            1
+            for monitoring in recent_monitorings
+            if monitoring.pest_status
+            not in [None, "", "None", "Low"]
+        )
+
+        # =====================================================
+        # 8. DISEASE ALERTS
+        # =====================================================
+
+        disease_alert_count = sum(
+            1
+            for monitoring in recent_monitorings
+            if monitoring.disease_status
+            not in [None, "", "None", "Low"]
+        )
+
+        # =====================================================
+        # 9. RENDER
+        # =====================================================
+
         return render_template(
-            "user_page/dashboard.html", 
+            "user_page/farm_detail.html",
+
             user=current_user,
-            disease=default_disease,
-            recent_activities=recent_activities,
-            new_diseases=new_diseases,
-            new_diseases_count=new_diseases_count,
-            search_results=search_results,
-            selected_city_weather=selected_city_weather,
-            form=form,
-            current_date=current_date,
-            # Farm Management
-            farm_statistics=farm_statistics,
-            # Crop Monitoring
+
+            # Farm
+            farm=farm,
+
+            # Fields
+            fields=fields,
+
+            # Field Crops
             field_crops=field_crops,
+
+            # Monitoring
+            recent_monitorings=recent_monitorings,
+
+            monitoring_history = monitoring_history,
+
+            # Statistics
+            total_fields=total_fields,
+            active_fields=active_fields,
+
             total_field_crops=total_field_crops,
-            active_crops=active_crops,
+
+            growing_crops=growing_crops,
             harvested_crops=harvested_crops,
             completed_crops=completed_crops,
-            recent_monitorings=recent_monitorings
-            )
-    except Exception as e:
-        print(f"Dashboard error: {e}")
-        flash("Unable to load dashboard data.","danger")
-        # -----------------------------------------------------
-        # Default Farm Statistics
-        # -----------------------------------------------------
-        farm_statistics = {
-            "total_farms": 0,
-            "active_farms": 0,
-            "total_fields": 0,
-            "active_fields": 0,
-            "total_area": 0,
-            "total_crops": 0,
-            "active_crops": 0,
-            "harvested_crops": 0
 
-        }
-        return render_template(
-            "user_page/dashboard.html",
-            user=current_user,
-            disease=None,
-            recent_activities=[],
-            new_diseases=[],
-            new_diseases_count=0,
-            search_results=search_results,
-            selected_city_weather=selected_city_weather,
-            form=form,
-            current_date=current_date,
-            farm_statistics=farm_statistics
+            total_monitorings=total_monitorings,
+
+            pest_alert_count=pest_alert_count,
+            disease_alert_count=disease_alert_count
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            f"Farm Detail error: {e}"
+        )
+
+        flash(
+            "Unable to load farm details.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("user.dashboard")
         )
 # ---------------- SETTINGS ----------------
 @user_bp.route("/settings", methods=["GET", "POST"])
@@ -414,6 +851,28 @@ def about():
 def diagnosis_input():
     try:
         form = DiagnosisForm()
+        # =====================================================
+        # GET MONITORING INFORMATION
+        # =====================================================
+
+        monitoring_id = request.args.get(
+            "monitoring_id",
+            type=int
+        )
+
+        farm_id = request.args.get(
+            "farm_id",
+            type=int
+        )
+
+        # Store monitoring information in session
+        if monitoring_id:
+
+            session["monitoring_id"] = monitoring_id
+
+        if farm_id:
+
+            session["farm_id"] = farm_id
 
         # Get all active symptoms
         symptoms = SymptomsTable.query.filter_by(is_active=True).all()
@@ -470,7 +929,9 @@ def diagnosis_input():
             "user_page/index.html",
             form=form,
             grouped_symptoms=grouped_symptoms,
-            user=current_user
+            user=current_user,
+            monitoring_id=monitoring_id,
+            farm_id=farm_id
         )
     except Exception as e:
         flash("System error: Unable to load diagnosis page.", "danger")
@@ -479,7 +940,7 @@ def diagnosis_input():
 
 @user_bp.route("/save_diagnosis", methods=["POST"])
 @login_required
-def save_diagnosis_history(conclusions, rule_trace=None):
+def save_diagnosis_history(conclusions, rule_trace=None, monitoring_id=None):
     """
     Save diagnosis results to the database using raw SQL.
     """
@@ -491,6 +952,7 @@ def save_diagnosis_history(conclusions, rule_trace=None):
             user_name,
             disease_id,
             confidence,
+            monitoring_id,
             selected_symptoms,
             status,
             created_at
@@ -500,6 +962,7 @@ def save_diagnosis_history(conclusions, rule_trace=None):
             :user_name,
             :disease_id,
             :confidence,
+            :monitoring_id,
             :selected_symptoms,
             :status,
             NOW()
@@ -519,6 +982,7 @@ def save_diagnosis_history(conclusions, rule_trace=None):
                 "user_name": current_user.username,
                 "disease_id": disease_id,
                 "confidence": confidence,
+                "monitoring_id": monitoring_id,
                 "selected_symptoms": selected_symptoms,
                 "status": "Completed"
             }
@@ -537,6 +1001,17 @@ def diagnosis_result():
         flash("No symptoms selected.", "warning")
         return redirect(url_for("user.diagnosis_input"))
 
+    # =====================================================
+    # GET MONITORING INFORMATION
+    # =====================================================
+
+    monitoring_id = session.get(
+        "monitoring_id"
+    )
+
+    farm_id = session.get(
+        "farm_id"
+    )
     #Run inference
     conclusions, rule_trace, skipped_rules = DiagnosisService.infer(selected_ids)
 
@@ -546,9 +1021,11 @@ def diagnosis_result():
     if not conclusions:
         flash("No diseases matched your symptoms.", "info")
         return redirect(url_for("user.diagnosis_input"))
+    
+
 
     # Save diagnosis results using raw SQL helper
-    save_diagnosis_history(conclusions, rule_trace)
+    save_diagnosis_history(conclusions, rule_trace, monitoring_id=monitoring_id)
 
     #Prepare results for template
     results = []
@@ -568,7 +1045,9 @@ def diagnosis_result():
     return render_template(
         "user_page/result.html",
         results=results,
-        user=current_user
+        user=current_user,
+        monitoring_id=monitoring_id,
+        farm_id=farm_id
     )
 
 
@@ -777,94 +1256,844 @@ def disease_detail(id):
         new_diseases_count=new_diseases_count
     )
 
-@user_bp.route("/notifications")
+# @user_bp.route("/notifications")
+# @login_required
+# @role_required("User")
+# def get_notifications():
+
+#     user_id = current_user.id
+
+#     results = db.session.query(DiseaseTable).all()
+
+#     data = []
+
+#     for d in results:
+#         notif = UserNotification.query.filter_by(
+#             user_id=user_id,
+#             disease_id=d.id,
+#             is_deleted=True
+#         ).first()
+
+#         if not notif:
+#             data.append({
+#                 "id": d.id,
+#                 "name": d.disease_name,
+#                 "time": d.created_at.isoformat()
+#             })
+
+#     return jsonify(data)
+
+# @user_bp.route("/notifications/read/<int:id>", methods=["POST"])
+# @login_required
+# @role_required("User")
+# def read_notification(id):
+#     user_id = current_user.id
+
+#     notif = UserNotification.query.filter_by(
+#         user_id=user_id,
+#         disease_id=id
+#     ).first()
+
+#     if not notif:
+#         notif = UserNotification(
+#             user_id=user_id,
+#             disease_id=id,
+#             is_read=True
+#         )
+#         db.session.add(notif)
+#     else:
+#         notif.is_read = True
+
+#     db.session.commit()
+#     return "", 204
+
+# @user_bp.route("/notifications/delete-all", methods=["POST"])
+# @login_required
+# @role_required("User")
+# def delete_all_notifications():
+#     try:
+#         user_id = current_user.id
+#         UserNotification.query.filter_by(user_id=user_id).update({
+#             "is_deleted": True
+#         })
+#         db.session.commit()
+#         return "", 204
+#     except Exception as e:
+#         db.session.rollback()
+#         print("[ERROR delete_all_notifications]:", e)
+#         return {"error": "Failed to delete"}, 500
+    
+# @user_bp.route("/notifications/delete/<int:id>", methods=["POST"])
+# @login_required
+# @role_required("User")
+# def delete_notification(id):
+
+#     user_id = current_user.id
+
+#     notif = UserNotification.query.filter_by(
+#         user_id=user_id,
+#         disease_id=id
+#     ).first()
+
+#     if not notif:
+#         notif = UserNotification(
+#             user_id=user_id,
+#             disease_id=id,
+#             is_deleted=True
+#         )
+#         db.session.add(notif)
+#     else:
+#         notif.is_deleted = True
+
+#     db.session.commit()
+#     return "", 204
+
+
+# =========================================================
+# GET ALL NOTIFICATIONS
+# =========================================================
+
+# =========================================================
+# GET ALL NOTIFICATIONS
+# =========================================================
+
+@user_bp.route(
+    "/notifications",
+    methods=["GET"]
+)
 @login_required
 @role_required("User")
 def get_notifications():
 
     user_id = current_user.id
 
-    results = db.session.query(DiseaseTable).all()
+    try:
 
-    data = []
+        notifications = (
+            UserNotification.query
+            .filter(
+                UserNotification.user_id == user_id,
+                UserNotification.is_deleted == False
+            )
+            .order_by(
+                UserNotification.created_at.desc()
+            )
+            .all()
+        )
 
-    for d in results:
-        notif = UserNotification.query.filter_by(
-            user_id=user_id,
-            disease_id=d.id,
-            is_deleted=True
-        ).first()
+        data = []
 
-        if not notif:
-            data.append({
-                "id": d.id,
-                "name": d.disease_name,
-                "time": d.created_at.isoformat()
-            })
+        for notif in notifications:
 
-    return jsonify(data)
+            # =================================================
+            # DISEASE NOTIFICATION
+            # =================================================
 
-@user_bp.route("/notifications/read/<int:id>", methods=["POST"])
+            if notif.category == "disease":
+
+                disease = DiseaseTable.query.get(
+                    notif.disease_id
+                )
+
+                if not disease:
+                    continue
+
+                data.append({
+
+                    "id": notif.id,
+
+                    "notification_id": notif.id,
+
+                    "category": "disease",
+
+                    "reference_id": disease.id,
+
+                    "title": disease.disease_name,
+
+                    "name": disease.disease_name,
+
+                    "message":
+                        "New disease information",
+
+                    "type": "warning",
+
+                    "icon": "bi-virus",
+
+                    "is_read": notif.is_read,
+
+                    "time":
+                        notif.created_at.isoformat()
+                        if notif.created_at
+                        else None
+                })
+
+
+            # =================================================
+            # CROP MONITORING NOTIFICATION
+            # =================================================
+
+            elif notif.category == "crop_monitoring":
+
+                monitoring = (
+                    CropMonitoringTable.query.get(
+                        notif.monitoring_id
+                    )
+                )
+
+                if not monitoring:
+                    continue
+
+
+                # ---------------------------------------------
+                # DEFAULT
+                # ---------------------------------------------
+
+                notification_type = "info"
+
+                icon = "bi-info-circle"
+
+
+                # ---------------------------------------------
+                # DISEASE
+                # ---------------------------------------------
+
+                if monitoring.disease_status in [
+                    "Detected",
+                    "Severe"
+                ]:
+
+                    notification_type = "critical"
+
+                    icon = (
+                        "bi-exclamation-triangle-fill"
+                    )
+
+
+                # ---------------------------------------------
+                # PEST
+                # ---------------------------------------------
+
+                elif monitoring.pest_status in [
+                    "Medium",
+                    "High"
+                ]:
+
+                    notification_type = "warning"
+
+                    icon = "bi-bug-fill"
+
+
+                # ---------------------------------------------
+                # PLANT CONDITION
+                # ---------------------------------------------
+
+                elif monitoring.plant_condition in [
+                    "Poor",
+                    "Critical"
+                ]:
+
+                    notification_type = "warning"
+
+                    icon = "bi-heart-pulse-fill"
+
+
+                # ---------------------------------------------
+                # TITLE
+                # ---------------------------------------------
+
+                title = "Crop Monitoring Alert"
+
+
+                # ---------------------------------------------
+                # MESSAGE
+                # ---------------------------------------------
+
+                message = (
+                    f"Plant condition: "
+                    f"{monitoring.plant_condition or 'N/A'}"
+                )
+
+
+                # ---------------------------------------------
+                # DATA
+                # ---------------------------------------------
+
+                data.append({
+
+                    "id": notif.id,
+
+                    "notification_id": notif.id,
+
+                    "category":
+                        "crop_monitoring",
+
+                    "reference_id":
+                        monitoring.id,
+
+                    "title": title,
+
+                    "name": title,
+
+                    "message": message,
+
+                    "type":
+                        notification_type,
+
+                    "icon": icon,
+
+                    "is_read":
+                        notif.is_read,
+
+                    "time":
+                        notif.created_at.isoformat()
+                        if notif.created_at
+                        else None
+                })
+
+
+        return jsonify(data), 200
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "[ERROR get_notifications]:",
+            e
+        )
+
+        return jsonify({
+
+            "error":
+                "Failed to load notifications."
+
+        }), 500
+
+
+# =========================================================
+# READ NOTIFICATION
+# =========================================================
+
+@user_bp.route(
+    "/notifications/read/<int:id>",
+    methods=["POST"]
+)
 @login_required
 @role_required("User")
 def read_notification(id):
+
     user_id = current_user.id
 
-    notif = UserNotification.query.filter_by(
-        user_id=user_id,
-        disease_id=id
-    ).first()
+    try:
 
-    if not notif:
-        notif = UserNotification(
-            user_id=user_id,
-            disease_id=id,
-            is_read=True
+        notif = (
+            UserNotification.query
+            .filter_by(
+                id=id,
+                user_id=user_id,
+                is_deleted=False
+            )
+            .first()
         )
-        db.session.add(notif)
-    else:
+
+
+        if not notif:
+
+            return jsonify({
+
+                "error":
+                    "Notification not found."
+
+            }), 404
+
+
         notif.is_read = True
 
-    db.session.commit()
-    return "", 204
-
-@user_bp.route("/notifications/delete-all", methods=["POST"])
-@login_required
-@role_required("User")
-def delete_all_notifications():
-    try:
-        user_id = current_user.id
-        UserNotification.query.filter_by(user_id=user_id).update({
-            "is_deleted": True
-        })
         db.session.commit()
+
         return "", 204
+
+
     except Exception as e:
+
         db.session.rollback()
-        print("[ERROR delete_all_notifications]:", e)
-        return {"error": "Failed to delete"}, 500
-    
-@user_bp.route("/notifications/delete/<int:id>", methods=["POST"])
+
+        print(
+            "[ERROR read_notification]:",
+            e
+        )
+
+        return jsonify({
+
+            "error":
+                "Failed to mark notification as read."
+
+        }), 500
+
+
+# =========================================================
+# DELETE ONE NOTIFICATION
+# =========================================================
+
+@user_bp.route(
+    "/notifications/delete/<int:id>",
+    methods=["POST"]
+)
 @login_required
 @role_required("User")
 def delete_notification(id):
 
     user_id = current_user.id
 
-    notif = UserNotification.query.filter_by(
-        user_id=user_id,
-        disease_id=id
-    ).first()
+    try:
 
-    if not notif:
-        notif = UserNotification(
-            user_id=user_id,
-            disease_id=id,
-            is_deleted=True
+        notif = (
+            UserNotification.query
+            .filter_by(
+                id=id,
+                user_id=user_id
+            )
+            .first()
         )
-        db.session.add(notif)
-    else:
+
+
+        if not notif:
+
+            return jsonify({
+
+                "error":
+                    "Notification not found."
+
+            }), 404
+
+
+        # Soft delete
         notif.is_deleted = True
 
-    db.session.commit()
-    return "", 204
+        db.session.commit()
+
+        return "", 204
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "[ERROR delete_notification]:",
+            e
+        )
+
+        return jsonify({
+
+            "error":
+                "Failed to delete notification."
+
+        }), 500
+
+
+# =========================================================
+# DELETE ALL NOTIFICATIONS
+# =========================================================
+
+@user_bp.route(
+    "/notifications/delete-all",
+    methods=["POST"]
+)
+@login_required
+@role_required("User")
+def delete_all_notifications():
+
+    user_id = current_user.id
+
+    try:
+
+        (
+            UserNotification.query
+            .filter_by(
+                user_id=user_id,
+                is_deleted=False
+            )
+            .update({
+
+                "is_deleted": True
+
+            })
+        )
+
+        db.session.commit()
+
+        return "", 204
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "[ERROR delete_all_notifications]:",
+            e
+        )
+
+        return jsonify({
+
+            "error":
+                "Failed to delete notifications."
+
+        }), 500
+
+
+# =========================================================
+# CROP MONITORING DETAIL
+# =========================================================
+
+@user_bp.route(
+    "/notifications/crop/<int:monitoring_id>",
+    methods=["GET"]
+)
+@login_required
+@role_required("User")
+def crop_notification_detail(monitoring_id):
+    try:
+        monitoring = (CropMonitoringService.get_by_id(monitoring_id,current_user.id))
+        if not monitoring:
+
+            return jsonify({"error":"Monitoring record not found."}), 404
+        
+        return jsonify({
+            "id": monitoring.id,
+
+            "field_crop_id": monitoring.field_crop_id,
+            "field_crop_name": (
+                monitoring.field_crop.field.field_name
+                if monitoring.field_crop
+                else "Unknown"
+            ),
+
+            "monitoring_date": (
+                monitoring.monitoring_date.isoformat()
+                if monitoring.monitoring_date
+                else None
+            ),
+
+            "growth_stage_id": monitoring.growth_stage_id,
+            "growth_stage_name": (
+                monitoring.growth_stage.stage_name_kh
+                if monitoring.growth_stage
+                else "Unknown"
+            ),
+
+            "plant_height": (
+                float(monitoring.plant_height)
+                if monitoring.plant_height is not None
+                else None
+            ),
+
+            "water_status": monitoring.water_status,
+
+            "plant_condition": monitoring.plant_condition,
+
+            "pest_status": monitoring.pest_status,
+
+            "disease_status": monitoring.disease_status,
+
+            "description": monitoring.description
+        }), 200
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "[ERROR crop_notification_detail]:",
+            e
+        )
+
+        return jsonify({
+
+            "error":
+                "Failed to load crop monitoring."
+
+        }), 500
+    
+@user_bp.route("/crop-monitoring/<int:monitoring_id>/detail")
+@login_required
+@role_required("User")
+def crop_monitoring_detail_page(monitoring_id):
+
+    return render_template(
+        "user_page/crop_monitorings/crop_monitoring_detail.html",
+        monitoring_id=monitoring_id
+    )
+
+@user_bp.route("/monitoring/history", methods=["GET"])
+@login_required
+@role_required("User")
+def monitoring_history():
+
+    try:
+
+        # =====================================================
+        # 1. GET MONITORING HISTORY
+        # =====================================================
+
+        monitorings = (
+            CropMonitoringTable.query
+
+            # Crop Monitoring
+            .join(
+                CropMonitoringTable.field_crop
+            )
+
+            # Field Crop → Field
+            .join(
+                FieldCropTable.field
+            )
+
+            # Only current user's farms
+            .join(
+                FieldTable.farm
+            )
+
+            .filter(
+                FarmTable.user_id == current_user.id
+            )
+
+            .order_by(
+                CropMonitoringTable.monitoring_date.desc(),
+                CropMonitoringTable.id.desc()
+            )
+
+            .all()
+        )
+
+
+        # =====================================================
+        # 2. RETURN PAGE
+        # =====================================================
+
+        return render_template(
+            "user_page/monitoring/history.html",
+
+            user=current_user,
+
+            monitorings=monitorings
+        )
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            f"Monitoring History error: {e}"
+        )
+
+        flash(
+            "Unable to load monitoring history.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("user.dashboard")
+        )
+
+@user_bp.route(
+    "/farm/<int:farm_id>/monitoring/<int:monitoring_id>",
+    methods=["GET"]
+)
+@login_required
+@role_required("User")
+def monitoring_detail(farm_id, monitoring_id):
+
+    try:
+
+        # =====================================================
+        # 1. GET FARM
+        # =====================================================
+
+        farm = (
+            FarmTable.query
+            .filter(
+                FarmTable.id == farm_id,
+                FarmTable.user_id == current_user.id
+            )
+            .first_or_404()
+        )
+
+
+        # =====================================================
+        # 2. GET MONITORING
+        # =====================================================
+
+        monitoring = (
+            CropMonitoringTable.query
+
+            .join(
+                CropMonitoringTable.field_crop
+            )
+
+            .join(
+                FieldCropTable.field
+            )
+
+            .filter(
+                CropMonitoringTable.id == monitoring_id,
+                FieldTable.farm_id == farm.id
+            )
+
+            .first_or_404()
+        )
+
+
+        # =====================================================
+        # 3. GET DIAGNOSIS HISTORY
+        # =====================================================
+
+        diagnosis_rows = (
+            db.session.execute(
+                text("""
+                    SELECT *
+                    FROM tbl_diagnosis_history
+                    WHERE monitoring_id = :monitoring_id
+                    AND user_id = :user_id
+                    ORDER BY created_at DESC
+                """),
+                {
+                    "monitoring_id": monitoring.id,
+                    "user_id": current_user.id
+                }
+            )
+            .mappings()
+            .all()
+        )
+
+
+        # =====================================================
+        # 4. PREPARE DIAGNOSIS DATA
+        # =====================================================
+
+        diagnosis_histories = []
+
+
+        for row in diagnosis_rows:
+
+            # -----------------------------------------------
+            # Convert RowMapping to normal dictionary
+            # -----------------------------------------------
+
+            diagnosis = dict(row)
+
+
+            # -----------------------------------------------
+            # Get Disease
+            # -----------------------------------------------
+
+            disease = (
+                DiseaseTable.query
+                .filter(
+                    DiseaseTable.id == diagnosis["disease_id"]
+                )
+                .first()
+            )
+
+            diagnosis["disease"] = disease
+
+
+            # -----------------------------------------------
+            # Get Selected Symptoms
+            # -----------------------------------------------
+
+            symptom_ids = [
+                int(x.strip())
+                for x in (
+                    diagnosis.get("selected_symptoms") or ""
+                ).split(",")
+
+                if x.strip().isdigit()
+            ]
+
+
+            # -----------------------------------------------
+            # Get Symptoms
+            # -----------------------------------------------
+
+            symptoms = []
+
+            if symptom_ids:
+
+                symptoms = (
+                    SymptomsTable.query
+                    .filter(
+                        SymptomsTable.id.in_(symptom_ids)
+                    )
+                    .all()
+                )
+
+
+            # -----------------------------------------------
+            # Create ID → Name
+            # -----------------------------------------------
+
+            symptom_map = {
+                symptom.id: symptom.symptom_name
+                for symptom in symptoms
+            }
+
+
+            # -----------------------------------------------
+            # Keep original selected order
+            # -----------------------------------------------
+
+            diagnosis["symptom_names"] = [
+                symptom_map[symptom_id]
+                for symptom_id in symptom_ids
+                if symptom_id in symptom_map
+            ]
+
+
+            # -----------------------------------------------
+            # Add to list
+            # -----------------------------------------------
+
+            diagnosis_histories.append(diagnosis)
+
+
+        # =====================================================
+        # 5. RENDER
+        # =====================================================
+
+        return render_template(
+            "user_page/monitoring/detail.html",
+
+            user=current_user,
+
+            farm=farm,
+
+            monitoring=monitoring,
+
+            diagnosis_histories=diagnosis_histories
+        )
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            f"Monitoring Detail error: {e}"
+        )
+
+        flash(
+            "Unable to load monitoring details.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "user.farm_detail",
+                farm_id=farm_id
+            )
+        )

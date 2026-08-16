@@ -1,3 +1,7 @@
+from flask_login import current_user
+
+from app.models.UserNotification import UserNotification
+from app.models.field import FieldTable
 from extensions import db
 
 from app.models.crop_monitoring import CropMonitoringTable
@@ -109,38 +113,76 @@ class CropMonitoringService:
         disease_status=None,
         description=None
     ):
-
         try:
 
+            # =====================================================
+            # CREATE CROP MONITORING
+            # =====================================================
+
             monitoring = CropMonitoringTable(
-
                 field_crop_id=field_crop_id,
-
                 monitoring_date=monitoring_date,
-
                 growth_stage_id=growth_stage_id,
-
                 plant_height=plant_height,
-
                 water_status=water_status,
-
                 plant_condition=plant_condition,
-
                 pest_status=pest_status,
-
                 disease_status=disease_status,
-
                 description=description
             )
 
-            db.session.add(
-                monitoring
+            db.session.add(monitoring)
+
+            # =====================================================
+            # GET AUTO-INCREMENT monitoring.id
+            # =====================================================
+
+            db.session.flush()
+
+            print(
+                "Created monitoring ID:",
+                monitoring.id
             )
+
+            # =====================================================
+            # CREATE NOTIFICATION
+            # =====================================================
+
+            notification = UserNotification(
+                user_id=current_user.id,
+
+                # Crop monitoring notification
+                disease_id=None,
+
+                # ✅ Now monitoring.id exists
+                monitoring_id=monitoring.id,
+
+                category="crop_monitoring",
+
+                is_read=False,
+
+                is_deleted=False
+            )
+
+            db.session.add(notification)
+
+            # =====================================================
+            # SAVE BOTH
+            # =====================================================
 
             db.session.commit()
 
-            db.session.refresh(
-                monitoring
+            # =====================================================
+            # REFRESH MONITORING
+            # =====================================================
+
+            db.session.refresh(monitoring)
+
+            print(
+                "Notification created:",
+                notification.id,
+                "Monitoring:",
+                notification.monitoring_id
             )
 
             return monitoring
@@ -247,6 +289,48 @@ class CropMonitoringService:
 
             print(
                 f"CropMonitoringService.delete() error: {e}"
+            )
+
+            raise
+    @staticmethod
+    def get_latest_by_field_crop(user_id):
+        try:
+            # Get all monitoring records
+            monitorings = CropMonitoringTable.query \
+                .join(
+                    FieldCropTable,
+                    CropMonitoringTable.field_crop_id == FieldCropTable.id
+                ) \
+                .join(
+                    FieldTable,
+                    FieldCropTable.field_id == FieldTable.id
+                ) \
+                .filter(
+                    FieldTable.farm.has(user_id=user_id)
+                ) \
+                .order_by(
+                    CropMonitoringTable.field_crop_id.asc(),
+                    CropMonitoringTable.monitoring_date.desc(),
+                    CropMonitoringTable.id.desc()
+                ).all()
+
+            latest = {}
+
+            for monitoring in monitorings:
+
+                crop_id = monitoring.field_crop_id
+
+                if crop_id not in latest:
+                    latest[crop_id] = monitoring
+
+            return list(latest.values())
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            print(
+                f"CropMonitoringService.get_latest_by_field_crop() error: {e}"
             )
 
             raise

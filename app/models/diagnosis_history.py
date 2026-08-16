@@ -17,6 +17,15 @@ class DiagnosisHistoryTable(db.Model):
     confidence = db.Column(db.Float, nullable=False)
     # Additional optional notes
     notes = db.Column(db.Text, nullable=True)
+
+    monitoring_id = db.Column(
+            db.Integer,
+            db.ForeignKey(
+                "tbl_crop_monitorings.id",
+                ondelete="SET NULL"
+            ),
+            nullable=True
+    )
     # Status and timestamps
     status = db.Column(db.String(50), default='Completed')
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -25,6 +34,11 @@ class DiagnosisHistoryTable(db.Model):
     # Relationships
     disease = db.relationship('DiseaseTable', backref='histories')
     user = db.relationship('UserTable', backref='diagnosis_histories')
+
+    monitoring = db.relationship(
+        "CropMonitoringTable",
+        back_populates="diagnosis_histories"
+    )
 
     def set_symptoms(self, symptoms: list):
         """Store selected symptoms as JSON string"""

@@ -666,3 +666,1337 @@ body {
     font-size: 0.7rem;
   }
 }
+
+/* =========================================================
+   🌾 FARM MANAGEMENT NOTIFICATION
+   Modern Agriculture UI
+   ========================================================= */
+
+.farm-notification-dropdown {
+    position: relative;
+}
+
+
+/* =========================================================
+   🔔 NOTIFICATION BUTTON
+   ========================================================= */
+
+.farm-notification-toggle {
+    position: relative;
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    color: #53645a !important;
+
+    background: transparent;
+
+    transition: all 0.25s ease;
+}
+
+.farm-notification-toggle:hover {
+    color: #198754 !important;
+
+    background: #edf8f1;
+
+    transform: translateY(-2px);
+}
+
+.farm-notification-toggle::after {
+    display: none;
+}
+
+.farm-notification-bell {
+    font-size: 21px;
+
+    transition: transform 0.3s ease;
+}
+
+.farm-notification-toggle:hover
+.farm-notification-bell {
+    transform: rotate(-12deg);
+}
+
+
+/* =========================================================
+   🔴 NOTIFICATION COUNT
+   ========================================================= */
+
+.farm-notification-count {
+    position: absolute;
+
+    top: 1px;
+    right: -1px;
+
+    min-width: 19px;
+    height: 19px;
+
+    padding: 0 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #ffffff;
+
+    border-radius: 50%;
+
+    background: #dc3545;
+
+    color: #ffffff;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    box-shadow: 0 3px 8px rgba(220, 53, 69, .25);
+
+    animation: farmNotificationPulse 2s infinite;
+}
+
+.farm-notification-count:empty {
+    display: none;
+}
+
+@keyframes farmNotificationPulse {
+
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, .35);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+
+}
+
+
+/* =========================================================
+   📋 DROPDOWN
+   ========================================================= */
+
+.farm-notification-menu {
+    width: 380px;
+
+    max-width: calc(100vw - 24px);
+
+    margin-top: 10px !important;
+
+    padding: 0 !important;
+
+    border: 1px solid #e5eee8 !important;
+
+    border-radius: 20px !important;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 20px 55px rgba(29, 66, 43, .16),
+        0 4px 12px rgba(29, 66, 43, .06);
+
+    animation: farmNotificationOpen .22s ease;
+}
+
+@keyframes farmNotificationOpen {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   🌿 HEADER
+   ========================================================= */
+
+.farm-notification-header {
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0faf3 0%,
+            #ffffff 70%
+        );
+
+    border-bottom: 1px solid #e8f0eb;
+}
+
+.farm-notification-header::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #198754,
+            #5cb85c,
+            #8bc34a
+        );
+}
+
+.farm-notification-header-content {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 17px 18px 15px;
+}
+
+
+/* Header title */
+
+.farm-notification-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #244d34;
+
+    font-size: 15px;
+
+    font-weight: 750;
+}
+
+.farm-notification-title::before {
+    content: "🌾";
+
+    font-size: 17px;
+}
+
+.farm-notification-subtitle {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #8a978f;
+
+    font-size: 10px;
+
+    letter-spacing: .2px;
+}
+
+
+/* =========================================================
+   🗑 CLEAR BUTTON
+   ========================================================= */
+
+.farm-notification-clear {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 10px;
+
+    color: #89968e;
+
+    background: #f4f7f5;
+
+    transition: all .2s ease;
+}
+
+.farm-notification-clear:hover {
+    color: #dc3545;
+
+    background: #fff0f1;
+
+    transform: scale(1.06);
+}
+
+
+/* =========================================================
+   📜 BODY
+   ========================================================= */
+
+.farm-notification-body {
+    background: #ffffff;
+}
+
+.farm-notification-list {
+    max-height: 380px;
+
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+
+    scrollbar-color: #c6d8cb transparent;
+}
+
+
+/* Chrome scrollbar */
+
+.farm-notification-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.farm-notification-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.farm-notification-list::-webkit-scrollbar-thumb {
+    background: #c6d8cb;
+
+    border-radius: 20px;
+}
+
+.farm-notification-list::-webkit-scrollbar-thumb:hover {
+    background: #8fb29b;
+}
+
+
+/* =========================================================
+   🔔 NOTIFICATION ITEM
+   ========================================================= */
+
+.farm-notification-item {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px 16px;
+
+    border-bottom: 1px solid #f0f4f1;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+.farm-notification-item:last-child {
+    border-bottom: none;
+}
+
+.farm-notification-item:hover {
+    background: #f7fcf8;
+
+    transform: translateX(3px);
+}
+
+
+/* Green indicator */
+
+.farm-notification-item::before {
+    content: "";
+
+    position: absolute;
+
+    left: 4px;
+    top: 50%;
+
+    width: 3px;
+    height: 0;
+
+    border-radius: 5px;
+
+    background: #198754;
+
+    transform: translateY(-50%);
+
+    transition: height .2s ease;
+}
+
+.farm-notification-item:hover::before {
+    height: 32px;
+}
+
+
+/* =========================================================
+   🌱 ICON
+   ========================================================= */
+
+.farm-notification-icon {
+    width: 43px;
+    height: 43px;
+
+    min-width: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    font-size: 18px;
+
+    transition: transform .2s ease;
+}
+
+.farm-notification-item:hover
+.farm-notification-icon {
+    transform: scale(1.08);
+}
+
+
+/* Disease */
+
+.farm-notification-icon-disease {
+    color: #dc3545;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff1f2,
+            #ffe4e6
+        );
+}
+
+
+/* Pest */
+
+.farm-notification-icon-pest {
+    color: #d39e00;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff9df,
+            #fff3c4
+        );
+}
+
+
+/* Healthy */
+
+.farm-notification-icon-healthy {
+    color: #198754;
+
+    background:
+        linear-gradient(
+            135deg,
+            #edf9f1,
+            #dff4e6
+        );
+}
+
+
+/* Critical */
+
+.farm-notification-icon-critical {
+    color: #c82333;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff0f1,
+            #ffdfe2
+        );
+}
+
+
+/* Water */
+
+.farm-notification-icon-water {
+    color: #0d6efd;
+
+    background:
+        linear-gradient(
+            135deg,
+            #edf6ff,
+            #dceeff
+        );
+}
+
+
+/* =========================================================
+   📝 CONTENT
+   ========================================================= */
+
+.farm-notification-content {
+    flex: 1;
+
+    min-width: 0;
+}
+
+.farm-notification-name {
+    display: block;
+
+    overflow: hidden;
+
+    color: #26362d;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    line-height: 1.4;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+.farm-notification-message {
+    display: block;
+
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color: #7d8982;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+.farm-notification-time {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #a1aaa5;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   ❌ DELETE
+   ========================================================= */
+
+.farm-notification-delete {
+    width: 29px;
+    height: 29px;
+
+    min-width: 29px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 9px;
+
+    color: #aeb8b2;
+
+    background: transparent;
+
+    opacity: 0;
+
+    transition: all .2s ease;
+}
+
+.farm-notification-item:hover
+.farm-notification-delete {
+    opacity: 1;
+}
+
+.farm-notification-delete:hover {
+    color: #dc3545;
+
+    background: #fff0f1;
+
+    transform: scale(1.08);
+}
+
+
+/* =========================================================
+   🔵 UNREAD
+   ========================================================= */
+
+.farm-notification-unread {
+    background:
+        linear-gradient(
+            90deg,
+            #f1faf4,
+            #ffffff
+        );
+}
+
+.farm-notification-unread
+.farm-notification-name {
+    color: #174c2c;
+}
+
+
+/* =========================================================
+   😴 EMPTY STATE
+   ========================================================= */
+
+.farm-notification-empty {
+    padding: 45px 20px;
+
+    text-align: center;
+}
+
+.farm-notification-empty-icon {
+    width: 60px;
+    height: 60px;
+
+    margin: 0 auto 13px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 20px;
+
+    color: #198754;
+
+    background: #edf8f1;
+
+    font-size: 25px;
+}
+
+.farm-notification-empty-title {
+    display: block;
+
+    color: #53635a;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.farm-notification-empty-text {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #9aa59f;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   👁 FOOTER
+   ========================================================= */
+
+.farm-notification-footer {
+    border-top: 1px solid #e8efea;
+
+    background: #f8fbf9;
+}
+
+.farm-notification-view-all {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 12px;
+
+    color: #198754 !important;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: all .2s ease;
+}
+
+.farm-notification-view-all:hover {
+    color: #146c43 !important;
+
+    background: #edf8f1;
+}
+
+
+/* =========================================================
+   📱 MOBILE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    .farm-notification-menu {
+        width: 350px;
+
+        max-width: calc(100vw - 16px);
+
+        border-radius: 17px !important;
+    }
+
+    .farm-notification-list {
+        max-height: 330px;
+    }
+
+    .farm-notification-item {
+        padding: 12px;
+    }
+
+    .farm-notification-delete {
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================================
+   🌱 SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .farm-notification-menu {
+        width: calc(100vw - 12px);
+    }
+
+    .farm-notification-icon {
+        width: 39px;
+        height: 39px;
+
+        min-width: 39px;
+
+        border-radius: 12px;
+
+        font-size: 16px;
+    }
+
+    .farm-notification-name {
+        font-size: 12px;
+    }
+
+}
+
+/* =========================================================
+   FARM STATISTICS
+========================================================= */
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 35px;
+}
+
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+.stat-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+
+    min-height: 115px;
+
+    padding: 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ebe8;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.04);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* Hover */
+
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #d5e5dc;
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   STAT ICON
+========================================================= */
+
+.stat-icon {
+    flex-shrink: 0;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    font-size: 24px;
+}
+
+
+/* Farm */
+
+.farm-icon {
+    background: #eaf7ef;
+    color: #198754;
+}
+
+
+/* Active */
+
+.active-icon {
+    background: #eaf8f0;
+    color: #20a05a;
+}
+
+
+/* Field */
+
+.field-icon {
+    background: #edf4ff;
+    color: #4b7dcc;
+}
+
+
+/* Area */
+
+.area-icon {
+    background: #fff5e6;
+    color: #d8891b;
+}
+
+
+/* =========================================================
+   STAT CONTENT
+========================================================= */
+
+.stat-content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.stat-content span {
+    color: #7c8781;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    line-height: 1.3;
+}
+
+
+.stat-content strong {
+    color: #26352d;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    line-height: 1.1;
+}
+
+
+/* =========================================================
+   SECTION TITLE
+========================================================= */
+
+.section-title {
+    width: 100%;
+
+    margin-bottom: 18px;
+}
+
+
+.section-title h3 {
+    display: flex;
+    align-items: center;
+
+    margin: 0;
+
+    color: #26352d;
+
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+.section-title h3 i {
+    margin-right: 9px;
+
+    color: #198754;
+
+    font-size: 21px;
+}
+
+
+.section-title p {
+    margin: 6px 0 0;
+
+    color: #89938e;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CROP STATISTICS
+========================================================= */
+
+.crop-statistics-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 16px;
+
+    width: 100%;
+
+    margin-bottom: 35px;
+}
+
+
+/* =========================================================
+   CROP STAT CARD
+========================================================= */
+
+.crop-stat-card {
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    min-height: 95px;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ebe8;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.035);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* Hover */
+
+.crop-stat-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #d5e5dc;
+
+    box-shadow:
+        0 7px 18px rgba(0, 0, 0, 0.07);
+}
+
+
+/* =========================================================
+   CROP ICON
+========================================================= */
+
+.crop-stat-icon {
+    flex-shrink: 0;
+
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #eaf7ef;
+
+    color: #198754;
+
+    font-size: 20px;
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.crop-stat-card:hover .crop-stat-icon {
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   CROP CONTENT
+========================================================= */
+
+.crop-stat-card span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #7d8782;
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+.crop-stat-card strong {
+    display: block;
+
+    color: #26352d;
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    line-height: 1.1;
+}
+
+
+/* =========================================================
+   DIFFERENT CROP ICON COLORS
+   Optional: add these classes to the HTML if desired.
+========================================================= */
+
+.crop-stat-card:nth-child(1)
+.crop-stat-icon {
+    background: #eaf7ef;
+    color: #198754;
+}
+
+.crop-stat-card:nth-child(2)
+.crop-stat-icon {
+    background: #eef8f1;
+    color: #2a9d5b;
+}
+
+.crop-stat-card:nth-child(3)
+.crop-stat-icon {
+    background: #edf5ff;
+    color: #3e7fc1;
+}
+
+.crop-stat-card:nth-child(4)
+.crop-stat-icon {
+    background: #fff5e5;
+    color: #d38a20;
+}
+
+.crop-stat-card:nth-child(5)
+.crop-stat-icon {
+    background: #f0ecff;
+    color: #7356bd;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .statistics-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .crop-statistics-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   TABLET SMALL
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .statistics-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 15px;
+    }
+
+
+    .crop-statistics-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 15px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .statistics-grid {
+        grid-template-columns: 1fr;
+
+        gap: 13px;
+
+        margin-bottom: 28px;
+    }
+
+
+    .stat-card {
+        min-height: 100px;
+
+        padding: 18px;
+    }
+
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+
+        font-size: 22px;
+    }
+
+
+    .stat-content strong {
+        font-size: 24px;
+    }
+
+
+    .section-title h3 {
+        font-size: 18px;
+    }
+
+
+    .crop-statistics-grid {
+        grid-template-columns: 1fr;
+
+        gap: 13px;
+    }
+
+
+    .crop-stat-card {
+        min-height: 85px;
+
+        padding: 16px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .stat-card {
+        padding: 15px;
+    }
+
+
+    .stat-icon {
+        width: 46px;
+        height: 46px;
+
+        font-size: 19px;
+    }
+
+
+    .stat-content span {
+        font-size: 12px;
+    }
+
+
+    .stat-content strong {
+        font-size: 22px;
+    }
+
+
+    .crop-stat-icon {
+        width: 42px;
+        height: 42px;
+
+        font-size: 18px;
+    }
+
+
+    .crop-stat-card strong {
+        font-size: 21px;
+    }
+
+}
+/* =====================================================
+   FARM DASHBOARD CARD
+===================================================== */
+
+.farm-dashboard-card {
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e8ece8;
+
+    border-radius: 16px;
+
+    transition: all 0.25s ease;
+}
+
+.farm-dashboard-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+}
+
+
+/* =====================================================
+   FARM ICON
+===================================================== */
+
+.farm-dashboard-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eaf7ec;
+
+    color: #198754;
+
+    border-radius: 10px;
+
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   FARM MINI STAT
+===================================================== */
+
+.farm-mini-stat {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 9px;
+
+    background: #f8faf8;
+
+    border-radius: 9px;
+}
+
+.farm-mini-stat i {
+    font-size: 15px;
+}
+
+.farm-mini-stat small {
+    display: block;
+
+    color: #7b857e;
+
+    font-size: 10px;
+}
+
+.farm-mini-stat strong {
+    display: block;
+
+    color: #29352d;
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   EMPTY FARM
+===================================================== */
+.farm-name-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #e8f7ed;
+    color: #198754;
+
+    font-size: 20px;
+
+    flex-shrink: 0;
+
+    transition: all 0.25s ease;
+}
+
+.farm-dashboard-card:hover .farm-name-icon {
+    background: #198754;
+    color: #ffffff;
+
+    transform: scale(1.05);
+}

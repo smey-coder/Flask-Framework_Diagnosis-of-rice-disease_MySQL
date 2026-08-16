@@ -1,0 +1,913 @@
+/* =====================================================
+   MONITORING DETAIL
+===================================================== */
+
+.monitoring-detail-page {
+  padding: 24px 0;
+}
+
+/* HEADER */
+
+.monitoring-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 24px;
+
+  gap: 20px;
+}
+
+.monitoring-detail-title {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.monitoring-detail-title-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #e8f7ed;
+  color: #198754;
+
+  font-size: 21px;
+}
+
+.monitoring-detail-title h3 {
+  margin: 0;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  color: #202a23;
+}
+
+.monitoring-detail-title p {
+  margin: 4px 0 0;
+
+  font-size: 13px;
+
+  color: #7c857f;
+}
+
+/* BACK BUTTON */
+
+.monitoring-back-btn {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 9px 16px;
+
+  border: 1px solid #dfe6e1;
+
+  border-radius: 50px;
+
+  background: #fff;
+
+  color: #59635c;
+
+  font-size: 13px;
+
+  text-decoration: none;
+
+  transition: 0.2s ease;
+}
+
+.monitoring-back-btn:hover {
+  background: #f3f8f4;
+
+  border-color: #b9d9c1;
+
+  color: #198754;
+}
+
+/* INFO CARDS */
+
+.detail-info-card {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 18px;
+
+  border: 1px solid #e8eee9;
+
+  border-radius: 18px;
+
+  background: #fff;
+
+  box-shadow: 0 6px 22px rgba(31, 41, 55, 0.05);
+}
+
+.detail-info-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  font-size: 18px;
+
+  flex-shrink: 0;
+}
+
+.detail-info-icon.farm {
+  background: #e8f7ed;
+  color: #198754;
+}
+
+.detail-info-icon.field {
+  background: #eef5ff;
+  color: #0d6efd;
+}
+
+.detail-info-icon.crop {
+  background: #fff8df;
+  color: #b78900;
+}
+
+.detail-info-card small {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #8a938d;
+
+  font-size: 11px;
+}
+
+.detail-info-card h6 {
+  margin: 0;
+
+  color: #303a34;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+/* MAIN CARD */
+
+.monitoring-detail-card {
+  border-radius: 20px;
+
+  background: #fff;
+
+  box-shadow: 0 8px 28px rgba(31, 41, 55, 0.06);
+
+  overflow: hidden;
+}
+
+.monitoring-detail-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 22px;
+
+  background: #fff;
+
+  border-bottom: 1px solid #edf1ee;
+}
+
+.monitoring-detail-card .card-header h5 {
+  margin: 0;
+
+  font-weight: 700;
+}
+
+.monitoring-detail-card .card-header small {
+  color: #89928c;
+
+  font-size: 12px;
+}
+
+/* DETAIL ITEM */
+
+.detail-item {
+  padding: 16px;
+
+  border: 1px solid #edf1ee;
+
+  border-radius: 14px;
+
+  background: #fafcfb;
+}
+
+.detail-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #7c857f;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+.detail-label i {
+  margin-right: 5px;
+
+  color: #198754;
+}
+
+.detail-item strong {
+  color: #303a34;
+
+  font-size: 14px;
+}
+
+/* STATUS */
+
+.detail-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px 11px;
+
+  border-radius: 50px;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.detail-status.healthy {
+  background: #e8f7ed;
+  color: #198754;
+}
+
+.detail-status.warning {
+  background: #fff5d9;
+  color: #a87900;
+}
+
+.detail-status.unhealthy,
+.detail-status.danger {
+  background: #fdeaea;
+  color: #c0392b;
+}
+
+.detail-status.neutral {
+  background: #eef0ef;
+  color: #68716b;
+}
+
+/* DESCRIPTION */
+
+.monitoring-description-card {
+  border-radius: 20px;
+
+  background: #fff;
+
+  box-shadow: 0 6px 22px rgba(31, 41, 55, 0.05);
+}
+
+.monitoring-description {
+  padding: 16px;
+
+  border-radius: 14px;
+
+  background: #f7faf8;
+
+  color: #4c574f;
+
+  font-size: 14px;
+
+  line-height: 1.7;
+
+  white-space: pre-line;
+}
+
+/* META */
+
+.monitoring-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 20px;
+
+  padding: 5px 4px;
+
+  color: #8a938d;
+
+  font-size: 11px;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+  .monitoring-detail-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .monitoring-back-btn {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+  .monitoring-detail-title h3 {
+    font-size: 21px;
+  }
+}
+/* =========================================================
+   MONITORING DETAIL
+========================================================= */
+
+.monitoring-detail-page {
+  padding-bottom: 40px;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.monitoring-header {
+  background: linear-gradient(135deg, #198754, #20a464);
+
+  color: #ffffff;
+
+  border-radius: 20px;
+
+  padding: 24px;
+
+  margin-bottom: 24px;
+
+  box-shadow: 0 8px 25px rgba(25, 135, 84, 0.18);
+}
+
+.monitoring-header h3 {
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.monitoring-header p {
+  margin-bottom: 0;
+  opacity: 0.85;
+}
+
+.monitoring-header-icon {
+  width: 55px;
+  height: 55px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  font-size: 25px;
+}
+
+/* =========================================================
+   MONITORING INFO CARD
+========================================================= */
+
+.monitoring-info-card {
+  border: none;
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+
+  margin-bottom: 24px;
+}
+
+.monitoring-info-card .card-header {
+  background: #ffffff;
+
+  border-bottom: 1px solid #edf0f2;
+
+  padding: 17px 20px;
+}
+
+.monitoring-info-card .card-header h5 {
+  font-weight: 700;
+
+  margin: 0;
+
+  color: #212529;
+}
+
+.monitoring-info-card .card-body {
+  padding: 22px;
+}
+
+/* =========================================================
+   MONITORING ITEM
+========================================================= */
+
+.monitoring-item {
+  height: 100%;
+
+  padding: 16px;
+
+  border: 1px solid #edf0f2;
+
+  border-radius: 14px;
+
+  background: #fafbfc;
+
+  transition: all 0.25s ease;
+}
+
+.monitoring-item:hover {
+  transform: translateY(-3px);
+
+  background: #ffffff;
+
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.07);
+}
+
+.monitoring-label {
+  display: block;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  color: #6c757d;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+
+  margin-bottom: 6px;
+}
+
+.monitoring-value {
+  font-size: 16px;
+
+  font-weight: 700;
+
+  color: #212529;
+}
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+
+.monitoring-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px 12px;
+
+  border-radius: 30px;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.monitoring-status.good {
+  background: #e8f7ed;
+
+  color: #198754;
+}
+
+.monitoring-status.warning {
+  background: #fff4d6;
+
+  color: #b58105;
+}
+
+.monitoring-status.danger {
+  background: #fde8e8;
+
+  color: #dc3545;
+}
+
+.monitoring-status.normal {
+  background: #e9f2ff;
+
+  color: #0d6efd;
+}
+
+/* =========================================================
+   DISEASE DETECTION
+========================================================= */
+
+.disease-detection-card {
+  border: none;
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+
+  margin-bottom: 24px;
+}
+
+.disease-detection-card .card-header {
+  background: linear-gradient(135deg, #fff5f5, #ffffff);
+
+  border-bottom: 1px solid #f3dddd;
+
+  padding: 18px 20px;
+}
+
+.disease-title {
+  color: #dc3545;
+
+  font-weight: 700;
+
+  margin: 0;
+}
+
+.disease-title i {
+  margin-right: 8px;
+}
+
+/* =========================================================
+   DIAGNOSIS CARD
+========================================================= */
+
+.diagnosis-card {
+  position: relative;
+
+  background: #ffffff;
+
+  border: 1px solid #f0f1f2;
+
+  border-left: 5px solid #dc3545;
+
+  border-radius: 15px;
+
+  padding: 20px;
+
+  margin-bottom: 16px;
+
+  transition: all 0.25s ease;
+}
+
+.diagnosis-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================================
+   DIAGNOSIS ITEM
+========================================================= */
+
+.diagnosis-item {
+  height: 100%;
+
+  padding: 13px 15px;
+
+  background: #fafbfc;
+
+  border-radius: 12px;
+
+  border: 1px solid #edf0f2;
+}
+
+.diagnosis-label {
+  display: block;
+
+  color: #6c757d;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+
+  margin-bottom: 7px;
+}
+
+/* =========================================================
+   DISEASE NAME
+========================================================= */
+
+.diagnosis-disease-name {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: #dc3545;
+
+  font-size: 17px;
+
+  font-weight: 700;
+}
+
+.diagnosis-disease-icon {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #fdeaea;
+
+  color: #dc3545;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   CONFIDENCE
+========================================================= */
+
+.confidence-value {
+  font-size: 18px;
+
+  font-weight: 700;
+
+  color: #198754;
+}
+
+.confidence-bar {
+  height: 7px;
+
+  background: #e9ecef;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  margin-top: 8px;
+}
+
+.confidence-progress {
+  height: 100%;
+
+  background: linear-gradient(90deg, #198754, #20c997);
+
+  border-radius: 20px;
+
+  transition: width 0.5s ease;
+}
+
+/* =========================================================
+   SELECTED SYMPTOMS
+========================================================= */
+
+.symptoms-container {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 5px;
+}
+
+.symptom-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 7px 11px;
+
+  border-radius: 30px;
+
+  background: #fff1f1;
+
+  color: #b02a37;
+
+  border: 1px solid #f5c2c7;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.symptom-badge i {
+  font-size: 12px;
+}
+
+/* =========================================================
+   DIAGNOSIS DATE
+========================================================= */
+
+.diagnosis-date {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #495057;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+.diagnosis-date i {
+  color: #6c757d;
+}
+
+/* =========================================================
+   NO DIAGNOSIS
+========================================================= */
+
+.no-diagnosis {
+  text-align: center;
+
+  padding: 45px 20px;
+}
+
+.no-diagnosis-icon {
+  width: 70px;
+  height: 70px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin: 0 auto 15px;
+
+  border-radius: 50%;
+
+  background: #e8f7ed;
+
+  color: #198754;
+
+  font-size: 32px;
+}
+
+.no-diagnosis h6 {
+  font-weight: 700;
+
+  color: #212529;
+}
+
+.no-diagnosis p {
+  max-width: 500px;
+
+  margin: 0 auto 20px;
+
+  color: #6c757d;
+}
+
+/* =========================================================
+   DIAGNOSE BUTTON
+========================================================= */
+
+.btn-diagnose {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 10px 20px;
+
+  border-radius: 30px;
+
+  font-weight: 600;
+
+  transition: all 0.25s ease;
+}
+
+.btn-diagnose:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 6px 15px rgba(220, 53, 69, 0.2);
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.monitoring-back-btn {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 18px;
+
+  font-weight: 600;
+
+  color: #6c757d;
+
+  text-decoration: none;
+
+  transition: all 0.2s ease;
+}
+
+.monitoring-back-btn:hover {
+  color: #198754;
+
+  transform: translateX(-3px);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .monitoring-header {
+    padding: 20px;
+
+    border-radius: 16px;
+  }
+
+  .monitoring-header h3 {
+    font-size: 20px;
+  }
+
+  .monitoring-info-card .card-body {
+    padding: 15px;
+  }
+
+  .diagnosis-card {
+    padding: 14px;
+
+    border-left-width: 4px;
+  }
+
+  .diagnosis-item {
+    padding: 12px;
+  }
+
+  .symptom-badge {
+    font-size: 12px;
+
+    padding: 6px 9px;
+  }
+}
+
+@media (max-width: 576px) {
+  .monitoring-header {
+    padding: 16px;
+  }
+
+  .monitoring-header-icon {
+    width: 45px;
+    height: 45px;
+
+    font-size: 20px;
+  }
+
+  .monitoring-header h3 {
+    font-size: 18px;
+  }
+
+  .monitoring-value {
+    font-size: 15px;
+  }
+
+  .diagnosis-disease-name {
+    font-size: 15px;
+  }
+
+  .no-diagnosis {
+    padding: 35px 15px;
+  }
+}

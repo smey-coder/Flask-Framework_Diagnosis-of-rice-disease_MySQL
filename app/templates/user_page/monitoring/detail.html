@@ -1,0 +1,612 @@
+{% extends "layouts/user_layout/user.html" %} {% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/monitoring_detail.css') }}"
+/>
+<div class="container-fluid monitoring-detail-page">
+  <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+  <div class="monitoring-detail-header">
+    <div class="monitoring-detail-title">
+      <div class="monitoring-detail-title-icon">
+        <i class="bi bi-clipboard2-pulse"></i>
+      </div>
+
+      <div>
+        <h3>Monitoring Detail</h3>
+
+        <p>Detailed crop monitoring information</p>
+      </div>
+    </div>
+
+    <a
+      href="{{ url_for(
+                'user.farm_detail',
+                farm_id=farm.id
+            ) }}"
+      class="monitoring-back-btn"
+    >
+      <i class="bi bi-arrow-left"></i>
+
+      Back to Farm
+    </a>
+  </div>
+
+  <!-- =====================================================
+         FARM / FIELD / CROP INFORMATION
+    ====================================================== -->
+
+  <div class="row g-4 mb-4">
+    <!-- FARM -->
+
+    <div class="col-md-4">
+      <div class="detail-info-card">
+        <div class="detail-info-icon farm">
+          <i class="bi bi-tree-fill"></i>
+        </div>
+
+        <div>
+          <small> Farm </small>
+
+          <h6>{{ farm.farm_name }}</h6>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD -->
+
+    <div class="col-md-4">
+      <div class="detail-info-card">
+        <div class="detail-info-icon field">
+          <i class="bi bi-bounding-box"></i>
+        </div>
+
+        <div>
+          <small> Field </small>
+
+          <h6>{{ monitoring.field_crop.field.field_name }}</h6>
+        </div>
+      </div>
+    </div>
+
+    <!-- RICE VARIETY -->
+
+    <div class="col-md-4">
+      <div class="detail-info-card">
+        <div class="detail-info-icon crop">
+          <i class="bi bi-flower1"></i>
+        </div>
+
+        <div>
+          <small> Rice Variety </small>
+
+          <h6>{{ monitoring.field_crop.rice_variety.variety_name }}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         MONITORING INFORMATION
+    ====================================================== -->
+
+  <div class="card monitoring-detail-card border-0 mb-4">
+    <div class="card-header">
+      <div>
+        <h5>
+          <i class="bi bi-clipboard-data text-success me-2"></i>
+
+          Monitoring Information
+        </h5>
+
+        <small>
+          Recorded on {{ monitoring.monitoring_date.strftime("%d-%m-%Y") }}
+        </small>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="row g-4">
+        <!-- DATE -->
+
+        <div class="col-md-4">
+          <div class="detail-item">
+            <span class="detail-label">
+              <i class="bi bi-calendar3"></i>
+
+              Monitoring Date
+            </span>
+
+            <strong>
+              {{ monitoring.monitoring_date.strftime("%d-%m-%Y") }}
+            </strong>
+          </div>
+        </div>
+
+        <!-- GROWTH STAGE -->
+
+        <div class="col-md-4">
+          <div class="detail-item">
+            <span class="detail-label">
+              <i class="bi bi-graph-up-arrow"></i>
+
+              Growth Stage
+            </span>
+
+            {% if monitoring.growth_stage %}
+
+            <strong>
+              {{ monitoring.growth_stage.stage_name }} {% if
+              monitoring.growth_stage.stage_name_kh %}
+
+              <small class="text-muted">
+                ({{ monitoring.growth_stage.stage_name_kh }})
+              </small>
+
+              {% endif %}
+            </strong>
+
+            {% else %}
+
+            <strong class="text-muted"> N/A </strong>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- PLANT HEIGHT -->
+
+        <div class="col-md-4">
+          <div class="detail-item">
+            <span class="detail-label">
+              <i class="bi bi-rulers"></i>
+
+              Plant Height
+            </span>
+
+            <strong>
+              {% if monitoring.plant_height %} {{ monitoring.plant_height }}
+
+              <small class="text-muted"> cm </small>
+
+              {% else %} N/A {% endif %}
+            </strong>
+          </div>
+        </div>
+
+        <!-- PLANT CONDITION -->
+
+        <div class="col-md-4">
+          <div class="detail-item">
+            <span class="detail-label">
+              <i class="bi bi-heart-pulse"></i>
+
+              Plant Condition
+            </span>
+
+            {% if monitoring.plant_condition == "Healthy" %}
+
+            <span class="detail-status healthy">
+              <i class="bi bi-check-circle-fill"></i>
+
+              Healthy
+            </span>
+
+            {% elif monitoring.plant_condition == "Warning" %}
+
+            <span class="detail-status warning">
+              <i class="bi bi-exclamation-circle-fill"></i>
+
+              Warning
+            </span>
+
+            {% elif monitoring.plant_condition == "Unhealthy" %}
+
+            <span class="detail-status unhealthy">
+              <i class="bi bi-x-circle-fill"></i>
+
+              Unhealthy
+            </span>
+
+            {% else %}
+
+            <span class="detail-status neutral">
+              {{ monitoring.plant_condition or "N/A" }}
+            </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- WATER -->
+
+        <div class="col-md-4">
+          <div class="detail-item">
+            <span class="detail-label">
+              <i class="bi bi-droplet"></i>
+
+              Water Status
+            </span>
+
+            {% if monitoring.water_status == "Good" %}
+
+            <span class="detail-status healthy">
+              <i class="bi bi-droplet-fill"></i>
+
+              Good
+            </span>
+
+            {% elif monitoring.water_status == "Low" %}
+
+            <span class="detail-status warning">
+              <i class="bi bi-droplet"></i>
+
+              Low
+            </span>
+
+            {% else %}
+
+            <span class="detail-status neutral">
+              {{ monitoring.water_status or "N/A" }}
+            </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- PEST -->
+
+        <div class="col-md-4">
+          <div class="detail-item">
+            <span class="detail-label">
+              <i class="bi bi-bug"></i>
+
+              Pest Status
+            </span>
+
+            {% if monitoring.pest_status and monitoring.pest_status not in
+            ["None", "Low"] %}
+
+            <span class="detail-status danger">
+              <i class="bi bi-bug-fill"></i>
+
+              {{ monitoring.pest_status }}
+            </span>
+
+            {% else %}
+
+            <span class="detail-status healthy">
+              <i class="bi bi-check-circle-fill"></i>
+
+              None
+            </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- DISEASE -->
+
+        <div class="col-md-4">
+          <div class="detail-item">
+            <span class="detail-label">
+              <i class="bi bi-virus"></i>
+
+              Disease Status
+            </span>
+
+            {% if monitoring.disease_status and monitoring.disease_status not in
+            ["None", "Low"] %}
+
+            <span class="detail-status danger">
+              <i class="bi bi-virus"></i>
+
+              {{ monitoring.disease_status }}
+            </span>
+
+            {% else %}
+
+            <span class="detail-status healthy">
+              <i class="bi bi-check-circle-fill"></i>
+
+              None
+            </span>
+
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         DESCRIPTION
+    ====================================================== -->
+
+  <div class="card monitoring-description-card border-0 mb-4">
+    <div class="card-body">
+      <h5 class="fw-bold mb-3">
+        <i class="bi bi-card-text text-success me-2"></i>
+
+        Description
+      </h5>
+
+      {% if monitoring.description %}
+
+      <div class="monitoring-description">{{ monitoring.description }}</div>
+
+      {% else %}
+
+      <div class="text-muted">
+        No description was provided for this monitoring.
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- =====================================================
+         TIMESTAMPS
+    ====================================================== -->
+
+  <div class="monitoring-meta">
+    <span>
+      <i class="bi bi-clock me-1"></i>
+
+      Created: {{ monitoring.created_at.strftime("%d-%m-%Y %H:%M") }}
+    </span>
+
+    {% if monitoring.updated_at %}
+
+    <span>
+      <i class="bi bi-pencil me-1"></i>
+
+      Updated: {{ monitoring.updated_at.strftime("%d-%m-%Y %H:%M") }}
+    </span>
+
+    {% endif %}
+  </div>
+</div>
+<!-- =====================================================
+     DISEASE DETECTION
+====================================================== -->
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+
+  <div class="card-header bg-white py-3">
+
+    <h5 class="fw-bold mb-0 text-danger">
+
+      <i class="bi bi-virus me-2"></i>
+
+      Disease Detection
+
+    </h5>
+
+  </div>
+
+
+  <div class="card-body">
+
+    {% if diagnosis_histories %}
+
+      {% for diagnosis in diagnosis_histories %}
+
+        <div class="diagnosis-card">
+
+          <div class="row g-4">
+
+            <!-- Disease -->
+
+            <div class="col-md-6">
+
+              <div class="diagnosis-item">
+
+                <span class="diagnosis-label">
+                  Disease
+                </span>
+
+                <strong>
+
+                  {{
+                    diagnosis.disease.disease_name
+                    if diagnosis.disease
+                    else "Unknown Disease"
+                  }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <!-- Confidence -->
+
+            <div class="col-md-6">
+
+              <div class="diagnosis-item">
+
+                <span class="diagnosis-label">
+                  Confidence
+                </span>
+
+                <strong class="text-success">
+
+                  {{ diagnosis.confidence }}%
+
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <!-- Selected Symptoms -->
+
+            <div class="col-md-12">
+
+              <div class="diagnosis-item">
+
+                <span class="diagnosis-label">
+                  Selected Symptoms
+                </span>
+
+
+                <div class="d-flex flex-wrap gap-2 mt-2">
+
+                  {% if diagnosis.symptom_names %}
+
+                    {% for symptom in diagnosis.symptom_names %}
+
+                      <span
+                        class="badge bg-success-subtle text-success px-3 py-2"
+                      >
+
+                        <i class="bi bi-leaf me-1"></i>
+
+                        {{ symptom }}
+
+                      </span>
+
+                    {% endfor %}
+
+                  {% else %}
+
+                    <span class="text-muted">
+                      No symptoms recorded.
+                    </span>
+
+                  {% endif %}
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- Notes -->
+
+            <div class="col-md-12">
+
+              <div class="diagnosis-item">
+
+                <span class="diagnosis-label">
+                  Notes
+                </span>
+
+                <div>
+                  {{ diagnosis.notes or "No notes available." }}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="col-md-6">
+
+              <div class="diagnosis-item">
+
+                <span class="diagnosis-label">
+                  Status
+                </span>
+
+                <span class="badge bg-success">
+
+                  {{ diagnosis.status }}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- Date -->
+
+            <div class="col-md-6">
+
+              <div class="diagnosis-item">
+
+                <span class="diagnosis-label">
+                  Diagnosis Date
+                </span>
+
+                <strong>
+
+                  {{ diagnosis.created_at.strftime(
+                      "%d-%m-%Y %H:%M"
+                  ) }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      {% endfor %}
+
+
+    {% else %}
+
+      <!-- No Diagnosis -->
+
+      <div class="text-center py-4">
+
+        <div class="mb-3">
+
+          <i
+            class="bi bi-shield-check text-success"
+            style="font-size: 45px"
+          ></i>
+
+        </div>
+
+
+        <h6 class="fw-bold">
+          No Disease Diagnosis
+        </h6>
+
+
+        <p class="text-muted mb-3">
+
+          No disease diagnosis has been recorded
+          for this monitoring.
+
+        </p>
+
+
+        <a
+          href="{{ url_for(
+              'user.diagnosis_input',
+              farm_id=farm.id,
+              monitoring_id=monitoring.id
+          ) }}"
+          class="btn btn-danger rounded-pill px-4"
+        >
+
+          <i class="bi bi-virus me-1"></i>
+
+          Diagnose Disease
+
+        </a>
+
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock %}

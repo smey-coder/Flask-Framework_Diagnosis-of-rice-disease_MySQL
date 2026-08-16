@@ -108,6 +108,12 @@ class CropMonitoringTable(db.Model):
         back_populates="monitorings"
     )
 
+    diagnosis_histories = db.relationship(
+        "DiagnosisHistoryTable",
+        back_populates="monitoring",
+        cascade="all, delete-orphan"
+    )
+
     # =========================================================
     # REPRESENTATION
     # =========================================================

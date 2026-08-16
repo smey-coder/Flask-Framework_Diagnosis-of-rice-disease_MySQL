@@ -32,31 +32,23 @@
     {% for error in form.location.errors %}
 
     <div class="text-danger small mt-1">{{ error }}</div>
-
     {% endfor %}
   </div>
-
   <!-- Status -->
   <div class="mb-3">
     {{ form.status.label( class="form-label fw-semibold" ) }} {{ form.status(
     class="form-select" ) }} {% for error in form.status.errors %}
-
     <div class="text-danger small mt-1">{{ error }}</div>
-
     {% endfor %}
   </div>
-
   <!-- Description -->
   <div class="mb-3">
     {{ form.description.label( class="form-label fw-semibold" ) }} {{
     form.description( class="form-control", rows="5", placeholder="Enter farm
     description..." ) }} {% for error in form.description.errors %}
-
     <div class="text-danger small mt-1">{{ error }}</div>
-
     {% endfor %}
   </div>
-
   <!-- Actions -->
   <div class="farm-form-actions">
     <a href="{{ cancel_url }}" class="btn btn-secondary">
