@@ -27,19 +27,55 @@ rule_condition_bp = Blueprint(
 @rule_condition_bp.route("/")
 @login_required
 def index():
-    page = request.args.get("page", 1, type=int)
-    active_only = request.args.get("active", type=int)
+    try:
+        page = request.args.get("page", 1, type=int)
 
-    pagination = RuleConditionService.paginate(page=page)
-    rule_conditions = pagination.items
+        search = request.args.get(
+            "search",
+            "",
+            type=str
+        ).strip()
 
-    return render_template(
-        "rule_condition_page/index.html",
-        rule_conditions=rule_conditions,
-        pagination=pagination,
-        active_only=active_only,
-        grouped_symptoms=get_grouped_symptoms()
-    )
+        active_value = request.args.get(
+            "active",
+            "",
+            type=str
+        ).strip()
+
+        # Convert active filter to integer
+        if active_value in ("0", "1"):
+            active_only = int(active_value)
+        else:
+            active_only = None
+
+        pagination = RuleConditionService.paginate(
+            page=page,
+            per_page=10,
+            search=search if search else None,
+            active_only=active_only
+        )
+
+        return render_template(
+            "rule_condition_page/index.html",
+            rule_conditions=pagination.items,
+            pagination=pagination,
+            search=search,
+            active_only=active_only,
+            grouped_symptoms=get_grouped_symptoms()
+        )
+
+    except Exception as e:
+
+        print(f"Rule Condition Index Error: {e}")
+
+        flash(
+            "Unable to load rule conditions.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("rule_condition.index")
+        )
 
 # ===================== CREATE =====================
 

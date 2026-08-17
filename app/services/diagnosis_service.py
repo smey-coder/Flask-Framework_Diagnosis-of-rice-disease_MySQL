@@ -128,7 +128,7 @@ class DiagnosisService:
         """Return treatments for a disease."""
         treatments = TreatmentTable.query.filter_by(disease_id=disease_id, is_active=True).all()
         return [
-            {"id": t.id, "method": t.method, "description": t.description, "image": t.image}
+            {"id": t.id, "treatment_type": t.treatment_type,"method": t.method, "description": t.description, "image": t.image}
             for t in treatments
         ]
 

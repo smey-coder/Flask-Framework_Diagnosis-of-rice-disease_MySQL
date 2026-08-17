@@ -275,8 +275,8 @@ RiceCare AI{% endblock %} {% block content %}
               <!-- RICE VARIETY -->
 
               <td>
-                {% if monitoring.field_crop.rice_variety %} {{
-                monitoring.field_crop.rice_variety.variety_name }} {% else %}
+                {% if monitoring.field_crop.rice_variety %} 
+                {{monitoring.field_crop.rice_variety.variety_name }} {{monitoring.field_crop.rice_variety.name_kh }}{% else %}
 
                 <span class="text-muted"> - </span>
 
@@ -289,7 +289,7 @@ RiceCare AI{% endblock %} {% block content %}
                 {% if monitoring.growth_stage %}
 
                 <span class="badge rounded-pill bg-success-subtle text-success">
-                  {{ monitoring.growth_stage.stage_name }}
+                  {{ monitoring.growth_stage.stage_name }}- {{ monitoring.growth_stage.stage_name_kh }}
                 </span>
 
                 {% else %}

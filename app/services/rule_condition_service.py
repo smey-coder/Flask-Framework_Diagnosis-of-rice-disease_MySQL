@@ -1,7 +1,10 @@
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
+from app.models.diseases import DiseaseTable
+from app.models.symptoms import SymptomsTable
 from extensions import db
 from app.models.rule_conditions import RuleConditionsTable
+from app.models.rules import RulesTable
 from app.services.audit_service import log_audit
 
 
@@ -21,15 +24,74 @@ class RuleConditionService:
         return query.order_by(RuleConditionsTable.id.desc()).all()
 
     @staticmethod
-    def paginate(page: int = 1, per_page: int = 10, active_only: bool = False):
-        """Paginated list for admin UI, with optional active_only filter"""
+    def paginate(
+        page=1,
+        per_page=10,
+        search=None,
+        active_only=None
+    ):
+
         query = RuleConditionsTable.query
-        if active_only:
-            query = query.filter_by(is_active=True)
-        return query.order_by(RuleConditionsTable.id.desc()).paginate(
-            page=page, per_page=per_page, error_out=False
+
+        # =====================================
+        # SEARCH
+        # Condition + Disease + Symptom
+        # =====================================
+
+        if search:
+
+            search_pattern = f"%{search}%"
+
+            query = (
+                query
+                .join(RuleConditionsTable.rule)
+                .join(RuleConditionsTable.symptom)
+                .join(RulesTable.disease)
+                .filter(
+                    db.or_(
+                        RuleConditionsTable.rule_id.ilike(
+                            search_pattern
+                        ),
+
+                        DiseaseTable.disease_name.ilike(
+                            search_pattern
+                        ),
+
+                        SymptomsTable.symptom_name.ilike(
+                            search_pattern
+                        )
+                    )
+                )
+            )
+
+        # =====================================
+        # ACTIVE FILTER
+        # =====================================
+
+        if active_only is not None:
+
+            query = query.filter(
+                RuleConditionsTable.is_active
+                == active_only
+            )
+
+        # =====================================
+        # ORDER
+        # =====================================
+
+        query = query.order_by(
+            RuleConditionsTable.id.desc()
         )
 
+        # =====================================
+        # PAGINATION
+        # =====================================
+
+        return query.paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
     @staticmethod
     def get_by_id(rule_condition_id: int) -> RuleConditionsTable:
         """Get rule condition by ID"""

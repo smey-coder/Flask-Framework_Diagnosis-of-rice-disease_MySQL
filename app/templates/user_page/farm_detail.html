@@ -116,6 +116,121 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
       </div>
     </div>
   </div>
+  <!-- =====================================================
+      CROP HEALTH SUMMARY
+  ===================================================== -->
+  <div class="section-heading">
+      <h2>CROP HEALTH SUMMARY/សង្ខេបសុខភាពដំណាំ</h2>
+      <p>summary of farming activities</p>
+  </div>
+  <div class="row g-4 mb-4">
+      <!-- Total Monitoring -->
+      <div class="col-xl-3 col-md-6">
+
+          <div class="health-stat-card monitoring">
+
+              <div class="health-stat-icon">
+
+                  <i class="bi bi-clipboard2-pulse"></i>
+
+              </div>
+
+              <div>
+
+                  <span>Total Monitoring</span>
+
+                  <h3>
+                      {{ monitoring_summary.total_monitorings or 0 }}
+                  </h3>
+
+              </div>
+
+          </div>
+
+      </div>
+
+
+      <!-- Healthy -->
+
+      <div class="col-xl-3 col-md-6">
+
+          <div class="health-stat-card healthy">
+
+              <div class="health-stat-icon">
+
+                  <i class="bi bi-heart-pulse"></i>
+
+              </div>
+
+              <div>
+
+                  <span>Healthy</span>
+
+                  <h3>
+                      {{ monitoring_summary.healthy_count or 0 }}
+                  </h3>
+
+              </div>
+
+          </div>
+
+      </div>
+
+
+      <!-- Warning -->
+
+      <div class="col-xl-3 col-md-6">
+
+          <div class="health-stat-card warning">
+
+              <div class="health-stat-icon">
+
+                  <i class="bi bi-exclamation-triangle"></i>
+
+              </div>
+
+              <div>
+
+                  <span>Warning</span>
+
+                  <h3>
+                      {{ monitoring_summary.warning_count or 0 }}
+                  </h3>
+
+              </div>
+
+          </div>
+
+      </div>
+
+
+      <!-- Disease -->
+
+      <div class="col-xl-3 col-md-6">
+
+          <div class="health-stat-card disease">
+
+              <div class="health-stat-icon">
+
+                  <i class="bi bi-virus"></i>
+
+              </div>
+
+              <div>
+
+                  <span>Disease Detection</span>
+
+                  <h3>
+                      {{ disease_count }}
+                  </h3>
+
+              </div>
+
+          </div>
+
+      </div>
+
+  </div>
 
   <!-- =====================================================
          STATISTICS
@@ -188,7 +303,198 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
           </span>
         </div>
       </div>
+      <!-- DISEASE DETECTION -->
+
+      <!-- <div class="stat-card">
+
+          <div class="stat-icon disease-icon">
+              <i class="bi bi-virus"></i>
+          </div>
+
+          <div class="stat-content">
+
+              <span class="stat-label">
+                  Disease Detection
+              </span>
+
+              <strong class="stat-number">
+                  🦠 {{ disease_count }}
+              </strong>
+
+              <span class="stat-description">
+                  disease cases detected
+              </span>
+
+          </div> -->
+
+      </div>
     </div>
+  </div>
+  <!-- =====================================================
+      DISEASE ANALYSIS
+  ====================================================== -->
+
+  <div class="disease-analysis-section">
+
+      <div class="section-heading">
+
+          <h2>
+              <i class="bi bi-virus me-2"></i>
+              Disease Analysis
+          </h2>
+
+          <p>
+              Overview of detected diseases in this farm
+          </p>
+
+      </div>
+
+
+      {% if disease_analysis %}
+
+      <div class="disease-analysis-card">
+
+          <div class="table-responsive">
+
+              <table class="table disease-analysis-table align-middle mb-0">
+
+                  <thead>
+
+                      <tr>
+
+                          <th>#</th>
+
+                          <th>Disease</th>
+
+                          <th>Detection Count</th>
+
+                          <th>Last Detected</th>
+
+                      </tr>
+
+                  </thead>
+
+
+                  <tbody>
+
+                      {% for disease in disease_analysis %}
+
+                      <tr>
+
+                          <!-- Number -->
+
+                          <td>
+
+                              <span class="disease-number">
+                                  {{ loop.index }}
+                              </span>
+
+                          </td>
+
+                          <!-- Disease -->
+
+                          <td>
+
+                              <div class="disease-name">
+
+                                  <div class="disease-icon-small">
+
+                                      <i class="bi bi-virus"></i>
+
+                                  </div>
+
+                                  <strong>
+                                      {{ disease.disease_name }}
+                                  </strong>
+
+                              </div>
+
+                          </td>
+
+
+                          <!-- Detection Count -->
+
+                          <td>
+
+                              <span class="disease-count">
+
+                                  {{ disease.detection_count }}
+
+                                  {% if disease.detection_count == 1 %}
+                                      case/ករណី
+                                  {% else %}
+                                      cases/ករណី
+                                  {% endif %}
+
+                              </span>
+
+                          </td>
+
+
+                          <!-- Last Detected -->
+
+                          <td>
+
+                              {% if disease.last_detected %}
+
+                              <span class="disease-date">
+
+                                  <i class="bi bi-calendar3 me-1"></i>
+
+                                  {{ disease.last_detected.strftime(
+                                      '%d-%m-%Y %H:%M'
+                                  ) }}
+
+                              </span>
+
+                              {% else %}
+
+                              <span class="text-muted">
+                                  -
+                              </span>
+
+                              {% endif %}
+
+                          </td>
+
+                      </tr>
+
+                      {% endfor %}
+
+                  </tbody>
+
+              </table>
+
+          </div>
+
+      </div>
+
+
+      {% else %}
+
+      <!-- Empty -->
+
+      <div class="disease-empty">
+
+          <div class="disease-empty-icon">
+
+              <i class="bi bi-shield-check"></i>
+
+          </div>
+
+          <h5>
+              No Disease Detected
+          </h5>
+
+          <p>
+              No disease diagnosis has been recorded
+              for this farm yet.
+          </p>
+
+      </div>
+
+      {% endif %}
+
   </div>
 
   <!-- =====================================================
@@ -453,9 +759,11 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
 
             <th>Water</th>
 
-            <th>Pest</th>
+            <!-- <th>Pest</th> -->
 
             <th>Disease</th>
+
+            <th>Action</th>
           </tr>
         </thead>
 
@@ -534,7 +842,7 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
 
             <!-- PEST -->
 
-            <td>
+            <!-- <td>
               {% if monitoring.pest_status and monitoring.pest_status not in
               ["None", "Low"] %}
 
@@ -547,7 +855,7 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
               <span class="monitor-badge healthy"> None </span>
 
               {% endif %}
-            </td>
+            </td> -->
 
             <!-- DISEASE -->
 
@@ -563,6 +871,35 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
 
               <span class="monitor-badge healthy"> None </span>
 
+              {% endif %}
+            </td>
+            <!-- ACTION -->
+
+            <td>
+                <a
+                    href="{{ url_for(
+                        'user.monitoring_detail',
+                        farm_id=monitoring.field_crop.field.farm.id,
+                        monitoring_id=monitoring.id
+                    ) }}"
+                    class="btn btn-sm btn-outline-success"
+                >
+                    <i class="bi bi-eye me-1"></i>
+                    View
+                </a>
+                {% if monitoring.disease_status != "None" and monitoring.disease_status %}
+                <a
+                    href="{{ url_for(
+                        'user.diagnosis_input',
+                        farm_id=farm.id,
+                        monitoring_id=monitoring.id
+                    ) }}"
+                    class="btn-diagnose-small"
+                >
+                    <i class="bi bi-virus"></i>
+                    <span>Diagnose</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
               {% endif %}
             </td>
           </tr>
@@ -597,7 +934,6 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
         <div>
           <h5 class="fw-bold mb-1 text-dark">
             <i class="bi bi-clock-history text-success me-2"></i>
-
             Monitoring History
           </h5>
 
@@ -635,7 +971,7 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
 
               <th>Water</th>
 
-              <th>Pest</th>
+              <!-- <th>Pest</th> -->
 
               <th>Disease</th>
               <th>Action</th>
@@ -672,7 +1008,7 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
                 <div class="monitoring-crop">
                   <i class="bi bi-flower1"></i>
 
-                  {{ monitoring.field_crop.rice_variety.variety_name }}
+                  {{ monitoring.field_crop.rice_variety.variety_name }} - {{ monitoring.field_crop.rice_variety.name_kh }}
                 </div>
               </td>
 
@@ -682,7 +1018,7 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
                 {% if monitoring.growth_stage %}
 
                 <span class="growth-stage-badge">
-                  {{ monitoring.growth_stage.stage_name }}
+                  {{ monitoring.growth_stage.stage_name }} - {{ monitoring.growth_stage.stage_name_kh }}
                 </span>
 
                 {% else %}
@@ -770,7 +1106,7 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
 
               <!-- PEST -->
 
-              <td>
+              <!-- <td>
                 {% if monitoring.pest_status and monitoring.pest_status not in
                 ["None", "Low"] %}
 
@@ -789,7 +1125,7 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
                 </span>
 
                 {% endif %}
-              </td>
+              </td> -->
 
               <!-- DISEASE -->
 

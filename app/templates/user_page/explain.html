@@ -87,11 +87,13 @@
         <ul class="list-group list-group-flush">
             {% for t in treatments %}
                 <li class="list-group-item">
-                    <strong>{{ t.method }}</strong>: {{ t.description }}
-                    <!-- {% if t.image %}
-                        <img src="{{ url_for('static', filename='uploads/' + t.image) }}" 
-                             alt="{{ t.method }}" class="img-thumbnail ms-2" style="max-width:100px;">
-                    {% endif %} -->
+                    <p style="color: rgb(59, 47, 226);">{{ t.treatment_type }}</p>
+                    <p><strong>{{ t.method }}</strong>: {{ t.description }}</p>
+                    
+                    {% if t.image %}
+                        <img src="{{ url_for('static', filename='images/treatments/' + t.image) }}" 
+                             alt="No Image" class="img-thumbnail ms-2" style="max-width:100px;">
+                    {% endif %}
                 </li>
             {% else %}
                 <li class="list-group-item text-muted">មិនមានវិធីព្យាបាល</li>

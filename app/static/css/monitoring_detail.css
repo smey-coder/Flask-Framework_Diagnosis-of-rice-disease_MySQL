@@ -911,3 +911,96 @@
     padding: 35px 15px;
   }
 }
+/* =====================================================
+   DIAGNOSIS ACTIONS
+===================================================== */
+
+.diagnosis-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    padding-top: 14px;
+
+    border-top: 1px solid #eef1f3;
+}
+
+
+/* Empty diagnosis icon */
+
+.diagnosis-empty-icon {
+    width: 64px;
+    height: 64px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: #eaf7ef;
+
+    color: #198754;
+
+    font-size: 30px;
+}
+
+
+/* Small diagnosis button */
+
+.btn-diagnose-small {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 6px 11px;
+
+    border-radius: 8px;
+
+    color: #fff;
+
+    background: #dc3545;
+
+    text-decoration: none;
+
+    font-size: 0.78rem;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 3px 8px rgba(220, 53, 69, 0.18);
+
+    transition: all 0.2s ease;
+}
+
+
+.btn-diagnose-small:hover {
+    color: #fff;
+
+    background: #bb2d3b;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(220, 53, 69, 0.25);
+}
+
+
+.btn-diagnose-small i:first-child {
+    font-size: 13px;
+}
+
+
+.btn-diagnose-small i:last-child {
+    font-size: 11px;
+
+    transition: transform 0.2s ease;
+}
+
+
+.btn-diagnose-small:hover i:last-child {
+    transform: translateX(3px);
+}

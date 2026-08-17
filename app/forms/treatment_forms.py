@@ -5,10 +5,13 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from extensions import db
 from app.models.diseases import DiseaseTable
 
-TREATMENT_TYPE =[
-    ("cultural","cultural"),
-    ("Chemical","Chemical"),
-    ("Biological","Biological"),
+TREATMENT_TYPE = [
+    ("Cultural / វិធានការកសិកម្ម", "Cultural / វិធានការកសិកម្ម"),
+    ("Chemical / វិធានការប្រើសារធាតុគីមី", "Chemical / វិធានការប្រើសារធាតុគីមី"),
+    ("Biological / វិធានការជីវសាស្ត្រ", "Biological / វិធានការជីវសាស្ត្រ"),
+    ("Physical / វិធានការរូបវន្ត", "Physical / វិធានការរូបវន្ត"),
+    ("Preventive / វិធានការបង្កា", "Preventive / វិធានការបង្ការ"),
+    ("Integrated / ការគ្រប់គ្រងចម្រុះ", "Integrated / ការគ្រប់គ្រងចម្រុះ"),
 ]
 
 def disease_choices():

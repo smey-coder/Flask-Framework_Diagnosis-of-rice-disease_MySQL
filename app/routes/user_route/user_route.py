@@ -629,6 +629,114 @@ def farm_detail(farm_id):
             if monitoring.disease_status
             not in [None, "", "None", "Low"]
         )
+        # =====================================================
+        # MONITORING SUMMARY
+        # =====================================================
+
+        monitoring_summary = db.session.execute(
+            text("""
+                SELECT
+                    COUNT(cm.id) AS total_monitorings,
+
+                    SUM(
+                        CASE
+                            WHEN cm.plant_condition = 'Healthy'
+                            THEN 1
+                            ELSE 0
+                        END
+                    ) AS healthy_count,
+
+                    SUM(
+                        CASE
+                            WHEN cm.plant_condition IN ('Warning', 'Unhealthy')
+                            THEN 1
+                            ELSE 0
+                        END
+                    ) AS warning_count
+
+                FROM tbl_crop_monitorings cm
+
+                INNER JOIN tbl_field_crops fc
+                    ON fc.id = cm.field_crop_id
+
+                INNER JOIN tbl_fields f
+                    ON f.id = fc.field_id
+
+                WHERE f.farm_id = :farm_id
+            """),
+            {
+                "farm_id": farm.id
+            }
+        ).mappings().first()
+        # =====================================================
+        # DISEASE COUNT
+        # =====================================================
+
+        disease_count = db.session.execute(
+            text("""
+                SELECT COUNT(DISTINCT dh.id)
+
+                FROM tbl_diagnosis_history dh
+
+                INNER JOIN tbl_crop_monitorings cm
+                    ON cm.id = dh.monitoring_id
+
+                INNER JOIN tbl_field_crops fc
+                    ON fc.id = cm.field_crop_id
+
+                INNER JOIN tbl_fields f
+                    ON f.id = fc.field_id
+
+                WHERE f.farm_id = :farm_id
+                AND dh.user_id = :user_id
+            """),
+            {
+                "farm_id": farm.id,
+                "user_id": current_user.id
+            }
+        ).scalar() or 0
+        # =====================================================
+        # DISEASE ANALYSIS
+        # =====================================================
+
+        disease_analysis = db.session.execute(
+            text("""
+                SELECT
+                    dh.disease_id,
+                    d.disease_name,
+                    COUNT(dh.id) AS detection_count,
+                    MAX(dh.created_at) AS last_detected
+                FROM tbl_diagnosis_history dh
+
+                INNER JOIN tbl_diseases d
+                    ON d.id = dh.disease_id
+
+                INNER JOIN tbl_crop_monitorings cm
+                    ON cm.id = dh.monitoring_id
+
+                INNER JOIN tbl_field_crops fc
+                    ON fc.id = cm.field_crop_id
+
+                INNER JOIN tbl_fields f
+                    ON f.id = fc.field_id
+
+                WHERE f.farm_id = :farm_id
+                AND dh.user_id = :user_id
+
+                GROUP BY
+                    dh.disease_id,
+                    d.disease_name
+
+                ORDER BY
+                    detection_count DESC,
+                    last_detected DESC
+            """),
+            {
+                "farm_id": farm.id,
+                "user_id": current_user.id
+            }
+        ).mappings().all()
+        
 
         # =====================================================
         # 9. RENDER
@@ -666,7 +774,13 @@ def farm_detail(farm_id):
             total_monitorings=total_monitorings,
 
             pest_alert_count=pest_alert_count,
-            disease_alert_count=disease_alert_count
+            disease_alert_count=disease_alert_count,
+
+            monitoring_summary=monitoring_summary,
+
+            disease_count=disease_count,
+
+            disease_analysis = disease_analysis
         )
 
     except Exception as e:
@@ -1828,77 +1942,77 @@ def crop_monitoring_detail_page(monitoring_id):
         monitoring_id=monitoring_id
     )
 
-@user_bp.route("/monitoring/history", methods=["GET"])
-@login_required
-@role_required("User")
-def monitoring_history():
+# @user_bp.route("/monitoring/history", methods=["GET"])
+# @login_required
+# @role_required("User")
+# def monitoring_history():
 
-    try:
+#     try:
 
-        # =====================================================
-        # 1. GET MONITORING HISTORY
-        # =====================================================
+#         # =====================================================
+#         # 1. GET MONITORING HISTORY
+#         # =====================================================
 
-        monitorings = (
-            CropMonitoringTable.query
+#         monitorings = (
+#             CropMonitoringTable.query
 
-            # Crop Monitoring
-            .join(
-                CropMonitoringTable.field_crop
-            )
+#             # Crop Monitoring
+#             .join(
+#                 CropMonitoringTable.field_crop
+#             )
 
-            # Field Crop → Field
-            .join(
-                FieldCropTable.field
-            )
+#             # Field Crop → Field
+#             .join(
+#                 FieldCropTable.field
+#             )
 
-            # Only current user's farms
-            .join(
-                FieldTable.farm
-            )
+#             # Only current user's farms
+#             .join(
+#                 FieldTable.farm
+#             )
 
-            .filter(
-                FarmTable.user_id == current_user.id
-            )
+#             .filter(
+#                 FarmTable.user_id == current_user.id
+#             )
 
-            .order_by(
-                CropMonitoringTable.monitoring_date.desc(),
-                CropMonitoringTable.id.desc()
-            )
+#             .order_by(
+#                 CropMonitoringTable.monitoring_date.desc(),
+#                 CropMonitoringTable.id.desc()
+#             )
 
-            .all()
-        )
-
-
-        # =====================================================
-        # 2. RETURN PAGE
-        # =====================================================
-
-        return render_template(
-            "user_page/monitoring/history.html",
-
-            user=current_user,
-
-            monitorings=monitorings
-        )
+#             .all()
+#         )
 
 
-    except Exception as e:
+#         # =====================================================
+#         # 2. RETURN PAGE
+#         # =====================================================
 
-        db.session.rollback()
+#         return render_template(
+#             "user_page/monitoring/history.html",
 
-        print(
-            f"Monitoring History error: {e}"
-        )
+#             user=current_user,
 
-        flash(
-            "Unable to load monitoring history.",
-            "danger"
-        )
+#             monitorings=monitorings
+#         )
 
-        return redirect(
-            url_for("user.dashboard")
-        )
+
+#     except Exception as e:
+
+#         db.session.rollback()
+
+#         print(
+#             f"Monitoring History error: {e}"
+#         )
+
+#         flash(
+#             "Unable to load monitoring history.",
+#             "danger"
+#         )
+
+#         return redirect(
+#             url_for("user.dashboard")
+#         )
 
 @user_bp.route(
     "/farm/<int:farm_id>/monitoring/<int:monitoring_id>",
@@ -2095,5 +2209,129 @@ def monitoring_detail(farm_id, monitoring_id):
             url_for(
                 "user.farm_detail",
                 farm_id=farm_id
+            )
+        )
+
+@user_bp.route(
+    "/farm/<int:farm_id>/field-crop/<int:field_crop_id>/monitoring-history",
+    methods=["GET"]
+)
+@login_required
+@role_required("User")
+def monitoring_history(farm_id, field_crop_id):
+
+    try:
+
+        # =====================================================
+        # 1. GET FARM
+        # =====================================================
+
+        farm = (
+            FarmTable.query
+            .filter(
+                FarmTable.id == farm_id,
+                FarmTable.user_id == current_user.id
+            )
+            .first_or_404()
+        )
+
+        # =====================================================
+        # 2. GET FIELD CROP
+        # =====================================================
+
+        field_crop = (
+            FieldCropTable.query
+            .join(FieldTable)
+            .filter(
+                FieldCropTable.id == field_crop_id,
+                FieldTable.farm_id == farm.id
+            )
+            .first_or_404()
+        )
+
+        # =====================================================
+        # 3. GET MONITORING HISTORY
+        # =====================================================
+
+        monitorings = (
+            CropMonitoringTable.query
+            .filter(
+                CropMonitoringTable.field_crop_id == field_crop.id
+            )
+            .order_by(
+                CropMonitoringTable.monitoring_date.desc(),
+                CropMonitoringTable.id.desc()
+            )
+            .all()
+        )
+
+        # =====================================================
+        # 4. STATISTICS
+        # =====================================================
+
+        total_monitorings = len(monitorings)
+
+        healthy_count = sum(
+            1
+            for monitoring in monitorings
+            if monitoring.plant_condition == "Healthy"
+        )
+
+        warning_count = sum(
+            1
+            for monitoring in monitorings
+            if monitoring.plant_condition in [
+                "Warning",
+                "Unhealthy"
+            ]
+        )
+
+        disease_alert_count = sum(
+            1
+            for monitoring in monitorings
+            if monitoring.disease_status
+            not in [None, "", "None", "Low"]
+        )
+
+        # =====================================================
+        # 5. RENDER
+        # =====================================================
+
+        return render_template(
+            "user_page/monitoring/history.html",
+
+            user=current_user,
+
+            farm=farm,
+
+            field_crop=field_crop,
+
+            monitorings=monitorings,
+
+            total_monitorings=total_monitorings,
+
+            healthy_count=healthy_count,
+
+            warning_count=warning_count,
+
+            disease_alert_count=disease_alert_count
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            f"Monitoring History error: {e}"
+        )
+
+        flash(
+            "Unable to load monitoring history.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "field_crops.index"
             )
         )

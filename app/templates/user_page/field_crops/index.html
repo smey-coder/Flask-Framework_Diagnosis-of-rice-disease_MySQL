@@ -251,6 +251,22 @@ Field Crops
 
                                 </a>
 
+                                <!-- Monitoring History -->
+                                {% if crop.field and crop.field.farm %}
+
+                                <a
+                                    href="{{ url_for(
+                                        'user.monitoring_history',
+                                        farm_id=crop.field.farm.id,
+                                        field_crop_id=crop.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-success"
+                                    title="Monitoring History"
+                                >
+                                    <i class="bi bi-clock-history me-1"></i>
+                                    Monitoring
+                                </a>
+                                {% endif %}
                             </div>
 
                         </td>

@@ -82,7 +82,7 @@
         <div>
           <small> Rice Variety </small>
 
-          <h6>{{ monitoring.field_crop.rice_variety.variety_name }}</h6>
+          <h6>{{ monitoring.field_crop.rice_variety.variety_name }} - {{ monitoring.field_crop.rice_variety.name_kh }}</h6>
         </div>
       </div>
     </div>
@@ -374,239 +374,268 @@
 ====================================================== -->
 
 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-
   <div class="card-header bg-white py-3">
-
     <h5 class="fw-bold mb-0 text-danger">
-
       <i class="bi bi-virus me-2"></i>
 
       Disease Detection
-
     </h5>
-
   </div>
-
 
   <div class="card-body">
-
-    {% if diagnosis_histories %}
-
-      {% for diagnosis in diagnosis_histories %}
-
-        <div class="diagnosis-card">
-
-          <div class="row g-4">
-
-            <!-- Disease -->
-
-            <div class="col-md-6">
-
-              <div class="diagnosis-item">
-
-                <span class="diagnosis-label">
-                  Disease
-                </span>
-
-                <strong>
-
-                  {{
-                    diagnosis.disease.disease_name
-                    if diagnosis.disease
-                    else "Unknown Disease"
-                  }}
-
-                </strong>
-
-              </div>
-
-            </div>
-
-
-            <!-- Confidence -->
-
-            <div class="col-md-6">
-
-              <div class="diagnosis-item">
-
-                <span class="diagnosis-label">
-                  Confidence
-                </span>
-
-                <strong class="text-success">
-
-                  {{ diagnosis.confidence }}%
-
-                </strong>
-
-              </div>
-
-            </div>
-
-
-            <!-- Selected Symptoms -->
-
-            <div class="col-md-12">
-
-              <div class="diagnosis-item">
-
-                <span class="diagnosis-label">
-                  Selected Symptoms
-                </span>
-
-
-                <div class="d-flex flex-wrap gap-2 mt-2">
-
-                  {% if diagnosis.symptom_names %}
-
-                    {% for symptom in diagnosis.symptom_names %}
-
-                      <span
-                        class="badge bg-success-subtle text-success px-3 py-2"
-                      >
-
-                        <i class="bi bi-leaf me-1"></i>
-
-                        {{ symptom }}
-
-                      </span>
-
-                    {% endfor %}
-
-                  {% else %}
-
-                    <span class="text-muted">
-                      No symptoms recorded.
-                    </span>
-
-                  {% endif %}
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <!-- Notes -->
-
-            <div class="col-md-12">
-
-              <div class="diagnosis-item">
-
-                <span class="diagnosis-label">
-                  Notes
-                </span>
-
-                <div>
-                  {{ diagnosis.notes or "No notes available." }}
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <!-- Status -->
-
-            <div class="col-md-6">
-
-              <div class="diagnosis-item">
-
-                <span class="diagnosis-label">
-                  Status
-                </span>
-
-                <span class="badge bg-success">
-
-                  {{ diagnosis.status }}
-
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <!-- Date -->
-
-            <div class="col-md-6">
-
-              <div class="diagnosis-item">
-
-                <span class="diagnosis-label">
-                  Diagnosis Date
-                </span>
-
-                <strong>
-
-                  {{ diagnosis.created_at.strftime(
-                      "%d-%m-%Y %H:%M"
-                  ) }}
-
-                </strong>
-
-              </div>
-
-            </div>
-
+    {% if diagnosis_histories %} {% for diagnosis in diagnosis_histories %}
+
+    <div class="diagnosis-card">
+      <div class="row g-4">
+        <!-- ==============================
+                         DISEASE
+                    =============================== -->
+
+        <div class="col-md-6">
+          <div class="diagnosis-item">
+            <span class="diagnosis-label">
+              <i class="bi bi-virus me-1 text-danger"></i>
+              Disease
+            </span>
+
+            <strong class="text-danger">
+              {% if diagnosis.disease_name %} {{ diagnosis.disease_name }} {%
+              elif diagnosis.disease %} {{ diagnosis.disease.disease_name }} {%
+              else %} Unknown Disease {% endif %}
+            </strong>
           </div>
-
         </div>
 
-      {% endfor %}
+        <!-- ==============================
+                         CONFIDENCE
+                    =============================== -->
 
+        <div class="col-md-6">
+          <div class="diagnosis-item">
+            <span class="diagnosis-label">
+              <i class="bi bi-speedometer2 me-1"></i>
+              Confidence
+            </span>
 
-    {% else %}
-
-      <!-- No Diagnosis -->
-
-      <div class="text-center py-4">
-
-        <div class="mb-3">
-
-          <i
-            class="bi bi-shield-check text-success"
-            style="font-size: 45px"
-          ></i>
-
+            <strong class="text-success">
+              {{ "%.2f"|format(diagnosis.confidence or 0) }}%
+            </strong>
+          </div>
         </div>
 
+        <!-- ==============================
+        SELECTED SYMPTOMS
+        =============================== -->
 
-        <h6 class="fw-bold">
-          No Disease Diagnosis
-        </h6>
+        <div class="col-md-12">
+          <div class="diagnosis-item">
+            <span class="diagnosis-label">
+              <i class="bi bi-list-check me-1"></i>
 
+              Selected Symptoms
+            </span>
 
-        <p class="text-muted mb-3">
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              {% if diagnosis.symptom_names %} {% for symptom in
+              diagnosis.symptom_names %}
 
-          No disease diagnosis has been recorded
-          for this monitoring.
+              <span class="badge bg-success-subtle text-success px-3 py-2">
+                <i class="bi bi-leaf me-1"></i>
 
-        </p>
+                {{ symptom }}
+              </span>
 
+              {% endfor %} {% else %}
 
-        <a
-          href="{{ url_for(
-              'user.diagnosis_input',
-              farm_id=farm.id,
-              monitoring_id=monitoring.id
-          ) }}"
-          class="btn btn-danger rounded-pill px-4"
-        >
+              <span class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
 
-          <i class="bi bi-virus me-1"></i>
+                No symptoms recorded.
+              </span>
 
-          Diagnose Disease
+              {% endif %}
+            </div>
+          </div>
+        </div>
 
-        </a>
+        <!-- ==============================
+                         NOTES
+                    =============================== -->
 
+        <div class="col-md-12">
+          <div class="diagnosis-item">
+            <span class="diagnosis-label">
+              <i class="bi bi-journal-text me-1"></i>
+
+              Notes
+            </span>
+
+            <div class="text-muted">
+              {{ diagnosis.notes or "No notes available." }}
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================
+                         STATUS
+                    =============================== -->
+
+        <div class="col-md-6">
+          <div class="diagnosis-item">
+            <span class="diagnosis-label">
+              <i class="bi bi-check-circle me-1"></i>
+
+              Status
+            </span>
+
+            {% if diagnosis.status == "Completed" %}
+
+            <span class="badge bg-success-subtle text-success">
+              <i class="bi bi-check-circle me-1"></i>
+
+              Completed
+            </span>
+
+            {% elif diagnosis.status == "Pending" %}
+
+            <span class="badge bg-warning-subtle text-warning">
+              <i class="bi bi-clock me-1"></i>
+
+              Pending
+            </span>
+
+            {% else %}
+
+            <span class="badge bg-secondary-subtle text-secondary">
+              {{ diagnosis.status or "Unknown" }}
+            </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- ==============================
+                         DATE
+                    =============================== -->
+
+        <div class="col-md-6">
+          <div class="diagnosis-item">
+            <span class="diagnosis-label">
+              <i class="bi bi-calendar3 me-1"></i>
+
+              Diagnosis Date
+            </span>
+
+            <strong>
+              {% if diagnosis.created_at %} {{ diagnosis.created_at.strftime(
+              "%d-%m-%Y %H:%M" ) }} {% else %} - {% endif %}
+            </strong>
+          </div>
+        </div>
+
+        <!-- ==============================
+                         ACTIONS
+                    =============================== -->
+
+        <div class="col-md-12">
+          <div class="diagnosis-actions">
+            {% if diagnosis.disease_id %}
+
+            <a
+              href="{{ url_for(
+                                        'user.diagnosis_explain',
+                                        disease_id=diagnosis.disease_id
+                                    ) }}"
+              class="btn btn-sm btn-outline-success rounded-pill px-3"
+            >
+              <i class="bi bi-lightbulb me-1"></i>
+
+              View Explanation
+            </a>
+
+            <a
+              href="{{ url_for(
+                                        'user.disease_treatment',
+                                        disease_id=diagnosis.disease_id
+                                    ) }}"
+              class="btn btn-sm btn-outline-primary rounded-pill px-3"
+            >
+              <i class="bi bi-capsule me-1"></i>
+
+              Treatment
+            </a>
+
+            <a
+              href="{{ url_for(
+                                        'user.disease_prevention',
+                                        disease_id=diagnosis.disease_id
+                                    ) }}"
+              class="btn btn-sm btn-outline-warning rounded-pill px-3"
+            >
+              <i class="bi bi-shield-check me-1"></i>
+
+              Prevention
+            </a>
+
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %} {% else %}
+
+    <!-- ==========================================
+             NO DIAGNOSIS
+        =========================================== -->
+
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <div class="diagnosis-empty-icon">
+          <i class="bi bi-shield-check"></i>
+        </div>
       </div>
 
+      <h6 class="fw-bold mb-2">No Disease Diagnosis</h6>
+
+      <p class="text-muted mb-4">
+        No disease diagnosis has been recorded for this monitoring.
+      </p>
+
+      <!-- ======================================
+                 ONLY SHOW WHEN DISEASE EXISTS
+            ======================================= -->
+
+      {% if monitoring.disease_status and monitoring.disease_status != "None" %}
+
+      <a
+        href="{{ url_for(
+                        'user.diagnosis_input',
+                        farm_id=farm.id,
+                        monitoring_id=monitoring.id
+                    ) }}"
+        class="btn-diagnose-small"
+      >
+        <i class="bi bi-virus"></i>
+
+        <span>Diagnose</span>
+
+        <i class="bi bi-arrow-right"></i>
+      </a>
+
+      {% else %}
+
+      <div class="text-muted small">
+        <i class="bi bi-check-circle-fill text-success me-1"></i>
+
+        No disease detected. Diagnosis is not required.
+      </div>
+
+      {% endif %}
+    </div>
+
     {% endif %}
-
   </div>
-
 </div>
 
 {% endblock %}

@@ -43,7 +43,7 @@ class FieldForm(FlaskForm):
     )
 
     soil_type = StringField(
-        "Soil Type",
+        "Soil Type/ប្រភេទដី",
         validators=[
             Optional(),
             Length(max=100)
