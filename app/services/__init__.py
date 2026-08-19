@@ -17,4 +17,5 @@ from .field_crop_service import FieldCropService
 from .rice_variety_service import RiceVarietyService
 from .growth_stage_service import GrowthStageService
 from .crop_monitoring_service import CropMonitoringService
+from .treatment_history_service import TreatmentHistoryService
 #from .audit_service import log_audit

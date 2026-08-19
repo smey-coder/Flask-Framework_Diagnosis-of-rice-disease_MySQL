@@ -16,7 +16,7 @@ Conditions {% endblock %} {% block content %}
 
       <p class="text-muted mb-0">Manage disease diagnosis rule conditions</p>
     </div>
-
+    {% if current_user.has_permission('CREATE_RULE_CONDITION') %}
     <a
       href="{{ url_for('rule_condition.create') }}"
       class="btn btn-success rounded-pill px-4"
@@ -25,6 +25,7 @@ Conditions {% endblock %} {% block content %}
 
       Add Rule Condition
     </a>
+    {% endif %}
   </div>
 
   <!-- =====================================================
@@ -59,40 +60,44 @@ Conditions {% endblock %} {% block content %}
         </div>
 
         <!-- STATUS -->
-
         <div class="col-md-3">
-    <label class="form-label fw-semibold">
-        Status
-    </label>
+          <label for="activeFilter" class="form-label fw-semibold">
+              <i class="bi bi-toggle-on me-1"></i>
+              Status
+          </label>
 
-    <select name="active" class="form-select">
+          <select
+              id="activeFilter"
+              name="active"
+              class="form-select"
+          >
 
-        <option value=""
-            {% if active_only is none %}
-                selected
-            {% endif %}
-        >
-            All Status
-        </option>
+              <!-- All -->
+              <option
+                  value=""
+                  {% if active_only is none %}selected{% endif %}
+              >
+                  All Status
+              </option>
 
-        <option value="1"
-            {% if active_only == 1 %}
-                selected
-            {% endif %}
-        >
-            Active
-        </option>
+              <!-- Active -->
+              <option
+                  value="1"
+                  {% if active_only is true %}selected{% endif %}
+              >
+                  Active
+              </option>
 
-        <option value="0"
-            {% if active_only == 0 %}
-                selected
-            {% endif %}
-        >
-            Inactive
-        </option>
+              <!-- Inactive -->
+              <option
+                  value="0"
+                  {% if active_only is false %}selected{% endif %}
+              >
+                  Inactive
+              </option>
 
-    </select>
-</div>
+          </select>
+      </div>
 
         <!-- BUTTONS -->
 
@@ -276,39 +281,34 @@ Conditions {% endblock %} {% block content %}
               <!-- ACTIONS -->
 
               <td class="text-end pe-4">
-                <div class="btn-group">
+                <div class="btn-group" role="group">
+                  {% if current_user.has_permission('VIEW_RULE_CONDITION') %}
                   <a
-                    href="{{ url_for(
-                                        'rule_condition.detail',
-                                        id=rc.id
-                                    ) }}"
+                    href="{{ url_for('rule_condition.detail', id=rc.id) }}"
                     class="btn btn-sm btn-outline-info"
-                    title="View"
+                    title="View Rule Condition"
                   >
                     <i class="bi bi-eye"></i>
                   </a>
-
+                  {% endif %} 
+                  {% if current_user.has_permission('EDIT_RULE_CONDITION') %}
                   <a
-                    href="{{ url_for(
-                                        'rule_condition.edit',
-                                        id=rc.id
-                                    ) }}"
+                    href="{{ url_for('rule_condition.edit', id=rc.id) }}"
                     class="btn btn-sm btn-outline-warning"
-                    title="Edit"
+                    title="Edit Rule Condition"
                   >
                     <i class="bi bi-pencil"></i>
                   </a>
-
+                  {% endif %}
+                  {% if current_user.has_permission('DELETE_RULE_CONDITION') %}
                   <a
-                    href="{{ url_for(
-                                        'rule_condition.delete',
-                                        id=rc.id
-                                    ) }}"
+                    href="{{ url_for('rule_condition.delete', id=rc.id) }}"
                     class="btn btn-sm btn-outline-danger"
-                    title="Delete"
+                    title="Delete Rule Condition"
                   >
                     <i class="bi bi-trash"></i>
                   </a>
+                  {% endif %}
                 </div>
               </td>
             </tr>
@@ -351,7 +351,6 @@ Conditions {% endblock %} {% block content %}
                 {% endif %}
               </td>
             </tr>
-
             {% endfor %}
           </tbody>
         </table>

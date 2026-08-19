@@ -1,0 +1,611 @@
+{% extends 'layouts/admin_layout/admin.html' %} {% block title %}Preventions{%
+endblock %} 
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/prevention.css') }}" />
+
+<div class="prevention-page container-fluid py-4">
+  <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+  <div class="page-header mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">
+        <i class="bi bi-shield-check text-success me-2"></i>
+        Preventions
+      </h3>
+
+      <p class="text-muted mb-0">Manage disease prevention information</p>
+    </div>
+
+    <a
+      href="{{ url_for('prevention.create') }}"
+      class="btn btn-success rounded-pill px-4"
+    >
+      <i class="bi bi-plus-circle me-1"></i>
+      Add Prevention
+    </a>
+  </div>
+
+  <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-success-subtle text-success">
+          <i class="bi bi-shield-check"></i>
+        </div>
+
+        <div>
+          <small class="text-muted">Total</small>
+          <h4 class="fw-bold mb-0" id="totalCount">{{ preventions|length }}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-primary-subtle text-primary">
+          <i class="bi bi-check-circle"></i>
+        </div>
+
+        <div>
+          <small class="text-muted">Active</small>
+          <h4 class="fw-bold mb-0" id="activeCount">
+            {{ preventions|selectattr('is_active')|list|length }}
+          </h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-secondary-subtle text-secondary">
+          <i class="bi bi-pause-circle"></i>
+        </div>
+
+        <div>
+          <small class="text-muted">Inactive</small>
+          <h4 class="fw-bold mb-0" id="inactiveCount">
+            {{ preventions|rejectattr('is_active')|list|length }}
+          </h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="stat-icon bg-warning-subtle text-warning">
+          <i class="bi bi-image"></i>
+        </div>
+
+        <div>
+          <small class="text-muted">With Image</small>
+          <h4 class="fw-bold mb-0">
+            {{ preventions|selectattr('image')|list|length }}
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         FILTER CARD
+    ====================================================== -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <!-- Search -->
+        <div class="col-12 col-lg-4">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-search me-1"></i>
+            Search
+          </label>
+
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="bi bi-search"></i>
+            </span>
+
+            <input
+              type="text"
+              id="searchInput"
+              class="form-control border-start-0"
+              placeholder="Search disease, type or method..."
+            />
+
+            <button
+              type="button"
+              id="clearSearch"
+              class="btn btn-outline-secondary"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Disease Filter -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold"> Disease </label>
+
+          <select id="diseaseFilter" class="form-select">
+            <option value="">All Diseases</option>
+
+            {% set diseases = [] %} {% for p in preventions %} {% if p.disease
+            and p.disease.disease_name not in diseases %} {% set _ =
+            diseases.append(p.disease.disease_name) %} {% endif %} {% endfor %}
+            {% for disease in diseases|sort %}
+
+            <option value="{{ disease|lower }}">{{ disease }}</option>
+
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Type Filter -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold"> Prevention Type </label>
+
+          <select id="typeFilter" class="form-select">
+            <option value="">All Types</option>
+
+            {% set types = [] %} {% for p in preventions %} {% if
+            p.prevention_type not in types %} {% set _ =
+            types.append(p.prevention_type) %} {% endif %} {% endfor %} {% for
+            type in types|sort %}
+
+            <option value="{{ type|lower }}">{{ type }}</option>
+
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="col-12 col-lg-2">
+          <label class="form-label fw-semibold"> Status </label>
+
+          <select id="statusFilter" class="form-select">
+            <option value="">All</option>
+
+            <option value="active">Active</option>
+
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filter Result -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <small class="text-muted">
+          Showing
+          <strong id="visibleCount"> {{ preventions|length }} </strong>
+          prevention(s)
+        </small>
+
+        <button
+          type="button"
+          id="resetFilters"
+          class="btn btn-sm btn-outline-secondary rounded-pill"
+        >
+          <i class="bi bi-arrow-counterclockwise me-1"></i>
+          Reset Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         TABLE CARD
+    ====================================================== -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="fw-bold mb-1">
+            <i class="bi bi-list-check text-success me-2"></i>
+            Prevention List
+          </h5>
+
+          <small class="text-muted"> Disease prevention management </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Responsive Scroll -->
+    <div class="table-scroll-wrapper">
+      <table class="table prevention-table align-middle mb-0"n id="preventionTable">
+        <thead>
+          <tr>
+            <th class="text-center">#</th>
+
+            <th>Disease</th>
+
+            <th>Prevention Type</th>
+
+            <th>Method</th>
+
+            <th class="text-center">Priority</th>
+
+            <th class="text-center">Image</th>
+
+            <th class="text-center">Status</th>
+
+            <th class="text-center action-column">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for p in preventions %}
+
+          <tr
+            data-disease="{{ p.disease.disease_name|lower if p.disease else '' }}"
+            data-type="{{ p.prevention_type|lower }}"
+            data-status="{{ 'active' if p.is_active else 'inactive' }}"
+          >
+            <!-- ID -->
+            <td class="text-center">
+              <span class="id-badge"> {{ p.id }} </span>
+            </td>
+
+            <!-- Disease -->
+            <td>
+              <div class="disease-cell">
+                <div class="disease-icon">
+                  <i class="bi bi-virus"></i>
+                </div>
+
+                <div>
+                  <div class="fw-semibold">
+                    {{ p.disease.disease_name if p.disease else 'Unknown
+                    Disease' }}
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Type -->
+            <td>
+              {% if 'Cultural' in p.prevention_type %}
+
+              <span class="type-badge cultural">
+                <i class="bi bi-flower1 me-1"></i>
+                {{ p.prevention_type }}
+              </span>
+
+              {% elif 'Chemical' in p.prevention_type %}
+
+              <span class="type-badge chemical">
+                <i class="bi bi-droplet-half me-1"></i>
+                {{ p.prevention_type }}
+              </span>
+
+              {% elif 'Biological' in p.prevention_type %}
+
+              <span class="type-badge biological">
+                <i class="bi bi-bug me-1"></i>
+                {{ p.prevention_type }}
+              </span>
+
+              {% elif 'Physical' in p.prevention_type %}
+
+              <span class="type-badge physical">
+                <i class="bi bi-tools me-1"></i>
+                {{ p.prevention_type }}
+              </span>
+
+              {% elif 'Integrated' in p.prevention_type %}
+
+              <span class="type-badge integrated">
+                <i class="bi bi-diagram-3 me-1"></i>
+                {{ p.prevention_type }}
+              </span>
+
+              {% else %}
+
+              <span class="type-badge"> {{ p.prevention_type }} </span>
+
+              {% endif %}
+            </td>
+
+            <!-- Method -->
+            <td>
+              <div class="method-cell">
+                <span class="fw-semibold"> {{ p.method or '-' }} </span>
+
+                {% if p.description %}
+
+                <small class="text-muted d-block">
+                  {{ p.description[:80] }} {% if p.description|length > 80 %}
+                  ... {% endif %}
+                </small>
+
+                {% endif %}
+              </div>
+            </td>
+
+            <!-- Priority -->
+            <td class="text-center">
+              {% if p.priority == 1 %}
+
+              <span class="priority-badge priority-1">
+                <i class="bi bi-star-fill me-1"></i>
+                Priority 1
+              </span>
+
+              {% elif p.priority == 2 %}
+
+              <span class="priority-badge priority-2"> Priority 2 </span>
+
+              {% elif p.priority == 3 %}
+
+              <span class="priority-badge priority-3"> Priority 3 </span>
+
+              {% else %}
+
+              <span class="text-muted"> - </span>
+
+              {% endif %}
+            </td>
+
+            <!-- Image -->
+            <td class="text-center">
+              {% if p.image %}
+
+              <img
+                src="{{ url_for(
+                                        'static',
+                                        filename='images/preventions/' ~ p.image
+                                    ) }}"
+                alt="{{ p.method or 'Prevention Image' }}"
+                class="prevention-image"
+                onclick="showPreventionImage(this.src)"
+              />
+
+              {% else %}
+
+              <div class="no-image">
+                <i class="bi bi-image"></i>
+              </div>
+
+              {% endif %}
+            </td>
+
+            <!-- Status -->
+            <td class="text-center">
+              {% if p.is_active %}
+
+              <span class="status-badge active">
+                <span class="status-dot"></span>
+                Active
+              </span>
+
+              {% else %}
+
+              <span class="status-badge inactive">
+                <span class="status-dot"></span>
+                Inactive
+              </span>
+
+              {% endif %}
+            </td>
+
+            <!-- Actions -->
+            <td class="text-center action-column">
+              <div class="action-buttons">
+                <a
+                  href="{{ url_for('prevention.detail', id=p.id) }}"
+                  class="btn btn-sm btn-outline-info"
+                  title="View"
+                >
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('prevention.edit', id=p.id) }}"
+                  class="btn btn-sm btn-outline-warning"
+                  title="Edit"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('prevention.delete', id=p.id) }}"
+                  class="btn btn-sm btn-outline-danger"
+                  title="Delete"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          {% else %}
+
+          <tr id="emptyInitial">
+            <td colspan="8" class="text-center py-5">
+              <div class="empty-state">
+                <i class="bi bi-shield-x"></i>
+
+                <h5 class="fw-bold mt-3">No Preventions Found</h5>
+
+                <p class="text-muted">
+                  There are currently no prevention records.
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          {% endfor %}
+
+          <!-- Search Empty -->
+          <tr id="noSearchResult" style="display: none">
+            <td colspan="8" class="text-center py-5">
+              <div class="empty-state">
+                <i class="bi bi-search"></i>
+
+                <h5 class="fw-bold mt-3">No Matching Results</h5>
+
+                <p class="text-muted mb-0">
+                  Try changing your search or filters.
+                </p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     IMAGE MODAL
+====================================================== -->
+
+<div
+  class="modal fade"
+  id="preventionImageModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content image-modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-image me-2"></i>
+          Prevention Image
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body text-center">
+        <img
+          id="preventionModalImage"
+          src=""
+          class="img-fluid rounded-4"
+          alt="Prevention Image"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const diseaseFilter = document.getElementById("diseaseFilter");
+    const typeFilter = document.getElementById("typeFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    const clearSearch = document.getElementById("clearSearch");
+    const resetFilters = document.getElementById("resetFilters");
+
+    const visibleCount = document.getElementById("visibleCount");
+    const noSearchResult = document.getElementById("noSearchResult");
+
+    const rows = document.querySelectorAll(
+      "#preventionTable tbody tr[data-disease]",
+    );
+
+    function filterTable() {
+      const search = searchInput.value.toLowerCase().trim();
+
+      const disease = diseaseFilter.value.toLowerCase();
+
+      const type = typeFilter.value.toLowerCase();
+
+      const status = statusFilter.value.toLowerCase();
+
+      let count = 0;
+
+      rows.forEach(function (row) {
+        const rowText = row.innerText.toLowerCase();
+
+        const rowDisease = row.dataset.disease || "";
+
+        const rowType = row.dataset.type || "";
+
+        const rowStatus = row.dataset.status || "";
+
+        const matchSearch = !search || rowText.includes(search);
+
+        const matchDisease = !disease || rowDisease === disease;
+
+        const matchType = !type || rowType === type;
+
+        const matchStatus = !status || rowStatus === status;
+
+        if (matchSearch && matchDisease && matchType && matchStatus) {
+          row.style.display = "";
+
+          count++;
+        } else {
+          row.style.display = "none";
+        }
+      });
+
+      visibleCount.textContent = count;
+
+      if (count === 0 && rows.length > 0) {
+        noSearchResult.style.display = "";
+      } else {
+        noSearchResult.style.display = "none";
+      }
+    }
+
+    searchInput.addEventListener("input", filterTable);
+
+    diseaseFilter.addEventListener("change", filterTable);
+
+    typeFilter.addEventListener("change", filterTable);
+
+    statusFilter.addEventListener("change", filterTable);
+
+    clearSearch.addEventListener("click", function () {
+      searchInput.value = "";
+
+      filterTable();
+
+      searchInput.focus();
+    });
+
+    resetFilters.addEventListener("click", function () {
+      searchInput.value = "";
+
+      diseaseFilter.value = "";
+
+      typeFilter.value = "";
+
+      statusFilter.value = "";
+
+      filterTable();
+    });
+  });
+
+  /* =====================================================
+   IMAGE PREVIEW
+===================================================== */
+
+  function showPreventionImage(src) {
+    const image = document.getElementById("preventionModalImage");
+
+    image.src = src;
+
+    const modalElement = document.getElementById("preventionImageModal");
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+    modal.show();
+  }
+</script>
+
+{% endblock %}

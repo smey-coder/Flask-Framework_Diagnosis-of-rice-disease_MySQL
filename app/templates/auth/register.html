@@ -1,112 +1,313 @@
-{% extends "layouts/base.html" %}
-
-{% block title %} Sign Up {% endblock %}
-
+{% extends "layouts/base.html" %} {% block title %}Create Account{% endblock %}
 {% block content %}
-<div class="register-wrapper d-flex justify-content-center align-items-center" style="min-height:90vh;">
-    <div class="card shadow-lg border-0 register-card" style="max-width:900px; border-radius: 18px; overflow:hidden;">
-        <div class="row g-0">
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/auth/register.css') }}"
+/>
 
-            <!-- Left Panel -->
-            <div class="col-md-5 d-none d-md-flex flex-column justify-content-center align-items-center text-center left-panel p-4 bg-light">
-                <h3 class="fw-bold mb-3">Welcome</h3>
-                <p class="small opacity-75">
-                    Welcome to the Rice Disease Diagnosis System<br>
-                    សូមស្វាគមន៍មកកាន់ប្រព័ន្ធ វិនិច្ឆ័យជំងឺស្រូវ
-                </p>
-                <img src="{{ url_for('static', filename='images/Rigester_logo.jpg') }}"
-                     style="max-width:70%; border-radius:15px;" class="mt-3">
-            </div>
+<div class="register-page">
+  <div class="register-card">
+    <!-- ================= LEFT PANEL ================= -->
+    <div class="register-info">
+      <div class="rice-logo">
+        <i class="bi bi-flower1"></i>
+      </div>
 
-            <!-- Right Panel / Form -->
-            <div class="col-md-7 p-5">
-                <h3 class="fw-bold mb-4 text-center">
-                    <i class="bi bi-shield-lock-fill me-2 text-success"></i>
-                    Create Account
-                </h3>
+      <h2>Rice Expert</h2>
 
-                <form method="POST" action="{{ url_for('auth.register') }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <p class="system-title">Rice Disease Diagnosis System</p>
 
-                    <!-- Username -->
-                    <div class="mb-3">
-                        <label for="username" class="form-label" >Username</label>
-                        <input 
-                            type="text"
-                            class="form-control"
-                            id="username"
-                            name="username"
-                            placeholder="Choose a username"
-                            value="{{ username or ''}}"
-                            required
-                            autofocus>
-                    </div>
+      <p class="khmer-text">ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ</p>
 
-                    <!-- Email -->
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input 
-                            type="email"
-                            class="form-control"
-                            id="email"
-                            name="email"
-                            placeholder="Your email address"
-                            value="{{ email or ''}}"
-                            required>
-                    </div>
+      <div class="info-line">
+        <i class="bi bi-shield-check"></i>
+        <span>Secure Account</span>
+      </div>
 
-                    <!-- Full Name -->
-                    <div class="mb-3">
-                        <label for="full_name" class="form-label">Full Name</label>
-                        <input 
-                            type="text"
-                            class="form-control"
-                            id="full_name"
-                            name="full_name"
-                            placeholder="Your full name"
-                            value="{{ full_name or ''}}"
-                            required>
-                    </div>
+      <div class="info-line">
+        <i class="bi bi-cpu"></i>
+        <span>Smart Disease Diagnosis</span>
+      </div>
 
-                    <!-- Password -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input 
-                            type="password"
-                            class="form-control"
-                            autocomplete="new-password"
-                            id="password"
-                            name="password"
-                            placeholder="Enter a strong password"
-                            required>
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input 
-                            type="password"
-                            class="form-control"
-                            id="confirm_password"
-                            name="confirm_password"
-                            placeholder="Re-enter your password"
-                            required>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="d-grid mb-3">
-                        <button type="submit" class="btn btn-success fw-semibold">Sign Up</button>
-                    </div>
-                </form>
-
-                <hr>
-
-                <p class="mb-0 small text-center">
-                    Already have an account?
-                    <a href="{{ url_for('auth.login') }}" class="fw-semibold text-success text-decoration-none">Sign In</a>
-                </p>
-            </div>
-        </div>
+      <div class="info-line">
+        <i class="bi bi-leaf"></i>
+        <span>Rice Farming Knowledge</span>
+      </div>
     </div>
+
+    <!-- ================= RIGHT FORM ================= -->
+    <div class="register-form-section">
+      <div class="form-header">
+        <div>
+          <h2>Create Account</h2>
+
+          <p>Create your Rice Expert account</p>
+        </div>
+      </div>
+
+      <!-- ================= STEP INDICATOR ================= -->
+
+      <div class="step-container">
+        <div class="step active" id="stepIndicator1">
+          <div class="step-number">1</div>
+
+          <span>Account</span>
+        </div>
+
+        <div class="step-line" id="stepLine"></div>
+
+        <div class="step" id="stepIndicator2">
+          <div class="step-number">2</div>
+
+          <span>Security</span>
+        </div>
+      </div>
+
+      <!-- ================= FORM ================= -->
+
+      <form
+        method="POST"
+        action="{{ url_for('auth.register') }}"
+        id="registerForm"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <!-- ==================================================
+                     STEP 1
+                =================================================== -->
+
+        <div class="register-step active-step" id="step1">
+          <div class="step-title">
+            <h4>Account Information</h4>
+
+            <p>Enter your basic account information.</p>
+          </div>
+
+          <!-- Username -->
+
+          <div class="register-field">
+            <label for="username"> Username </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-person input-icon"></i>
+
+              <input
+                type="text"
+                class="register-input"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                value="{{ username or '' }}"
+                autocomplete="username"
+                required
+                autofocus
+              />
+            </div>
+          </div>
+
+          <!-- Email -->
+
+          <div class="register-field">
+            <label for="email"> Email </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-envelope input-icon"></i>
+
+              <input
+                type="email"
+                class="register-input"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value="{{ email or '' }}"
+                autocomplete="email"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Full Name -->
+
+          <div class="register-field">
+            <label for="full_name"> Full Name </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-person-vcard input-icon"></i>
+
+              <input
+                type="text"
+                class="register-input"
+                id="full_name"
+                name="full_name"
+                placeholder="Enter your full name"
+                value="{{ full_name or '' }}"
+                autocomplete="name"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="button" class="btn-next" id="nextBtn">
+            Continue
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- ==================================================
+                     STEP 2
+                =================================================== -->
+
+        <div class="register-step" id="step2">
+          <div class="step-title">
+            <h4>Secure Your Account</h4>
+
+            <p>Create a strong password for your account.</p>
+          </div>
+
+          <!-- Password -->
+
+          <div class="register-field">
+            <label for="password"> Password </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-lock input-icon"></i>
+
+              <input
+                type="password"
+                class="register-input password-input"
+                id="password"
+                name="password"
+                placeholder="Create a strong password"
+                autocomplete="new-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-target="password"
+                aria-label="Show password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- PASSWORD STRENGTH -->
+
+          <div class="password-strength">
+            <div class="strength-header">
+              <span>Password strength</span>
+
+              <strong id="strengthText"> None </strong>
+            </div>
+
+            <div class="strength-bar">
+              <div id="strengthBar" class="strength-progress"></div>
+            </div>
+          </div>
+
+          <!-- REQUIREMENTS -->
+
+          <div class="password-requirements">
+            <div class="requirement" id="lengthRequirement">
+              <i class="bi bi-circle"></i>
+              <span>At least 8 characters</span>
+            </div>
+
+            <div class="requirement" id="uppercaseRequirement">
+              <i class="bi bi-circle"></i>
+              <span>One uppercase letter</span>
+            </div>
+
+            <div class="requirement" id="lowercaseRequirement">
+              <i class="bi bi-circle"></i>
+              <span>One lowercase letter</span>
+            </div>
+
+            <div class="requirement" id="numberRequirement">
+              <i class="bi bi-circle"></i>
+              <span>One number</span>
+            </div>
+
+            <div class="requirement" id="specialRequirement">
+              <i class="bi bi-circle"></i>
+              <span>One special character</span>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+
+          <div class="register-field">
+            <label for="confirm_password"> Confirm Password </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-lock-fill input-icon"></i>
+
+              <input
+                type="password"
+                class="register-input password-input"
+                id="confirm_password"
+                name="confirm_password"
+                placeholder="Confirm your password"
+                autocomplete="new-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-target="confirm_password"
+                aria-label="Show password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+
+            <small id="matchMessage" class="match-message"></small>
+          </div>
+
+          <!-- BUTTONS -->
+
+          <div class="form-buttons">
+            <button type="button" class="btn-back" id="backBtn">
+              <i class="bi bi-arrow-left"></i>
+              Back
+            </button>
+
+            <button type="submit" class="btn-create" id="createBtn">
+              <span id="createText"> Create Account </span>
+
+              <span id="createLoading" class="d-none">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Creating account...
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- LOGIN -->
+
+      <div class="login-link">
+        Already have an account?
+
+        <a href="{{ url_for('auth.login') }}"> Sign In </a>
+      </div>
+
+      <!-- SECURITY NOTE -->
+
+      <div class="security-note">
+        <i class="bi bi-shield-lock"></i>
+
+        <span> Your account information is securely protected. </span>
+      </div>
+    </div>
+  </div>
 </div>
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+{% endblock %} 
+
+{% block scripts %}
+
 {% endblock %}

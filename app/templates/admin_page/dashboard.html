@@ -1,250 +1,1013 @@
-{% extends "layouts/admin_layout/admin.html" %}
-
-{% block title %}Admin Dashboard{% endblock %}
-{% block page_title %}Admin Dashboard{% endblock %}
-
+{% extends "layouts/admin_layout/admin.html" %} 
+{% block title %} {% if current_user.has_role("Admin") %} Admin Dashboard 
+{% elif current_user.has_role("Expert") %} Expert Dashboard {% else %} Dashboard {%endif %} 
+{% endblock %} {% block page_title %} 
+{% if current_user.has_role("Admin") %} Admin Dashboard {% elif current_user.has_role("Expert") %} Expert Dashboard 
+{% else %} Dashboard {%endif %} {% endblock %} 
 {% block content %}
 
 <style>
-    .dashboard-header {
-        position: relative;
-        border-radius: 18px;
-        overflow: hidden;
-        height: 240px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-    }
+  /* =========================================================
+       DASHBOARD HEADER
+    ========================================================= */
 
+  .dashboard-header {
+    position: relative;
+    min-height: 250px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .dashboard-header img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
+
+  .dashboard-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 35px;
+    color: #fff;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.72),
+      rgba(0, 0, 0, 0.25)
+    );
+  }
+
+  .dashboard-title {
+    font-size: 2.3rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 1rem;
+    opacity: 0.85;
+  }
+
+  /* =========================================================
+       STAT CARDS
+    ========================================================= */
+
+  .dashboard-stat-card {
+    border: 0;
+    border-radius: 18px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .dashboard-stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .dashboard-stat-card .card-body {
+    padding: 22px;
+  }
+
+  .stat-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .stat-icon {
+    width: 62px;
+    height: 62px;
+    min-width: 62px;
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: 27px;
+  }
+
+  .stat-label {
+    color: #6c757d;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .stat-icon.users {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+  }
+
+  .stat-icon.roles {
+    background: linear-gradient(135deg, #6f42c1, #4b248c);
+  }
+
+  .stat-icon.permissions {
+    background: linear-gradient(135deg, #20c997, #087f5b);
+  }
+
+  .stat-icon.audit {
+    background: linear-gradient(135deg, #6c757d, #343a40);
+  }
+
+  .stat-icon.diseases {
+    background: linear-gradient(135deg, #e74a3b, #b52b20);
+  }
+
+  .stat-icon.symptoms {
+    background: linear-gradient(135deg, #1cc88a, #087f5b);
+  }
+
+  .stat-icon.rules {
+    background: linear-gradient(135deg, #f6c23e, #c99500);
+  }
+
+  .stat-icon.treatments {
+    background: linear-gradient(135deg, #36b9cc, #087f9c);
+  }
+
+  .stat-icon.preventions {
+    background: linear-gradient(135deg, #198754, #0b5133);
+  }
+
+  .stat-icon.diagnosis {
+    background: linear-gradient(135deg, #6610f2, #4310a1);
+  }
+
+  /* =========================================================
+       SECTION CARD
+    ========================================================= */
+
+  .dashboard-section {
+    border: 0;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+  }
+
+  .dashboard-section .card-header {
+    background: transparent;
+    border-bottom: 1px solid #eee;
+    padding: 18px 20px;
+  }
+
+  .dashboard-section .card-body {
+    padding: 20px;
+  }
+
+  /* =========================================================
+       QUICK ACTION
+    ========================================================= */
+
+  .quick-action {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 15px;
+    border-radius: 14px;
+
+    text-decoration: none;
+    color: inherit;
+
+    border: 1px solid #e9ecef;
+    background: #fff;
+
+    transition: all 0.25s ease;
+  }
+
+  .quick-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    color: inherit;
+  }
+
+  .quick-action-icon {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+  }
+
+  .quick-action-text strong {
+    display: block;
+    font-size: 0.95rem;
+  }
+
+  .quick-action-text small {
+    color: #6c757d;
+  }
+
+  /* =========================================================
+       WEATHER
+    ========================================================= */
+
+  .weather-main {
+    text-align: center;
+  }
+
+  .weather-main img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .weather-temperature {
+    font-size: 3rem;
+    font-weight: 800;
+  }
+
+  .weather-info {
+    padding: 18px;
+    border-radius: 14px;
+    background: #f8f9fa;
+    height: 100%;
+    text-align: center;
+  }
+
+  .weather-info i {
+    font-size: 22px;
+    margin-bottom: 7px;
+  }
+
+  .weather-info-value {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .weather-info-label {
+    display: block;
+    color: #6c757d;
+    font-size: 0.8rem;
+  }
+
+  /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+  @media (max-width: 768px) {
+    .dashboard-header,
     .dashboard-header img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+      height: 220px;
+      min-height: 220px;
     }
 
     .dashboard-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0.15));
-        display: flex;
-        align-items: center;
-        padding: 30px;
-        color: white;
+      padding: 22px;
     }
 
     .dashboard-title {
-        font-size: 2.3rem;
-        font-weight: 800;
+      font-size: 1.7rem;
     }
 
-    .stat-card {
-        border: none;
-        border-radius: 16px;
-        transition: all 0.3s ease;
+    .dashboard-subtitle {
+      font-size: 0.9rem;
     }
 
-    .stat-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    .stat-number {
+      font-size: 1.5rem;
+    }
+
+    .weather-temperature {
+      font-size: 2.4rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .dashboard-header,
+    .dashboard-header img {
+      height: 200px;
+      min-height: 200px;
+    }
+
+    .dashboard-title {
+      font-size: 1.45rem;
+    }
+
+    .dashboard-overlay {
+      padding: 18px;
+    }
+
+    .stat-content {
+      gap: 12px;
     }
 
     .stat-icon {
-        width: 65px;
-        height: 65px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 30px;
-        margin: auto;
-        margin-bottom: 10px;
-        color: white;
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      font-size: 22px;
     }
-
-    .bg-users { background: linear-gradient(135deg, #4e73df, #224abe); }
-    .bg-diseases { background: linear-gradient(135deg, #e74a3b, #be2617); }
-    .bg-symptoms { background: linear-gradient(135deg, #1cc88a, #0f6848); }
-    .bg-rules { background: linear-gradient(135deg, #f6c23e, #dda20a); }
+  }
 </style>
 
-<!-- 🌾 HEADER -->
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
 <div class="dashboard-header">
-    <img src="{{ url_for('static', filename='images/logo_dashboard.jpg') }}" alt="Rice Field">
-    <div class="dashboard-overlay">
-        <div>
-            <div class="dashboard-title">🌾 {{ lang.dashboard.welcome }}</div>
-            <div class="opacity-75">{{ lang.dashboard['Administration & Knowledge Monitoring Panel'] }}</div>
-        </div>
+  <img
+    src="{{ url_for('static', filename='images/logo_dashboard.jpg') }}"
+    alt="Rice Field"
+  />
+
+  <div class="dashboard-overlay">
+    <div>
+      {% if current_user.has_role("Admin") %}
+
+      <div class="dashboard-title">
+        <i class="bi bi-speedometer2 me-2"></i>
+        {{ lang.dashboard.welcome }}
+      </div>
+
+      <div class="dashboard-subtitle">
+        Administration & Knowledge Monitoring Panel
+      </div>
+
+      {% elif current_user.has_role("Expert") %}
+
+      <div class="dashboard-title">
+        <i class="bi bi-mortarboard-fill me-2"></i>
+        Expert Dashboard
+      </div>
+
+      <div class="dashboard-subtitle">
+        Rice Disease Knowledge & Diagnosis Management
+      </div>
+
+      {% else %}
+
+      <div class="dashboard-title">Dashboard</div>
+
+      <div class="dashboard-subtitle">Rice Disease Diagnosis System</div>
+
+      {% endif %}
     </div>
+  </div>
+
 </div>
 
-<!-- 📊 STAT CARDS -->
+<!-- =========================================================
+     ADMIN SUMMARY
+========================================================= -->
+
+{% if current_user.has_role("Admin") %}
+
 <div class="row g-4 mb-4">
-    <div class="col-xl-3 col-md-6">
-        <div class="card stat-card shadow-sm h-100 text-center">
-            <div class="card-body">
-                <div class="stat-icon bg-users">👥</div>
-                <h2 class="fw-bold text-primary">{{ stats.users }}</h2>
-                <small class="text-muted">{{ lang.dashboard.total_users }}</small>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-xl-3 col-md-6">
-        <div class="card stat-card shadow-sm h-100 text-center">
-            <div class="card-body">
-                <div class="stat-icon bg-diseases">🦠</div>
-                <h2 class="fw-bold text-danger">{{ stats.diseases }}</h2>
-                <small class="text-muted">{{ lang.dashboard.total_diseases }}</small>
-            </div>
-        </div>
-    </div>
+  <!-- Users -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon users">
+            <i class="bi bi-people-fill"></i>
+          </div>
 
-    <div class="col-xl-3 col-md-6">
-        <div class="card stat-card shadow-sm h-100 text-center">
-            <div class="card-body">
-                <div class="stat-icon bg-symptoms">🌱</div>
-                <h2 class="fw-bold text-success">{{ stats.symptoms }}</h2>
-                <small class="text-muted">{{ lang.dashboard.total_symptoms }}</small>
-            </div>
-        </div>
-    </div>
+          <div>
+            <div class="stat-label">Total Users</div>
 
-    <div class="col-xl-3 col-md-6">
-        <div class="card stat-card shadow-sm h-100 text-center">
-            <div class="card-body">
-                <div class="stat-icon bg-rules">🧠</div>
-                <h2 class="fw-bold text-warning">{{ stats.rules }}</h2>
-                <small class="text-muted">{{ lang.dashboard.total_rules }}</small>
-            </div>
+            <div class="stat-number text-primary">{{ stats.users }}</div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Roles -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon roles">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Roles</div>
+
+            <div class="stat-number">{{ stats.roles|default(0) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Permissions -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon permissions">
+            <i class="bi bi-key-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Permissions</div>
+
+            <div class="stat-number">{{ stats.permissions|default(0) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon audit">
+            <i class="bi bi-journal-text"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Audit Logs</div>
+
+            <div class="stat-number">{{ stats.audit_logs|default(0) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- 🔍 CITY SELECTION SECTION -->
-<div class="row g-4 mb-4">
-    <div class="col-12">
-        <div class="card stat-card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title fw-bold mb-3">🌤️ Select City in Cambodia</h5>
-                <form method="POST" class="row g-3">
-                    {{ form.hidden_tag() }}
-                    <div class="col-md-8">
-                        {{ form.city.label(class="form-label") }}
-                        {{ form.city(class="form-select") }}
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        {{ form.submit(class="btn btn-primary w-100") }}
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 🌤️ WEATHER DISPLAY SECTION -->
-{% if selected_city_weather %}
-<div class="row g-4 mb-4">
-    <div class="col-12">
-        <div class="card stat-card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title fw-bold mb-3">🌤️ Current Weather</h5>
-                <div class="row text-center">
-                    <div class="col-md-6">
-                        <h3>{{ selected_city_weather.city }}, Cambodia</h3>
-                        <img src="http://openweathermap.org/img/wn/{{ selected_city_weather.icon }}@2x.png" alt="{{ selected_city_weather.description }}" class="img-fluid mb-3" style="max-width: 100px;">
-                        <h1 class="display-4 fw-bold">{{ selected_city_weather.temperature }}°C</h1>
-                        <p class="lead">{{ selected_city_weather.description }}</p>
-                        <p class="text-muted">Feels like {{ selected_city_weather.feels_like }}°C</p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <i class="fas fa-tint text-info"></i>
-                                    <div class="fw-bold">{{ selected_city_weather.humidity }}%</div>
-                                    <small class="text-muted">Humidity</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <i class="fas fa-wind text-success"></i>
-                                    <div class="fw-bold">{{ selected_city_weather.wind_speed }} m/s</div>
-                                    <small class="text-muted">Wind Speed</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <i class="fas fa-eye text-warning"></i>
-                                    <div class="fw-bold">{{ selected_city_weather.visibility }} km</div>
-                                    <small class="text-muted">Visibility</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <i class="fas fa-cloud text-secondary"></i>
-                                    <div class="fw-bold">{{ selected_city_weather.clouds }}%</div>
-                                    <small class="text-muted">Cloudiness</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-center mt-3">
-                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">Back to Search</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endif %}
 
-<!-- 📈 GRAPH SECTION (BOTTOM) -->
+<!-- =========================================================
+     EXPERT SUMMARY
+========================================================= -->
 
-<div class="card shadow-sm border-0 rounded-4 mt-4">
-    <div class="card-body">
-        <h5 class="fw-bold mb-3">📈 {{ lang.chart['Knowledge Base Overview'] }}</h5>
-        <canvas id="dashboardChart" height="100"></canvas>
+{% if current_user.has_role("Expert") %}
+
+<div class="row g-4 mb-4">
+
+  <!-- Diseases -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon diseases">
+            <i class="bi bi-virus"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Diseases</div>
+
+            <div class="stat-number text-danger">{{ stats.diseases }}</div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Symptoms -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon symptoms">
+            <i class="bi bi-clipboard2-pulse"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Symptoms</div>
+
+            <div class="stat-number text-success">{{ stats.symptoms }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon rules">
+            <i class="bi bi-diagram-3-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Rules</div>
+
+            <div class="stat-number text-warning">{{ stats.rules }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Treatments -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon treatments">
+            <i class="bi bi-capsule"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Treatments</div>
+
+            <div class="stat-number text-info">
+              {{ stats.treatments|default(0) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- CHART SCRIPT -->
-<script>
-const ctx = document.getElementById('dashboardChart');
+<!-- Second row -->
 
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['{{ lang.chart.user }}', '{{ lang.chart.disease }}', '{{ lang.chart.symptom }}', '{{ lang.chart.rule }}'],
-        datasets: [{
-            label: '{{ lang.chart['System Data Overview'] }}',
-            data: [
-                {{ stats.users }},
-                {{ stats.diseases }},
-                {{ stats.symptoms }},
-                {{ stats.rules }}
-            ],
-            borderWidth: 2,
-            borderRadius: 10
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true },
-            title: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1
-                }
-            }
-        }
-    }
-});
+<div class="row g-4 mb-4">
+  
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon preventions">
+            <i class="bi bi-shield-check"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Preventions</div>
+
+            <div class="stat-number text-success">
+              {{ stats.preventions|default(0) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-content">
+          <div class="stat-icon diagnosis">
+            <i class="bi bi-clipboard2-check-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-label">Diagnoses</div>
+
+            <div class="stat-number text-primary">
+              {{ stats.diagnoses|default(0) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endif %}
+
+<!-- =========================================================
+     QUICK ACTIONS
+========================================================= -->
+
+<div class="card dashboard-section mb-4">
+
+  <div class="card-header">
+    <h5 class="fw-bold mb-0">
+      <i class="bi bi-lightning-charge-fill text-warning me-2"></i>
+
+      Quick Actions
+    </h5>
+  </div>
+
+  <div class="card-body">
+    <div class="row g-3">
+      {% if current_user.has_role("Admin") %}
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('tbl_users.index') }}" class="quick-action">
+          <div class="quick-action-icon bg-primary bg-opacity-10 text-primary">
+            <i class="bi bi-people-fill"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>User Management</strong>
+
+            <small>Manage system users</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('tbl_roles.index') }}" class="quick-action">
+          <div class="quick-action-icon bg-purple bg-opacity-10 text-primary">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>Roles</strong>
+
+            <small>Manage user roles</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('tbl_permissions.index') }}" class="quick-action">
+          <div class="quick-action-icon bg-success bg-opacity-10 text-success">
+            <i class="bi bi-key-fill"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>Permissions</strong>
+
+            <small>Manage permissions</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('audit.index') }}" class="quick-action">
+          <div
+            class="quick-action-icon bg-secondary bg-opacity-10 text-secondary"
+          >
+            <i class="bi bi-journal-text"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>Audit Logs</strong>
+
+            <small>System activity</small>
+          </div>
+        </a>
+      </div>
+
+      {% endif %} {% if current_user.has_role("Admin") or
+      current_user.has_role("Expert") %}
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('tbl_diseases.index') }}" class="quick-action">
+          <div class="quick-action-icon bg-danger bg-opacity-10 text-danger">
+            <i class="bi bi-virus"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>Diseases</strong>
+
+            <small>Manage diseases</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('tbl_symptoms.index') }}" class="quick-action">
+          <div class="quick-action-icon bg-success bg-opacity-10 text-success">
+            <i class="bi bi-clipboard2-pulse"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>Symptoms</strong>
+
+            <small>Manage symptoms</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('rules.index') }}" class="quick-action">
+          <div class="quick-action-icon bg-warning bg-opacity-10 text-warning">
+            <i class="bi bi-diagram-3-fill"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>Rules</strong>
+
+            <small>Manage diagnosis rules</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ url_for('prevention.index') }}" class="quick-action">
+          <div class="quick-action-icon bg-success bg-opacity-10 text-success">
+            <i class="bi bi-shield-check"></i>
+          </div>
+
+          <div class="quick-action-text">
+            <strong>Preventions</strong>
+
+            <small>Manage prevention knowledge</small>
+          </div>
+        </a>
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- =========================================================
+     WEATHER SEARCH
+========================================================= -->
+
+<div class="card dashboard-section mb-4">
+
+  <div class="card-header">
+    <h5 class="fw-bold mb-0">
+      <i class="bi bi-cloud-sun-fill text-primary me-2"></i>
+
+      Weather Information
+    </h5>
+  </div>
+
+  <div class="card-body">
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <div class="row g-3">
+        <div class="col-md-8">
+          {{ form.city.label(class="form-label fw-semibold") }} {{
+          form.city(class="form-select") }}
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+          {{ form.submit( class="btn btn-primary w-100" ) }}
+        </div>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<!-- =========================================================
+     WEATHER DISPLAY
+========================================================= -->
+
+{% if selected_city_weather %}
+
+<div class="card dashboard-section mb-4">
+
+  <div class="card-header">
+    <h5 class="fw-bold mb-0">
+      <i class="bi bi-cloud-sun-fill text-primary me-2"></i>
+
+      Current Weather
+    </h5>
+  </div>
+
+  <div class="card-body">
+    <div class="row g-4 align-items-center">
+      <!-- Main Weather -->
+
+      <div class="col-lg-5">
+        <div class="weather-main">
+          <h3 class="fw-bold">{{ selected_city_weather.city }}, Cambodia</h3>
+
+          <img
+            src="http://openweathermap.org/img/wn/{{ selected_city_weather.icon }}@2x.png"
+            alt="{{ selected_city_weather.description }}"
+          />
+
+          <div class="weather-temperature">
+            {{ selected_city_weather.temperature }}°C
+          </div>
+
+          <p class="lead mb-1">{{ selected_city_weather.description }}</p>
+
+          <p class="text-muted">
+            Feels like {{ selected_city_weather.feels_like }}°C
+          </p>
+        </div>
+      </div>
+
+      <!-- Weather Details -->
+
+      <div class="col-lg-7">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="weather-info">
+              <i class="fas fa-tint text-info"></i>
+
+              <div class="weather-info-value">
+                {{ selected_city_weather.humidity }}%
+              </div>
+
+              <span class="weather-info-label"> Humidity </span>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="weather-info">
+              <i class="fas fa-wind text-success"></i>
+
+              <div class="weather-info-value">
+                {{ selected_city_weather.wind_speed }} m/s
+              </div>
+
+              <span class="weather-info-label"> Wind Speed </span>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="weather-info">
+              <i class="fas fa-eye text-warning"></i>
+
+              <div class="weather-info-value">
+                {{ selected_city_weather.visibility }} km
+              </div>
+
+              <span class="weather-info-label"> Visibility </span>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="weather-info">
+              <i class="fas fa-cloud text-secondary"></i>
+
+              <div class="weather-info-value">
+                {{ selected_city_weather.clouds }}%
+              </div>
+
+              <span class="weather-info-label"> Cloudiness </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <a
+        href="{{ url_for('admin.dashboard') }}"
+        class="btn btn-outline-secondary"
+      >
+        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        Search Another City
+      </a>
+    </div>
+  </div>
+
+</div>
+
+{% endif %}
+
+<!-- =========================================================
+     KNOWLEDGE BASE CHART
+========================================================= -->
+
+<div class="card dashboard-section mb-4">
+
+  <div class="card-header">
+    <h5 class="fw-bold mb-0">
+      <i class="bi bi-bar-chart-fill text-primary me-2"></i>
+
+      {% if current_user.has_role("Admin") %} Knowledge Base & System Overview
+      {% else %} Knowledge Base Overview {% endif %}
+    </h5>
+  </div>
+
+  <div class="card-body">
+    <div style="height: 350px">
+      <canvas id="dashboardChart"></canvas>
+    </div>
+  </div>
+ 
+</div>
+
+<!-- =========================================================
+     CHART
+========================================================= -->
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+      const canvas = document.getElementById("dashboardChart");
+
+      if (!canvas) {
+          return;
+      }
+
+      const isAdmin = {{ 'true' if current_user.has_role("Admin") else 'false' }};
+
+      let labels;
+      let values;
+
+      if (isAdmin) {
+
+          labels = [
+              "Users",
+              "Diseases",
+              "Symptoms",
+              "Rules"
+          ];
+
+          values = [
+              {{ stats.users|default(0) }},
+              {{ stats.diseases|default(0) }},
+              {{ stats.symptoms|default(0) }},
+              {{ stats.rules|default(0) }}
+          ];
+
+      } else {
+
+          labels = [
+              "Diseases",
+              "Symptoms",
+              "Rules",
+              "Treatments",
+              "Preventions"
+          ];
+
+          values = [
+              {{ stats.diseases|default(0) }},
+              {{ stats.symptoms|default(0) }},
+              {{ stats.rules|default(0) }},
+              {{ stats.treatments|default(0) }},
+              {{ stats.preventions|default(0) }}
+          ];
+
+      }
+
+      new Chart(canvas, {
+
+          type: "bar",
+
+          data: {
+
+              labels: labels,
+
+              datasets: [{
+
+                  label: isAdmin
+                      ? "System Overview"
+                      : "Knowledge Base Overview",
+
+                  data: values,
+
+                  borderWidth: 2,
+
+                  borderRadius: 10,
+
+                  maxBarThickness: 60
+
+              }]
+
+          },
+
+          options: {
+
+              responsive: true,
+
+              maintainAspectRatio: false,
+
+              plugins: {
+
+                  legend: {
+                      display: true
+                  }
+
+              },
+
+              scales: {
+
+                  y: {
+
+                      beginAtZero: true,
+
+                      ticks: {
+                          precision: 0
+                      }
+
+                  }
+
+              }
+
+          }
+
+      });
+
+  });
 </script>
 
 {% endblock %}

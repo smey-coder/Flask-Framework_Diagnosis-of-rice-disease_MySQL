@@ -31,7 +31,9 @@ def create():
             PreventionService.create({
                 "disease_id": form.disease_id.data,
                 "prevention_type": form.prevention_type.data,
+                "method": form.method.data,
                 "description": form.description.data,
+                "priority": form.priority.data,
                 "is_active": form.is_active.data
             }, image_file)
             flash("Prevention created successfully.", "success")
@@ -51,7 +53,9 @@ def edit(id):
     if request.method == "GET":
         form.disease_id.data = prevention.disease_id
         form.prevention_type.data = prevention.prevention_type
+        form.method.data = prevention.method
         form.description.data = prevention.description
+        form.priority.data = prevention.priority
         form.is_active.data = prevention.is_active
 
     if form.validate_on_submit():
@@ -60,7 +64,9 @@ def edit(id):
             PreventionService.update(prevention, {
                 "disease_id": form.disease_id.data,
                 "prevention_type": form.prevention_type.data,
+                "method": form.method.data,
                 "description": form.description.data,
+                "priority": form.priority.data,
                 "is_active": form.is_active.data
             }, image_file)
             flash("Prevention updated successfully.", "success")

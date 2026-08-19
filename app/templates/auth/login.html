@@ -1,97 +1,297 @@
-{% extends "layouts/base.html" %}
-{% block title %} Login {% endblock %}
+{% extends "layouts/base.html" %} {% block title %}Sign In | Rice
+Expert{% endblock %} {% block content %}
 
-{% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height:90vh;">
-    <div class="card shadow-lg border-0" style="width: 380px; border-radius: 18px; overflow:hidden;">
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/auth/login.css') }}"
+/>
 
-        <!-- Top Image -->
-        <div style="height:200px; overflow:hidden;">
-            <img src="{{ url_for('static', filename='images/logo_login.jpg') }}" 
-                 alt="Login banner"
-                 class="w-100 h-100"
-                 style="object-fit:cover;">
+<div class="login-page">
+  <div class="login-container">
+    <!-- =================================================
+             LEFT BRANDING
+        ================================================== -->
+
+    <section class="brand-panel">
+      <div class="brand-content">
+        <div class="brand-icon">
+            <img
+                src="{{ url_for('static', filename='images/rice.png') }}"
+                alt="Rice Expert Logo"
+            >
         </div>
 
-        <!-- Card Body -->
-        <div class="card-body p-4">
+        <h1 class="brand-title">Rice Expert</h1>
 
-            <h3 class="fw-bold fst-italic text-center mb-2">Sign In</h3>
-            <p class="text-center text-muted small mb-4">Welcome, back!</p>
-            <form method="POST" action="{{ url_for('auth.login') }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p class="brand-subtitle">
+          Smart Rice Disease Diagnosis System
+          <br />
+          ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវឆ្លាតវៃ
+        </p>
 
-                <div class="mb-3 text-start">
-                    <label for="username" class="form-label fw-semibold">Username</label>
-                    <input 
-                        type="text"
-                        class="form-control"
-                        id="username"
-                        name="username"
-                        placeholder="Enter your username"
-                        required
-                        autofocus>
-                </div>
+        <ul class="feature-list">
+          <li>
+            <span class="feature-icon">
+              <i class="bi bi-cpu"></i>
+            </span>
 
-                <div class="mb-3 text-start">
-                    <label for="password" class="form-label fw-semibold">Password</label>
-                    <input 
-                        type="password"
-                        class="form-control"
-                        id="password"
-                        name="password"
-                        placeholder="Enter your password"
-                        required>
-                </div>
-                <div class="mb-3 form-check text-start">
-                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                    <label class="form-check-label" for="remember">
-                        Remember me
-                    </label>
-                </div>
+            <span> Intelligent disease diagnosis </span>
+          </li>
 
-                <div class="text-end mb-3">
-                    <a href="{{ url_for('auth.forget_password') }}" class="small text-decoration-none">
-                        Forgot password?
-                    </a>
-                </div>
+          <li>
+            <span class="feature-icon">
+              <i class="bi bi-diagram-3"></i>
+            </span>
 
-                <div class="d-grid mb-3">
-                    <button type="submit" class="btn btn-primary fw-semibold">
-                        Log In
-                    </button>
-                </div>
-            </form>
-            <hr class="my-3">
+            <span> Knowledge-based rule system </span>
+          </li>
 
-            <!-- Role Information -->
-            <!-- <div class="small mb-3">
-                <p class="fw-semibold text-muted mb-2">Access Levels:</p>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <span class="badge bg-danger">Admin</span>
-                        <span class="small">Manage system & users</span>
-                    </li>
-                    <li class="mb-2">
-                        <span class="badge bg-success">Expert</span>
-                        <span class="small">Create diagnosis rules</span>
-                    </li>
-                    <li>
-                        <span class="badge bg-info">User</span>
-                        <span class="small">Use diagnosis system</span>
-                    </li>
-                </ul>
-            </div> -->
+          <li>
+            <span class="feature-icon">
+              <i class="bi bi-shield-check"></i>
+            </span>
 
-            <!-- <hr class="my-3"> -->
-            <p class="small text-center mb-0">
-                Don’t have an account?
-                <a href="{{ url_for('auth.register') }}" class="fw-semibold text-primary text-decoration-none">
-                    Sign Up
-                </a>
-            </p>
+            <span> Secure role-based access </span>
+          </li>
 
+          <li>
+            <span class="feature-icon">
+              <i class="bi bi-bar-chart-line"></i>
+            </span>
+
+            <span> Diagnosis history & monitoring </span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =================================================
+             RIGHT LOGIN
+        ================================================== -->
+
+    <section class="login-panel">
+      <div class="login-content">
+        <div class="login-header">
+          <h2>Welcome Back</h2>
+          <p>Sign in to access your Rice Expert account.</p>
         </div>
-    </div>
+
+        <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+          <!-- USERNAME -->
+
+          <div class="mb-3">
+            <label for="username" class="form-label fw-semibold"> Username </label>
+            <div class="input-icon-wrapper">
+              <i class="bi bi-person input-icon"></i>
+              <input
+                type="text"
+                class="form-control input-with-icon"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                autocomplete="username"
+                required
+                autofocus
+              />
+            </div>
+          </div>
+
+          <!-- PASSWORD -->
+          <div class="mb-3">
+            <label for="password" class="form-label fw-semibold"> Password </label>
+
+            <div class="input-icon-wrapper">
+              <i class="bi bi-lock input-icon"></i>
+
+              <input
+                type="password"
+                class="form-control input-with-icon"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                id="togglePassword"
+                aria-label="Show password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- OPTIONS -->
+
+          <div class="login-options">
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="remember"
+                name="remember"
+              />
+
+              <label class="form-check-label small" for="remember">
+                Remember me
+              </label>
+            </div>
+
+            <a href="{{ url_for('auth.forget_password') }}" class="forgot-link">
+              Forgot password?
+            </a>
+          </div>
+
+          <!-- LOGIN BUTTON -->
+
+          <div class="d-grid">
+            <button
+              type="submit"
+              class="btn btn-success login-button"
+              id="loginButton"
+            >
+              <span id="loginText">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Sign In
+              </span>
+
+              <span id="loginLoading" class="d-none">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+
+                Signing in...
+              </span>
+            </button>
+          </div>
+        </form>
+
+        <!-- DIVIDER -->
+
+        <div class="divider">OR</div>
+
+        <!-- REGISTER -->
+
+        <div class="register-text">
+          Don't have an account?
+
+          <a href="{{ url_for('auth.register') }}" class="register-link">
+            Create Account
+          </a>
+        </div>
+
+        <!-- SECURITY -->
+
+        <div class="security-note">
+          <i class="bi bi-shield-lock-fill"></i>
+
+          <span>
+            Your account information is protected with secure authentication.
+          </span>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
+
+<script>
+  // ============================================
+  // SHOW / HIDE PASSWORD
+  // ============================================
+
+  const togglePassword = document.getElementById("togglePassword");
+
+  const password = document.getElementById("password");
+
+  if (togglePassword && password) {
+    togglePassword.addEventListener("click", function () {
+      const icon = this.querySelector("i");
+
+      if (password.type === "password") {
+        password.type = "text";
+
+        icon.classList.remove("bi-eye");
+
+        icon.classList.add("bi-eye-slash");
+
+        this.setAttribute("aria-label", "Hide password");
+      } else {
+        password.type = "password";
+
+        icon.classList.remove("bi-eye-slash");
+
+        icon.classList.add("bi-eye");
+
+        this.setAttribute("aria-label", "Show password");
+      }
+    });
+  }
+
+  // ============================================
+  // LOGIN LOADING
+  // ============================================
+
+  const loginForm = document.getElementById("loginForm");
+
+  const loginButton = document.getElementById("loginButton");
+
+  const loginText = document.getElementById("loginText");
+
+  const loginLoading = document.getElementById("loginLoading");
+
+  if (loginForm) {
+    loginForm.addEventListener("submit", function () {
+      if (loginButton.disabled) {
+        return;
+      }
+
+      loginButton.disabled = true;
+
+      loginText.classList.add("d-none");
+
+      loginLoading.classList.remove("d-none");
+    });
+  }
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordIcon = document.getElementById("passwordIcon");
+
+    if (passwordInput && togglePassword && passwordIcon) {
+
+        togglePassword.addEventListener("click", function () {
+
+            const isPassword =
+                passwordInput.type === "password";
+
+            passwordInput.type =
+                isPassword ? "text" : "password";
+
+            passwordIcon.classList.toggle(
+                "bi-eye",
+                !isPassword
+            );
+
+            passwordIcon.classList.toggle(
+                "bi-eye-slash",
+                isPassword
+            );
+
+            togglePassword.setAttribute(
+                "aria-label",
+                isPassword
+                    ? "Hide password"
+                    : "Show password"
+            );
+        });
+    }
+
+});
+</script>
+
 {% endblock %}

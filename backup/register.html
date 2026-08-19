@@ -1,0 +1,291 @@
+{% extends "layouts/base.html" %} {% block title %}Sign Up{% endblock %} {%
+block styles %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/register.css') }}"
+/>
+{% endblock %} {% block content %}
+
+<div class="register-page">
+  <div class="register-container">
+    <!-- =================================================
+             LEFT BRANDING PANEL
+        ================================================== -->
+    <div class="register-brand">
+      <div class="brand-content">
+        <div class="brand-icon">
+          <i class="bi bi-flower1"></i>
+        </div>
+
+        <h1>Rice Expert</h1>
+
+        <p class="brand-subtitle">Rice Disease Diagnosis System</p>
+
+        <div class="brand-khmer">ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ</div>
+
+        <div class="brand-description">
+          <i class="bi bi-check-circle-fill"></i>
+          Smart Rice Disease Diagnosis
+        </div>
+
+        <div class="brand-description">
+          <i class="bi bi-check-circle-fill"></i>
+          Knowledge-Based System
+        </div>
+
+        <div class="brand-description">
+          <i class="bi bi-check-circle-fill"></i>
+          Easy and Secure Access
+        </div>
+      </div>
+
+      <div class="brand-footer">
+        <i class="bi bi-shield-check"></i>
+        Secure & Reliable System
+      </div>
+    </div>
+
+    <!-- =================================================
+             RIGHT REGISTER PANEL
+        ================================================== -->
+    <div class="register-form-panel">
+      <div class="register-form-content">
+        <!-- Header -->
+        <div class="register-header">
+          <div class="register-header-icon">
+            <i class="bi bi-person-plus-fill"></i>
+          </div>
+
+          <h2>Create Account</h2>
+
+          <p>Create your Rice Expert account</p>
+        </div>
+
+        <!-- Register Form -->
+        <form
+          method="POST"
+          action="{{ url_for('auth.register') }}"
+          id="registerForm"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+          <!-- ================= USERNAME ================= -->
+          <div class="register-field">
+            <label for="username"> Username </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-person input-icon"></i>
+
+              <input
+                type="text"
+                class="register-input"
+                id="username"
+                name="username"
+                placeholder="Choose a username"
+                value="{{ username or '' }}"
+                autocomplete="username"
+                required
+                autofocus
+              />
+            </div>
+          </div>
+
+          <!-- ================= EMAIL ================= -->
+          <div class="register-field">
+            <label for="email"> Email Address </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-envelope input-icon"></i>
+
+              <input
+                type="email"
+                class="register-input"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value="{{ email or '' }}"
+                autocomplete="email"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- ================= FULL NAME ================= -->
+          <div class="register-field">
+            <label for="full_name"> Full Name </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-person-vcard input-icon"></i>
+
+              <input
+                type="text"
+                class="register-input"
+                id="full_name"
+                name="full_name"
+                placeholder="Enter your full name"
+                value="{{ full_name or '' }}"
+                autocomplete="name"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- ================= PASSWORD ================= -->
+          <div class="register-field">
+            <label for="password"> Password </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-lock input-icon"></i>
+
+              <input
+                type="password"
+                class="register-input password-input"
+                id="password"
+                name="password"
+                placeholder="Create a strong password"
+                autocomplete="new-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-target="password"
+                aria-label="Show password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= CONFIRM PASSWORD ================= -->
+          <div class="register-field">
+            <label for="confirm_password"> Confirm Password </label>
+
+            <div class="input-wrapper">
+              <i class="bi bi-lock-fill input-icon"></i>
+
+              <input
+                type="password"
+                class="register-input password-input"
+                id="confirm_password"
+                name="confirm_password"
+                placeholder="Confirm your password"
+                autocomplete="new-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-target="confirm_password"
+                aria-label="Show password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Password Requirement -->
+          <div class="password-hint">
+            <i class="bi bi-info-circle"></i>
+            Use a strong password to protect your account.
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="register-submit" id="registerSubmit">
+            <span id="registerButtonText">
+              <i class="bi bi-person-plus me-2"></i>
+              Create Account
+            </span>
+
+            <span id="registerLoading" class="d-none">
+              <span
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+              ></span>
+              Creating account...
+            </span>
+          </button>
+        </form>
+
+        <!-- Security -->
+        <div class="security-note">
+          <i class="bi bi-shield-lock-fill"></i>
+
+          <span>
+            Your account information is protected and securely stored.
+          </span>
+        </div>
+
+        <div class="register-divider">
+          <span>Already have an account?</span>
+        </div>
+
+        <!-- Login -->
+        <a href="{{ url_for('auth.login') }}" class="signin-link">
+          <i class="bi bi-box-arrow-in-right me-2"></i>
+          Sign In
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    /* ==========================================
+       SHOW / HIDE PASSWORD
+    ========================================== */
+
+    const toggleButtons = document.querySelectorAll(".password-toggle");
+
+    toggleButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        const targetId = this.getAttribute("data-target");
+
+        const input = document.getElementById(targetId);
+
+        const icon = this.querySelector("i");
+
+        if (input.type === "password") {
+          input.type = "text";
+
+          icon.classList.remove("bi-eye");
+          icon.classList.add("bi-eye-slash");
+
+          this.setAttribute("aria-label", "Hide password");
+        } else {
+          input.type = "password";
+
+          icon.classList.remove("bi-eye-slash");
+          icon.classList.add("bi-eye");
+
+          this.setAttribute("aria-label", "Show password");
+        }
+      });
+    });
+
+    /* ==========================================
+       LOADING STATE
+    ========================================== */
+
+    const form = document.getElementById("registerForm");
+
+    const button = document.getElementById("registerSubmit");
+
+    const buttonText = document.getElementById("registerButtonText");
+
+    const loading = document.getElementById("registerLoading");
+
+    form.addEventListener("submit", function () {
+      button.disabled = true;
+
+      buttonText.classList.add("d-none");
+
+      loading.classList.remove("d-none");
+    });
+  });
+</script>
+
+{% endblock %}

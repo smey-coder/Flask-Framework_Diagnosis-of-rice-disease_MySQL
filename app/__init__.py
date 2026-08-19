@@ -69,7 +69,7 @@ def create_app(config_class: type[Config] = Config):
             if current_user.has_role("Admin"):
                 return redirect(url_for("admin.dashboard"))
             elif current_user.has_role("Expert"):
-                return redirect(url_for("expert.dashboard"))
+                return redirect(url_for("admin.dashboard"))
             else:
                 return redirect(url_for("user.dashboard"))
         return redirect(url_for("auth.login"))
@@ -93,7 +93,7 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.user_route.field_routes import field_bp
     from app.routes.user_route.field_crop_routes import field_crop_bp
     from app.routes.user_route.crop_monitoring_routes import crop_monitoring_bp
-
+    from app.routes.user_route.treatment_history import treatment_history_bp
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
@@ -112,6 +112,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(field_bp)
     app.register_blueprint(field_crop_bp)
     app.register_blueprint(crop_monitoring_bp)
+    app.register_blueprint(treatment_history_bp)
 
     # ================= CREATE TABLES =================
     with app.app_context():

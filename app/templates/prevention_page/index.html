@@ -1,62 +1,1681 @@
+```html
 {% extends 'layouts/admin_layout/admin.html' %}
 
 {% block title %}Preventions{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Preventions</h3>
-        <a href="{{ url_for('prevention.create') }}" class="btn btn-success">+ Add Prevention</a>
+
+<div class="container-fluid prevention-page py-3">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+    <div class="page-header mb-4">
+
+        <div>
+            <h3 class="fw-bold mb-1">
+                <i class="bi bi-shield-check text-success me-2"></i>
+                Preventions
+            </h3>
+
+            <p class="text-muted mb-0">
+                Manage disease prevention methods and recommendations.
+            </p>
+        </div>
+
+        <div>
+            <a href="{{ url_for('prevention.create') }}"
+               class="btn btn-success rounded-3">
+                <i class="bi bi-plus-circle me-1"></i>
+                Add Prevention
+            </a>
+        </div>
+
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Disease</th>
-                        <th>Type</th>
-                        <th>Image</th>
-                        <th>Status</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in preventions %}
-                    <tr>
-                        <td>{{ p.id }}</td>
-                        <td>{{ p.disease.disease_name }}</td>
-                        <td>{{ p.prevention_type }}</td>
-                        <td>
-                            {% if p.image %}
-                                <img src="{{ url_for('static', filename='images/preventions/' ~ p.image) }}" 
-                                     alt="Image" class="img-thumbnail" style="max-width:50px;">
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if p.is_active %}
-                                <span class="badge bg-success">Active</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Inactive</span>
-                            {% endif %}
-                        </td>
-                        <td class="text-end">
-                            <a href="{{ url_for('prevention.detail', id=p.id) }}" class="btn btn-sm btn-info">View</a>
-                            <a href="{{ url_for('prevention.edit', id=p.id) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <a href="{{ url_for('prevention.delete', id=p.id) }}" class="btn btn-sm btn-danger">Delete</a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">No preventions found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+    <div class="row g-3 mb-4">
+
+        <!-- Total -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="summary-card">
+                <div class="summary-icon bg-primary-subtle text-primary">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">
+                        Total Preventions
+                    </div>
+
+                    <div class="summary-value" id="totalCount">
+                        {{ preventions|length }}
+                    </div>
+                </div>
+            </div>
         </div>
+
+
+        <!-- Active -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="summary-card">
+                <div class="summary-icon bg-success-subtle text-success">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">
+                        Active
+                    </div>
+
+                    <div class="summary-value" id="activeCount">
+                        {{ preventions|selectattr('is_active')|list|length }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Inactive -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="summary-card">
+                <div class="summary-icon bg-secondary-subtle text-secondary">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">
+                        Inactive
+                    </div>
+
+                    <div class="summary-value" id="inactiveCount">
+                        {{ preventions|rejectattr('is_active')|list|length }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Showing -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="summary-card">
+                <div class="summary-icon bg-warning-subtle text-warning">
+                    <i class="bi bi-search"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">
+                        Showing
+                    </div>
+
+                    <div class="summary-value" id="showingCount">
+                        {{ preventions|length }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+
+    <!-- =====================================================
+         SEARCH + FILTER
+    ====================================================== -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-3 align-items-end">
+
+                <!-- Search -->
+                <div class="col-12 col-lg-5">
+
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-search me-1"></i>
+                        Search
+                    </label>
+
+                    <div class="search-box">
+
+                        <i class="bi bi-search"></i>
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            class="form-control"
+                            placeholder="Search disease, method, description..."
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Type -->
+                <div class="col-12 col-sm-6 col-lg-3">
+
+                    <label class="form-label fw-semibold">
+                        Prevention Type
+                    </label>
+
+                    <select id="typeFilter"
+                            class="form-select">
+
+                        <option value="all">
+                            All Types
+                        </option>
+
+                        <option value="cultural">
+                            Cultural
+                        </option>
+
+                        <option value="chemical">
+                            Chemical
+                        </option>
+
+                        <option value="biological">
+                            Biological
+                        </option>
+
+                        <option value="physical">
+                            Physical
+                        </option>
+
+                        <option value="preventive">
+                            Preventive
+                        </option>
+
+                        <option value="integrated">
+                            Integrated
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Status -->
+                <div class="col-12 col-sm-6 col-lg-2">
+
+                    <label class="form-label fw-semibold">
+                        Status
+                    </label>
+
+                    <select id="statusFilter"
+                            class="form-select">
+
+                        <option value="all">
+                            All Status
+                        </option>
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Reset -->
+                <div class="col-12 col-lg-2">
+
+                    <button
+                        type="button"
+                        id="resetFilters"
+                        class="btn btn-outline-secondary w-100">
+
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Reset
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Search Result Info -->
+            <div class="filter-result mt-3">
+
+                <span>
+                    <i class="bi bi-funnel me-1"></i>
+
+                    Showing
+                    <strong id="resultCount">
+                        {{ preventions|length }}
+                    </strong>
+                    prevention records
+                </span>
+
+                <span id="filterStatus"
+                      class="text-muted">
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABLE CARD
+    ====================================================== -->
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-header bg-white border-0 py-3">
+
+            <div class="d-flex flex-column flex-md-row
+                        justify-content-between
+                        align-items-md-center gap-2">
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-table me-2 text-success"></i>
+                        Prevention Records
+                    </h5>
+
+                    <small class="text-muted">
+                        Disease prevention management
+                    </small>
+                </div>
+
+                <span class="table-hint">
+                    <i class="bi bi-arrows-move me-1"></i>
+                    Scroll horizontally to view more
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RESPONSIVE TABLE WRAPPER
+        ================================================== -->
+        <div class="table-responsive prevention-table-wrapper">
+
+            <table
+                class="table table-hover align-middle prevention-table mb-0"
+                id="preventionTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th class="text-center id-column">
+                            #
+                        </th>
+
+                        <th>
+                            Disease
+                        </th>
+
+                        <th>
+                            Prevention Type
+                        </th>
+
+                        <th>
+                            Method
+                        </th>
+
+                        <th class="text-center">
+                            Priority
+                        </th>
+
+                        <th class="text-center">
+                            Image
+                        </th>
+
+                        <th class="text-center">
+                            Status
+                        </th>
+
+                        <th class="text-center action-column">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for p in preventions %}
+
+                    <tr
+                        data-disease="{{ p.disease.disease_name|lower if p.disease else '' }}"
+                        data-type="{{ p.prevention_type|lower }}"
+                        data-method="{{ p.method|lower if p.method else '' }}"
+                        data-description="{{ p.description|lower if p.description else '' }}"
+                        data-status="{{ 'active' if p.is_active else 'inactive' }}"
+                    >
+
+                        <!-- ID -->
+                        <td class="text-center">
+
+                            <span class="id-badge">
+                                {{ p.id }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- Disease -->
+                        <td>
+
+                            <div class="disease-cell">
+
+                                <div class="disease-icon">
+                                    <i class="bi bi-virus"></i>
+                                </div>
+
+                                <div>
+
+                                    <div class="fw-semibold disease-name">
+
+                                        {{ p.disease.disease_name
+                                           if p.disease
+                                           else 'Unknown Disease' }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- Type -->
+                        <td>
+
+                            {% if 'Cultural' in p.prevention_type %}
+
+                                <span class="type-badge cultural">
+                                    <i class="bi bi-flower1 me-1"></i>
+                                    {{ p.prevention_type }}
+                                </span>
+
+                            {% elif 'Chemical' in p.prevention_type %}
+
+                                <span class="type-badge chemical">
+                                    <i class="bi bi-droplet-half me-1"></i>
+                                    {{ p.prevention_type }}
+                                </span>
+
+                            {% elif 'Biological' in p.prevention_type %}
+
+                                <span class="type-badge biological">
+                                    <i class="bi bi-bug me-1"></i>
+                                    {{ p.prevention_type }}
+                                </span>
+
+                            {% elif 'Physical' in p.prevention_type %}
+
+                                <span class="type-badge physical">
+                                    <i class="bi bi-tools me-1"></i>
+                                    {{ p.prevention_type }}
+                                </span>
+
+                            {% elif 'Integrated' in p.prevention_type %}
+
+                                <span class="type-badge integrated">
+                                    <i class="bi bi-diagram-3 me-1"></i>
+                                    {{ p.prevention_type }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="type-badge">
+                                    {{ p.prevention_type }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Method -->
+                        <td>
+
+                            <div class="method-cell">
+
+                                <span class="fw-semibold">
+                                    {{ p.method or '-' }}
+                                </span>
+
+                                {% if p.description %}
+
+                                    <small class="text-muted d-block description-text">
+
+                                        {{ p.description[:100] }}
+
+                                        {% if p.description|length > 100 %}
+                                            ...
+                                        {% endif %}
+
+                                    </small>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- Priority -->
+                        <td class="text-center">
+
+                            {% if p.priority == 1 %}
+
+                                <span class="priority-badge priority-1">
+
+                                    <i class="bi bi-star-fill me-1"></i>
+
+                                    Priority 1
+
+                                </span>
+
+                            {% elif p.priority == 2 %}
+
+                                <span class="priority-badge priority-2">
+
+                                    Priority 2
+
+                                </span>
+
+                            {% elif p.priority == 3 %}
+
+                                <span class="priority-badge priority-3">
+
+                                    Priority 3
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    -
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Image -->
+                        <td class="text-center">
+
+                            {% if p.image %}
+
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='images/preventions/' ~ p.image
+                                    ) }}"
+                                    alt="{{ p.method or 'Prevention Image' }}"
+                                    class="prevention-image"
+                                    onclick="showPreventionImage(this.src)"
+                                >
+
+                            {% else %}
+
+                                <div class="no-image">
+
+                                    <i class="bi bi-image"></i>
+
+                                </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Status -->
+                        <td class="text-center">
+
+                            {% if p.is_active %}
+
+                                <span class="status-badge active">
+
+                                    <span class="status-dot"></span>
+
+                                    Active
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge inactive">
+
+                                    <span class="status-dot"></span>
+
+                                    Inactive
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Actions -->
+                        <td class="text-center action-column">
+
+                            <div class="action-buttons">
+
+                                <a
+                                    href="{{ url_for('prevention.detail', id=p.id) }}"
+                                    class="btn btn-sm btn-outline-info"
+                                    title="View"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('prevention.edit', id=p.id) }}"
+                                    class="btn btn-sm btn-outline-warning"
+                                    title="Edit"
+                                >
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('prevention.delete', id=p.id) }}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    title="Delete"
+                                >
+                                    <i class="bi bi-trash"></i>
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% else %}
+
+                    <tr id="emptyInitial">
+
+                        <td colspan="8"
+                            class="text-center py-5">
+
+                            <div class="empty-state">
+
+                                <i class="bi bi-shield-x"></i>
+
+                                <h5 class="fw-bold mt-3">
+                                    No Preventions Found
+                                </h5>
+
+                                <p class="text-muted">
+                                    There are currently no prevention records.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                    <!-- Search Empty -->
+                    <tr id="noSearchResult"
+                        style="display:none;">
+
+                        <td colspan="8"
+                            class="text-center py-5">
+
+                            <div class="empty-state">
+
+                                <i class="bi bi-search"></i>
+
+                                <h5 class="fw-bold mt-3">
+                                    No Matching Results
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Try changing your search or filters.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
 </div>
+
+
+<!-- =====================================================
+     IMAGE MODAL
+====================================================== -->
+
+<div class="modal fade"
+     id="preventionImageModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+
+        <div class="modal-content bg-dark border-0 rounded-4">
+
+            <div class="modal-body text-center p-3">
+
+                <img
+                    id="preventionModalImage"
+                    src=""
+                    class="img-fluid rounded-3"
+                    style="
+                        max-height:80vh;
+                        object-fit:contain;
+                    "
+                >
+
+            </div>
+
+            <button
+                type="button"
+                class="btn-close btn-close-white
+                       position-absolute top-0 end-0 m-3"
+                data-bs-dismiss="modal">
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CSS
+====================================================== -->
+
+<style>
+
+.prevention-page {
+    max-width: 100%;
+}
+
+
+/* ============================
+   HEADER
+============================ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+
+/* ============================
+   SUMMARY
+============================ */
+
+.summary-card {
+
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    background: #fff;
+
+    border-radius: 16px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,.06);
+
+    border: 1px solid rgba(0,0,0,.04);
+
+}
+
+.summary-icon {
+
+    width: 52px;
+    height: 52px;
+
+    min-width: 52px;
+
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 23px;
+
+}
+
+.summary-label {
+
+    color: #6c757d;
+
+    font-size: 13px;
+
+    margin-bottom: 3px;
+
+}
+
+.summary-value {
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+}
+
+
+/* ============================
+   SEARCH
+============================ */
+
+.search-box {
+
+    position: relative;
+
+}
+
+.search-box i {
+
+    position: absolute;
+
+    left: 13px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #6c757d;
+
+    z-index: 2;
+
+}
+
+.search-box input {
+
+    padding-left: 38px;
+
+    height: 43px;
+
+}
+
+.filter-result {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    font-size: 14px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #eee;
+
+}
+
+
+/* ============================
+   TABLE
+============================ */
+
+.prevention-table-wrapper {
+
+    width: 100%;
+
+    max-height: 650px;
+
+    overflow-x: auto;
+
+    overflow-y: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: thin;
+
+}
+
+
+/* Important for responsive */
+
+.prevention-table {
+
+    min-width: 1250px;
+
+    width: 100%;
+
+    white-space: nowrap;
+
+}
+
+
+/* Sticky Header */
+
+.prevention-table thead th {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+
+    background: #f8f9fa;
+
+    border-bottom: 2px solid #dee2e6;
+
+    padding: 14px 12px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+
+/* Table rows */
+
+.prevention-table tbody td {
+
+    padding: 14px 12px;
+
+}
+
+
+/* ============================
+   ID
+============================ */
+
+.id-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 35px;
+
+    height: 28px;
+
+    padding: 0 8px;
+
+    border-radius: 8px;
+
+    background: #f1f3f5;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* ============================
+   DISEASE
+============================ */
+
+.disease-cell {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.disease-icon {
+
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e8f5e9;
+
+    color: #198754;
+
+}
+
+.disease-name {
+
+    max-width: 230px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* ============================
+   TYPE
+============================ */
+
+.type-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 7px 10px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    background: #f1f3f5;
+
+}
+
+.type-badge.cultural {
+
+    background: #e8f5e9;
+
+    color: #198754;
+
+}
+
+.type-badge.chemical {
+
+    background: #fff3cd;
+
+    color: #997404;
+
+}
+
+.type-badge.biological {
+
+    background: #cff4fc;
+
+    color: #087990;
+
+}
+
+.type-badge.physical {
+
+    background: #e2e3e5;
+
+    color: #41464b;
+
+}
+
+.type-badge.integrated {
+
+    background: #e0cffc;
+
+    color: #59359a;
+
+}
+
+
+/* ============================
+   METHOD
+============================ */
+
+.method-cell {
+
+    max-width: 300px;
+
+}
+
+.description-text {
+
+    max-width: 300px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* ============================
+   PRIORITY
+============================ */
+
+.priority-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 6px 9px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+.priority-1 {
+
+    background: #fff3cd;
+
+    color: #997404;
+
+}
+
+.priority-2 {
+
+    background: #e2e3e5;
+
+    color: #41464b;
+
+}
+
+.priority-3 {
+
+    background: #f8d7da;
+
+    color: #842029;
+
+}
+
+
+/* ============================
+   IMAGE
+============================ */
+
+.prevention-image {
+
+    width: 65px;
+
+    height: 50px;
+
+    object-fit: cover;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    border: 1px solid #dee2e6;
+
+    transition: .2s;
+
+}
+
+.prevention-image:hover {
+
+    transform: scale(1.08);
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+
+}
+
+.no-image {
+
+    width: 65px;
+
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: auto;
+
+    border-radius: 9px;
+
+    background: #f8f9fa;
+
+    color: #adb5bd;
+
+    font-size: 20px;
+
+}
+
+
+/* ============================
+   STATUS
+============================ */
+
+.status-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+.status-badge.active {
+
+    background: #d1e7dd;
+
+    color: #0f5132;
+
+}
+
+.status-badge.inactive {
+
+    background: #e2e3e5;
+
+    color: #41464b;
+
+}
+
+.status-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+
+}
+
+
+/* ============================
+   ACTIONS
+============================ */
+
+.action-buttons {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 5px;
+
+}
+
+.action-buttons .btn {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* ============================
+   EMPTY
+============================ */
+
+.empty-state {
+
+    padding: 20px;
+
+}
+
+.empty-state > i {
+
+    font-size: 50px;
+
+    color: #adb5bd;
+
+}
+
+
+/* ============================
+   TABLE HINT
+============================ */
+
+.table-hint {
+
+    font-size: 12px;
+
+    color: #6c757d;
+
+}
+
+
+/* ============================
+   SCROLLBAR
+============================ */
+
+.prevention-table-wrapper::-webkit-scrollbar {
+
+    width: 9px;
+
+    height: 9px;
+
+}
+
+.prevention-table-wrapper::-webkit-scrollbar-track {
+
+    background: #f1f3f5;
+
+}
+
+.prevention-table-wrapper::-webkit-scrollbar-thumb {
+
+    background: #adb5bd;
+
+    border-radius: 20px;
+
+}
+
+.prevention-table-wrapper::-webkit-scrollbar-thumb:hover {
+
+    background: #6c757d;
+
+}
+
+
+/* =====================================================
+   TABLET
+====================================================== */
+
+@media (max-width: 992px) {
+
+    .page-header {
+
+        align-items: flex-start;
+
+    }
+
+    .summary-card {
+
+        padding: 16px;
+
+    }
+
+    .prevention-table-wrapper {
+
+        max-height: 550px;
+
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 576px) {
+
+    .prevention-page {
+
+        padding-left: 8px !important;
+
+        padding-right: 8px !important;
+
+    }
+
+
+    .page-header {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+    .page-header h3 {
+
+        font-size: 21px;
+
+    }
+
+    .page-header .btn {
+
+        width: 100%;
+
+    }
+
+
+    .summary-card {
+
+        padding: 15px;
+
+    }
+
+    .summary-icon {
+
+        width: 45px;
+
+        height: 45px;
+
+        min-width: 45px;
+
+        font-size: 19px;
+
+    }
+
+    .summary-value {
+
+        font-size: 21px;
+
+    }
+
+
+    .filter-result {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 5px;
+
+    }
+
+
+    .prevention-table-wrapper {
+
+        max-height: 450px;
+
+        overflow-x: auto;
+
+        overflow-y: auto;
+
+    }
+
+
+    .prevention-table {
+
+        min-width: 1200px;
+
+    }
+
+
+    .table-hint {
+
+        display: block;
+
+    }
+
+}
+
+
+/* =====================================================
+   VERY SMALL SCREEN
+====================================================== */
+
+@media (max-width: 400px) {
+
+    .summary-card {
+
+        padding: 12px;
+
+    }
+
+    .summary-icon {
+
+        width: 40px;
+
+        height: 40px;
+
+        min-width: 40px;
+
+    }
+
+}
+
+</style>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    const typeFilter =
+        document.getElementById("typeFilter");
+
+    const statusFilter =
+        document.getElementById("statusFilter");
+
+    const resetButton =
+        document.getElementById("resetFilters");
+
+    const table =
+        document.getElementById("preventionTable");
+
+    const rows =
+        table.querySelectorAll("tbody tr[data-disease]");
+
+    const resultCount =
+        document.getElementById("resultCount");
+
+    const showingCount =
+        document.getElementById("showingCount");
+
+    const noSearchResult =
+        document.getElementById("noSearchResult");
+
+    const filterStatus =
+        document.getElementById("filterStatus");
+
+
+    function filterTable() {
+
+        const search =
+            searchInput.value
+                .toLowerCase()
+                .trim();
+
+        const type =
+            typeFilter.value.toLowerCase();
+
+        const status =
+            statusFilter.value.toLowerCase();
+
+
+        let visible = 0;
+
+
+        rows.forEach(function (row) {
+
+            const disease =
+                row.dataset.disease || "";
+
+            const rowType =
+                row.dataset.type || "";
+
+            const method =
+                row.dataset.method || "";
+
+            const description =
+                row.dataset.description || "";
+
+            const rowStatus =
+                row.dataset.status || "";
+
+
+            const matchesSearch =
+                !search ||
+                disease.includes(search) ||
+                rowType.includes(search) ||
+                method.includes(search) ||
+                description.includes(search);
+
+
+            const matchesType =
+                type === "all" ||
+                rowType.includes(type);
+
+
+            const matchesStatus =
+                status === "all" ||
+                rowStatus === status;
+
+
+            if (
+                matchesSearch &&
+                matchesType &&
+                matchesStatus
+            ) {
+
+                row.style.display = "";
+
+                visible++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        resultCount.textContent = visible;
+
+        showingCount.textContent = visible;
+
+
+        if (visible === 0) {
+
+            noSearchResult.style.display = "";
+
+            filterStatus.textContent =
+                "No matching records.";
+
+        } else {
+
+            noSearchResult.style.display = "none";
+
+            if (
+                search ||
+                type !== "all" ||
+                status !== "all"
+            ) {
+
+                filterStatus.textContent =
+                    "Filters applied.";
+
+            } else {
+
+                filterStatus.textContent = "";
+
+            }
+
+        }
+
+    }
+
+
+    searchInput.addEventListener(
+        "input",
+        filterTable
+    );
+
+    typeFilter.addEventListener(
+        "change",
+        filterTable
+    );
+
+    statusFilter.addEventListener(
+        "change",
+        filterTable
+    );
+
+
+    resetButton.addEventListener(
+        "click",
+        function () {
+
+            searchInput.value = "";
+
+            typeFilter.value = "all";
+
+            statusFilter.value = "all";
+
+            filterTable();
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   IMAGE MODAL
+====================================================== */
+
+function showPreventionImage(src) {
+
+    document.getElementById(
+        "preventionModalImage"
+    ).src = src;
+
+
+    const modalElement =
+        document.getElementById(
+            "preventionImageModal"
+        );
+
+
+    const modal =
+        bootstrap.Modal.getOrCreateInstance(
+            modalElement
+        );
+
+
+    modal.show();
+
+}
+
+</script>
+
 {% endblock %}
+```

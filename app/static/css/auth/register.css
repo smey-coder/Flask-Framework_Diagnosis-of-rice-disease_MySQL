@@ -1,0 +1,685 @@
+/* =========================================================
+   REGISTER PAGE
+========================================================= */
+
+.register-page {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 15px;
+  /* background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #ecfdf5 100%); */
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.register-card {
+  width: 100%;
+  max-width: 950px;
+  min-height: 600px;
+
+  display: grid;
+  grid-template-columns: 38% 62%;
+
+  background: #ffffff;
+
+  border-radius: 28px;
+  overflow: hidden;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================================
+   LEFT PANEL
+========================================================= */
+
+.register-info {
+  padding: 50px 40px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  color: #ffffff;
+
+  background: linear-gradient(145deg, #198754, #157347, #0f5132);
+}
+
+.rice-logo {
+  width: 100px;
+  height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.15);
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  margin-bottom: 25px;
+
+  animation: floatRice 3s ease-in-out infinite;
+}
+
+.rice-logo i {
+  font-size: 52px;
+}
+
+@keyframes floatRice {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.register-info h2 {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.system-title {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+
+.khmer-text {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 35px;
+}
+
+.info-line {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px 15px;
+
+  margin-bottom: 10px;
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  text-align: left;
+
+  transition: 0.25s;
+}
+
+.info-line:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateX(5px);
+}
+
+.info-line i {
+  font-size: 20px;
+}
+
+/* =========================================================
+   FORM SECTION
+========================================================= */
+
+.register-form-section {
+  padding: 45px 50px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-header h2 {
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.form-header p {
+  color: #6c757d;
+  margin-bottom: 25px;
+}
+
+/* =========================================================
+   STEP INDICATOR
+========================================================= */
+
+.step-container {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 30px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #adb5bd;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.step-number {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e9ecef;
+
+  color: #6c757d;
+
+  font-weight: 700;
+
+  transition: 0.3s;
+}
+
+.step.active {
+  color: #198754;
+}
+
+.step.active .step-number {
+  background: #198754;
+  color: white;
+
+  box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+}
+
+.step-line {
+  flex: 1;
+
+  height: 2px;
+
+  background: #dee2e6;
+
+  margin: 0 15px;
+
+  transition: 0.3s;
+}
+
+.step-line.completed {
+  background: #198754;
+}
+
+/* =========================================================
+   STEP CONTENT
+========================================================= */
+
+.register-step {
+  display: none;
+}
+
+.register-step.active-step {
+  display: block;
+
+  animation: stepIn 0.35s ease;
+}
+
+@keyframes stepIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-title h4 {
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.step-title p {
+  color: #6c757d;
+  font-size: 14px;
+
+  margin-bottom: 25px;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.register-field {
+  margin-bottom: 18px;
+}
+
+.register-field label {
+  display: block;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  margin-bottom: 7px;
+
+  color: #343a40;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+
+  left: 15px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #6c757d;
+
+  z-index: 2;
+
+  pointer-events: none;
+
+  transition: 0.25s;
+}
+
+.register-input {
+  width: 100%;
+
+  height: 48px;
+
+  padding: 10px 45px;
+
+  border: 1px solid #dee2e6;
+
+  border-radius: 12px;
+
+  outline: none;
+
+  font-size: 14px;
+
+  transition: all 0.25s;
+
+  background: #ffffff;
+}
+
+.register-input:focus {
+  border-color: #198754;
+
+  box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1);
+}
+
+.register-input:focus + .password-toggle {
+  color: #198754;
+}
+
+/* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
+
+.password-toggle {
+  position: absolute;
+
+  right: 12px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border: none;
+
+  background: transparent;
+
+  color: #6c757d;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  padding: 5px;
+
+  z-index: 3;
+}
+
+.password-toggle:hover {
+  color: #198754;
+}
+
+/* =========================================================
+   PASSWORD STRENGTH
+========================================================= */
+
+.password-strength {
+  margin-top: -5px;
+  margin-bottom: 15px;
+}
+
+.strength-header {
+  display: flex;
+  justify-content: space-between;
+
+  font-size: 12px;
+
+  margin-bottom: 6px;
+
+  color: #6c757d;
+}
+
+.strength-header strong {
+  font-weight: 700;
+}
+
+.strength-bar {
+  height: 6px;
+
+  background: #e9ecef;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+}
+
+.strength-progress {
+  width: 0;
+  height: 100%;
+
+  border-radius: 10px;
+
+  transition:
+    width 0.3s ease,
+    background 0.3s ease;
+}
+
+/* =========================================================
+   PASSWORD REQUIREMENTS
+========================================================= */
+
+.password-requirements {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 7px;
+
+  margin-bottom: 18px;
+
+  padding: 12px;
+
+  background: #f8f9fa;
+
+  border-radius: 12px;
+}
+
+.requirement {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  font-size: 12px;
+
+  color: #6c757d;
+
+  transition: 0.2s;
+}
+
+.requirement i {
+  font-size: 13px;
+}
+
+.requirement.valid {
+  color: #198754;
+
+  font-weight: 600;
+}
+
+.requirement.valid i::before {
+  content: "\f26a";
+}
+
+.requirement.invalid {
+  color: #6c757d;
+}
+
+/* =========================================================
+   MATCH PASSWORD
+========================================================= */
+
+.match-message {
+  display: block;
+
+  margin-top: 6px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+.match-message.success {
+  color: #198754;
+}
+
+.match-message.error {
+  color: #dc3545;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn-next,
+.btn-create {
+  width: 100%;
+
+  height: 48px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  font-weight: 700;
+
+  color: #ffffff;
+
+  background: linear-gradient(135deg, #198754, #157347);
+
+  transition: all 0.25s;
+
+  box-shadow: 0 6px 15px rgba(25, 135, 84, 0.2);
+}
+
+.btn-next:hover,
+.btn-create:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 10px 20px rgba(25, 135, 84, 0.25);
+}
+
+.btn-next:disabled,
+.btn-create:disabled {
+  opacity: 0.7;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.form-buttons {
+  display: grid;
+
+  grid-template-columns: 110px 1fr;
+
+  gap: 10px;
+
+  margin-top: 10px;
+}
+
+.btn-back {
+  height: 48px;
+
+  border: 1px solid #dee2e6;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #495057;
+
+  font-weight: 600;
+
+  transition: 0.25s;
+}
+
+.btn-back:hover {
+  background: #f8f9fa;
+
+  border-color: #adb5bd;
+}
+
+/* =========================================================
+   LOGIN LINK
+========================================================= */
+
+.login-link {
+  text-align: center;
+
+  font-size: 13px;
+
+  color: #6c757d;
+
+  margin-top: 22px;
+}
+
+.login-link a {
+  color: #198754;
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   SECURITY NOTE
+========================================================= */
+
+.security-note {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 15px;
+
+  font-size: 11px;
+
+  color: #6c757d;
+}
+
+.security-note i {
+  color: #198754;
+
+  font-size: 14px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .register-page {
+    padding: 15px;
+  }
+
+  .register-card {
+    grid-template-columns: 1fr;
+
+    max-width: 520px;
+
+    min-height: auto;
+
+    border-radius: 20px;
+  }
+
+  .register-info {
+    padding: 30px 25px;
+  }
+
+  .rice-logo {
+    width: 70px;
+    height: 70px;
+
+    margin-bottom: 15px;
+  }
+
+  .rice-logo i {
+    font-size: 35px;
+  }
+
+  .register-info h2 {
+    font-size: 24px;
+  }
+
+  .khmer-text {
+    margin-bottom: 20px;
+  }
+
+  .info-line {
+    display: none;
+  }
+
+  .register-form-section {
+    padding: 30px 22px;
+  }
+
+  .password-requirements {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 400px) {
+  .register-form-section {
+    padding: 25px 18px;
+  }
+
+  .step span {
+    font-size: 12px;
+  }
+
+  .step-line {
+    margin: 0 8px;
+  }
+
+  .form-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-back {
+    order: 2;
+  }
+}

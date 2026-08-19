@@ -1,4 +1,5 @@
 from typing import List, Optional
+from venv import logger
 from extensions import db
 from app.models.treatments import TreatmentTable
 from app.models.diseases import DiseaseTable
@@ -52,133 +53,421 @@ class TreatmentService:
     def get_by_id(treatment_id: int) -> Optional[TreatmentTable]:
         return TreatmentTable.query.get(treatment_id)
 
+    @staticmethod
+    def get_by_disease(disease_id):
+        try:
+            return (
+                TreatmentTable.query
+                .filter(
+                    TreatmentTable.disease_id == disease_id,
+                    TreatmentTable.is_active == True
+                )
+                .order_by(TreatmentTable.id.desc())
+                .all()
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Error getting treatments by disease: {e}"
+            )
+            return []
+
+    #Treatment Recommended 
+    @staticmethod
+    def get_recommended_treatment(disease_id):
+        try:
+
+            treatment = (
+                TreatmentTable.query
+                .filter(
+                    TreatmentTable.disease_id == disease_id,
+                    TreatmentTable.is_active == True
+                )
+                .order_by(
+                    TreatmentTable.priority.asc(),
+                    TreatmentTable.id.asc()
+                )
+                .first()
+            )
+
+            return treatment
+
+        except Exception as e:
+
+            print(
+                f"Treatment Recommendation Error: {e}"
+            )
+            return None
+
+    @staticmethod
+    def get_treatments_by_disease(disease_id):
+
+        try:
+
+            return (
+                TreatmentTable.query
+                .filter(
+                    TreatmentTable.disease_id == disease_id,
+                    TreatmentTable.is_active == True
+                )
+                .order_by(
+                    TreatmentTable.priority.asc(),
+                    TreatmentTable.id.asc()
+                )
+                .all()
+            )
+
+        except Exception as e:
+
+            print(
+                f"Treatment List Error: {e}"
+            )
+
+            return []
     # ---------- CREATE ---------- #
     @staticmethod
     def create(data: dict, image_file) -> TreatmentTable:
-        # --- VALIDATION ---
-        if not data.get("disease_id"):
-            raise ValueError("Disease is required.")
-        if not data.get("treatment_type"):
-            raise ValueError("Treatment type is required.")
 
-        disease = DiseaseTable.query.get(data.get("disease_id"))
+        # =====================================================
+        # VALIDATION
+        # =====================================================
+
+        # -----------------------------------------------------
+        # Disease
+        # -----------------------------------------------------
+
+        disease_id = data.get("disease_id")
+
+        if not disease_id:
+            raise ValueError("Disease is required.")
+
+        disease = DiseaseTable.query.get(disease_id)
+
         if not disease:
             raise ValueError("Selected disease does not exist.")
+        # -----------------------------------------------------
+        # Treatment Type
+        # -----------------------------------------------------
 
-        if not image_file or image_file.filename == "":
+        treatment_type = data.get("treatment_type")
+
+        if not treatment_type:
+            raise ValueError("Treatment type is required.")
+        # -----------------------------------------------------
+        # Method
+        # -----------------------------------------------------
+
+        method = (data.get("method") or "").strip()
+
+        if not method:
+            raise ValueError("Treatment method is required.")
+
+        # -----------------------------------------------------
+        # Priority
+        # -----------------------------------------------------
+
+        priority = data.get("priority",1)
+
+        try:
+            priority = int(priority)
+        except (TypeError,ValueError):
+            raise ValueError("Priority must be a number.")
+
+        if priority < 1 or priority > 10:
+            raise ValueError("Priority must be between 1 and 10.")
+        # -----------------------------------------------------
+        # Image
+        # -----------------------------------------------------
+
+        if (not image_file or image_file.filename == ""):
+
             raise ValueError("Image is required.")
+
         if not allowed_file(image_file.filename):
+
             raise ValueError("Invalid image format.")
 
-        duplicate = TreatmentTable.query.filter_by(
-            disease_id=data.get("disease_id"),
-            treatment_type=data.get("treatment_type")
-        ).first()
-        if duplicate:
-            raise ValueError("This treatment type already exists for this disease.")
+        # =====================================================
+        # DUPLICATE CHECK
+        # =====================================================
 
-        # --- SAVE IMAGE ---
+        # duplicate = (TreatmentTable.query.filter_by(disease_id=disease_id,treatment_type=treatment_type).first())
+
+        # if duplicate:
+        #     raise ValueError("This treatment type already exists ""for this disease.")
+
+        # =====================================================
+        # SAVE IMAGE
+        # =====================================================
+
         filename = save_image(image_file)
+        # =====================================================
+        # CREATE OBJECT
+        # =====================================================
 
-        # --- CREATE OBJECT ---
         treatment = TreatmentTable(
-            disease_id=data.get("disease_id"),
-            treatment_type=data.get("treatment_type"),
-            description=data.get("description", ""),
-            method=data.get("method", ""),
+
+            disease_id=disease_id,
+
+            treatment_type=treatment_type,
+
+            description=(data.get("description") or "").strip(),
+
+            priority=priority,
+
+            method=method,
+
             image=filename,
-            is_active=data.get("is_active", True)
+
+            is_active=data.get("is_active",True)
         )
+
+
+        # =====================================================
+        # DATABASE
+        # =====================================================
 
         try:
             db.session.add(treatment)
             db.session.commit()
         except SQLAlchemyError as e:
+
             db.session.rollback()
+
+            # Delete uploaded image
+            # if database insert fails
+
             delete_image(filename)
             raise ValueError(f"Database error: {str(e)}")
 
-        # --- AUDIT LOG ---
+
+        # =====================================================
+        # AUDIT LOG
+        # =====================================================
+
         log_audit(
+
             action="CREATE",
+
             table_name="treatments",
+
             record_id=treatment.id,
+
             before_data=None,
+
             after_data={
-                "disease_id": treatment.disease_id,
-                "treatment_type": treatment.treatment_type,
-                "description": treatment.description,
-                "method": treatment.method,
-                "is_active": treatment.is_active
+
+                "disease_id":
+                    treatment.disease_id,
+
+                "treatment_type":
+                    treatment.treatment_type,
+
+                "description":
+                    treatment.description,
+
+                "priority":
+                    treatment.priority,
+
+                "method":
+                    treatment.method,
+
+                "image":
+                    treatment.image,
+
+                "is_active":
+                    treatment.is_active
             }
         )
 
+
+        # =====================================================
+        # RETURN
+        # =====================================================
+
         return treatment
 
-    # ---------- UPDATE ---------- #
+
+    # ---------- UPDATE ----------
     @staticmethod
-    def update(treatment: TreatmentTable, data: dict, image_file=None) -> TreatmentTable:
+    def update(
+        treatment: TreatmentTable,
+        data: dict,
+        image_file=None
+    ) -> TreatmentTable:
+
+        # =====================================================
+        # VALIDATION
+        # =====================================================
+
         if not data.get("disease_id"):
             raise ValueError("Disease is required.")
-        disease = DiseaseTable.query.get(data.get("disease_id"))
+
+        if not data.get("treatment_type"):
+            raise ValueError("Treatment type is required.")
+
+        disease = DiseaseTable.query.get(
+            data.get("disease_id")
+        )
+
         if not disease:
-            raise ValueError("Selected disease does not exist.")
+            raise ValueError(
+                "Selected disease does not exist."
+            )
 
-        duplicate = TreatmentTable.query.filter(
-            TreatmentTable.id != treatment.id,
-            TreatmentTable.disease_id == data.get("disease_id"),
-            TreatmentTable.treatment_type == data.get("treatment_type")
-        ).first()
-        if duplicate:
-            raise ValueError("This treatment type already exists for this disease.")
+        # =====================================================
+        # PRIORITY VALIDATION
+        # =====================================================
 
-        # --- BEFORE SNAPSHOT ---
+        priority = data.get("priority")
+
+        if priority in (None, ""):
+            priority = treatment.priority or 1
+
+        try:
+            priority = int(priority)
+        except (TypeError, ValueError):
+            raise ValueError(
+                "Priority must be a number."
+            )
+
+        if priority < 1:
+            raise ValueError(
+                "Priority must be greater than or equal to 1."
+            )
+
+        # =====================================================
+        # DUPLICATE VALIDATION
+        # =====================================================
+
+        # duplicate = TreatmentTable.query.filter(
+        #     TreatmentTable.id != treatment.id,
+        #     TreatmentTable.disease_id == data.get("disease_id"),
+        #     TreatmentTable.treatment_type == data.get(
+        #         "treatment_type"
+        #     )
+        # ).first()
+
+        # if duplicate:
+        #     raise ValueError(
+        #         "This treatment type already exists for this disease."
+        #     )
+
+        # =====================================================
+        # BEFORE SNAPSHOT
+        # =====================================================
+
         before_data = {
             "disease_id": treatment.disease_id,
             "treatment_type": treatment.treatment_type,
             "description": treatment.description,
             "method": treatment.method,
+            "priority": treatment.priority,
             "image": treatment.image,
             "is_active": treatment.is_active
         }
 
-        # --- IMAGE UPDATE ---
-        if image_file and image_file.filename != "":
-            if not allowed_file(image_file.filename):
-                raise ValueError("Invalid image format.")
-            old_image = treatment.image
-            filename = save_image(image_file)
-            treatment.image = filename
-            delete_image(old_image)
+        # =====================================================
+        # IMAGE UPDATE
+        # =====================================================
 
-        # --- UPDATE DATA ---
-        treatment.disease_id = data.get("disease_id")
-        treatment.treatment_type = data.get("treatment_type")
-        treatment.description = data.get("description", treatment.description)
-        treatment.method = data.get("method", treatment.method)
-        treatment.is_active = data.get("is_active", treatment.is_active)
+        old_image = treatment.image
+        new_image = None
+
+        if image_file and image_file.filename != "":
+
+            if not allowed_file(image_file.filename):
+                raise ValueError(
+                    "Invalid image format."
+                )
+
+            new_image = save_image(image_file)
+
+            treatment.image = new_image
+
+        # =====================================================
+        # UPDATE DATA
+        # =====================================================
+
+        treatment.disease_id = data.get(
+            "disease_id"
+        )
+
+        treatment.treatment_type = data.get(
+            "treatment_type"
+        )
+
+        treatment.description = data.get(
+            "description",
+            treatment.description
+        )
+
+        treatment.method = data.get(
+            "method",
+            treatment.method
+        )
+
+        treatment.priority = priority
+
+        treatment.is_active = data.get(
+            "is_active",
+            treatment.is_active
+        )
+
+        # =====================================================
+        # DATABASE COMMIT
+        # =====================================================
 
         try:
-            db.session.commit()
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise ValueError(f"Database error: {str(e)}")
 
-        # --- AFTER SNAPSHOT ---
+            db.session.commit()
+
+        except SQLAlchemyError as e:
+
+            db.session.rollback()
+
+            # Delete newly uploaded image
+            if new_image:
+                delete_image(new_image)
+
+            raise ValueError(
+                f"Database error: {str(e)}"
+            )
+
+        # =====================================================
+        # DELETE OLD IMAGE
+        # =====================================================
+
+        if new_image and old_image:
+            delete_image(old_image)
+
+        # =====================================================
+        # AFTER SNAPSHOT
+        # =====================================================
+
         after_data = {
             "disease_id": treatment.disease_id,
             "treatment_type": treatment.treatment_type,
             "description": treatment.description,
             "method": treatment.method,
+            "priority": treatment.priority,
             "image": treatment.image,
             "is_active": treatment.is_active
         }
 
-        # --- AUDIT LOG ---
-        log_audit("UPDATE", "treatments", treatment.id, before_data, after_data)
+        # =====================================================
+        # AUDIT LOG
+        # =====================================================
+
+        log_audit(
+            action="UPDATE",
+            table_name="treatments",
+            record_id=treatment.id,
+            before_data=before_data,
+            after_data=after_data
+        )
 
         return treatment
-
     # ---------- DELETE ---------- #
     @staticmethod
     def delete(treatment: TreatmentTable):
@@ -187,6 +476,7 @@ class TreatmentService:
             "disease_id": treatment.disease_id,
             "treatment_type": treatment.treatment_type,
             "description": treatment.description,
+            "priority": treatment.priority,
             "method": treatment.method,
             "image": treatment.image,
             "is_active": treatment.is_active

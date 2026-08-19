@@ -1,50 +1,457 @@
-{% extends 'layouts/admin_layout/admin.html' %}
+{% extends 'layouts/admin_layout/admin.html' %} {% block title %}Prevention
+Details{% endblock %} {% block content %}
 
-{% block title %}Prevention Details{% endblock %}
+<div class="container-fluid py-4">
+  <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">
+        <i class="bi bi-shield-check text-success me-2"></i>
+        Prevention Details
+      </h3>
 
-{% block content %}
-<div class="container mt-4">
-    <h3 class="mb-3">Prevention Details</h3>
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3">ID</dt>
-                <dd class="col-sm-9">{{ prevention.id }}</dd>
-
-                <dt class="col-sm-3">Disease</dt>
-                <dd class="col-sm-9">{{ prevention.disease.disease_name }}</dd>
-
-                <dt class="col-sm-3">Prevention Type</dt>
-                <dd class="col-sm-9">{{ prevention.prevention_type }}</dd>
-
-                <dt class="col-sm-3">Description</dt>
-                <dd class="col-sm-9">{{ prevention.description or '-' }}</dd>
-
-                <dt class="col-sm-3">Image</dt>
-                <dd class="col-sm-9">
-                    {% if prevention.image %}
-                        <img src="{{ url_for('static', filename='images/preventions/' ~ prevention.image) }}" 
-                             alt="Image" class="img-thumbnail" style="max-width:200px;">
-                    {% else %}
-                        -
-                    {% endif %}
-                </dd>
-
-                <dt class="col-sm-3">Status</dt>
-                <dd class="col-sm-9">
-                    {% if prevention.is_active %}
-                        <span class="badge bg-success">Active</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Inactive</span>
-                    {% endif %}
-                </dd>
-            </dl>
-
-            <div class="text-end">
-                <a href="{{ url_for('prevention.edit', id=prevention.id) }}" class="btn btn-warning">Edit</a>
-                <a href="{{ url_for('prevention.index') }}" class="btn btn-secondary">Back</a>
-            </div>
-        </div>
+      <p class="text-muted mb-0">
+        View detailed information about this prevention method.
+      </p>
     </div>
+
+    <a
+      href="{{ url_for('prevention.index') }}"
+      class="btn btn-outline-secondary rounded-pill"
+    >
+      <i class="bi bi-arrow-left me-1"></i>
+      Back
+    </a>
+  </div>
+
+  <!-- =====================================================
+         MAIN CARD
+    ====================================================== -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <!-- Header -->
+    <div class="card-header bg-success text-white py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1 fw-bold">{{ prevention.prevention_type }}</h5>
+
+          <small> Prevention ID #{{ prevention.id }} </small>
+        </div>
+
+        {% if prevention.is_active %}
+
+        <span class="badge bg-light text-success px-3 py-2">
+          <i class="bi bi-check-circle-fill me-1"></i>
+          Active
+        </span>
+
+        {% else %}
+
+        <span class="badge bg-secondary px-3 py-2">
+          <i class="bi bi-x-circle-fill me-1"></i>
+          Inactive
+        </span>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- =================================================
+             BODY
+        ================================================== -->
+
+    <div class="card-body p-4">
+      <div class="row g-4">
+        <!-- =========================================
+                     IMAGE
+                ========================================== -->
+
+        <div class="col-lg-5">
+          <div class="card border-0 bg-light rounded-4 h-100">
+            <div class="card-body text-center p-4">
+              <h6 class="fw-bold text-secondary mb-3">
+                <i class="bi bi-image me-2"></i>
+                Prevention Image
+              </h6>
+
+              {% if prevention.image %}
+
+              <div
+                class="prevention-image-wrapper"
+                data-bs-toggle="modal"
+                data-bs-target="#preventionImageModal"
+              >
+                <img
+                  src="{{ url_for(
+                                            'static',
+                                            filename='images/preventions/' ~ prevention.image
+                                        ) }}?v={{ prevention.updated_at.timestamp() if prevention.updated_at else prevention.id }}"
+                  alt="{{ prevention.prevention_type }}"
+                  class="img-fluid rounded-4 shadow-sm prevention-detail-image"
+                />
+              </div>
+
+              <small class="text-muted d-block mt-2">
+                <i class="bi bi-zoom-in me-1"></i>
+                Click image to view larger
+              </small>
+
+              {% else %}
+
+              <div
+                class="d-flex flex-column align-items-center justify-content-center bg-white rounded-4"
+                style="height: 300px"
+              >
+                <i
+                  class="bi bi-shield-check text-muted"
+                  style="font-size: 70px"
+                ></i>
+
+                <p class="text-muted mt-3 mb-0">No image available</p>
+              </div>
+
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================
+                     INFORMATION
+                ========================================== -->
+
+        <div class="col-lg-7">
+          <div class="row g-3">
+            <!-- Disease -->
+
+            <div class="col-md-12">
+              <div class="info-box">
+                <div class="info-icon bg-danger-subtle text-danger">
+                  <i class="bi bi-virus"></i>
+                </div>
+
+                <div>
+                  <small class="text-muted d-block"> Disease </small>
+
+                  <strong> {{ prevention.disease.disease_name }} </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prevention Type -->
+
+            <div class="col-md-6">
+              <div class="info-box">
+                <div class="info-icon bg-primary-subtle text-primary">
+                  <i class="bi bi-shield-check"></i>
+                </div>
+
+                <div>
+                  <small class="text-muted d-block"> Prevention Type </small>
+
+                  <strong> {{ prevention.prevention_type }} </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Priority -->
+
+            <div class="col-md-6">
+              <div class="info-box">
+                <div class="info-icon bg-warning-subtle text-warning">
+                  <i class="bi bi-star-fill"></i>
+                </div>
+
+                <div>
+                  <small class="text-muted d-block"> Priority </small>
+
+                  {% if prevention.priority == 1 %}
+
+                  <span class="badge bg-success">
+                    Priority 1 — Recommended
+                  </span>
+
+                  {% elif prevention.priority == 2 %}
+
+                  <span class="badge bg-warning text-dark">
+                    Priority 2 — Alternative
+                  </span>
+
+                  {% else %}
+
+                  <span class="badge bg-secondary">
+                    Priority {{ prevention.priority }}
+                  </span>
+
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Method -->
+
+            <div class="col-md-12">
+              <div class="info-box">
+                <div class="info-icon bg-info-subtle text-info">
+                  <i class="bi bi-tools"></i>
+                </div>
+
+                <div class="flex-grow-1">
+                  <small class="text-muted d-block"> Method </small>
+
+                  <strong> {{ prevention.method or '-' }} </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Description -->
+
+            <div class="col-12">
+              <div class="description-box">
+                <div class="d-flex align-items-center mb-2">
+                  <i class="bi bi-card-text text-success me-2"></i>
+
+                  <h6 class="fw-bold mb-0">Description</h6>
+                </div>
+
+                {% if prevention.description %}
+
+                <p class="text-muted mb-0" style="line-height: 1.8">
+                  {{ prevention.description }}
+                </p>
+
+                {% else %}
+
+                <p class="text-muted fst-italic mb-0">
+                  No description available.
+                </p>
+
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Status -->
+
+            <div class="col-md-6">
+              <div class="info-box">
+                <div
+                  class="info-icon {% if prevention.is_active %} bg-success-subtle text-success {% else %} bg-secondary-subtle text-secondary {% endif %}"
+                >
+                  {% if prevention.is_active %}
+                  <i class="bi bi-check-circle-fill"></i>
+                  {% else %}
+                  <i class="bi bi-x-circle-fill"></i>
+                  {% endif %}
+                </div>
+
+                <div>
+                  <small class="text-muted d-block"> Status </small>
+
+                  {% if prevention.is_active %}
+
+                  <strong class="text-success"> Active </strong>
+
+                  {% else %}
+
+                  <strong class="text-secondary"> Inactive </strong>
+
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Created -->
+
+            <div class="col-md-6">
+              <div class="info-box">
+                <div class="info-icon bg-light text-secondary">
+                  <i class="bi bi-calendar-event"></i>
+                </div>
+
+                <div>
+                  <small class="text-muted d-block"> Created At </small>
+
+                  <strong>
+                    {% if prevention.created_at %} {{
+                    prevention.created_at.strftime('%d/%m/%Y %H:%M') }} {% else
+                    %} - {% endif %}
+                  </strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================
+             FOOTER ACTIONS
+        ================================================== -->
+
+    <div class="card-footer bg-light border-0 p-4">
+      <div class="d-flex justify-content-end gap-2">
+        <a
+          href="{{ url_for('prevention.index') }}"
+          class="btn btn-outline-secondary rounded-pill px-4"
+        >
+          <i class="bi bi-arrow-left me-1"></i>
+          Back
+        </a>
+
+        <a
+          href="{{ url_for('prevention.edit', id=prevention.id) }}"
+          class="btn btn-warning rounded-pill px-4"
+        >
+          <i class="bi bi-pencil-square me-1"></i>
+          Edit Prevention
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- =====================================================
+     IMAGE MODAL
+====================================================== -->
+
+<div
+  class="modal fade"
+  id="preventionImageModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-dark border-0 rounded-4">
+      <div class="modal-body text-center p-3 position-relative">
+        <button
+          type="button"
+          class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+
+        <img
+          src="{{ url_for(
+                        'static',
+                        filename='images/preventions/' ~ prevention.image
+                    ) }}?v={{ prevention.updated_at.timestamp() if prevention.updated_at else prevention.id }}"
+          alt="{{ prevention.prevention_type }}"
+          class="img-fluid rounded-3"
+          style="max-height: 85vh; object-fit: contain"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     CSS
+====================================================== -->
+
+<style>
+  /* ===============================
+       IMAGE
+    ================================ */
+
+  .prevention-image-wrapper {
+    cursor: zoom-in;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: white;
+  }
+
+  .prevention-detail-image {
+    width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  .prevention-image-wrapper:hover .prevention-detail-image {
+    transform: scale(1.03);
+  }
+
+  /* ===============================
+       INFORMATION BOX
+    ================================ */
+
+  .info-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 15px;
+
+    background: #fff;
+
+    border: 1px solid #eee;
+
+    border-radius: 15px;
+
+    height: 100%;
+
+    transition: all 0.2s ease;
+  }
+
+  .info-box:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+
+    border-color: #dcdcdc;
+  }
+
+  /* ===============================
+       ICON
+    ================================ */
+
+  .info-icon {
+    width: 45px;
+    height: 45px;
+
+    min-width: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    font-size: 20px;
+  }
+
+  /* ===============================
+       DESCRIPTION
+    ================================ */
+
+  .description-box {
+    padding: 18px;
+
+    background: #f8f9fa;
+
+    border-radius: 15px;
+
+    border-left: 4px solid #198754;
+  }
+
+  /* ===============================
+       RESPONSIVE
+    ================================ */
+
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    .card-body {
+      padding: 20px !important;
+    }
+
+    .prevention-detail-image {
+      max-height: 280px;
+    }
+  }
+</style>
+
 {% endblock %}

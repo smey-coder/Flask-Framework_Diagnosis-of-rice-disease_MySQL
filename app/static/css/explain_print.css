@@ -1,0 +1,1022 @@
+.diagnosis-report-wrapper {
+    width: 100%;
+    padding: 20px 0 50px;
+    background: #f5f7fb;
+  }
+
+  .report-actions {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  /* =========================================================
+   A4 REPORT
+========================================================= */
+
+  .diagnosis-report {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    background: #ffffff;
+    padding: 45px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  /* =========================================================
+   HEADER
+========================================================= */
+
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .report-header-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .report-logo {
+    width: 65px;
+    height: 65px;
+    border-radius: 16px;
+    background: #e8f5e9;
+    color: #198754;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+
+  .report-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    color: #173b2c;
+  }
+
+  .report-subtitle {
+    font-size: 15px;
+    color: #6c757d;
+    margin-top: 4px;
+  }
+
+  .report-system {
+    display: inline-block;
+    margin-top: 7px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .disease-report-image {
+    width: 125px;
+    height: 125px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid #dee2e6;
+  }
+
+  .disease-image-placeholder {
+    width: 125px;
+    height: 125px;
+    border-radius: 14px;
+    background: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 42px;
+  }
+
+  /* =========================================================
+   META
+========================================================= */
+
+  .report-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 20px 0 30px;
+  }
+
+  .meta-item {
+    padding: 14px 16px;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    background: #fafbfc;
+  }
+
+  .meta-label {
+    display: block;
+    color: #6c757d;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .meta-label i {
+    margin-right: 5px;
+  }
+
+  /* =========================================================
+   SECTION
+========================================================= */
+
+  .report-section {
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .section-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    background: #eef5ff;
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+  }
+
+  .section-title h2 {
+    font-size: 18px;
+    font-weight: 750;
+    margin: 0;
+    color: #212529;
+  }
+
+  .section-title small {
+    color: #6c757d;
+  }
+
+  /* =========================================================
+   DIAGNOSIS RESULT
+========================================================= */
+
+  .diagnosis-result-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 25px;
+    padding: 24px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8fbff, #f2fff7);
+    border: 1px solid #dcefe4;
+  }
+
+  .result-label {
+    display: block;
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 5px;
+  }
+
+  .diagnosis-main h2 {
+    font-size: 25px;
+    font-weight: 800;
+    margin: 0;
+    color: #173b2c;
+  }
+
+  .result-en {
+    font-size: 13px;
+    color: #6c757d;
+  }
+
+  .diagnosis-severity {
+    min-width: 150px;
+    text-align: right;
+  }
+
+  .severity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .severity-high {
+    background: #f8d7da;
+    color: #b02a37;
+  }
+
+  .severity-medium {
+    background: #fff3cd;
+    color: #997404;
+  }
+
+  .severity-low {
+    background: #d1e7dd;
+    color: #146c43;
+  }
+
+  /* =========================================================
+   CONFIDENCE
+========================================================= */
+
+  .confidence-card {
+    padding: 22px;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    background: #ffffff;
+  }
+
+  .confidence-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .confidence-label {
+    display: block;
+    color: #6c757d;
+    font-size: 12px;
+  }
+
+  .confidence-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: #198754;
+  }
+
+  .confidence-status {
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .confidence-high {
+    background: #d1e7dd;
+    color: #146c43;
+  }
+
+  .confidence-medium {
+    background: #fff3cd;
+    color: #997404;
+  }
+
+  .confidence-low {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  .confidence-progress {
+    height: 24px;
+    margin-top: 15px;
+    border-radius: 20px;
+    background: #e9ecef;
+    overflow: hidden;
+  }
+
+  .confidence-progress-bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 35px;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .confidence-progress-high {
+    background: #198754;
+  }
+
+  .confidence-progress-medium {
+    background: #ffc107;
+    color: #212529;
+  }
+
+  .confidence-progress-low {
+    background: #6c757d;
+  }
+
+  .confidence-description {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f8f9fa;
+    color: #495057;
+    font-size: 13px;
+  }
+
+  .confidence-description i {
+    margin-top: 2px;
+  }
+
+  /* =========================================================
+   SYMPTOMS
+========================================================= */
+
+  .symptoms-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .symptom-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 13px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .symptom-item i {
+    color: #198754;
+  }
+
+  /* =========================================================
+   DESCRIPTION
+========================================================= */
+
+  .description-box {
+    padding: 18px;
+    background: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+    border-radius: 10px;
+    line-height: 1.8;
+    color: #495057;
+    font-size: 14px;
+  }
+
+  /* =========================================================
+   RULE TRACE
+========================================================= */
+
+  .rule-card {
+    margin-bottom: 14px;
+    padding: 18px;
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    background: #ffffff;
+  }
+
+  .rule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .rule-number {
+    font-weight: 750;
+    color: #0d6efd;
+  }
+
+  .rule-cf {
+    padding: 5px 10px;
+    border-radius: 15px;
+    background: #e8f5e9;
+    color: #198754;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .rule-row {
+    margin-bottom: 14px;
+  }
+
+  .rule-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
+    font-size: 13px;
+    font-weight: 650;
+  }
+
+  .rule-label i {
+    color: #198754;
+    margin-right: 5px;
+  }
+
+  .matched-symptoms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .matched-badge {
+    padding: 5px 9px;
+    border-radius: 15px;
+    background: #eef5ff;
+    color: #0d6efd;
+    font-size: 12px;
+  }
+
+  .rule-cf-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .rule-cf-grid > div {
+    padding: 10px;
+    border-radius: 9px;
+    background: #f8f9fa;
+    text-align: center;
+  }
+
+  .rule-cf-grid span {
+    display: block;
+    font-size: 11px;
+    color: #6c757d;
+  }
+
+  .rule-cf-grid strong {
+    display: block;
+    margin-top: 3px;
+    font-size: 14px;
+  }
+
+  .rule-explanation {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px;
+    background: #fff8e1;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .rule-explanation > i {
+    color: #f59f00;
+    margin-top: 3px;
+  }
+
+  .rule-explanation p {
+    margin: 5px 0 0;
+    color: #495057;
+  }
+
+  /* =========================================================
+   RECOMMENDATION BANNER
+========================================================= */
+
+  .recommendation-banner {
+    display: flex;
+    gap: 13px;
+    padding: 15px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+  }
+
+  .recommendation-banner > i {
+    font-size: 22px;
+  }
+
+  .recommendation-banner strong {
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .recommendation-banner p {
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .recommendation-success {
+    background: #d1e7dd;
+    color: #146c43;
+  }
+
+  .recommendation-warning {
+    background: #fff3cd;
+    color: #664d03;
+  }
+
+  .recommendation-secondary {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  /* =========================================================
+   TREATMENT
+========================================================= */
+
+  .treatment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .treatment-card {
+    display: flex;
+    gap: 18px;
+    padding: 16px;
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    background: #ffffff;
+  }
+
+  .treatment-recommended {
+    border: 2px solid #198754;
+    background: #f4fff8;
+  }
+
+  .treatment-image,
+  .treatment-placeholder {
+    width: 115px;
+    height: 115px;
+    flex: 0 0 115px;
+    border-radius: 11px;
+    object-fit: cover;
+  }
+
+  .treatment-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    color: #198754;
+    font-size: 38px;
+  }
+
+  .treatment-content {
+    flex: 1;
+  }
+
+  .treatment-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .priority-badge,
+  .treatment-type {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .priority-one {
+    background: #198754;
+    color: white;
+  }
+
+  .priority-two {
+    background: #fff3cd;
+    color: #997404;
+  }
+
+  .priority-other {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  .treatment-type {
+    background: #eef5ff;
+    color: #0d6efd;
+  }
+
+  .treatment-content h4 {
+    margin: 10px 0 5px;
+    font-size: 17px;
+    font-weight: 750;
+  }
+
+  .treatment-content p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .recommended-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    color: #198754;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* =========================================================
+   PREVENTION
+========================================================= */
+
+  .prevention-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+  }
+
+  .prevention-card {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e9ecef;
+    border-radius: 13px;
+    background: #ffffff;
+  }
+
+  .prevention-icon-box {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #fff3cd;
+    color: #997404;
+  }
+
+  .prevention-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .prevention-priority,
+  .prevention-type {
+    padding: 4px 8px;
+    border-radius: 13px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .prevention-priority {
+    background: #e8f5e9;
+    color: #146c43;
+  }
+
+  .prevention-type {
+    background: #eef5ff;
+    color: #0d6efd;
+  }
+
+  .prevention-card h4 {
+    margin: 8px 0 4px;
+    font-size: 15px;
+  }
+
+  .prevention-card p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* =========================================================
+   FINAL ADVICE
+========================================================= */
+
+  .final-advice {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 15px;
+  }
+
+  .final-advice-icon {
+    font-size: 30px;
+  }
+
+  .final-advice h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+  }
+
+  .final-advice p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .final-advice-success {
+    background: #d1e7dd;
+    color: #146c43;
+  }
+
+  .final-advice-warning {
+    background: #fff3cd;
+    color: #664d03;
+  }
+
+  .final-advice-secondary {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  /* =========================================================
+   DISCLAIMER
+========================================================= */
+
+  .report-disclaimer {
+    margin-top: 30px;
+    padding: 17px;
+    border: 1px solid #ffe69c;
+    border-radius: 13px;
+    background: #fff8e1;
+    color: #664d03;
+  }
+
+  .disclaimer-title {
+    font-weight: 750;
+    margin-bottom: 8px;
+  }
+
+  .disclaimer-title i {
+    margin-right: 6px;
+  }
+
+  .report-disclaimer ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .report-disclaimer li {
+    margin-bottom: 5px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* =========================================================
+   FOOTER
+========================================================= */
+
+  .report-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-top: 22px;
+    margin-top: 30px;
+    border-top: 1px solid #dee2e6;
+    color: #6c757d;
+    font-size: 11px;
+  }
+
+  .report-footer strong,
+  .report-footer span {
+    display: block;
+  }
+
+  .footer-right {
+    text-align: right;
+  }
+
+  /* =========================================================
+   EMPTY STATE
+========================================================= */
+
+  .empty-state {
+    padding: 25px;
+    text-align: center;
+    border: 1px dashed #ced4da;
+    border-radius: 12px;
+    color: #6c757d;
+    background: #f8f9fa;
+  }
+
+  .empty-state i {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 25px;
+  }
+
+  /* =========================================================
+   RESPONSIVE
+========================================================= */
+
+  @media (max-width: 768px) {
+    .diagnosis-report {
+      padding: 25px 18px;
+      border-radius: 10px;
+    }
+
+    .report-header {
+      align-items: flex-start;
+    }
+
+    .report-header h1 {
+      font-size: 21px;
+    }
+
+    .report-logo {
+      width: 48px;
+      height: 48px;
+      font-size: 23px;
+    }
+
+    .disease-report-image,
+    .disease-image-placeholder {
+      width: 85px;
+      height: 85px;
+    }
+
+    .report-meta {
+      grid-template-columns: 1fr;
+    }
+
+    .diagnosis-result-card {
+      grid-template-columns: 1fr;
+    }
+
+    .diagnosis-severity {
+      text-align: left;
+    }
+
+    .symptoms-grid,
+    .prevention-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .rule-cf-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .treatment-card {
+      flex-direction: column;
+    }
+
+    .treatment-image,
+    .treatment-placeholder {
+      width: 100%;
+      height: 180px;
+    }
+
+    .report-footer {
+      flex-direction: column;
+    }
+
+    .footer-right {
+      text-align: left;
+    }
+  }
+
+  /* =========================================================
+   PRINT
+========================================================= */
+
+  @media print {
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+    }
+
+    body * {
+      visibility: hidden;
+    }
+
+    #print-area,
+    #print-area * {
+      visibility: visible;
+    }
+
+    #print-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      box-shadow: none;
+      border-radius: 0;
+      background: #ffffff;
+    }
+
+    .no-print,
+    .report-actions {
+      display: none !important;
+    }
+
+    .diagnosis-report-wrapper {
+      padding: 0;
+      background: #ffffff;
+    }
+
+    .report-header {
+      padding-bottom: 15px;
+    }
+
+    .report-section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      margin-bottom: 10px;
+      padding-bottom: 7px;
+    }
+
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+
+    .section-title h2 {
+      font-size: 15px;
+    }
+
+    .section-title small {
+      font-size: 10px;
+    }
+
+    .diagnosis-result-card,
+    .confidence-card,
+    .rule-card,
+    .treatment-card,
+    .prevention-card,
+    .final-advice,
+    .report-disclaimer {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .rule-card,
+    .treatment-card,
+    .prevention-card {
+      box-shadow: none !important;
+    }
+
+    .treatment-recommended {
+      border: 2px solid #198754 !important;
+    }
+
+    .recommendation-banner,
+    .final-advice {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .confidence-progress {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .confidence-progress-bar {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .severity-badge,
+    .priority-badge,
+    .treatment-type,
+    .prevention-priority,
+    .prevention-type,
+    .confidence-status {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .report-header,
+    .report-meta,
+    .diagnosis-result-card,
+    .confidence-card,
+    .symptoms-grid,
+    .rule-card,
+    .treatment-card,
+    .prevention-card,
+    .final-advice,
+    .report-disclaimer,
+    .report-footer {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+}

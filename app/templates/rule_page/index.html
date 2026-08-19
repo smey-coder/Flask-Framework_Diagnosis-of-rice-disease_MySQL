@@ -1,114 +1,461 @@
-{% extends "layouts/admin_layout/admin.html" %}
-{% block title %}Rules{% endblock %}
+{% extends "layouts/admin_layout/admin.html" %} {% block title %}Rules
+Management{% endblock %} {% block content %}
 
-{% block content %}
-<div class="container-fluid">
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/rules.css') }}"
+/>
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-0">
-                <i class="bi bi-diagram-3 text-primary"></i> Rules Management
-            </h2>
-            <small class="text-muted">Expert System Knowledge Rules</small>
-        </div>
+<div class="rules-page">
+  <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+  <div class="rules-header">
+    <div class="rules-title-wrapper">
+      <div class="rules-title-icon">
+        <i class="bi bi-diagram-3-fill"></i>
+      </div>
 
-        <a href="{{ url_for('rules.create') }}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> New Rule
-        </a>
+      <div>
+        <h1>Rules Management</h1>
+
+        <p>Manage expert system knowledge rules and certainty factors.</p>
+      </div>
     </div>
 
-    {% if rules %}
+    <a
+      href="{{ url_for('rules.create') }}"
+      class="btn btn-success rules-add-btn"
+    >
+      <i class="bi bi-plus-circle-fill me-1"></i>
+      New Rule
+    </a>
+  </div>
 
-    <!-- Rules Table Card -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
+  {% if rules %}
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">#</th>
-                            <th>Disease</th>
-                            <th>Certainty Factor</th>
-                            <th>Status</th>
-                            <th class="text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for rule in rules %}
-                        <tr>
-                            <td class="ps-4 fw-semibold">{{ rule.id }}</td>
+  <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+  {% set total_rules = rules|length %} {% set active_rules =
+  rules|selectattr('is_active')|list|length %} {% set inactive_rules =
+  rules|rejectattr('is_active')|list|length %}
 
-                            <td>
-                                <i class="bi bi-bug-fill text-danger"></i>
-                                {{ rule.disease.disease_name if rule.disease else '-' }}
-                            </td>
+  <div class="rules-summary-grid">
+    <!-- Total -->
+    <div class="rules-summary-card total">
+      <div class="summary-icon">
+        <i class="bi bi-diagram-3-fill"></i>
+      </div>
 
-                            <td>
-                                <span class="fw-semibold text-primary">
-                                    {{ rule.certainty }}
-                                </span>
-                            </td>
-
-                            <td>
-                                {% if rule.is_active %}
-                                    <span class="badge bg-success">
-                                        <i class="bi bi-check-circle"></i> Active
-                                    </span>
-                                {% else %}
-                                    <span class="badge bg-secondary">
-                                        <i class="bi bi-x-circle"></i> Inactive
-                                    </span>
-                                {% endif %}
-                            </td>
-
-                            <td class="text-end pe-4">
-                                <a href="{{ url_for('rules.detail', rule_id=rule.id) }}"
-                                   class="btn btn-sm btn-outline-info me-1">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-
-                                <a href="{{ url_for('rules.edit', rule_id=rule.id) }}"
-                                   class="btn btn-sm btn-outline-warning me-1">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-
-                                <a href="{{ url_for('rules.delete', rule_id=rule.id) }}"
-                                   class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
+      <div class="summary-content">
+        <span>Total Rules</span>
+        <strong id="totalRules"> {{ total_rules }} </strong>
+      </div>
     </div>
 
-    {% else %}
+    <!-- Active -->
+    <div class="rules-summary-card active">
+      <div class="summary-icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
 
-    <!-- Empty State -->
-    <div class="card shadow-sm border-0 text-center p-5">
-        <img src="{{ url_for('static', filename='images/empty_rules.svg') }}"
-             class="img-fluid mb-4"
-             style="max-height: 220px;"
-             alt="No Rules">
-
-        <h4 class="fw-bold">No Rules Found</h4>
-        <p class="text-muted">
-            Your expert system has no rules yet.<br>
-            Start by creating your first knowledge rule.
-        </p>
-
-        <a href="{{ url_for('rules.create') }}" class="btn btn-success btn-lg">
-            <i class="bi bi-plus-circle"></i> Create First Rule
-        </a>
+      <div class="summary-content">
+        <span>Active Rules</span>
+        <strong id="activeRules"> {{ active_rules }} </strong>
+      </div>
     </div>
 
-    {% endif %}
+    <!-- Inactive -->
+    <div class="rules-summary-card inactive">
+      <div class="summary-icon">
+        <i class="bi bi-x-circle-fill"></i>
+      </div>
 
+      <div class="summary-content">
+        <span>Inactive Rules</span>
+        <strong id="inactiveRules"> {{ inactive_rules }} </strong>
+      </div>
+    </div>
+
+    <!-- Average CF -->
+    <div class="rules-summary-card certainty">
+      <div class="summary-icon">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+
+      <div class="summary-content">
+        <span>Average Certainty</span>
+
+        <strong id="averageCF"> 0.00 </strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         FILTER BAR
+    ====================================================== -->
+  <div class="rules-filter-card">
+    <!-- Search -->
+    <div class="rules-search">
+      <i class="bi bi-search"></i>
+
+      <input
+        type="text"
+        id="ruleSearch"
+        class="form-control"
+        placeholder="Search disease name..."
+      />
+    </div>
+
+    <!-- Status -->
+    <div class="rules-filter-control">
+      <label for="statusFilter">
+        <i class="bi bi-toggle-on me-1"></i>
+        Status
+      </label>
+
+      <select id="statusFilter" class="form-select">
+        <option value="">All Status</option>
+
+        <option value="active">Active</option>
+
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    <!-- Certainty -->
+    <div class="rules-filter-control">
+      <label for="certaintyFilter">
+        <i class="bi bi-bar-chart-fill me-1"></i>
+
+        Certainty
+      </label>
+
+      <select id="certaintyFilter" class="form-select">
+        <option value="">All Levels</option>
+
+        <option value="high">High ≥ 0.70</option>
+
+        <option value="medium">Medium 0.40 - 0.69</option>
+
+        <option value="low">Low &lt; 0.40</option>
+      </select>
+    </div>
+
+    <!-- Reset -->
+    <button
+      type="button"
+      class="btn btn-outline-secondary rules-reset-btn"
+      onclick="resetRuleFilters()"
+    >
+      <i class="bi bi-arrow-counterclockwise me-1"></i>
+
+      Reset
+    </button>
+  </div>
+
+  <!-- =====================================================
+         RESULT COUNT
+    ====================================================== -->
+  <div class="rules-result-info">
+    <span>
+      Showing
+
+      <strong id="visibleRuleCount"> {{ total_rules }} </strong>
+
+      of
+
+      <strong> {{ total_rules }} </strong>
+
+      rules
+    </span>
+  </div>
+
+  <!-- =====================================================
+         TABLE
+    ====================================================== -->
+  <div class="rules-table-card">
+    <div class="rules-table-wrapper">
+      <table class="table rules-table align-middle mb-0" id="rulesTable">
+        <thead>
+          <tr>
+            <th class="text-center">#</th>
+
+            <th>Disease</th>
+
+            <th>Certainty Factor</th>
+
+            <th class="text-center">Status</th>
+
+            <th class="text-center rules-action-column">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for rule in rules %} {% set cf = rule.certainty|float %}
+
+          <tr
+            data-disease="{{ rule.disease.disease_name|lower if rule.disease else '' }}"
+            data-status="{{ 'active' if rule.is_active else 'inactive' }}"
+            data-certainty="{{ cf }}"
+          >
+            <!-- ID -->
+            <td class="text-center">
+              <span class="rule-id"> {{ rule.id }} </span>
+            </td>
+
+            <!-- Disease -->
+            <td>
+              <div class="disease-cell">
+                <div class="disease-icon">
+                  <i class="bi bi-virus"></i>
+                </div>
+
+                <div>
+                  <a
+                    href="{{ url_for('rules.detail', rule_id=rule.id) }}"
+                    class="disease-name"
+                  >
+                    {{ rule.disease.disease_name if rule.disease else 'Unknown
+                    Disease' }}
+                  </a>
+
+                  <small class="d-block text-muted">
+                    Rule #{{ rule.id }}
+                  </small>
+                </div>
+              </div>
+            </td>
+
+            <!-- Certainty -->
+            <td>
+              <div class="certainty-wrapper">
+                <div class="d-flex justify-content-between">
+                  <span class="certainty-value"> {{ "%.2f"|format(cf) }} </span>
+
+                  <small class="text-muted">
+                    {{ "%.0f"|format(cf * 100) }}%
+                  </small>
+                </div>
+
+                <div class="progress certainty-progress">
+                  <div
+                    class="progress-bar {% if cf >= 0.70 %} bg-success {% elif cf >= 0.40 %} bg-warning {% else %} bg-secondary {% endif %}"
+                    style="width: {{ cf * 100 }}%;"
+                  ></div>
+                </div>
+
+                <small
+                  class="certainty-label {% if cf >= 0.70 %} text-success {% elif cf >= 0.40 %} text-warning {% else %} text-muted {% endif %}"
+                >
+                  {% if cf >= 0.70 %} High Confidence {% elif cf >= 0.40 %}
+                  Medium Confidence {% else %} Low Confidence {% endif %}
+                </small>
+              </div>
+            </td>
+
+            <!-- Status -->
+            <td class="text-center">
+              {% if rule.is_active %}
+
+              <span class="status-badge active">
+                <span class="status-dot"></span>
+
+                Active
+              </span>
+
+              {% else %}
+
+              <span class="status-badge inactive">
+                <span class="status-dot"></span>
+
+                Inactive
+              </span>
+
+              {% endif %}
+            </td>
+
+            <!-- Actions -->
+            <td class="text-center rules-action-column">
+              <div class="rule-actions">
+                <a
+                  href="{{ url_for('rules.detail', rule_id=rule.id) }}"
+                  class="btn btn-sm btn-outline-info"
+                  title="View Rule"
+                >
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('rules.edit', rule_id=rule.id) }}"
+                  class="btn btn-sm btn-outline-warning"
+                  title="Edit Rule"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('rules.delete', rule_id=rule.id) }}"
+                  class="btn btn-sm btn-outline-danger"
+                  title="Delete Rule"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          {% endfor %}
+
+          <!-- Search Empty -->
+          <tr id="noRuleResult" style="display: none">
+            <td colspan="5" class="text-center py-5">
+              <div class="rule-empty-state">
+                <i class="bi bi-search"></i>
+
+                <h5>No Matching Rules</h5>
+
+                <p>Try changing your search or filters.</p>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  onclick="resetRuleFilters()"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+
+  <!-- =====================================================
+         EMPTY STATE
+    ====================================================== -->
+  <div class="rules-empty-card">
+    <div class="empty-icon">
+      <i class="bi bi-diagram-3"></i>
+    </div>
+
+    <h4>No Rules Found</h4>
+
+    <p>
+      Your expert system has no knowledge rules yet. Start by creating your
+      first rule.
+    </p>
+
+    <a href="{{ url_for('rules.create') }}" class="btn btn-success">
+      <i class="bi bi-plus-circle me-1"></i>
+
+      Create First Rule
+    </a>
+  </div>
+
+  {% endif %}
 </div>
-{% endblock %}
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+{% if rules %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("ruleSearch");
+
+    const statusFilter = document.getElementById("statusFilter");
+
+    const certaintyFilter = document.getElementById("certaintyFilter");
+
+    const table = document.getElementById("rulesTable");
+
+    const rows = Array.from(table.querySelectorAll("tbody tr[data-disease]"));
+
+    const noResult = document.getElementById("noRuleResult");
+
+    const visibleCount = document.getElementById("visibleRuleCount");
+
+    function filterRules() {
+      const search = searchInput.value.toLowerCase().trim();
+
+      const status = statusFilter.value;
+
+      const certainty = certaintyFilter.value;
+
+      let visible = 0;
+
+      rows.forEach((row) => {
+        const disease = row.dataset.disease || "";
+
+        const rowStatus = row.dataset.status || "";
+
+        const cf = parseFloat(row.dataset.certainty || "0");
+
+        const matchSearch = disease.includes(search);
+
+        const matchStatus = !status || rowStatus === status;
+
+        let matchCertainty = true;
+
+        if (certainty === "high") {
+          matchCertainty = cf >= 0.7;
+        } else if (certainty === "medium") {
+          matchCertainty = cf >= 0.4 && cf < 0.7;
+        } else if (certainty === "low") {
+          matchCertainty = cf < 0.4;
+        }
+
+        const show = matchSearch && matchStatus && matchCertainty;
+
+        row.style.display = show ? "" : "none";
+
+        if (show) {
+          visible++;
+        }
+      });
+
+      visibleCount.textContent = visible;
+
+      noResult.style.display = visible === 0 ? "" : "none";
+    }
+
+    searchInput.addEventListener("input", filterRules);
+
+    statusFilter.addEventListener("change", filterRules);
+
+    certaintyFilter.addEventListener("change", filterRules);
+
+    window.resetRuleFilters = function () {
+      searchInput.value = "";
+
+      statusFilter.value = "";
+
+      certaintyFilter.value = "";
+
+      filterRules();
+    };
+
+    /* ==========================================
+       CALCULATE AVERAGE CF
+    ========================================== */
+
+    let totalCF = 0;
+
+    rows.forEach((row) => {
+      totalCF += parseFloat(row.dataset.certainty || "0");
+    });
+
+    const averageCF = rows.length > 0 ? totalCF / rows.length : 0;
+
+    document.getElementById("averageCF").textContent = averageCF.toFixed(2);
+  });
+</script>
+
+{% endif %} {% endblock %}

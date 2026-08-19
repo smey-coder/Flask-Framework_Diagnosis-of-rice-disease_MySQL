@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, SubmitField, SelectField, StringField, TextAreaField
-from wtforms.validators import DataRequired, Length
+from wtforms import BooleanField, IntegerField, SubmitField, SelectField, StringField, TextAreaField
+from wtforms.validators import DataRequired, Length, NumberRange
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from extensions import db
 from app.models.diseases import DiseaseTable
@@ -31,6 +31,24 @@ class TreatmentCreateForm(FlaskForm):
         validators=[Length(max=255)],
         render_kw={"placeholder": "Short description (Optional)"},
     )
+    priority = IntegerField(
+        "Prioirty/អទិភាព",
+        validators=[
+            DataRequired(),
+            NumberRange(
+                min=1,
+                max=10,
+                message="Priority must be between 1 and 10."
+            )
+        ],
+        default=1,
+        render_kw={
+            "class": "form-control",
+            "min": 1,
+            "max": 10,
+            "placeholder" : "1 = Highest recommendation"
+        }
+    )
     image = FileField("Image", validators=[
         FileRequired("Image is required."),
         FileAllowed(["jpg", "jpeg", "png"], "Only images are allowed.")
@@ -41,14 +59,33 @@ class TreatmentCreateForm(FlaskForm):
 class TreatmentEditForm(FlaskForm):
     disease_id = SelectField("Disease", coerce=int, validators=[DataRequired()])
     treatment_type = SelectField(
-        "Prevention",
+        "Treatment Type",
         validators=[DataRequired()],
         choices=TREATMENT_TYPE,
         render_kw={"class": "form-control"}
     )
     description = TextAreaField("Description")
+    
+    priority = IntegerField(
+            "Prioirty/អទិភាព",
+            validators=[
+                DataRequired(),
+                NumberRange(
+                    min=1,
+                    max=10,
+                    message="Priority must be between 1 and 10."
+                )
+            ],
+            default=1,
+            render_kw={
+                "class": "form-control",
+                "min": 1,
+                "max": 10,
+                "placeholder" : "1 = Highest recommendation"
+            }
+    )
     method = StringField(
-        "Description",
+        "Treatment Method",
         validators=[Length(max=255)],
         render_kw={"placeholder": "Short description (Optional)"},
     )

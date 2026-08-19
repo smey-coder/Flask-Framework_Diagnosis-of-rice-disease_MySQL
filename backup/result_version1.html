@@ -1,0 +1,315 @@
+{% extends "layouts/user_layout/user.html" %} {% block page_title %} Diagnosis
+Results {% endblock %} {% block content %}
+
+<!-- =====================================================
+     IMAGE PREVIEW MODAL
+====================================================== -->
+
+<div class="modal fade" id="imageModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div
+      class="modal-content bg-dark border-0 rounded-4 shadow-lg position-relative"
+    >
+      <div class="modal-body text-center p-3">
+        <img
+          id="modalImage"
+          src=""
+          class="img-fluid rounded-3 shadow"
+          style="max-height: 80vh; object-fit: contain"
+        />
+      </div>
+
+      <div class="modal-footer border-0 justify-content-center">
+        <button
+          type="button"
+          class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     PAGE
+====================================================== -->
+
+<div class="container-fluid">
+  <!-- Header -->
+
+  <div class="mb-4">
+    <h3 class="fw-bold text-primary">
+      <i class="bi bi-clipboard-data me-2"></i>
+
+      Diagnosis Results
+    </h3>
+
+    <p class="text-muted mb-0">
+      The expert system evaluated the selected symptoms and produced the
+      following diagnosis results.
+    </p>
+  </div>
+
+  {% if results %}
+
+  <!-- =================================================
+     DIAGNOSIS SUMMARY
+================================================== -->
+
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-light fw-semibold">
+      <i class="bi bi-bar-chart-fill me-2"></i>
+
+      Diagnosis Summary
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered mb-0 align-middle">
+          <thead class="table-light text-center">
+            <tr>
+              <th style="width: 15%">Image</th>
+
+              <th style="width: 20%">Disease</th>
+
+              <th style="width: 12%">Severity</th>
+
+              <th style="width: 13%">Certainty</th>
+
+              <th style="width: 40%">Recommendation & Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for result in results %}
+
+            <tr>
+              <!-- =================================
+                             DISEASE IMAGE
+                        ================================== -->
+
+              <td class="text-center">
+                {% if result.image %}
+
+                <img
+                  src="{{ url_for(
+                                        'static',
+                                        filename='images/diseases/' + result.image
+                                    ) }}"
+                  alt="{{ result.disease_name }}"
+                  class="img-thumbnail"
+                  style="max-width: 100px; cursor: pointer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#imageModal"
+                  onclick="showImage(this.src)"
+                />
+
+                {% else %}
+
+                <span class="text-muted"> No image </span>
+
+                {% endif %}
+              </td>
+
+              <!-- =================================
+              DISEASE
+              ================================== -->
+
+              <td>
+                <div class="fw-bold">{{ result.disease_name }}</div>
+              </td>
+
+              <!-- =================================
+                      SEVERITY
+                        ================================== -->
+
+              <td class="text-center">
+                {% if result.severity_level == 'High(ខ្ពស់)' %}
+
+                <span class="badge bg-danger">
+                  {{ result.severity_level }}
+                </span>
+
+                {% elif result.severity_level == 'Medium(មធ្យម)' %}
+
+                <span class="badge bg-warning text-dark">
+                  {{ result.severity_level }}
+                </span>
+
+                {% else %}
+
+                <span class="badge bg-success">
+                  {{ result.severity_level }}
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- =================================
+                             CERTAINTY
+             ================================== -->
+
+              <td class="text-center">
+                {% set certainty = result.confidence %} {% if certainty >= 0.70
+                %}
+
+                <span class="badge bg-success fs-6">
+                  {{ (certainty * 100) | round(2) }}%
+                </span>
+
+                <div class="small text-success mt-1">High Confidence</div>
+
+                {% elif certainty >= 0.40 %}
+
+                <span class="badge bg-warning text-dark fs-6">
+                  {{ (certainty * 100) | round(2) }}%
+                </span>
+
+                <div class="small text-warning mt-1">Medium Confidence</div>
+
+                {% else %}
+
+                <span class="badge bg-secondary fs-6">
+                  {{ (certainty * 100) | round(2) }}%
+                </span>
+
+                <div class="small text-muted mt-1">Low Confidence</div>
+
+                {% endif %}
+              </td>
+
+              <!-- =================================
+              RECOMMENDATION
+              ================================== -->
+
+              <td>
+                {% if certainty >= 0.70 %}
+
+                <!-- HIGH CONFIDENCE -->
+
+                <div class="alert alert-success py-2 mb-2">
+                  <div class="fw-bold">
+                    <i class="bi bi-check-circle me-1"></i>
+
+                    Recommended Treatment
+                  </div>
+
+                  <small>
+                    Diagnosis confidence is high. Priority 1 treatment can be
+                    recommended.(ទំនុកចិត្តលើការធ្វើរោគវិនិច្ឆ័យគឺខ្ពស់។
+                    ការព្យាបាលអាទិភាពទី 1 អាចត្រូវបានណែនាំ។)
+                  </small>
+                </div>
+
+                {% elif certainty >= 0.40 %}
+                <!-- MEDIUM CONFIDENCE -->
+                <div class="alert alert-warning py-2 mb-2">
+                  <div class="fw-bold">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Treatment With Verification
+                  </div>
+
+                  <small>
+                    Confidence is moderate. Review symptoms before applying
+                    treatment.(ទំនុកចិត្តមានកម្រិតមធ្យម។
+                    ពិនិត្យមើលរោគសញ្ញាមុនពេលអនុវត្តការព្យាបាល។)
+                  </small>
+                </div>
+
+                {% else %}
+
+                <!-- LOW CONFIDENCE -->
+                <div class="alert alert-secondary py-2 mb-2">
+                  <div class="fw-bold">
+                    <i class="bi bi-question-circle me-1"></i>
+                    More Symptoms Recommended
+                  </div>
+
+                  <small>
+                    Confidence is low. Please provide more symptoms before
+                    strongly recommending treatment.(ទំនុកចិត្តទាប។
+                    សូមផ្តល់រោគសញ្ញាបន្ថែមទៀតមុនពេលណែនាំយ៉ាងខ្លាំងដល់ការព្យាបាល។)
+                  </small>
+                </div>
+
+                {% endif %}
+
+                <!-- =================================
+                                 ACTION BUTTONS
+                            ================================== -->
+
+                <div class="d-flex flex-wrap gap-2">
+                  {% if result.diagnosis_id %}
+
+                  <a
+                    href="{{ url_for('user.diagnosis_explain',diagnosis_id=result.diagnosis_id) }}"
+                    class="btn btn-primary btn-sm rounded-pill"
+                  >
+                    <i class="bi bi-info-circle me-1"></i>
+                    Explanation
+                  </a>
+                  {% endif %}
+                  <!-- Treatment -->
+                  <a
+                    href="{{ url_for('user.disease_treatment',disease_id=result.disease_id) }}"
+                    class="btn btn-sm rounded-pill {% if certainty >= 0.70 %} btn-success {% elif certainty >= 0.40 %} btn-warning {% else %} btn-outline-secondary {% endif %}"
+                  >
+                    {% if certainty >= 0.70 %}
+                    <i class="bi bi-capsule me-1"></i>
+                    Recommended Treatment {% elif certainty >= 0.40 %}
+                    <i class="bi bi-capsule me-1"></i>
+                    View Treatment {% else %}
+                    <i class="bi bi-capsule me-1"></i>
+                    View Treatment Options {% endif %}
+                  </a>
+                  
+                  <!-- Prevention -->
+                  <a
+                    href="{{ url_for('user.disease_prevention',disease_id=result.disease_id) }}"
+                    class="btn btn-outline-warning btn-sm rounded-pill"
+                  >
+                    <i class="bi bi-shield-check me-1"></i>
+
+                    Prevention
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- =================================================
+    FOOTER
+    ================================================== -->
+    <div class="card-footer text-end">
+      <a href="{{ url_for('user.diagnosis_input') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i>
+        Back to Diagnosis
+      </a>
+    </div>
+  </div>
+  {% else %}
+  <!-- =================================================
+  NO RESULT
+  ================================================== -->
+  <div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    No matching diseases found.
+  </div>
+  {% endif %}
+</div>
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+  function showImage(src) {
+    document.getElementById("modalImage").src = src;
+  }
+</script>
+
+{% endblock %}

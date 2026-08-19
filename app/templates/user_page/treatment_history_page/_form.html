@@ -1,0 +1,98 @@
+
+<div class="row g-4">
+
+    <!-- Treatment Date -->
+    <div class="col-md-6">
+
+        <label class="form-label fw-semibold">
+            Treatment Date
+            <span class="text-danger">*</span>
+        </label>
+
+        {{ form.treatment_date(
+            class="form-control"
+        ) }}
+
+        {% if form.treatment_date.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.treatment_date.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Status -->
+    <div class="col-md-6">
+
+        <label class="form-label fw-semibold">
+            Status
+            <span class="text-danger">*</span>
+        </label>
+
+        {{ form.status(
+            class="form-select"
+        ) }}
+
+        {% if form.status.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.status.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Result -->
+    <div class="col-12">
+
+        <label class="form-label fw-semibold">
+            Treatment Result
+        </label>
+
+        {{ form.result(
+            class="form-control",
+            rows="4",
+            placeholder="Describe the treatment result..."
+        ) }}
+
+        {% if form.result.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.result.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Notes -->
+    <div class="col-12">
+
+        <label class="form-label fw-semibold">
+            Notes
+        </label>
+
+        {{ form.notes(
+            class="form-control",
+            rows="4",
+            placeholder="Enter additional notes..."
+        ) }}
+
+        {% if form.notes.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.notes.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+

@@ -1,65 +1,638 @@
-<!-- Username -->
-<div class="mb-3">
-    {{ form.username.label(class="form-label") }}
-    {{ form.username(class="form-control", placeholder="Enter username") }}
+<form method="POST" class="profile-form">
+  {{ form.hidden_tag() }}
 
-    {% for error in form.username.errors %}
-        <div class="text-danger small">{{ error }}</div>
-    {% endfor %}
-</div>
+  <!-- =========================================
+         PERSONAL INFORMATION
+    ========================================== -->
+  <div class="profile-section">
+    <div class="section-header">
+      <div class="section-icon profile-icon">
+        <i class="bi bi-person-vcard-fill"></i>
+      </div>
 
-<!-- Email -->
-<div class="mb-3">
-    {{ form.email.label(class="form-label") }}
-    {{ form.email(class="form-control", placeholder="Enter email") }}
+      <div>
+        <h5>Personal Information</h5>
+        <p>Update your account and personal information.</p>
+      </div>
+    </div>
 
-    {% for error in form.email.errors %}
-        <div class="text-danger small">{{ error }}</div>
-    {% endfor %}
-</div>
+    <div class="row g-4">
+      <!-- Username -->
+      <div class="col-md-6">
+        <label class="custom-label">
+          <i class="bi bi-person me-1"></i>
+          {{ form.username.label.text }}
+        </label>
 
-<!-- Full Name -->
-<div class="mb-3">
-    {{ form.full_name.label(class="form-label") }}
-    {{ form.full_name(class="form-control", placeholder="Enter full name") }}
+        <div class="input-wrapper">
+          <i class="bi bi-person input-icon"></i>
 
-    {% for error in form.full_name.errors %}
-        <div class="text-danger small">{{ error }}</div>
-    {% endfor %}
-</div>
+          {{ form.username( class="form-control custom-input",
+          placeholder="Enter username", autocomplete="username" ) }}
+        </div>
 
-<hr>
+        {% for error in form.username.errors %}
+        <div class="field-error">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endfor %}
+      </div>
 
-<h6 class="text-muted">Change Password (optional)</h6>
-<div class="mb-3">
-    {{ form.old_password.label(class="form-label") }}
-    {{ form.old_password(class="form-control", placeholder="Enter old password", autocomplete="off") }}
+      <!-- Email -->
+      <div class="col-md-6">
+        <label class="custom-label">
+          <i class="bi bi-envelope me-1"></i>
+          {{ form.email.label.text }}
+        </label>
 
-    {% for error in form.old_password.errors %}
-        <div class="text-danger small">{{ error }}</div>
-    {% endfor %}
-</div>
-<!-- Password -->
-<div class="mb-3">
-    {{ form.password.label(class="form-label") }}
-    {{ form.password(class="form-control", placeholder="New password", autocomplete="new-password") }}
+        <div class="input-wrapper">
+          <i class="bi bi-envelope input-icon"></i>
 
-    {% for error in form.password.errors %}
-        <div class="text-danger small">{{ error }}</div>
-    {% endfor %}
-</div>
+          {{ form.email( class="form-control custom-input", placeholder="Enter
+          email", autocomplete="email" ) }}
+        </div>
 
-<!-- Confirm Password -->
-<div class="mb-3">
-    {{ form.confirm_password.label(class="form-label") }}
-    {{ form.confirm_password(class="form-control", placeholder="Confirm password", autocomplete="new-password") }}
+        {% for error in form.email.errors %}
+        <div class="field-error">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endfor %}
+      </div>
 
-    {% for error in form.confirm_password.errors %}
-        <div class="text-danger small">{{ error }}</div>
-    {% endfor %}
-</div>
+      <!-- Full Name -->
+      <div class="col-12">
+        <label class="custom-label">
+          <i class="bi bi-person-badge me-1"></i>
+          {{ form.full_name.label.text }}
+        </label>
 
-<!-- Submit -->
-<div class="d-flex justify-content-end">
-    {{ form.submit(class="btn btn-primary px-4") }}
-</div>
+        <div class="input-wrapper">
+          <i class="bi bi-person-badge input-icon"></i>
+
+          {{ form.full_name( class="form-control custom-input",
+          placeholder="Enter full name", autocomplete="name" ) }}
+        </div>
+
+        {% for error in form.full_name.errors %}
+        <div class="field-error">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+         CHANGE PASSWORD
+    ========================================== -->
+  <div class="profile-section password-section">
+    <div class="section-header">
+      <div class="section-icon security-icon">
+        <i class="bi bi-shield-lock-fill"></i>
+      </div>
+
+      <div>
+        <h5>Change Password</h5>
+        <p>
+          Leave the password fields empty if you don't want to change your
+          password.
+        </p>
+      </div>
+    </div>
+
+    <!-- Security Notice -->
+    <div class="security-alert">
+      <i class="bi bi-info-circle-fill"></i>
+
+      <div>
+        <strong>Password Security</strong>
+
+        <p>
+          For your security, enter your current password before creating a new
+          password.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Old Password -->
+      <div class="col-12">
+        <label class="custom-label">
+          <i class="bi bi-key me-1"></i>
+          {{ form.old_password.label.text }}
+        </label>
+
+        <div class="password-wrapper">
+          {{ form.old_password( class="form-control custom-input",
+          placeholder="Enter current password", autocomplete="current-password",
+          id="oldPassword" ) }}
+
+          <button
+            type="button"
+            class="password-toggle"
+            onclick="togglePassword('oldPassword', this)"
+          >
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+
+        {% for error in form.old_password.errors %}
+        <div class="field-error">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- New Password -->
+      <div class="col-md-6">
+        <label class="custom-label">
+          <i class="bi bi-lock-fill me-1"></i>
+          {{ form.password.label.text }}
+        </label>
+
+        <div class="password-wrapper">
+          {{ form.password( class="form-control custom-input",
+          placeholder="Enter new password", autocomplete="new-password",
+          id="newPassword" ) }}
+
+          <button
+            type="button"
+            class="password-toggle"
+            onclick="togglePassword('newPassword', this)"
+          >
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+
+        {% for error in form.password.errors %}
+        <div class="field-error">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="col-md-6">
+        <label class="custom-label">
+          <i class="bi bi-lock me-1"></i>
+          {{ form.confirm_password.label.text }}
+        </label>
+
+        <div class="password-wrapper">
+          {{ form.confirm_password( class="form-control custom-input",
+          placeholder="Confirm new password", autocomplete="new-password",
+          id="confirmPassword" ) }}
+
+          <button
+            type="button"
+            class="password-toggle"
+            onclick="togglePassword('confirmPassword', this)"
+          >
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+
+        {% for error in form.confirm_password.errors %}
+        <div class="field-error">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+         ACTIONS
+    ========================================== -->
+  <div class="form-actions">
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-light btn-cancel">
+      <i class="bi bi-arrow-left me-1"></i>
+      Cancel
+    </a>
+
+    {{ form.submit( class="btn btn-primary btn-save" ) }}
+  </div>
+</form>
+
+<style>
+  /* =========================================
+   MAIN FORM
+========================================= */
+
+  .profile-form {
+    width: 100%;
+  }
+
+  /* =========================================
+   SECTION
+========================================= */
+
+  .profile-section {
+    background: #ffffff;
+
+    border: 1px solid #e8ebef;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    margin-bottom: 20px;
+
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  }
+
+  /* =========================================
+   SECTION HEADER
+========================================= */
+
+  .section-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-bottom: 25px;
+
+    padding-bottom: 17px;
+
+    border-bottom: 1px solid #f0f1f3;
+  }
+
+  .section-icon {
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    font-size: 21px;
+  }
+
+  .profile-icon {
+    background: #e9f2ff;
+
+    color: #0d6efd;
+  }
+
+  .security-icon {
+    background: #e8f7ef;
+
+    color: #198754;
+  }
+
+  .section-header h5 {
+    margin: 0;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    color: #212529;
+  }
+
+  .section-header p {
+    margin: 3px 0 0;
+
+    font-size: 12px;
+
+    color: #6c757d;
+  }
+
+  /* =========================================
+   LABEL
+========================================= */
+
+  .custom-label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #343a40;
+  }
+
+  /* =========================================
+   INPUT
+========================================= */
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+
+    left: 14px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #8a94a6;
+
+    z-index: 2;
+  }
+
+  .input-wrapper .custom-input {
+    padding-left: 42px;
+  }
+
+  .custom-input {
+    min-height: 45px;
+
+    border: 1px solid #dfe3e8;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .custom-input:focus {
+    border-color: #0d6efd;
+
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+  }
+
+  /* =========================================
+   PASSWORD
+========================================= */
+
+  .password-wrapper {
+    position: relative;
+  }
+
+  .password-wrapper .custom-input {
+    padding-right: 48px;
+  }
+
+  .password-toggle {
+    position: absolute;
+
+    right: 7px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background: transparent;
+
+    color: #6c757d;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+  }
+
+  .password-toggle:hover {
+    background: #f1f3f5;
+
+    color: #0d6efd;
+  }
+
+  /* =========================================
+   SECURITY ALERT
+========================================= */
+
+  .security-alert {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 14px 16px;
+
+    margin-bottom: 25px;
+
+    background: #f0f7ff;
+
+    border: 1px solid #d7e9ff;
+
+    border-radius: 12px;
+
+    color: #0d6efd;
+  }
+
+  .security-alert > i {
+    font-size: 20px;
+
+    margin-top: 1px;
+  }
+
+  .security-alert strong {
+    display: block;
+
+    font-size: 13px;
+
+    color: #174a8b;
+  }
+
+  .security-alert p {
+    margin: 3px 0 0;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    color: #5c6f82;
+  }
+
+  /* =========================================
+   ERROR
+========================================= */
+
+  .field-error {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 6px;
+
+    margin-top: 7px;
+
+    color: #dc3545;
+
+    font-size: 12px;
+  }
+
+  .field-error i {
+    margin-top: 1px;
+  }
+
+  /* =========================================
+   ACTIONS
+========================================= */
+
+  .form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 5px 0 20px;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    min-height: 43px;
+
+    padding: 9px 20px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+  }
+
+  .btn-cancel {
+    border: 1px solid #dee2e6;
+
+    color: #495057;
+  }
+
+  .btn-cancel:hover {
+    background: #f1f3f5;
+  }
+
+  .btn-save {
+    min-width: 130px;
+
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+  }
+
+  /* =========================================
+   TABLET
+========================================= */
+
+  @media (max-width: 768px) {
+    .profile-section {
+      padding: 20px;
+
+      border-radius: 15px;
+    }
+
+    .section-header {
+      margin-bottom: 20px;
+    }
+  }
+
+  /* =========================================
+   MOBILE
+========================================= */
+
+  @media (max-width: 576px) {
+    .profile-section {
+      padding: 16px;
+
+      margin-bottom: 15px;
+    }
+
+    .section-header {
+      align-items: flex-start;
+
+      gap: 10px;
+    }
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+
+      font-size: 17px;
+
+      border-radius: 10px;
+    }
+
+    .section-header h5 {
+      font-size: 15px;
+    }
+
+    .section-header p {
+      font-size: 10px;
+    }
+
+    .custom-input {
+      min-height: 42px;
+
+      font-size: 13px;
+    }
+
+    .form-actions {
+      flex-direction: column-reverse;
+
+      width: 100%;
+    }
+
+    .btn-cancel,
+    .btn-save {
+      width: 100%;
+    }
+
+    .security-alert {
+      padding: 12px;
+    }
+  }
+</style>
+
+<script>
+  /* =========================================
+   PASSWORD SHOW / HIDE
+========================================= */
+
+  function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+
+    const icon = button.querySelector("i");
+
+    if (!input) return;
+
+    if (input.type === "password") {
+      input.type = "text";
+
+      icon.classList.remove("bi-eye");
+
+      icon.classList.add("bi-eye-slash");
+    } else {
+      input.type = "password";
+
+      icon.classList.remove("bi-eye-slash");
+
+      icon.classList.add("bi-eye");
+    }
+  }
+</script>

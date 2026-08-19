@@ -18,17 +18,96 @@
     </div>
 
     <div class="mb-3">
-        {{ form.description.label(class="form-label") }}
-        {{ form.description(class="form-control", rows=4) }}
+        {{ form.method.label(class="form-label") }}
+        {{ form.method(class="form-control") }}
+        {% for error in form.method.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <div class="mb-3">
-        {{ form.image.label(class="form-label") }}
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", rows=4) }}
+    </div>
+    <!-- Priority -->
+    <div class="mb-3">
+
+        {{ form.priority.label(class="form-label fw-semibold") }}
+
+        {{ form.priority(
+            class="form-control",
+            min="1",
+            placeholder="Example: 1"
+        ) }}
+
+        <div class="form-text">
+            <i class="bi bi-info-circle me-1"></i>
+
+            Priority 1 = Recommended prevention,
+            Priority 2 = Alternative,
+            Priority 3 = Other option.
+        </div>
+
+        {% for error in form.priority.errors %}
+
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="mb-3">
+
+        {{ form.image.label(class="form-label fw-semibold") }}
+
         {{ form.image(class="form-control") }}
+
+        <div class="form-text">
+            <i class="bi bi-info-circle me-1"></i>
+
+            {% if prevention %}
+                Leave empty to keep the current image.
+            {% else %}
+                Image is required.
+            {% endif %}
+        </div>
+
+        {% for error in form.image.errors %}
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
+        {% endfor %}
+
         {% if prevention and prevention.image %}
-            <img src="{{ url_for('static', filename='images/preventions/' ~ prevention.image) }}" 
-                 alt="Prevention Image" class="img-thumbnail mt-2" style="max-width:150px;">
+
+            <div class="mt-3">
+
+                <label class="form-label fw-semibold">
+                    Current Image
+                </label>
+
+                <div>
+                    <img
+                        src="{{ url_for(
+                            'static',
+                            filename='images/preventions/' ~ prevention.image
+                        ) }}"
+                        alt="Current Prevention Image"
+                        class="img-thumbnail rounded-3 shadow-sm"
+                        style="
+                            width: 180px;
+                            height: 130px;
+                            object-fit: cover;
+                        "
+                    >
+                </div>
+
+            </div>
+
         {% endif %}
+
     </div>
 
     <div class="form-check mb-3">

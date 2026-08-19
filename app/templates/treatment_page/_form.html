@@ -22,6 +22,34 @@
         {{ form.description(class="form-control", rows=4) }}
     </div>
 
+    <!-- Priority -->
+    <div class="mb-3">
+
+        {{ form.priority.label(class="form-label fw-semibold") }}
+
+        {{ form.priority(
+            class="form-control",
+            min="1",
+            placeholder="Example: 1"
+        ) }}
+
+        <div class="form-text">
+            <i class="bi bi-info-circle me-1"></i>
+
+            Priority 1 = Recommended treatment,
+            Priority 2 = Alternative,
+            Priority 3 = Other option.
+        </div>
+
+        {% for error in form.priority.errors %}
+
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
+
+        {% endfor %}
+
+    </div>
     <div class="mb-3">
         {{ form.method.label(class="form-label") }}
         {{ form.method(class="form-control") }}

@@ -544,7 +544,7 @@
             <a
               href="{{ url_for(
                                         'user.diagnosis_explain',
-                                        disease_id=diagnosis.disease_id
+                                        diagnosis_id=diagnosis.id
                                     ) }}"
               class="btn btn-sm btn-outline-success rounded-pill px-3"
             >
@@ -611,8 +611,7 @@
       <a
         href="{{ url_for(
                         'user.diagnosis_input',
-                        farm_id=farm.id,
-                        monitoring_id=monitoring.id
+                        diagnosis_id=diagnosis.id
                     ) }}"
         class="btn-diagnose-small"
       >

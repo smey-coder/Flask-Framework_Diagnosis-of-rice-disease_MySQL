@@ -27,7 +27,8 @@
     "home" : "Home",
     "history": "History",
     "diagnostics" : "Diagnostics",
-    "ricediseasediagnosticsystem": "Rice disease diagnostic system"
+    "ricediseasediagnosticsystem": "Rice disease diagnostic system",
+    "fact_management_system": "Fact Management System"
   },
   "dashboard": {
     "welcome": "Welcome to Rice Expert Dashboard",

@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from extensions import db
 from app.models.diseases import DiseaseTable
-class TreatmentTable(UserMixin, db.Model):
+class TreatmentTable(db.Model):
     __tablename__ ="tbl_treatments"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +15,11 @@ class TreatmentTable(UserMixin, db.Model):
         nullable=False
     )
     description = db.Column(db.Text, nullable=True)
+    priority = db.Column(
+        db.Integer,
+        default=1,
+        nullable=False
+    )
     method = db.Column(db.String(255), nullable=False)
     image = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)

@@ -32,6 +32,7 @@ def create():
                 "disease_id": form.disease_id.data,
                 "treatment_type": form.treatment_type.data,
                 "description": form.description.data,
+                "priority": form.priority.data,
                 "method": form.method.data,
                 "is_active": form.is_active.data
             }, image_file)
@@ -53,6 +54,7 @@ def edit(id):
         form.disease_id.data = treatment.disease_id
         form.treatment_type.data = treatment.treatment_type
         form.description.data = treatment.description
+        form.priority.data = treatment.priority
         form.method.data = treatment.method
         form.is_active.data = treatment.is_active
 
@@ -63,6 +65,7 @@ def edit(id):
                 "disease_id": form.disease_id.data,
                 "treatment_type": form.treatment_type.data,
                 "description": form.description.data,
+                "priority": form.priority.data,
                 "method": form.method.data,
                 "is_active": form.is_active.data
             }, image_file)

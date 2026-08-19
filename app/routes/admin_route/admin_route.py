@@ -61,7 +61,8 @@ def set_language():
 
 @admin_bp.route("/dashboard", methods=["GET", "POST"])
 @login_required
-@role_required("Admin")
+@role_required("Admin", "Expert")
+@permission_required("VIEW_DASHBOARD")
 def dashboard():
     from app.forms.weather_form import CitySearchForm
     from app.services.weather_service import WeatherService

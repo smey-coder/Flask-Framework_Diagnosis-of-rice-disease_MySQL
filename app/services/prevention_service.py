@@ -11,7 +11,7 @@ from app.services.audit_service import log_audit
 
 # ================= CONFIG ================= #
 
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 UPLOAD_FOLDER = "static/images/preventions"
 
 
@@ -56,28 +56,93 @@ class PreventionService:
     def get_by_id(prevention_id: int) -> Optional[PreventionTable]:
         return PreventionTable.query.get_or_404(prevention_id)
 
+    @staticmethod
+    def get_by_disease(disease_id):
+
+        try:
+
+            return (
+                PreventionTable.query
+                .filter(
+                    PreventionTable.disease_id == disease_id,
+                    PreventionTable.is_active == True
+                )
+                .order_by(
+                    PreventionTable.id.asc()
+                )
+                .all()
+            )
+
+        except Exception as e:
+
+            print(
+                f"Prevention Error: {e}"
+            )
+
+            return []
+
     # ---------- CREATE ---------- #
 
     @staticmethod
     def create(data: dict, image_file=None) -> PreventionTable:
+
+        #Validation
+        #Disease
+        disease_id = data.get("disease_id")
+
+        if not disease_id:
+            raise ValueError("Disease is required")
+        disease = DiseaseTable.query.get(disease_id)
+        if not disease:
+            raise ValueError("Disease disease does not exit.")
+
+        #Prevention Type
+
+        prevention_type = data.get("prevention_type")
+        if not prevention_type:
+            raise ValueError("Treatment type is required.")
+        #Method
+        method = (data.get("method") or "").strip()
+        if not method:
+            raise ValueError("Treatment method is required.")
+
+        #image
         if not image_file or not allowed_file(image_file.filename):
             raise ValueError("Image is required and must be valid.")
 
         filename = save_image(image_file)
 
-        # Check duplicates
-        duplicate = PreventionTable.query.filter_by(
-            disease_id=data.get("disease_id"),
-            prevention_type=data.get("prevention_type")
-        ).first()
-        if duplicate:
-            delete_image(filename)
-            raise ValueError(f"A prevention of type '{data.get('prevention_type')}' already exists for this disease.")
+        # -----------------------------------------------------
+        # Priority
+        # -----------------------------------------------------
 
+        priority = data.get("priority",1)
+
+        try:
+            priority = int(priority)
+        except (TypeError,ValueError):
+            raise ValueError("Priority must be a number.")
+
+        if priority < 1 or priority > 10:
+            raise ValueError("Priority must be between 1 and 10.")
+
+        # Check duplicates
+        # duplicate = PreventionTable.query.filter_by(
+        #     disease_id=data.get("disease_id"),
+        #     prevention_type=data.get("prevention_type")
+        # ).first()
+        # if duplicate:
+        #     delete_image(filename)
+        #     raise ValueError(f"A prevention of type '{data.get('prevention_type')}' already exists for this disease.")
+
+
+        #Create Object
         prevention = PreventionTable(
-            disease_id=data.get("disease_id"),
-            prevention_type=data.get("prevention_type"),
-            description=data.get("description", ""),
+            disease_id=disease_id,
+            prevention_type=prevention_type,
+            method=method,
+            description=data.get("description" or  "").strip(),
+            priority=priority,
             image=filename,
             is_active=data.get("is_active", True)
         )
@@ -90,7 +155,7 @@ class PreventionService:
             delete_image(filename)
             raise ValueError(f"Database error: {str(e)}")
 
-        # ✅ Audit log
+        # Audit log
         log_audit(
             "CREATE",
             "preventions",
@@ -99,7 +164,9 @@ class PreventionService:
             after_data={
                 "disease_id": prevention.disease_id,
                 "prevention_type": prevention.prevention_type,
+                "method": prevention.method,
                 "description": prevention.description,
+                "priority": prevention.priority,
                 "image": prevention.image,
                 "is_active": prevention.is_active
             }
@@ -110,54 +177,166 @@ class PreventionService:
     # ---------- UPDATE ---------- #
 
     @staticmethod
-    def update(prevention: PreventionTable, data: dict, image_file=None) -> PreventionTable:
-        # Before snapshot
+    def update(
+        prevention: PreventionTable,
+        data: dict,
+        image_file=None
+    ) -> PreventionTable:
+
+        # =====================================================
+        # BEFORE SNAPSHOT
+        # =====================================================
+
         before_data = {
             "disease_id": prevention.disease_id,
             "prevention_type": prevention.prevention_type,
+            "method": prevention.method,
             "description": prevention.description,
+            "priority": prevention.priority,
             "image": prevention.image,
             "is_active": prevention.is_active
         }
 
-        # Check duplicates
-        duplicate = PreventionTable.query.filter(
-            PreventionTable.id != prevention.id,
-            PreventionTable.disease_id == data.get("disease_id"),
-            PreventionTable.prevention_type == data.get("prevention_type")
-        ).first()
-        if duplicate:
-            raise ValueError(f"A prevention of type '{data.get('prevention_type')}' already exists for this disease.")
 
-        # Handle image update
-        if image_file and allowed_file(image_file.filename):
-            old_image = prevention.image
-            filename = save_image(image_file)
-            prevention.image = filename
-            delete_image(old_image)
+        # =====================================================
+        # VALIDATE DISEASE
+        # =====================================================
 
-        prevention.disease_id = data.get("disease_id", prevention.disease_id)
-        prevention.prevention_type = data.get("prevention_type", prevention.prevention_type)
-        prevention.description = data.get("description", prevention.description)
-        prevention.is_active = data.get("is_active", prevention.is_active)
+        disease_id = data.get(
+            "disease_id",
+            prevention.disease_id
+        )
+
+        disease = DiseaseTable.query.get(disease_id)
+
+        if not disease:
+            raise ValueError(
+                "Selected disease does not exist."
+            )
+
+
+        # =====================================================
+        # IMAGE VARIABLES
+        # =====================================================
+
+        old_image = prevention.image
+        new_image = None
+
+
+        # =====================================================
+        # HANDLE NEW IMAGE
+        # =====================================================
+
+        if image_file and image_file.filename:
+
+            if not allowed_file(image_file.filename):
+                raise ValueError(
+                    "Invalid image format. "
+                    "Only png, jpg, jpeg, gif, webp are allowed."
+                )
+
+            # Save NEW image first
+            new_image = save_image(image_file)
+
+            # Update model
+            prevention.image = new_image
+
+
+        # =====================================================
+        # UPDATE DATA
+        # =====================================================
+
+        prevention.disease_id = disease_id
+
+        prevention.prevention_type = data.get(
+            "prevention_type",
+            prevention.prevention_type
+        )
+
+        prevention.method = data.get(
+            "method",
+            prevention.method
+        )
+
+        prevention.description = data.get(
+            "description",
+            prevention.description
+        )
+
+        prevention.priority = data.get(
+            "priority",
+            prevention.priority
+        )
+
+        prevention.is_active = data.get(
+            "is_active",
+            prevention.is_active
+        )
+
+
+        # =====================================================
+        # DATABASE COMMIT
+        # =====================================================
 
         try:
-            db.session.commit()
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise ValueError(f"Database error: {str(e)}")
 
-        # After snapshot
+            db.session.commit()
+
+        except SQLAlchemyError as e:
+
+            db.session.rollback()
+
+            # Database failed
+            # Delete NEW image because it is no longer used
+
+            if new_image:
+                delete_image(new_image)
+
+            raise ValueError(
+                f"Database error: {str(e)}"
+            )
+
+
+        # =====================================================
+        # DELETE OLD IMAGE
+        # Only after successful DB commit
+        # =====================================================
+
+        if (
+            new_image
+            and old_image
+            and old_image != new_image
+        ):
+            delete_image(old_image)
+
+
+        # =====================================================
+        # AFTER SNAPSHOT
+        # =====================================================
+
         after_data = {
             "disease_id": prevention.disease_id,
             "prevention_type": prevention.prevention_type,
+            "method": prevention.method,
             "description": prevention.description,
+            "priority": prevention.priority,
             "image": prevention.image,
             "is_active": prevention.is_active
         }
 
-        # ✅ Audit log
-        log_audit("UPDATE", "preventions", prevention.id, before_data, after_data)
+
+        # =====================================================
+        # AUDIT LOG
+        # =====================================================
+
+        log_audit(
+            "UPDATE",
+            "preventions",
+            prevention.id,
+            before_data,
+            after_data
+        )
+
 
         return prevention
 
@@ -169,7 +348,9 @@ class PreventionService:
         before_data = {
             "disease_id": prevention.disease_id,
             "prevention_type": prevention.prevention_type,
+            "method": prevention.method,
             "description": prevention.description,
+            "priority": prevention.priority,
             "image": prevention.image,
             "is_active": prevention.is_active
         }
@@ -184,5 +365,5 @@ class PreventionService:
             db.session.rollback()
             raise ValueError(f"Database error: {str(e)}")
 
-        # ✅ Audit log
+        # Audit log
         log_audit("DELETE", "preventions", prevention.id, before_data, after_data=None)

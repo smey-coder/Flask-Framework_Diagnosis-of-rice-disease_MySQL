@@ -1,52 +1,399 @@
-{% extends "layouts/admin_layout/admin.html"%}
-{% block title %} Roles {% endblock %}
+{% extends "layouts/admin_layout/admin.html" %} {% block title %}Roles{%
+endblock %} {% block content %}
 
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Roles</h1>
-    <a href="{{ url_for('tbl_roles.create')}}" class="btn btn-primary">Create Role</a>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/roles.css') }}"
+/>
+
+<div class="roles-page">
+  <!-- =========================================
+       PAGE HEADER
+  ========================================== -->
+  <div class="roles-header">
+    <div class="roles-title-wrapper">
+      <div class="roles-title-icon">
+        <i class="bi bi-shield-lock-fill"></i>
+      </div>
+
+      <div>
+        <h1>Role Management</h1>
+        <p>Manage system roles and their permissions.</p>
+      </div>
+    </div>
+
+    <a
+      href="{{ url_for('tbl_roles.create') }}"
+      class="btn btn-primary roles-add-btn"
+    >
+      <i class="bi bi-plus-circle-fill me-1"></i>
+      Create Role
+    </a>
+  </div>
+
+  <!-- =========================================
+       SUMMARY
+  ========================================== -->
+
+  <div class="role-summary-grid">
+    <!-- Total Roles -->
+    <div class="role-summary-card">
+      <div class="summary-icon total">
+        <i class="bi bi-shield-fill"></i>
+      </div>
+
+      <div class="summary-content">
+        <span class="summary-label"> Total Roles </span>
+
+        <strong> {{ roles|length }} </strong>
+      </div>
+    </div>
+
+    <!-- Roles With Permissions -->
+    <div class="role-summary-card">
+      <div class="summary-icon permission">
+        <i class="bi bi-key-fill"></i>
+      </div>
+
+      <div class="summary-content">
+        <span class="summary-label"> With Permissions </span>
+
+        <strong id="rolesWithPermission">
+          {{ roles |selectattr('permissions') |list |length }}
+        </strong>
+      </div>
+    </div>
+
+    <!-- Roles Without Permissions -->
+    <div class="role-summary-card">
+      <div class="summary-icon no-permission">
+        <i class="bi bi-key"></i>
+      </div>
+
+      <div class="summary-content">
+        <span class="summary-label"> No Permissions </span>
+
+        <strong id="rolesWithoutPermission">
+          {{ roles |rejectattr('permissions') |list |length }}
+        </strong>
+      </div>
+    </div>
+
+    <!-- Total Permissions -->
+    <div class="role-summary-card">
+      <div class="summary-icon security">
+        <i class="bi bi-lock-fill"></i>
+      </div>
+
+      <div class="summary-content">
+        <span class="summary-label"> Total Permissions </span>
+
+        <strong>
+          {{ roles |map(attribute='permissions') |map('length') |sum }}
+        </strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       FILTER BAR
+  ========================================== -->
+
+  <div class="role-filter-card">
+    <!-- Search -->
+    <div class="role-search">
+      <i class="bi bi-search"></i>
+
+      <input
+        type="text"
+        id="roleSearch"
+        class="form-control"
+        placeholder="Search role or description..."
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Permission Filter -->
+    <div class="role-filter-control">
+      <label for="permissionFilter">
+        <i class="bi bi-key-fill me-1"></i>
+        Permissions
+      </label>
+
+      <select id="permissionFilter" class="form-select">
+        <option value="">All Roles</option>
+
+        <option value="with">With Permissions</option>
+
+        <option value="without">No Permissions</option>
+      </select>
+    </div>
+
+    <!-- Reset -->
+    <button
+      type="button"
+      class="btn btn-outline-secondary role-reset-btn"
+      onclick="resetRoleFilters()"
+    >
+      <i class="bi bi-arrow-counterclockwise me-1"></i>
+      Reset
+    </button>
+  </div>
+
+  <!-- =========================================
+       RESULT INFO
+  ========================================== -->
+
+  <div class="role-result-info">
+    <span>
+      Showing
+      <strong id="visibleRoleCount"> {{ roles|length }} </strong>
+      of
+      <strong> {{ roles|length }} </strong>
+      roles
+    </span>
+  </div>
+
+  <!-- =========================================
+       TABLE
+  ========================================== -->
+
+  <div class="role-table-card">
+    <div class="role-table-wrapper">
+      <table class="table role-table align-middle mb-0" id="roleTable">
+        <thead>
+          <tr>
+            <th class="text-center role-number">#</th>
+
+            <th>Role</th>
+
+            <th>Description</th>
+
+            <th class="text-center">Permissions</th>
+
+            <th class="text-center role-actions">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for role in roles %}
+
+          <tr
+            data-role="{{ role.name|lower }}"
+            data-description="{{ (role.description or '')|lower }}"
+            data-permission="{% if role.permissions %}with{% else %}without{% endif %}"
+          >
+            <!-- Number -->
+            <td class="text-center">
+              <span class="role-id"> {{ loop.index }} </span>
+            </td>
+
+            <!-- Role -->
+            <td>
+              <div class="role-name-cell">
+                <div class="role-icon">
+                  <i class="bi bi-shield-fill"></i>
+                </div>
+
+                <div>
+                  <a
+                    href="{{ url_for('tbl_roles.detail', role_id=role.id) }}"
+                    class="role-name"
+                  >
+                    {{ role.name }}
+                  </a>
+
+                  <small> Role ID: {{ role.id }} </small>
+                </div>
+              </div>
+            </td>
+
+            <!-- Description -->
+            <td>
+              {% if role.description %}
+
+              <div class="role-description">{{ role.description }}</div>
+
+              {% else %}
+
+              <span class="text-muted"> No description </span>
+
+              {% endif %}
+            </td>
+
+            <!-- Permissions -->
+            <td class="text-center">
+              {% if role.permissions %}
+
+              <span class="permission-badge has-permission">
+                <i class="bi bi-key-fill me-1"></i>
+
+                {{ role.permissions|length }} Permission{% if
+                role.permissions|length != 1 %}s{% endif %}
+              </span>
+
+              {% else %}
+
+              <span class="permission-badge no-permission">
+                <i class="bi bi-key me-1"></i>
+
+                No Permissions
+              </span>
+
+              {% endif %}
+            </td>
+
+            <!-- Actions -->
+            <td class="text-center">
+              <div class="role-actions-wrapper">
+                <a
+                  href="{{ url_for('tbl_roles.detail', role_id=role.id) }}"
+                  class="btn btn-sm btn-outline-info"
+                  title="View Role"
+                >
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('tbl_roles.edit', role_id=role.id) }}"
+                  class="btn btn-sm btn-outline-primary"
+                  title="Edit Role"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('tbl_roles.delete_confirm', role_id=role.id) }}"
+                  class="btn btn-sm btn-outline-danger"
+                  title="Delete Role"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          {% else %}
+
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <div class="role-empty-state">
+                <div class="empty-icon">
+                  <i class="bi bi-shield-x"></i>
+                </div>
+
+                <h5>No Roles Found</h5>
+
+                <p>There are currently no roles in the system.</p>
+
+                <a
+                  href="{{ url_for('tbl_roles.create') }}"
+                  class="btn btn-primary btn-sm"
+                >
+                  <i class="bi bi-plus-circle me-1"></i>
+                  Create First Role
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          {% endfor %}
+
+          <!-- Search Empty -->
+
+          <tr id="noRoleSearchResult" style="display: none">
+            <td colspan="5" class="text-center py-5">
+              <div class="role-empty-state">
+                <div class="empty-icon">
+                  <i class="bi bi-search"></i>
+                </div>
+
+                <h5>No Matching Roles</h5>
+
+                <p>Try changing your search or filter.</p>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  onclick="resetRoleFilters()"
+                >
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>
+                  Reset Filters
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-{% if roles %}
-    <table class="table table-striped align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Permissions</th>
-                <th class="text-end" style="width: 160px;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for role in roles %}
-            <tr>
-                <td>
-                    <a href="{{ url_for('tbl_roles.detail', role_id=role.id) }}" class="text-decoration-none fw-semibold">
-                        {{ role.name }}
-                    </a>
-                </td>
-                <td>{{ role.description or "_" }}</td>
-                <td>
-                    {% if role.permissions%}
-                            <span class="badge bg-secondary">{{ role.permissions |length }} Permissions</span>
-                        
-                    {% else %}
-                        <span class="text-muted small">No permissions</span>
-                    {% endif %}
-                </td>
-                <td class="text-end">
-                    <a href="{{ url_for('tbl_roles.edit', role_id=role.id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
-                        ✏️
-                    </a>
-                    <a href="{{ url_for('tbl_roles.delete_confirm', role_id=role.id) }}" class="btn btn-sm btn-outline-danger" title="Delete">
-                        🗑️
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p class="text-muted">No roles defined yet.</p>
-{% endif %}
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("roleSearch");
+
+    const permissionFilter = document.getElementById("permissionFilter");
+
+    const table = document.getElementById("roleTable");
+
+    const rows = table.querySelectorAll("tbody tr[data-role]");
+
+    const noResult = document.getElementById("noRoleSearchResult");
+
+    const visibleCount = document.getElementById("visibleRoleCount");
+
+    function filterRoles() {
+      const search = searchInput.value.toLowerCase().trim();
+
+      const permission = permissionFilter.value;
+
+      let count = 0;
+
+      rows.forEach(function (row) {
+        const role = row.dataset.role || "";
+
+        const description = row.dataset.description || "";
+
+        const rowPermission = row.dataset.permission || "";
+
+        const matchesSearch =
+          role.includes(search) || description.includes(search);
+
+        const matchesPermission = !permission || rowPermission === permission;
+
+        if (matchesSearch && matchesPermission) {
+          row.style.display = "";
+          count++;
+        } else {
+          row.style.display = "none";
+        }
+      });
+
+      visibleCount.textContent = count;
+
+      if (count === 0) {
+        noResult.style.display = "";
+      } else {
+        noResult.style.display = "none";
+      }
+    }
+
+    searchInput.addEventListener("input", filterRoles);
+
+    permissionFilter.addEventListener("change", filterRoles);
+
+    window.resetRoleFilters = function () {
+      searchInput.value = "";
+      permissionFilter.value = "";
+
+      filterRoles();
+    };
+  });
+</script>
+
 {% endblock %}

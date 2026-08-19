@@ -27,7 +27,8 @@
     "history": "ប្រវត្តិ",
     "home": "ទំព័រដើម",
     "diagnostics": "ការធ្វើរោគវិនិច្ឆ័យ",
-    "ricediseasediagnosticsystem" : "ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ"
+    "ricediseasediagnosticsystem" : "ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ",
+    "fact_management_system": "ប្រព័ន្ធគ្រប់គ្រងការពិត"
   },
   "navbar": {
     "home": "ទំព័រដើម",

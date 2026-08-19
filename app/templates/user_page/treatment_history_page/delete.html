@@ -1,0 +1,269 @@
+{% extends "layouts/user_layout/user.html" %} {% block title %} Delete Treatment
+History {% endblock %} {% block content %}
+
+<div class="container-fluid mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-5 text-center">
+          <!-- =====================================================
+                         WARNING ICON
+                    ====================================================== -->
+
+          <div class="mb-4">
+            <div
+              class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center"
+              style="width: 85px; height: 85px"
+            >
+              <i class="bi bi-trash3" style="font-size: 38px"></i>
+            </div>
+          </div>
+
+          <!-- =====================================================
+                         TITLE
+                    ====================================================== -->
+
+          <h4 class="fw-bold mb-2">Delete Treatment History?</h4>
+
+          <p class="text-muted mb-4">
+            Are you sure you want to permanently delete this treatment history
+            record?
+          </p>
+
+          <!-- =====================================================
+                         INFORMATION
+                    ====================================================== -->
+
+          <div class="bg-light rounded-4 p-4 mb-4 text-start">
+            <!-- History ID -->
+
+            <div class="row mb-3">
+              <div class="col-sm-5">
+                <small class="text-muted"> History ID </small>
+              </div>
+
+              <div class="col-sm-7">
+                <strong> #{{ history.id }} </strong>
+              </div>
+            </div>
+
+            <!-- Monitoring -->
+
+            <div class="row mb-3">
+              <div class="col-sm-5">
+                <small class="text-muted"> Monitoring </small>
+              </div>
+
+              <div class="col-sm-7">
+                {% if history.monitoring %}
+
+                <strong> #{{ history.monitoring.id }} </strong>
+
+                {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Disease -->
+
+            <div class="row mb-3">
+              <div class="col-sm-5">
+                <small class="text-muted"> Disease </small>
+              </div>
+
+              <div class="col-sm-7">
+                {% if history.treatment and history.treatment.disease %}
+
+                <span class="fw-bold text-danger">
+                  <i class="bi bi-virus me-1"></i>
+
+                  {{ history.treatment.disease.disease_name }}
+                </span>
+
+                {% else %}
+
+                <span class="text-muted"> Unknown Disease </span>
+
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Treatment -->
+
+            <div class="row mb-3">
+              <div class="col-sm-5">
+                <small class="text-muted"> Treatment </small>
+              </div>
+
+              <div class="col-sm-7">
+                {% if history.treatment %}
+
+                <span class="fw-semibold">
+                  {{ history.treatment.method or "N/A" }}
+                </span>
+
+                {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Treatment Type -->
+
+            <div class="row mb-3">
+              <div class="col-sm-5">
+                <small class="text-muted"> Treatment Type </small>
+              </div>
+
+              <div class="col-sm-7">
+                {% if history.treatment %}
+
+                <span class="badge bg-success-subtle text-success">
+                  {{ history.treatment.treatment_type or "N/A" }}
+                </span>
+
+                {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Treatment Date -->
+
+            <div class="row mb-3">
+              <div class="col-sm-5">
+                <small class="text-muted"> Treatment Date </small>
+              </div>
+
+              <div class="col-sm-7">
+                {% if history.treatment_date %}
+
+                <strong>
+                  {{ history.treatment_date.strftime( "%d-%m-%Y" ) }}
+                </strong>
+
+                {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Status -->
+
+            <div class="row">
+              <div class="col-sm-5">
+                <small class="text-muted"> Status </small>
+              </div>
+
+              <div class="col-sm-7">
+                {% if history.status %} {% if history.status|lower ==
+                "completed" %}
+
+                <span class="badge bg-success"> Completed </span>
+
+                {% elif history.status|lower == "in_progress" %}
+
+                <span class="badge bg-primary"> In Progress </span>
+
+                {% elif history.status|lower == "planned" %}
+
+                <span class="badge bg-warning text-dark"> Planned </span>
+
+                {% elif history.status|lower == "failed" %}
+
+                <span class="badge bg-danger"> Failed </span>
+
+                {% else %}
+
+                <span class="badge bg-secondary"> {{ history.status }} </span>
+
+                {% endif %} {% else %}
+
+                <span class="badge bg-secondary"> N/A </span>
+
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- =====================================================
+                         WARNING
+                    ====================================================== -->
+
+          <div class="alert alert-danger text-start">
+            <div class="d-flex">
+              <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+
+              <div>
+                <strong> Warning </strong>
+
+                <div class="small mt-1">
+                  This action cannot be undone. The treatment history record
+                  will be permanently removed.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =====================================================
+                         DELETE FORM
+                    ====================================================== -->
+
+          <form
+            method="POST"
+            action="{{
+                            url_for(
+                                'treatment_history.delete',
+                                id=history.id
+                            )
+                        }}"
+          >
+            {{ form.hidden_tag() if form is defined else '' }} {% if form is not
+            defined %}
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            {% endif %}
+
+            <div class="d-flex justify-content-center gap-2 mt-4">
+              <!-- Cancel -->
+
+              <a
+                href="{{
+                                    url_for(
+                                        'treatment_history.detail',
+                                        id=history.id
+                                    )
+                                }}"
+                class="btn btn-outline-secondary rounded-pill px-4"
+              >
+                <i class="bi bi-x-circle me-1"></i>
+
+                Cancel
+              </a>
+
+              <!-- Delete -->
+
+              <button type="submit" class="btn btn-danger rounded-pill px-4">
+                <i class="bi bi-trash3 me-1"></i>
+
+                Delete Treatment History
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

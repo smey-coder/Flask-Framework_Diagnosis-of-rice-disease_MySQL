@@ -6,6 +6,7 @@ from app.models.symptoms import SymptomsTable
 from app.models.treatments import TreatmentTable
 from app.models.preventions import PreventionTable
 from app.services.audit_service import log_audit
+
 class DiagnosisService:
     """
     Expert system service using MYCIN certainty factor.
@@ -125,15 +126,212 @@ class DiagnosisService:
     # ---- Backward compatible: allow optional rule_trace argument ----
     @staticmethod
     def treatment_disease(disease_id: int, rule_trace=None) -> List[dict]:
-        """Return treatments for a disease."""
-        treatments = TreatmentTable.query.filter_by(disease_id=disease_id, is_active=True).all()
+        """
+        Get active treatments for a disease.
+        Treatments are ordered by priority.
+        Lower priority number = higher recommendation.
+        Example:
+            priority 1 = Best recommendation
+            priority 2 = Alternative
+            priority 3 = Other option
+        """
+        treatments = (
+            TreatmentTable.query
+            .filter(
+                TreatmentTable.disease_id == disease_id,
+                TreatmentTable.is_active == True
+            )
+            .order_by(
+                TreatmentTable.priority.asc(),
+                TreatmentTable.id.asc()
+            )
+            .all()
+        )
+
         return [
-            {"id": t.id, "treatment_type": t.treatment_type,"method": t.method, "description": t.description, "image": t.image}
+            {
+                "id": t.id,
+                "treatment_type": t.treatment_type,
+                "method": t.method,
+                "description": t.description,
+                "image": t.image,
+                "priority": t.priority
+            }
             for t in treatments
         ]
-
     @staticmethod
     def prevention_disease(disease_id: int, rule_trace=None) -> List[dict]:
-        """Return preventions for a disease."""
-        preventions = PreventionTable.query.filter_by(disease_id=disease_id, is_active=True).all()
-        return [{"id": p.id, "description": p.description} for p in preventions]
+        """
+        Get active prevention methods for a disease.
+        """
+
+        preventions = (
+            PreventionTable.query
+            .filter(
+                PreventionTable.disease_id == disease_id,
+                PreventionTable.is_active == True
+            )
+            .order_by(
+                PreventionTable.priority.asc(),
+                PreventionTable.id.asc()
+            )
+            .all()
+        )
+
+        return [
+            {
+                "id": p.id,
+                "prevention_type": p.prevention_type,
+                "method": p.method,
+                "description": p.description,
+                "priority": p.priority,
+                "image": p.image
+            }
+            for p in preventions
+        ]
+    @staticmethod
+    def recommend_prevention(disease_id: int) -> dict | None:
+
+        prevention = (
+            PreventionTable.query
+            .filter(
+                PreventionTable.disease_id == disease_id,
+                PreventionTable.is_active == True
+            )
+            .order_by(
+                PreventionTable.priority.asc(),
+                PreventionTable.id.asc()
+            )
+            .first()
+        )
+
+        if not prevention:
+            return None
+
+        return {
+            "id": prevention.id,
+            "prevention_type": prevention.prevention_type,
+            "method": prevention.method,
+            "description": prevention.description,
+            "image": prevention.image,
+            "priority": prevention.priority
+        }
+
+    @staticmethod
+    def recommend_treatment(disease_id: int) -> dict | None:
+        """
+        Return the highest-priority treatment for a disease.
+        """
+
+        treatment = (
+            TreatmentTable.query
+            .filter(
+                TreatmentTable.disease_id == disease_id,
+                TreatmentTable.is_active == True
+            )
+            .order_by(
+                TreatmentTable.priority.asc(),
+                TreatmentTable.id.asc()
+            )
+            .first()
+        )
+
+        if not treatment:
+            return None
+
+        return {
+            "id": treatment.id,
+            "treatment_type": treatment.treatment_type,
+            "method": treatment.method,
+            "description": treatment.description,
+            "image": treatment.image,
+            "priority": treatment.priority
+        }
+    @staticmethod
+    def get_treatment_recommendation(
+        disease_id: int,
+        certainty: float
+    ) -> dict:
+
+        # =====================================================
+        # GET BEST TREATMENT
+        # =====================================================
+
+        treatment = DiagnosisService.recommend_treatment(
+            disease_id
+        )
+
+        # =====================================================
+        # NO TREATMENT AVAILABLE
+        # =====================================================
+
+        if not treatment:
+
+            return {
+                "status": "no_treatment",
+                "level": "none",
+                "message": (
+                    "No treatment recommendation is "
+                    "available for this disease."
+                ),
+                "treatment": None,
+                "warning": None
+            }
+
+        # =====================================================
+        # HIGH CERTAINTY
+        # =====================================================
+
+        if certainty >= 0.70:
+
+            return {
+                "status": "recommended",
+                "level": "high",
+                "message": (
+                    "This treatment is recommended "
+                    "based on the diagnosis."
+                ),
+                "treatment": treatment,
+                "warning": None
+            }
+
+        # =====================================================
+        # MEDIUM CERTAINTY
+        # =====================================================
+
+        elif certainty >= 0.40:
+
+            return {
+                "status": "verify",
+                "level": "medium",
+                "message": (
+                    "This treatment may be suitable, "
+                    "but the diagnosis should be verified."
+                ),
+                "treatment": treatment,
+                "warning": (
+                    "Diagnosis confidence is moderate. "
+                    "Please verify the symptoms before "
+                    "applying treatment."
+                )
+            }
+
+        # =====================================================
+        # LOW CERTAINTY
+        # =====================================================
+
+        else:
+
+            return {
+                "status": "insufficient",
+                "level": "low",
+                "message": (
+                    "The diagnosis confidence is too low "
+                    "to strongly recommend treatment."
+                ),
+                "treatment": None,
+                "warning": (
+                    "Please select additional symptoms "
+                    "or verify the diagnosis."
+                )
+            }

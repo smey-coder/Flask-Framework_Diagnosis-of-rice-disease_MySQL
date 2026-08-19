@@ -1,91 +1,698 @@
-{% extends "layouts/admin_layout/admin.html"%}
-{% block title %} Users - User Management{% endblock %}
+{% extends "layouts/admin_layout/admin.html" %} {% block title %}Users - User
+Management{% endblock %} {% block content %}
 
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Users</h1>
-    <a href="{{ url_for('tbl_users.create')}}" class="btn btn-primary">New User</a>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/users.css') }}"
+/>
+
+<div class="users-page">
+
+  <!-- =========================================
+     PAGE HEADER
+========================================== -->
+<div class="users-header">
+
+    <!-- Left -->
+    <div class="users-header-left">
+
+        <div class="page-title">
+
+            <!-- Icon -->
+            <div class="page-title-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <!-- Title -->
+            <div class="page-title-content">
+
+                <div class="page-title-top">
+                    <span class="page-breadcrumb">
+                        <i class="bi bi-house-door me-1"></i>
+                        Administration
+                    </span>
+
+                    <i class="bi bi-chevron-right page-arrow"></i>
+
+                    <span class="page-current">
+                        Users
+                    </span>
+                </div>
+
+                <h1>User Management</h1>
+
+                <p>
+                    Manage system users, roles and account status.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Right -->
+    <div class="users-header-right">
+
+        <!-- User count -->
+        <div class="header-user-count">
+
+            <div class="header-count-icon">
+                <i class="bi bi-person-lines-fill"></i>
+            </div>
+
+            <div>
+                <span>Total Users</span>
+
+                <strong>
+                    {{ users|length }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- Add User -->
+        <a
+            href="{{ url_for('tbl_users.create') }}"
+            class="btn btn-primary users-add-btn"
+        >
+            <i class="bi bi-person-plus-fill me-2"></i>
+
+            <span>New User</span>
+        </a>
+
+    </div>
+
+</div>
+  <br></br>
+  <!-- =========================================
+     USER SUMMARY
+========================================== -->
+<div class="user-summary-grid">
+
+    <!-- Total Users -->
+    <div class="user-summary-card total-card">
+        <div class="summary-card-content">
+
+            <div class="summary-icon total">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div class="summary-info">
+                <span class="summary-label">Total Users</span>
+
+                <strong class="summary-number">
+                    {{ users|length }}
+                </strong>
+
+                <span class="summary-description">
+                    <i class="bi bi-people me-1"></i>
+                    Registered users
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Active Users -->
+    <div class="user-summary-card active-card">
+        <div class="summary-card-content">
+
+            <div class="summary-icon active">
+                <i class="bi bi-person-check-fill"></i>
+            </div>
+
+            <div class="summary-info">
+                <span class="summary-label">Active Users</span>
+
+                <strong class="summary-number" id="activeCount">
+                    {{ users|selectattr('is_active')|list|length }}
+                </strong>
+
+                <span class="summary-description text-success">
+                    <span class="status-dot active-dot"></span>
+                    Currently active
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Inactive Users -->
+    <div class="user-summary-card inactive-card">
+        <div class="summary-card-content">
+
+            <div class="summary-icon inactive">
+                <i class="bi bi-person-x-fill"></i>
+            </div>
+
+            <div class="summary-info">
+                <span class="summary-label">Inactive Users</span>
+
+                <strong class="summary-number" id="inactiveCount">
+                    {{ users|rejectattr('is_active')|list|length }}
+                </strong>
+
+                <span class="summary-description text-secondary">
+                    <span class="status-dot inactive-dot"></span>
+                    Currently inactive
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Roles -->
+    <div class="user-summary-card role-card">
+        <div class="summary-card-content">
+
+            <div class="summary-icon role">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+
+            <div class="summary-info">
+                <span class="summary-label">Assigned Roles</span>
+
+                <strong class="summary-number">
+                    {{ users|map(attribute='roles')|map('length')|sum }}
+                </strong>
+
+                <span class="summary-description">
+                    <i class="bi bi-shield-check me-1"></i>
+                    User role assignments
+                </span>
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
-{% if users %}
-<div class="table-responsive">
-    <table class="table table-striped table-bordered align-middle shadow-sm">
-        <thead class="table-light">
-            <tr>
-                <th style="width: 50px;">#</th>
-                <th>Username</th>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th class="text-end" style="width: 160px;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
+ <!-- =========================================
+     USER FILTER BAR
+========================================== -->
+<div class="user-filter-card">
+
+    <!-- Search -->
+    <div class="filter-search-wrapper">
+        <label for="userSearch" class="filter-label">
+            <i class="bi bi-search me-1"></i>
+            Search Users
+        </label>
+
+        <div class="filter-search">
+            <i class="bi bi-search search-icon"></i>
+
+            <input
+                type="text"
+                id="userSearch"
+                class="form-control"
+                placeholder="Search username, name or email..."
+                autocomplete="off"
+            />
+
+            <button
+                type="button"
+                class="search-clear-btn"
+                id="clearUserSearch"
+                onclick="clearUserSearch()"
+                title="Clear search"
+                style="display: none;"
+            >
+                <i class="bi bi-x-circle-fill"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Role Filter -->
+    <div class="filter-control">
+        <label for="roleFilter" class="filter-label">
+            <i class="bi bi-shield-check me-1"></i>
+            Role
+        </label>
+
+        <select id="roleFilter" class="form-select">
+            <option value="">All Roles</option>
+
+            {% set role_names = [] %}
+
             {% for user in users %}
-            <tr>
-                <td>{{ loop.index}}</td>
+                {% for role in user.roles %}
 
-                <td>
-                    <a
-                      href="{{ url_for('tbl_users.detail', user_id = user.id)}}"
-                      class="text-decoration-none fw-semibold"
-                    >
-                      {{ user.username}}
-                     </a>
-                </td>
-                <td>{{ user.full_name}}</td>
-                <td>{{ user.email}}</td>
+                    {% if role.name not in role_names %}
 
-                <td>
-                    {% if user.roles%}
-                    {{ user.roles[0].name }}
-                    {% if user.roles|length > 1 %}
-                    <span class="text-warning small">(multiple)</span>
+                        {% set _ = role_names.append(role.name) %}
+
+                        <option value="{{ role.name|lower }}">
+                            {{ role.name }}
+                        </option>
+
                     {% endif %}
-                    {% else %}
-                       <span class="text-muted">No Role</span>
-                    {% endif %}
-                </td>
 
-                <td>
-                    {% if user.is_active %}
-                    <span class="badge text-bg-success">Active</span>
-                    {% else %}
-                    <span class="badge text-bg-secondary">Inactive</span>
-                    {% endif %}
-                </td>
-
-                <td>{{ user.created_at.strftime('%Y-%m-%d')}}</td>
-
-                <td class="text-end">
-                   
-                    <a
-                    href="{{ url_for('tbl_users.edit', user_id = user.id)}}"
-                    class="btn btn-sm btn-outline-primary"
-                    title="Edit"
-                    >
-                     ✏️
-                    </a>
-                    
-                    <a
-                    href="{{ url_for('tbl_users.delete_confirm', user_id = user.id)}}"
-                    class="btn btn-sm btn-outline-danger"
-                    title="Delete"
-                    >
-                     🗑️
-                    </a>
-                </td>
-            </tr>
+                {% endfor %}
             {% endfor %}
-        </tbody>
-    </table>
+
+        </select>
+    </div>
+
+
+    <!-- Status Filter -->
+    <div class="filter-control">
+
+        <label for="statusFilter" class="filter-label">
+            <i class="bi bi-toggle-on me-1"></i>
+            Status
+        </label>
+
+        <select id="statusFilter" class="form-select">
+
+            <option value="">All Status</option>
+
+            <option value="active">
+                Active
+            </option>
+
+            <option value="inactive">
+                Inactive
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- Reset -->
+    <div class="filter-action">
+
+        <button
+            type="button"
+            class="btn btn-outline-secondary reset-filter"
+            onclick="resetUserFilters()"
+        >
+            <i class="bi bi-arrow-counterclockwise me-1"></i>
+            Reset
+        </button>
+
+    </div>
+
 </div>
-{% else %}
-  <div class="alert alert-info">
-    No users found.
-    <a href="{{ url_for('tbl_users.create')}}">Create the first user</a>.
+
+
+<!-- Filter Result Info -->
+<div class="filter-result-bar">
+
+    <div class="filter-result-info">
+
+        <i class="bi bi-funnel-fill me-1"></i>
+
+        <span>
+            Showing
+            <strong id="visibleUserCount">{{ users|length }}</strong>
+            users
+        </span>
+
+    </div>
+
+    <div id="activeFilterInfo" class="active-filter-info">
+        <span class="badge bg-primary-subtle text-primary">
+            <i class="bi bi-filter me-1"></i>
+            Filters ready
+        </span>
+    </div>
+
+</div>
+
+  <!-- =========================================
+     TABLE
+========================================== -->
+  {% if users %}
+
+  <div class="user-table-card">
+    <div class="table-scroll-wrapper">
+      <table class="table user-table align-middle mb-0" id="usersTable">
+        <thead>
+          <tr>
+            <th class="text-center id-column">#</th>
+            <th>User</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="text-center">Status</th>
+            <th>Created</th>
+            <th class="text-center action-column">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for user in users %} {% set role_name = user.roles[0].name if
+          user.roles else 'No Role' %}
+
+          <tr
+            class="user-row"
+            data-search="
+                        {{ user.username|lower }}
+                        {{ user.full_name|lower }}
+                        {{ user.email|lower }}
+                    "
+            data-role="{{ role_name|lower }}"
+            data-status="{{ 'active' if user.is_active else 'inactive' }}"
+          >
+            <!-- ID -->
+            <td class="text-center">
+              <span class="user-id"> {{ loop.index }} </span>
+            </td>
+
+            <!-- USER -->
+            <td>
+              <div class="user-profile-cell">
+                <div class="user-avatar">{{ user.username[:1]|upper }}</div>
+
+                <div class="user-info">
+                  <a
+                    href="{{ url_for('tbl_users.detail', user_id=user.id) }}"
+                    class="username"
+                  >
+                    {{ user.username }}
+                  </a>
+
+                  <small> ID: {{ user.id }} </small>
+                </div>
+              </div>
+            </td>
+
+            <!-- FULL NAME -->
+            <td>
+              <span class="full-name"> {{ user.full_name or '-' }} </span>
+            </td>
+
+            <!-- EMAIL -->
+            <td>
+              {% if user.email %}
+
+              <a href="mailto:{{ user.email }}" class="email-link">
+                <i class="bi bi-envelope me-1"></i>
+                {{ user.email }}
+              </a>
+
+              {% else %}
+
+              <span class="text-muted">-</span>
+
+              {% endif %}
+            </td>
+
+            <!-- ROLE -->
+            <td>
+              {% if user.roles %}
+
+              <div class="role-wrapper">
+                {% for role in user.roles %}
+
+                <span class="role-badge">
+                  <i class="bi bi-shield-fill-check"></i>
+                  {{ role.name }}
+                </span>
+
+                {% endfor %}
+              </div>
+
+              {% else %}
+
+              <span class="no-role"> No Role </span>
+
+              {% endif %}
+            </td>
+
+            <!-- STATUS -->
+            <td class="text-center">
+              {% if user.is_active %}
+
+              <span class="user-status active">
+                <span class="status-dot"></span>
+
+                Active
+              </span>
+
+              {% else %}
+
+              <span class="user-status inactive">
+                <span class="status-dot"></span>
+
+                Inactive
+              </span>
+
+              {% endif %}
+            </td>
+
+            <!-- CREATED -->
+            <td>
+              <div class="created-date">
+                <i class="bi bi-calendar3"></i>
+
+                {{ user.created_at.strftime('%Y-%m-%d') }}
+              </div>
+            </td>
+
+            <!-- ACTIONS -->
+            <td class="text-center action-column">
+              <div class="user-actions">
+                <a
+                  href="{{ url_for('tbl_users.detail', user_id=user.id) }}"
+                  class="action-btn view"
+                  title="View"
+                >
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('tbl_users.edit', user_id=user.id) }}"
+                  class="action-btn edit"
+                  title="Edit"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+
+                <a
+                  href="{{ url_for('tbl_users.delete_confirm', user_id=user.id) }}"
+                  class="action-btn delete"
+                  title="Delete"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          {% endfor %}
+
+          <!-- SEARCH EMPTY -->
+          <tr id="noUserResult" style="display: none">
+            <td colspan="8">
+              <div class="empty-user-state">
+                <i class="bi bi-search"></i>
+
+                <h5>No Users Found</h5>
+
+                <p>No users match your search or filters.</p>
+
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  onclick="resetUserFilters()"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  {% endif %}
-  {% endblock %}
+
+  {% else %}
+
+  <!-- NO USERS -->
+  <div class="empty-user-card">
+    <div class="empty-user-icon">
+      <i class="bi bi-people"></i>
+    </div>
+
+    <h4>No Users Found</h4>
+
+    <p>There are currently no users in the system.</p>
+
+    <a href="{{ url_for('tbl_users.create') }}" class="btn btn-primary">
+      <i class="bi bi-person-plus me-1"></i>
+      Create First User
+    </a>
+  </div>
+
+  {% endif %} 
+</div>
+
+<!-- =========================================
+     JAVASCRIPT
+========================================== -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("userSearch");
+    const roleFilter = document.getElementById("roleFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    const rows = document.querySelectorAll(".user-row");
+
+    const countElement = document.getElementById("visibleUserCount");
+
+    const noResult = document.getElementById("noUserResult");
+
+    const filterStatus = document.getElementById("filterStatus");
+
+    function filterUsers() {
+      const search = searchInput.value.toLowerCase().trim();
+
+      const role = roleFilter.value.toLowerCase();
+
+      const status = statusFilter.value.toLowerCase();
+
+      let visible = 0;
+
+      rows.forEach(function (row) {
+        const rowSearch = row.dataset.search.toLowerCase();
+
+        const rowRole = row.dataset.role.toLowerCase();
+
+        const rowStatus = row.dataset.status.toLowerCase();
+
+        const matchSearch = !search || rowSearch.includes(search);
+
+        const matchRole = !role || rowRole === role;
+
+        const matchStatus = !status || rowStatus === status;
+
+        if (matchSearch && matchRole && matchStatus) {
+          row.style.display = "";
+          visible++;
+        } else {
+          row.style.display = "none";
+        }
+      });
+
+      countElement.textContent = visible;
+
+      if (visible === 0) {
+        noResult.style.display = "";
+      } else {
+        noResult.style.display = "none";
+      }
+
+      updateFilterText(search, role, status);
+    }
+
+    function updateFilterText(search, role, status) {
+      const filters = [];
+
+      if (search) filters.push(`Search: "${search}"`);
+
+      if (role) filters.push(`Role: ${role}`);
+
+      if (status) filters.push(`Status: ${status}`);
+
+      if (filters.length) {
+        filterStatus.textContent = filters.join(" • ");
+      } else {
+        filterStatus.textContent = "All users";
+      }
+    }
+
+    searchInput.addEventListener("input", filterUsers);
+
+    roleFilter.addEventListener("change", filterUsers);
+
+    statusFilter.addEventListener("change", filterUsers);
+
+    window.resetUserFilters = function () {
+      searchInput.value = "";
+      roleFilter.value = "";
+      statusFilter.value = "";
+
+      filterUsers();
+    };
+  });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("userSearch");
+    const clearButton = document.getElementById("clearUserSearch");
+
+    if (searchInput) {
+
+        searchInput.addEventListener("input", function () {
+
+            clearButton.style.display =
+                this.value.trim() !== "" ? "flex" : "none";
+
+        });
+
+    }
+
+});
+
+
+function clearUserSearch() {
+
+    const searchInput = document.getElementById("userSearch");
+    const clearButton = document.getElementById("clearUserSearch");
+
+    searchInput.value = "";
+
+    clearButton.style.display = "none";
+
+    searchInput.focus();
+
+    // Trigger filtering
+    searchInput.dispatchEvent(new Event("input"));
+
+}
+
+
+function resetUserFilters() {
+
+    const searchInput = document.getElementById("userSearch");
+    const roleFilter = document.getElementById("roleFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const clearButton = document.getElementById("clearUserSearch");
+
+    if (searchInput) {
+        searchInput.value = "";
+    }
+
+    if (roleFilter) {
+        roleFilter.value = "";
+    }
+
+    if (statusFilter) {
+        statusFilter.value = "";
+    }
+
+    if (clearButton) {
+        clearButton.style.display = "none";
+    }
+
+    // Trigger filtering
+    if (searchInput) {
+        searchInput.dispatchEvent(new Event("input"));
+    }
+
+}
+
+</script>
+
+{% endblock %}

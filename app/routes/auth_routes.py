@@ -6,118 +6,153 @@ from app.models.role import RoleTable
 from app.services.user_service import UserService
 from app.services.auth_service import AuthService
 from extensions import csrf, db
+from app.decorators.access import permission_required, role_required
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+#pubblic Login and rigister
 # ===================== LOGIN =====================
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "")
-        remember = True if request.form.get("remember") else False 
-
-        user = UserTable.query.filter_by(username=username).first()
-
-        if not user or not user.check_password(password):
-            flash("Invalid username or password.", "danger")
-            return redirect(url_for("auth.login"))
+    try:
+        if request.method == "POST":
+            username = request.form.get("username", "").strip()
+            password = request.form.get("password", "")
+            remember = True if request.form.get("remember") else False 
         
-        # LOGIN WITH REMEMBER ME  FIX HERE
-        login_user(user, remember=remember)
-
-        if not user.is_active:
-            flash("Your account is inactive. Please contact administrator.", "warning")
-            return redirect(url_for("auth.login"))
-
-        #  CHECK ROLE FIRST
-        if user.has_role("Admin"):
-            login_user(user)
-            flash(f"Welcome back, {user.full_name}!", "success")
-            return redirect(url_for("admin.dashboard"))
-
-        elif user.has_role("Expert"):
-            login_user(user)
-            flash(f"Welcome back, {user.full_name}!", "success")
-            return redirect(url_for("expert.dashboard"))
-
-        elif user.has_role("User"):
-            login_user(user)
-            flash(f"Welcome back, {user.full_name}!", "success")
-            return redirect(url_for("user.dashboard"))
-
-        else:
-            #  NO ROLE → DO NOT LOGIN
-            flash("No role assigned. Contact administrator.", "warning")
-            return redirect(url_for("auth.login"))
-
-    return render_template("auth/login.html")
-
+            user = UserTable.query.filter_by(username=username).first()
+        
+            if not user or not user.check_password(password):
+                flash("Invalid username or password.", "danger")
+                return redirect(url_for("auth.login"))
+                
+                # LOGIN WITH REMEMBER ME  FIX HERE
+            login_user(user, remember=remember)
+        
+            if not user.is_active:
+                flash("Your account is inactive. Please contact administrator.", "warning")
+                return redirect(url_for("auth.login"))
+        
+            #  CHECK ROLE FIRST
+            if user.has_role("Admin"):
+                login_user(user)
+                flash(f"Welcome back, {user.full_name}!", "success")
+                return redirect(url_for("admin.dashboard"))
+        
+            elif user.has_role("Expert"):
+                login_user(user)
+                flash(f"Welcome back, {user.full_name}!", "success")
+                return redirect(url_for("admin.dashboard"))
+        
+            elif user.has_role("User"):
+                login_user(user)
+                flash(f"Welcome back, {user.full_name}!", "success")
+                return redirect(url_for("user.dashboard"))
+        
+            else:
+                #  NO ROLE → DO NOT LOGIN
+                flash("No role assigned. Contact administrator.", "warning")
+                return redirect(url_for("auth.login"))
+        
+        return render_template("auth/login.html")
+    except Exception as e:
+        print(f"Error: {e}")
+        flash("Login Error", "danger")
+        return redirect(url_for("auth.login"))
 # ===================== REGISTER =====================
 @auth_bp.route("/register", methods=["GET", "POST"])
 @csrf.exempt
 def register():
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        email = request.form.get("email", "").strip()
-        full_name = request.form.get("full_name", "").strip()
-        password = request.form.get("password", "")
-        confirm_password = request.form.get("confirm_password", "")
+    try:
+        if request.method == "POST":
+            username = request.form.get("username", "").strip()
+            email = request.form.get("email", "").strip()
+            full_name = request.form.get("full_name", "").strip()
+            password = request.form.get("password", "")
+            confirm_password = request.form.get("confirm_password", "")
 
-        errors = []
+            errors = []
 
-        if not username:
-            errors.append("Username is required.")
-        if not email:
-            errors.append("Email is required.")
-        if not full_name:
-            errors.append("Full name is required.")
-        if not password:
-            errors.append("Password is required.")
-        if password != confirm_password:
-            errors.append("Passwords do not match.")
+            if not username:
+                errors.append("Username is required.")
+            if not email:
+                errors.append("Email is required.")
+            if not full_name:
+                errors.append("Full name is required.")
+            if not password:
+                errors.append("Password is required.")
+            if password != confirm_password:
+                errors.append("Passwords do not match.")
 
-        if UserTable.query.filter_by(username=username).first():
-            errors.append("Username already exists.")
-        if UserTable.query.filter_by(email=email).first():
-            errors.append("Email already registered.")
+            if UserTable.query.filter_by(username=username).first():
+                errors.append("Username already exists.")
+            if UserTable.query.filter_by(email=email).first():
+                errors.append("Email already registered.")
 
-        if errors:
-            for e in errors:
-                flash(e, "danger")
-            return render_template("auth/register.html", **request.form)
+            if errors:
+                for e in errors:
+                    flash(e, "danger")
+                return render_template("auth/register.html", **request.form)
 
-        # default_role = RoleTable.query.filter_by(name="User").first()
-        # default_role_id = default_role.id if default_role else None
+            # default_role = RoleTable.query.filter_by(name="User").first()
+            # default_role_id = default_role.id if default_role else None
 
-        new_user = UserService.create_user(
-            data={
-                "username": username,
-                "email": email,
-                "full_name": full_name,
-                "is_active": True,
-            },
-            password=password,
-            # role_id=default_role_id,
-        )
-        user_role = RoleTable.query.filter_by(name="User").first()
-        if user_role:
-            new_user.roles.append(user_role)
-            db.session.commit()
+            new_user = UserService.create_user(
+                data={
+                    "username": username,
+                    "email": email,
+                    "full_name": full_name,
+                    "is_active": True,
+                },
+                password=password,
+                # role_id=default_role_id,
+            )
+            user_role = RoleTable.query.filter_by(name="User").first()
+            if user_role:
+                new_user.roles.append(user_role)
+                db.session.commit()
 
+        
+            flash("Your account has been created successfully. Please log in to continue.", "success")
+            return redirect(url_for("auth.login"))
+
+        return render_template("auth/register.html")
+    except Exception as e:
+            # Rollback database transaction
+            db.session.rollback()
     
-        flash("Your account has been created successfully. Please log in to continue.", "success")
-        return redirect(url_for("auth.login"))
-
-    return render_template("auth/register.html")
+            # Log real error to server console/log
+            current_app.logger.exception(
+                "Registration Error"
+            )
+    
+            # User-friendly message
+            flash(
+                "Something went wrong while creating your account. "
+                "Please try again.",
+                "danger"
+            )
+    
+            return render_template(
+                "auth/register.html",
+                username=request.form.get("username", ""),
+                email=request.form.get("email", ""),
+                full_name=request.form.get("full_name", "")
+            )
 
 
 # ===================== LOGOUT =====================
 @auth_bp.route("/logout")
 @login_required
+@role_required("Admin", "Expert", "User")
 def logout():
-    logout_user()
-    flash("You have been logged out.", "info")
-    return redirect(url_for("auth.login"))
+    try:
+        logout_user()
+        flash("You have been logged out.", "info")
+        return redirect(url_for("auth.login"))
+    except Exception as e:
+        current_app.logger.exception("Logout Error")
+        flash("Something went wrong while logging out.","danger")
+        return redirect(url_for("auth.login"))
 
 
 # ===================== FORGOT PASSWORD =====================
@@ -152,11 +187,9 @@ def forget_password():
 def verify_email():
     try:
         email = request.args.get("email")
-
         if not email:
             flash("Invalid request", "danger")
             return redirect(url_for("auth.forget_password"))
-
         if request.method == "POST":
             otp = request.form.get("otp")
 

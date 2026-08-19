@@ -1,0 +1,721 @@
+{% extends "layouts/user_layout/user.html" %}
+
+{% block title %}
+Treatment History
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h3 class="fw-bold mb-1">
+
+            <i class="bi bi-clock-history text-success me-2"></i>
+
+            Treatment History
+
+        </h3>
+
+        <p class="text-muted mb-0">
+
+            Track treatments applied to monitored crops
+
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('treatment_history.create') }}"
+        class="btn btn-success rounded-pill px-4"
+    >
+
+        <i class="bi bi-plus-lg me-1"></i>
+
+        Record Treatment
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     SEARCH / FILTER
+====================================================== -->
+
+<div class="card border-0 bg-light rounded-4 mb-4">
+
+    <div class="card-body">
+
+        <form
+            method="GET"
+            action="{{ url_for('treatment_history.index') }}"
+        >
+
+            <div class="row g-3 align-items-end">
+
+                <!-- Search -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+
+                        Search
+
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text bg-white">
+
+                            <i class="bi bi-search text-success"></i>
+
+                        </span>
+
+                        <input
+                            type="text"
+                            name="search"
+                            class="form-control"
+                            value="{{ search or '' }}"
+                            placeholder="Search treatment or result..."
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Status -->
+
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">
+
+                        Status
+
+                    </label>
+
+                    <select
+                        name="status"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            All Status
+                        </option>
+
+
+                        {% for value, label in status_choices %}
+
+                            <option
+                                value="{{ value }}"
+                                {% if status == value %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ label }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="col-md-3 d-flex gap-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success flex-grow-1"
+                    >
+
+                        <i class="bi bi-search me-1"></i>
+
+                        Search
+
+                    </button>
+
+
+                    <a
+                        href="{{ url_for('treatment_history.index') }}"
+                        class="btn btn-outline-secondary"
+                        title="Reset"
+                    >
+
+                        <i class="bi bi-arrow-counterclockwise"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TABLE
+====================================================== -->
+
+<div class="card border-0 shadow-sm rounded-4">
+
+    <!-- Table Header -->
+
+    <div class="card-header bg-white border-0 py-3">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <h5 class="fw-bold mb-1">
+
+                    Treatment Records
+
+                </h5>
+
+
+                <small class="text-muted">
+
+                    {% if pagination %}
+
+                        Showing
+                        {{ pagination.items|length }}
+                        of
+                        {{ pagination.total }}
+                        records
+
+                    {% else %}
+
+                        No records
+
+                    {% endif %}
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Table Body -->
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th class="ps-4">
+                            #
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Field
+                        </th>
+
+                        <th>
+                            Disease
+                        </th>
+
+                        <th>
+                            Treatment
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th class="text-end pe-4">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for history in histories %}
+
+                    <tr>
+
+                        <!-- ID -->
+
+                        <td class="ps-4">
+
+                            <span class="fw-semibold text-muted">
+
+                                #{{ history.id }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            {% if history.treatment_date %}
+
+                                {{ history.treatment_date.strftime("%d-%m-%Y") }}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    N/A
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- FIELD -->
+
+                        <td>
+
+                            {% if history.monitoring
+                                and history.monitoring.field_crop
+                                and history.monitoring.field_crop.field %}
+
+                                <span class="fw-semibold">
+
+                                    {{ history.monitoring.field_crop.field.field_name }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    N/A
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- DISEASE -->
+
+                        <td>
+
+                            {% if history.treatment
+                                and history.treatment.disease %}
+
+                                <span class="fw-semibold text-danger">
+
+                                    <i class="bi bi-virus me-1"></i>
+
+                                    {{ history.treatment.disease.disease_name }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    Unknown Disease
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- TREATMENT -->
+
+                        <td>
+
+                            {% if history.treatment %}
+
+                                {{ history.treatment.method }}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    N/A
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- TYPE -->
+
+                        <td>
+
+                            {% if history.treatment %}
+
+                                <span
+                                    class="badge bg-success-subtle text-success"
+                                >
+
+                                    {{ history.treatment.treatment_type }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    N/A
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if history.status == "completed" %}
+
+                                <span class="badge bg-success">
+
+                                    <i class="bi bi-check-circle me-1"></i>
+
+                                    Completed
+
+                                </span>
+
+
+                            {% elif history.status == "in_progress" %}
+
+                                <span class="badge bg-primary">
+
+                                    <i class="bi bi-arrow-repeat me-1"></i>
+
+                                    In Progress
+
+                                </span>
+
+
+                            {% elif history.status == "planned" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    <i class="bi bi-clock me-1"></i>
+
+                                    Planned
+
+                                </span>
+
+
+                            {% elif history.status == "failed" %}
+
+                                <span class="badge bg-danger">
+
+                                    <i class="bi bi-x-circle me-1"></i>
+
+                                    Failed
+
+                                </span>
+
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    {{ history.status }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTIONS -->
+
+                        <td class="text-end pe-4">
+
+                            <div class="btn-group">
+
+                                <!-- View -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'treatment_history.detail',
+                                        id=history.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-info"
+                                    title="View"
+                                >
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+
+                                <!-- Edit -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'treatment_history.edit',
+                                        id=history.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-warning"
+                                    title="Edit"
+                                >
+
+                                    <i class="bi bi-pencil"></i>
+
+                                </a>
+
+
+                                <!-- Delete -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'treatment_history.delete',
+                                        id=history.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    title="Delete"
+                                >
+
+                                    <i class="bi bi-trash"></i>
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% else %}
+
+                    <!-- EMPTY -->
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="text-center py-5"
+                        >
+
+                            <i
+                                class="bi bi-clock-history text-muted"
+                                style="font-size: 50px;"
+                            ></i>
+
+                            <h6 class="fw-bold mt-3">
+
+                                No Treatment History
+
+                            </h6>
+
+                            <p class="text-muted mb-0">
+
+                                No treatment records have been found.
+
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PAGINATION
+    ====================================================== -->
+
+    {% if pagination and pagination.pages > 1 %}
+
+    <div class="card-footer bg-white border-0">
+
+        <nav>
+
+            <ul class="pagination justify-content-end mb-0">
+
+                <!-- Previous -->
+
+                {% if pagination.has_prev %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'treatment_history.index',
+                                page=pagination.prev_num,
+                                search=search,
+                                status=status
+                            ) }}"
+                        >
+
+                            Previous
+
+                        </a>
+
+                    </li>
+
+                {% else %}
+
+                    <li class="page-item disabled">
+
+                        <span class="page-link">
+                            Previous
+                        </span>
+
+                    </li>
+
+                {% endif %}
+
+
+                <!-- Pages -->
+
+                {% for p in pagination.iter_pages(
+                    left_edge=1,
+                    right_edge=1,
+                    left_current=2,
+                    right_current=2
+                ) %}
+
+                    {% if p %}
+
+                        {% if p == pagination.page %}
+
+                            <li class="page-item active">
+
+                                <span class="page-link">
+
+                                    {{ p }}
+
+                                </span>
+
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="{{ url_for(
+                                        'treatment_history.index',
+                                        page=p,
+                                        search=search,
+                                        status=status
+                                    ) }}"
+                                >
+
+                                    {{ p }}
+
+                                </a>
+
+                            </li>
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <li class="page-item disabled">
+
+                            <span class="page-link">
+
+                                …
+
+                            </span>
+
+                        </li>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+                <!-- Next -->
+
+                {% if pagination.has_next %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'treatment_history.index',
+                                page=pagination.next_num,
+                                search=search,
+                                status=status
+                            ) }}"
+                        >
+
+                            Next
+
+                        </a>
+
+                    </li>
+
+                {% else %}
+
+                    <li class="page-item disabled">
+
+                        <span class="page-link">
+                            Next
+                        </span>
+
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,409 @@
+/* =====================================================
+   DIAGNOSIS RESULT PAGE
+===================================================== */
+
+.diagnosis-result-page {
+  padding: 10px 0 30px;
+}
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.diagnosis-result-header {
+  margin-bottom: 25px;
+}
+
+.diagnosis-result-header h3 {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+
+.diagnosis-result-header p {
+  font-size: 0.95rem;
+}
+
+/* =====================================================
+   SUMMARY CARD
+===================================================== */
+
+.diagnosis-summary-card {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.diagnosis-summary-card .card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.diagnosis-summary-card .card-footer {
+  padding: 15px 20px;
+  background: #fff;
+  border-top: 1px solid #e9ecef;
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.diagnosis-table {
+  margin-bottom: 0;
+}
+
+.diagnosis-table thead th {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #495057;
+  padding: 14px 10px;
+  white-space: nowrap;
+}
+
+.diagnosis-table tbody td {
+  padding: 16px 12px;
+  vertical-align: middle;
+}
+
+.diagnosis-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.diagnosis-table tbody tr:hover {
+  background-color: #f8fbff;
+}
+
+/* =====================================================
+   DISEASE IMAGE
+===================================================== */
+
+.disease-image {
+  width: 95px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  padding: 3px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.disease-image:hover {
+  transform: scale(1.06);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+.no-disease-image {
+  width: 95px;
+  height: 75px;
+  border-radius: 12px;
+  background: #f1f3f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  color: #adb5bd;
+  font-size: 0.8rem;
+}
+
+/* =====================================================
+   DISEASE NAME
+===================================================== */
+
+.disease-name {
+  font-weight: 700;
+  color: #212529;
+  font-size: 0.95rem;
+}
+
+.disease-id {
+  font-size: 0.75rem;
+  color: #adb5bd;
+  margin-top: 3px;
+}
+
+/* =====================================================
+   SEVERITY
+===================================================== */
+
+.severity-badge {
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* =====================================================
+   CERTAINTY
+===================================================== */
+
+.certainty-wrapper {
+  min-width: 100px;
+}
+
+.certainty-badge {
+  display: inline-block;
+  padding: 7px 13px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.certainty-high {
+  background: #d1e7dd;
+  color: #146c43;
+}
+
+.certainty-medium {
+  background: #fff3cd;
+  color: #997404;
+}
+
+.certainty-low {
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.certainty-label {
+  font-size: 0.72rem;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+/* =====================================================
+   CONFIDENCE PROGRESS
+===================================================== */
+
+.confidence-progress {
+  height: 6px;
+  width: 90px;
+  margin: 7px auto 0;
+  border-radius: 10px;
+  background: #e9ecef;
+  overflow: hidden;
+}
+
+.confidence-progress-bar {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.confidence-high {
+  background: #198754;
+}
+
+.confidence-medium {
+  background: #ffc107;
+}
+
+.confidence-low {
+  background: #6c757d;
+}
+
+/* =====================================================
+   RECOMMENDATION
+===================================================== */
+
+.recommendation-box {
+  border-radius: 12px;
+  padding: 11px 13px;
+  margin-bottom: 10px;
+  border: 1px solid transparent;
+}
+
+.recommendation-box .recommendation-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.recommendation-box small {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.recommendation-high {
+  background: #e8f5e9;
+  border-color: #badbcc;
+  color: #146c43;
+}
+
+.recommendation-medium {
+  background: #fff8df;
+  border-color: #ffe69c;
+  color: #997404;
+}
+
+.recommendation-low {
+  background: #f1f3f5;
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+
+.diagnosis-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.diagnosis-actions .btn {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.diagnosis-actions .btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Recommended Treatment */
+
+.btn-recommended-treatment {
+  background: #198754;
+  border-color: #198754;
+  color: #fff;
+}
+
+.btn-recommended-treatment:hover {
+  background: #157347;
+  border-color: #157347;
+  color: #fff;
+}
+
+/* Verification Treatment */
+
+.btn-verification-treatment {
+  background: #ffc107;
+  border-color: #ffc107;
+  color: #212529;
+}
+
+.btn-verification-treatment:hover {
+  background: #ffca2c;
+  color: #212529;
+}
+
+/* Low confidence */
+
+.btn-treatment-options {
+  border-color: #adb5bd;
+  color: #6c757d;
+}
+
+.btn-treatment-options:hover {
+  background: #6c757d;
+  color: #fff;
+}
+
+/* Prevention */
+
+.btn-prevention {
+  border-color: #f0ad4e;
+  color: #d58512;
+}
+
+.btn-prevention:hover {
+  background: #f0ad4e;
+  color: #fff;
+}
+
+/* =====================================================
+   IMAGE MODAL
+===================================================== */
+
+.diagnosis-image-modal .modal-content {
+  background: #111;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.diagnosis-image-modal .modal-body {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diagnosis-image-modal img {
+  max-height: 80vh;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* =====================================================
+   EMPTY RESULT
+===================================================== */
+
+.no-diagnosis-result {
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+}
+
+.no-diagnosis-result i {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 992px) {
+  .diagnosis-table thead th {
+    font-size: 0.75rem;
+  }
+
+  .diagnosis-table tbody td {
+    padding: 12px 8px;
+  }
+
+  .recommendation-box {
+    padding: 9px 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .diagnosis-result-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .disease-image,
+  .no-disease-image {
+    width: 75px;
+    height: 60px;
+  }
+
+  .diagnosis-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .diagnosis-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .diagnosis-summary-card {
+    border-radius: 12px;
+  }
+
+  .diagnosis-table tbody td {
+    padding: 10px 6px;
+  }
+
+  .certainty-wrapper {
+    min-width: 80px;
+  }
+}

@@ -230,8 +230,74 @@
         <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'user.diagnosis_input' %}active{% endif %}" href="{{ url_for('user.diagnosis_input') }}">{{lang.sidebar.diagnostics}}</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'user.diagnosis_history' %}active{% endif %}" href="{{ url_for('user.diagnosis_history') }}">{{lang.sidebar.history}}</a>
+        <li class="nav-item dropdown">
+
+        <a
+            class="nav-link dropdown-toggle
+            {% if request.endpoint in [
+                'user.diagnosis_history',
+                'treatment_history.index'
+            ] %}
+                active
+            {% endif %}"
+            href="#"
+            id="historyDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+        >
+            <i class="bi bi-clock-history me-1"></i>
+            {{ lang.sidebar.history }}
+        </a>
+
+        <ul
+                class="dropdown-menu"
+                aria-labelledby="historyDropdown"
+            >
+
+                <!-- Diagnosis History -->
+
+                <li>
+
+                    <a
+                        class="dropdown-item
+                        {% if request.endpoint == 'user.diagnosis_history' %}
+                            active
+                        {% endif %}"
+                        href="{{ url_for('user.diagnosis_history') }}"
+                    >
+
+                        <i class="bi bi-heart-pulse text-danger me-2"></i>
+
+                        Diagnosis History
+
+                    </a>
+
+                </li>
+
+
+                <!-- Treatment History -->
+
+                <li>
+
+                    <a
+                        class="dropdown-item
+                        {% if request.endpoint == 'treatment_history.index' %}
+                            active
+                        {% endif %}"
+                        href="{{ url_for('treatment_history.index') }}"
+                    >
+
+                        <i class="bi bi-capsule text-success me-2"></i>
+
+                        Treatment History
+
+                    </a>
+
+                </li>
+
+            </ul>
+
         </li>
         <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'user.settings' %}active{% endif %}" href="{{ url_for('user.setting_index') }}">{{lang.sidebar.settings}}</a>

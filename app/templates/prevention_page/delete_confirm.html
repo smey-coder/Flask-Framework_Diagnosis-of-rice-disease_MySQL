@@ -1,37 +1,323 @@
-{% extends 'layouts/admin_layout/admin.html' %}
-
-{% block title %}Delete Prevention{% endblock %}
-
+{% extends 'layouts/admin_layout/admin.html' %} 
+{% block title %}Delete Prevention{% endblock %} 
 {% block content %}
-<div class="container mt-4">
-    <h3 class="mb-3 text-danger">Confirm Delete</h3>
 
-    <div class="card border-danger shadow-sm">
-        <div class="card-body">
-            <p>Are you sure you want to delete this prevention?</p>
+<div class="container-fluid py-4">
 
-            <ul>
-                <li><strong>Disease:</strong> {{ prevention.disease.disease_name }}</li>
-                <li><strong>Type:</strong> {{ prevention.prevention_type }}</li>
-                <li>
-                    <strong>Image:</strong>
-                    {% if prevention.image %}
-                        <img src="{{ url_for('static', filename='images/preventions/' ~ prevention.image) }}" 
-                             alt="Image" class="img-thumbnail" style="max-width:100px;">
-                    {% else %}
-                        -
-                    {% endif %}
-                </li>
-            </ul>
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-danger mb-1">
+        <i class="bi bi-trash3 me-2"></i>
+        Delete Prevention
+      </h3>
 
-            <form method="POST">
-                {{ form.hidden_tag() }}
-                <div class="text-end">
-                    {{ form.submit(class="btn btn-danger") }}
-                    <a href="{{ url_for('prevention.index') }}" class="btn btn-secondary">Cancel</a>
-                </div>
-            </form>
-        </div>
+      <p class="text-muted mb-0">
+        Confirm before permanently deleting this prevention record.
+      </p>
     </div>
+
+    <a
+      href="{{ url_for('prevention.index') }}"
+      class="btn btn-outline-secondary rounded-pill"
+    >
+      <i class="bi bi-arrow-left me-1"></i>
+      Back
+    </a>
+  </div>
+
+  <!-- Main Card -->
+  <div class="row justify-content-center">
+    <div class="col-xl-8 col-lg-10">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <!-- Danger Header -->
+        <div class="card-header bg-danger bg-opacity-10 border-0 p-4">
+          <div class="d-flex align-items-center">
+            <div class="delete-icon me-3">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+
+            <div>
+              <h5 class="fw-bold text-danger mb-1">Confirm Deletion</h5>
+
+              <small class="text-muted"> This action cannot be undone. </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-4">
+          <!-- Warning -->
+          <div
+            class="alert alert-warning border-0 rounded-3 d-flex align-items-start mb-4"
+          >
+            <i class="bi bi-info-circle-fill fs-5 me-3"></i>
+
+            <div>
+              <strong>Warning</strong>
+
+              <p class="mb-0 small">
+                Are you sure you want to delete this prevention? The prevention
+                information and associated image may no longer be available.
+              </p>
+            </div>
+          </div>
+
+          <!-- Prevention Information -->
+          <div class="row g-4">
+            <!-- Image -->
+            <div class="col-md-5">
+              <div class="prevention-image-box">
+                {% if prevention.image %}
+
+                <img
+                  src="{{ url_for(
+                                    'static',
+                                    filename='images/preventions/' ~ prevention.image
+                                ) }}"
+                  alt="{{ prevention.prevention_type }}"
+                  class="prevention-image"
+                />
+
+                {% else %}
+
+                <div class="no-image">
+                  <i class="bi bi-shield-check"></i>
+
+                  <span>No Image</span>
+                </div>
+
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Information -->
+            <div class="col-md-7">
+              <div class="info-section">
+                <!-- Disease -->
+                <div class="info-item">
+                  <div class="info-icon bg-success-subtle text-success">
+                    <i class="bi bi-virus2"></i>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block"> Disease </small>
+
+                    <strong> {{ prevention.disease.disease_name }} </strong>
+                  </div>
+                </div>
+
+                <!-- Prevention Type -->
+                <div class="info-item">
+                  <div class="info-icon bg-primary-subtle text-primary">
+                    <i class="bi bi-shield-check"></i>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block"> Prevention Type </small>
+
+                    <strong> {{ prevention.prevention_type }} </strong>
+                  </div>
+                </div>
+
+                <!-- Status -->
+                <div class="info-item">
+                  <div class="info-icon bg-warning-subtle text-warning">
+                    <i class="bi bi-toggle-on"></i>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block"> Status </small>
+
+                    {% if prevention.is_active %}
+
+                    <span class="badge bg-success rounded-pill">
+                      <i class="bi bi-check-circle me-1"></i>
+                      Active
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-secondary rounded-pill">
+                      <i class="bi bi-dash-circle me-1"></i>
+                      Inactive
+                    </span>
+
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mt-4">
+                  <small class="text-muted d-block mb-1"> Description </small>
+
+                  <div class="description-box">
+                    {% if prevention.description %} {{ prevention.description }}
+                    {% else %}
+
+                    <span class="text-muted"> No description available. </span>
+
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer bg-light border-0 p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="d-flex justify-content-end gap-2">
+              <a
+                href="{{ url_for('prevention.index') }}"
+                class="btn btn-outline-secondary rounded-pill px-4"
+              >
+                <i class="bi bi-x-circle me-1"></i>
+                Cancel
+              </a>
+
+              {{ form.submit( class="btn btn-danger rounded-pill px-4",
+              value="Delete Prevention" ) }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- =====================================================
+     STYLE
+===================================================== -->
+
+<style>
+  .delete-icon {
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    background: rgba(220, 53, 69, 0.12);
+
+    color: #dc3545;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 24px;
+  }
+
+  .prevention-image-box {
+    width: 100%;
+    height: 260px;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    background: #f8f9fa;
+
+    border: 1px solid #e9ecef;
+  }
+
+  .prevention-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+  }
+
+  .no-image {
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #adb5bd;
+  }
+
+  .no-image i {
+    font-size: 55px;
+
+    margin-bottom: 10px;
+  }
+
+  .info-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 14px;
+
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-icon {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+  }
+
+  .description-box {
+    background: #f8f9fa;
+
+    border-radius: 12px;
+
+    padding: 14px;
+
+    color: #495057;
+
+    line-height: 1.6;
+  }
+
+  .btn {
+    transition: all 0.2s ease;
+  }
+
+  .btn-danger:hover {
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    .prevention-image-box {
+      height: 220px;
+    }
+
+    .card-body {
+      padding: 1.25rem !important;
+    }
+  }
+</style>
+
 {% endblock %}

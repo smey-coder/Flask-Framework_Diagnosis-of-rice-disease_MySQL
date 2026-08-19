@@ -15,7 +15,7 @@ from app.forms.rule_condition_form import (
 )
 from app.models.symptoms import SymptomsTable
 from app.services.rule_condition_service import RuleConditionService
-
+from app.decorators.access import role_required, permission_required
 rule_condition_bp = Blueprint(
     "rule_condition",
     __name__,
@@ -26,6 +26,8 @@ rule_condition_bp = Blueprint(
 
 @rule_condition_bp.route("/")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_RULE_CONDITION")
 def index():
     try:
         page = request.args.get("page", 1, type=int)
@@ -81,6 +83,8 @@ def index():
 
 @rule_condition_bp.route("/create", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("CREATE_RULE_CONDITION")
 def create():
     form = RuleConditionCreateForm()
 
@@ -102,6 +106,8 @@ def create():
 
 @rule_condition_bp.route("/<int:id>")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("DETAIL_RULE_CONDITION")
 def detail(id: int):
     rule_condition = RuleConditionService.get_by_id(id)
     return render_template(
@@ -114,6 +120,8 @@ def detail(id: int):
 
 @rule_condition_bp.route("/<int:id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("EDIT_RULE_CONDITION")
 def edit(id: int):
     # Fetch the existing rule condition
     rule_condition = RuleConditionService.get_by_id(id)
@@ -147,6 +155,8 @@ def edit(id: int):
 
 @rule_condition_bp.route("/<int:id>/delete", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("DELETE_RULE_CONDITION")
 def delete(id: int):
     rule_condition = RuleConditionService.get_by_id(id)
     form = RuleConditionConfirmDeleteForm()
@@ -170,6 +180,8 @@ def delete(id: int):
 
 @rule_condition_bp.route("/<int:id>/toggle", methods=["POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("TOGGLE_RULE_CONDITION")
 def toggle(id: int):
     rule_condition = RuleConditionService.get_by_id(id)
     RuleConditionService.toggle_active(rule_condition)
@@ -192,6 +204,8 @@ def get_grouped_symptoms():
 
 @rule_condition_bp.route("/preview", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("PREVIEW_RULE_CONDITION")
 def preview_rule_condition():
 
     data = session.get("rule_data")

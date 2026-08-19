@@ -1,39 +1,411 @@
-{% extends "layouts/user_layout/user.html" %}
+{% extends "layouts/user_layout/user.html" %} {% block title %}Prevention{%
+endblock %} {% block content %}
 
-{% block title %}Prevention{% endblock %}
+<style>
+  .prevention-header {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: white;
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
 
-{% block content %}
-<div class="container mt-4">
+  .prevention-header h2 {
+    margin-bottom: 6px;
+  }
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-success">
-            <i class="bi bi-shield-check me-2"></i> Prevention for {{ disease.disease_name }}
-        </h2>
-        <a href="{{ url_for('user.diagnosis_result') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i> Back to Results
+  .prevention-card {
+    border: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    background: #fff;
+  }
+
+  .prevention-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .prevention-image {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    cursor: pointer;
+  }
+
+  .prevention-image-placeholder {
+    height: 190px;
+    background: #f1f8f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .priority-main {
+    border: 2px solid #198754;
+  }
+
+  .recommended-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+  }
+
+  .prevention-type {
+    font-size: 0.8rem;
+  }
+
+  .method-title {
+    font-weight: 700;
+    color: #212529;
+  }
+
+  .description {
+    color: #6c757d;
+    line-height: 1.7;
+  }
+
+  .priority-box {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 8px 12px;
+  }
+
+  .empty-prevention {
+    border: 0;
+    border-radius: 18px;
+    background: #f8f9fa;
+  }
+</style>
+
+<!-- =====================================================
+     IMAGE PREVIEW MODAL
+====================================================== -->
+
+<div class="modal fade" id="preventionImageModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark border-0 rounded-4">
+      <div class="modal-body text-center p-3">
+        <img
+          id="preventionModalImage"
+          src=""
+          alt="Prevention Image"
+          class="img-fluid rounded-3"
+          style="max-height: 80vh; object-fit: contain"
+        />
+      </div>
+
+      <button
+        type="button"
+        class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+        data-bs-dismiss="modal"
+      ></button>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4 mb-5">
+  <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+  <div class="prevention-header shadow-sm">
+    <div
+      class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"
+    >
+      <div>
+        <div class="d-flex align-items-center mb-2">
+          <div
+            class="bg-white text-success rounded-circle d-flex align-items-center justify-content-center me-3"
+            style="width: 48px; height: 48px"
+          >
+            <i class="bi bi-shield-check fs-3"></i>
+          </div>
+
+          <div>
+            <h2 class="fw-bold mb-0">វិធីការពារ</h2>
+
+            <small class="opacity-75"> Prevention Methods </small>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <span class="opacity-75"> សម្រាប់ជំងឺ៖ </span>
+
+          <strong class="fs-5"> {{ disease.disease_name }} </strong>
+        </div>
+      </div>
+
+      <!-- Back -->
+
+      <div>
+        <a
+          href="{{ url_for('user.diagnosis_result') }}"
+          class="btn btn-light rounded-pill px-4"
+        >
+          <i class="bi bi-arrow-left me-1"></i>
+
+          ត្រឡប់ទៅលទ្ធផល
         </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+  {% if preventions %}
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="fw-bold mb-1">
+        <i class="bi bi-list-check text-success me-2"></i>
+
+        វិធានការការពារ
+      </h5>
+
+      <small class="text-muted">
+        ប្រព័ន្ធបង្ហាញវិធីការពារដែលសមស្របសម្រាប់ជំងឺនេះ
+      </small>
     </div>
 
-    {% if preventions %}
-        <div class="row g-3">
-            {% for p in preventions %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ p.method if p.method else "Prevention Method" }}</h5>
-                            {% if p.description %}
-                                <p class="card-text">{{ p.description }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+    <span class="badge bg-success-subtle text-success px-3 py-2">
+      {{ preventions|length }} វិធី
+    </span>
+  </div>
+
+  <!-- =====================================================
+         PREVENTION CARDS
+    ====================================================== -->
+
+  <div class="row g-4">
+    {% for p in preventions %}
+
+    <div class="col-md-6 col-xl-4">
+      <div
+        class="card prevention-card shadow-sm h-100 {% if p.priority == 1 %} priority-main {% endif %}"
+      >
+        <div class="position-relative">
+          <!-- Recommended -->
+
+          {% if p.priority == 1 %}
+
+          <span class="badge bg-success recommended-badge">
+            <i class="bi bi-star-fill me-1"></i>
+
+            Recommended
+          </span>
+
+          {% endif %}
+
+          <!-- Image -->
+
+          {% if p.image %}
+
+          <img
+            src="{{ url_for(
+                            'static',
+                            filename='images/preventions/' ~ p.image
+                        ) }}"
+            alt="{{ p.method or 'Prevention Image' }}"
+            class="prevention-image"
+            onclick="showPreventionImage(this.src)"
+          />
+
+          {% else %}
+
+          <div class="prevention-image-placeholder">
+            <i class="bi bi-shield-check text-success" style="font-size: 60px">
+            </i>
+          </div>
+
+          {% endif %}
         </div>
-    {% else %}
-        <div class="alert alert-info">
-            No prevention information available for this disease.
+
+        <!-- =================================================
+                     CARD BODY
+                ================================================== -->
+
+        <div class="card-body p-4">
+          <!-- Type -->
+
+          <div class="mb-3">
+            {% if p.prevention_type and 'Cultural' in p.prevention_type %}
+
+            <span class="badge bg-success-subtle text-success prevention-type">
+              <i class="bi bi-flower1 me-1"></i>
+
+              វិធានការកសិកម្ម
+            </span>
+
+            {% elif p.prevention_type and 'Chemical' in p.prevention_type %}
+
+            <span class="badge bg-warning-subtle text-warning prevention-type">
+              <i class="bi bi-droplet-half me-1"></i>
+
+              វិធានការគីមី
+            </span>
+
+            {% elif p.prevention_type and 'Biological' in p.prevention_type %}
+
+            <span class="badge bg-info-subtle text-info prevention-type">
+              <i class="bi bi-bug me-1"></i>
+
+              វិធានការជីវសាស្ត្រ
+            </span>
+
+            {% elif p.prevention_type and 'Physical' in p.prevention_type %}
+
+            <span class="badge bg-primary-subtle text-primary prevention-type">
+              <i class="bi bi-tools me-1"></i>
+
+              វិធានការរូបវន្ត
+            </span>
+
+            {% elif p.prevention_type and 'Integrated' in p.prevention_type %}
+
+            <span class="badge bg-dark-subtle text-dark prevention-type">
+              <i class="bi bi-diagram-3 me-1"></i>
+
+              ការគ្រប់គ្រងចម្រុះ
+            </span>
+
+            {% else %}
+
+            <span
+              class="badge bg-secondary-subtle text-secondary prevention-type"
+            >
+              <i class="bi bi-shield me-1"></i>
+
+              {{ p.prevention_type or 'Prevention' }}
+            </span>
+
+            {% endif %}
+          </div>
+
+          <!-- Method -->
+
+          <h5 class="method-title mb-2">{{ p.method or 'វិធានការការពារ' }}</h5>
+
+          <!-- Description -->
+
+          <p class="description small mb-3">
+            {{ p.description or 'មិនមានការពិពណ៌នាសម្រាប់វិធីការពារនេះទេ។' }}
+          </p>
+
+          <!-- Priority -->
+
+          <div
+            class="priority-box d-flex justify-content-between align-items-center"
+          >
+            <span class="small text-muted">
+              <i class="bi bi-sort-numeric-down me-1"></i>
+
+              អាទិភាព
+            </span>
+
+            {% if p.priority == 1 %}
+
+            <span class="badge bg-success"> Priority 1 </span>
+
+            {% elif p.priority == 2 %}
+
+            <span class="badge bg-warning text-dark"> Priority 2 </span>
+
+            {% else %}
+
+            <span class="badge bg-secondary">
+              Priority {{ p.priority or 3 }}
+            </span>
+
+            {% endif %}
+          </div>
         </div>
-    {% endif %}
+      </div>
+    </div>
+
+    {% endfor %}
+  </div>
+
+  <!-- =====================================================
+         RECOMMENDATION INFO
+    ====================================================== -->
+
+  <div class="alert alert-success border-0 rounded-4 mt-4">
+    <div class="d-flex">
+      <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+
+      <div>
+        <h6 class="fw-bold mb-1">អំពីការណែនាំ</h6>
+
+        <p class="small mb-0">
+          វិធានការដែលមាន
+
+          <strong>Priority 1</strong>
+
+          គឺជាវិធានការដែលប្រព័ន្ធដាក់ជាអាទិភាពខ្ពស់ ហើយគួរត្រូវបានពិចារណាជាមុន។
+          ទោះជាយ៉ាងណា អ្នកប្រើប្រាស់គួរពិនិត្យលក្ខខណ្ឌជាក់ស្តែង
+          និងពិគ្រោះជាមួយអ្នកជំនាញកសិកម្មមុនអនុវត្ត។
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+
+  <!-- =====================================================
+         NO PREVENTION
+    ====================================================== -->
+
+  <div class="card empty-prevention shadow-sm">
+    <div class="card-body text-center py-5">
+      <div
+        class="bg-white rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center mb-3"
+        style="width: 80px; height: 80px"
+      >
+        <i class="bi bi-shield-x text-muted" style="font-size: 40px"> </i>
+      </div>
+
+      <h5 class="fw-bold">មិនមានវិធីការពារ</h5>
+
+      <p class="text-muted mb-4">
+        បច្ចុប្បន្នមិនមានព័ត៌មានអំពីវិធីការពារ សម្រាប់ជំងឺ {{
+        disease.disease_name }} ទេ។
+      </p>
+
+      <a
+        href="{{ url_for('user.diagnosis_result') }}"
+        class="btn btn-outline-secondary rounded-pill px-4"
+      >
+        <i class="bi bi-arrow-left me-1"></i>
+
+        ត្រឡប់ទៅលទ្ធផល
+      </a>
+    </div>
+  </div>
+
+  {% endif %}
 </div>
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+  function showPreventionImage(src) {
+    const image = document.getElementById("preventionModalImage");
+
+    image.src = src;
+
+    const modalElement = document.getElementById("preventionImageModal");
+
+    const modal = new bootstrap.Modal(modalElement);
+
+    modal.show();
+  }
+</script>
+
 {% endblock %}

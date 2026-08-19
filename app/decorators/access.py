@@ -21,7 +21,7 @@ def role_required(*role_names):
                 if getattr(current_user, "has_role", lambda r: False)("Admin"):
                     return redirect(url_for("admin.dashboard"))
                 elif getattr(current_user, "has_role", lambda r: False)("Expert"):
-                    return redirect(url_for("expert.dashboard"))
+                    return redirect(url_for("admin.dashboard"))
                 return redirect(url_for("auth.login"))
 
             return f(*args, **kwargs)

@@ -1,0 +1,114 @@
+{% extends "layouts/admin_layout/admin.html" %}
+{% block title %}Rules{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">
+                <i class="bi bi-diagram-3 text-primary"></i> Rules Management
+            </h2>
+            <small class="text-muted">Expert System Knowledge Rules</small>
+        </div>
+
+        <a href="{{ url_for('rules.create') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> New Rule
+        </a>
+    </div>
+
+    {% if rules %}
+
+    <!-- Rules Table Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Disease</th>
+                            <th>Certainty Factor</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rule in rules %}
+                        <tr>
+                            <td class="ps-4 fw-semibold">{{ rule.id }}</td>
+
+                            <td>
+                                <i class="bi bi-bug-fill text-danger"></i>
+                                {{ rule.disease.disease_name if rule.disease else '-' }}
+                            </td>
+
+                            <td>
+                                <span class="fw-semibold text-primary">
+                                    {{ rule.certainty }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if rule.is_active %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Active
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-x-circle"></i> Inactive
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-end pe-4">
+                                <a href="{{ url_for('rules.detail', rule_id=rule.id) }}"
+                                   class="btn btn-sm btn-outline-info me-1">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <a href="{{ url_for('rules.edit', rule_id=rule.id) }}"
+                                   class="btn btn-sm btn-outline-warning me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <a href="{{ url_for('rules.delete', rule_id=rule.id) }}"
+                                   class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    {% else %}
+
+    <!-- Empty State -->
+    <div class="card shadow-sm border-0 text-center p-5">
+        <img src="{{ url_for('static', filename='images/empty_rules.svg') }}"
+             class="img-fluid mb-4"
+             style="max-height: 220px;"
+             alt="No Rules">
+
+        <h4 class="fw-bold">No Rules Found</h4>
+        <p class="text-muted">
+            Your expert system has no rules yet.<br>
+            Start by creating your first knowledge rule.
+        </p>
+
+        <a href="{{ url_for('rules.create') }}" class="btn btn-success btn-lg">
+            <i class="bi bi-plus-circle"></i> Create First Rule
+        </a>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

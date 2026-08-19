@@ -1,88 +1,93 @@
-{% extends "layouts/user_layout/user.html" %}
-
-{% block title %}ការពន្យល់វិនិច្ឆ័យ{% endblock %}
-
-{% block content %}
+{% extends "layouts/user_layout/user.html" %} {% block title
+%}ការពន្យល់វិនិច្ឆ័យ{% endblock %} {% block content %}
 <div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary">
+      <i class="bi bi-info-circle me-2"></i> ពន្យល់សម្រាប់ {{
+      disease.disease_name }}
+    </h2>
+    {% if disease.image %}
+    <img
+      src="{{ url_for('static', filename='images/diseases/' + disease.image) }}"
+      alt="{{ disease.disease_name }}"
+      class="img-thumbnail"
+      style="max-width: 150px"
+    />
+    {% endif %}
+  </div>
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-primary">
-            <i class="bi bi-info-circle me-2"></i> ពន្យល់សម្រាប់ {{ disease.disease_name }}
-        </h2>
-        {% if disease.image %}
-            <img src="{{ url_for('static', filename='images/diseases/' + disease.image) }}" 
-                 alt="{{ disease.disease_name }}" class="img-thumbnail" style="max-width:150px;">
-        {% endif %}
-    </div>
+  <!-- Disease Info & Overall Confidence -->
+  <div class="mb-4">
+    <span
+      class="badge {% if disease.severity_level == 'High' %}bg-danger {% elif disease.severity_level == 'Medium' %}bg-warning text-dark {% else %}bg-success{% endif %} fs-6"
+    >
+      កម្រិតការប្រកាស៖ {{ disease.severity_level }}
+    </span>
 
-    <!-- Disease Info & Overall Confidence -->
-    <div class="mb-4">
-        <span class="badge 
-            {% if disease.severity_level == 'High' %}bg-danger
-            {% elif disease.severity_level == 'Medium' %}bg-warning text-dark
-            {% else %}bg-success{% endif %} fs-6">
-            កម្រិតការប្រកាស៖ {{ disease.severity_level }}
-        </span>
-
-        <div class="mt-2">
-            <strong>ភាពទំនុកចិត្តសរុប:</strong>
-            <div class="progress" style="height: 20px;">
-                <div class="progress-bar bg-success" role="progressbar" 
-                     style="width: {{ (certainty * 100)|round(2) }}%;">
-                    {{ (certainty * 100)|round(2) }}%
-                </div>
-            </div>
+    <div class="mt-2">
+      <strong>ភាពទំនុកចិត្តសរុប:</strong>
+      <div class="progress" style="height: 20px">
+        <div
+          class="progress-bar bg-success"
+          role="progressbar"
+          style="width: {{ (certainty * 100)|round(2) }}%;"
+        >
+          {{ (certainty * 100)|round(2) }}%
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Selected Symptoms -->
-    <div class="mb-4">
-        <h5 class="fw-semibold">រោគសញ្ញា​ដែលបានជ្រើសរើស:</h5>
-        <ul class="list-group list-group-flush">
-            {% for s in selected_symptoms %}
-                <li class="list-group-item">{{ s }}</li>
-            {% endfor %}
-        </ul>
+  <!-- Selected Symptoms -->
+  <div class="mb-4">
+    <h5 class="fw-semibold">រោគសញ្ញា​ដែលបានជ្រើសរើស:</h5>
+    <ul class="list-group list-group-flush">
+      {% for s in selected_symptoms %}
+      <li class="list-group-item">{{ s }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Rule Application Table -->
+  <div class="mb-4">
+    <h5 class="fw-semibold">ការដាក់អនុវត្តច្បាប់ (Rule Application)</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light text-center">
+          <tr>
+            <th>លេខច្បាប់</th>
+            <th>រោគសញ្ញា​ដែលផ្គូផ្គង</th>
+            <th>CF មុន</th>
+            <th>CF ច្បាប់</th>
+            <th>CF បន្ទាប់</th>
+            <th>ពន្យល់</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr {% if log.cf_after>
+            0.7 %}class="table-danger"{% endif %}>
+            <td class="text-center">{{ log.rule_id }}</td>
+            <td>{{ log.matched | join(', ') }}</td>
+            <td class="text-center">{{ (log.cf_before * 100) | round(2) }}%</td>
+            <td class="text-center">{{ (log.rule_cf * 100) | round(2) }}%</td>
+            <td class="text-center">{{ (log.cf_after * 100) | round(2) }}%</td>
+            <td>{{ log.explanation }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">
+              គ្មានច្បាប់អនុវត្ត
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    <!-- Rule Application Table -->
-    <div class="mb-4">
-        <h5 class="fw-semibold">ការដាក់អនុវត្តច្បាប់ (Rule Application)</h5>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light text-center">
-                    <tr>
-                        <th>លេខច្បាប់</th>
-                        <th>រោគសញ្ញា​ដែលផ្គូផ្គង</th>
-                        <th>CF មុន</th>
-                        <th>CF ច្បាប់</th>
-                        <th>CF បន្ទាប់</th>
-                        <th>ពន្យល់</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in logs %}
-                    <tr {% if log.cf_after > 0.7 %}class="table-danger"{% endif %}>
-                        <td class="text-center">{{ log.rule_id }}</td>
-                        <td>{{ log.matched | join(', ') }}</td>
-                        <td class="text-center">{{ (log.cf_before * 100) | round(2) }}%</td>
-                        <td class="text-center">{{ (log.rule_cf * 100) | round(2) }}%</td>
-                        <td class="text-center">{{ (log.cf_after * 100) | round(2) }}%</td>
-                        <td>{{ log.explanation }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">គ្មានច្បាប់អនុវត្ត</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Treatments -->
-    <div class="mb-4">
+  </div>
+  <!-- Treatments -->
+  <!-- <div class="mb-4">
         <h5 class="fw-semibold">វិធីព្យាបាលសម្រាប់ជំងឺនេះ:</h5>
         <ul class="list-group list-group-flush">
             {% for t in treatments %}
@@ -99,50 +104,818 @@
                 <li class="list-group-item text-muted">មិនមានវិធីព្យាបាល</li>
             {% endfor %}
         </ul>
+    </div> -->
+
+  <!-- =====================================================
+     TREATMENTS
+====================================================== -->
+
+  <!-- =====================================================
+     TREATMENTS
+====================================================== -->
+
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-semibold mb-1">
+          <i class="bi bi-capsule text-success me-2"></i>
+          វិធីព្យាបាលសម្រាប់ជំងឺនេះ
+        </h5>
+
+        <small class="text-muted">
+          វិធីព្យាបាលដែលប្រព័ន្ធណែនាំសម្រាប់ {{ disease.disease_name }}
+        </small>
+      </div>
+
+      {% if treatments %}
+      <span class="badge bg-success-subtle text-success">
+        {{ treatments|length }} វិធី
+      </span>
+      {% endif %}
     </div>
 
-    <!-- Preventive Measures -->
-    <div class="mb-4">
-        <h5 class="fw-semibold">វិធានការការពារ:</h5>
-        <ul class="list-group list-group-flush">
-            {% for p in preventions %}
-                <li class="list-group-item">{{ p.description }}</li>
-            {% else %}
-                <li class="list-group-item text-muted">មិនមានវិធានការការពារ</li>
-            {% endfor %}
-        </ul>
-    </div>
+    {% if treatments %}
 
-    <!-- Expert Advice -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title text-danger">អនុសាសន៍ពីអ្នកជំនាញ</h5>
-            <div class="alert alert-warning mb-0">
-                {% if certainty > 0.7 %}
-                    ⚠️ ជំងឺ {{ disease.disease_name }} មានហានិភ័យខ្ពស់! សូមទាក់ទងអ្នកជំនាញភ្លាមៗ។
-                {% elif certainty > 0.4 %}
-                    ⚠️ មានហានិភ័យមធ្យម។ ត្រួតពិនិត្យដំណាំ និងអនុវត្តវិធានការព្យាបាល និងការការពារ។
-                {% else %}
-                    ✅ មានហានិភ័យទាប។ រក្សាព្រឹត្តិការដាំដំណាំល្អ និងអនុវត្តវិធានការការពារ។
-                {% endif %}
+    <div class="row g-3">
+      {% for t in treatments %}
+
+      <div class="col-md-6 col-xl-4">
+        <div class="card h-100 border-0 shadow-sm rounded-4">
+          <!-- =================================================
+             TREATMENT IMAGE
+        ================================================== -->
+
+          {% if t.image %}
+
+          <img
+            src="{{ url_for(
+              'static',
+              filename='images/treatments/' + t.image
+          ) }}"
+            alt="{{ t.method }}"
+            class="card-img-top rounded-top-4"
+            style="height: 180px; object-fit: cover"
+          />
+
+          {% else %}
+
+          <div
+            class="d-flex align-items-center justify-content-center bg-light rounded-top-4"
+            style="height: 180px"
+          >
+            <i class="bi bi-capsule text-success" style="font-size: 55px"></i>
+          </div>
+
+          {% endif %}
+
+          <div class="card-body d-flex flex-column">
+            <!-- =================================================
+               PRIORITY
+          ================================================== -->
+
+            <div class="mb-2">
+              {% if t.priority == 1 %}
+
+              <span class="badge bg-success">
+                <i class="bi bi-star-fill me-1"></i>
+                Recommended
+              </span>
+
+              {% elif t.priority == 2 %}
+
+              <span class="badge bg-warning text-dark">
+                <i class="bi bi-arrow-right-circle me-1"></i>
+                Alternative
+              </span>
+
+              {% else %}
+
+              <span class="badge bg-secondary">
+                <i class="bi bi-three-dots me-1"></i>
+                Additional
+              </span>
+
+              {% endif %}
             </div>
+
+            <!-- =================================================
+               TREATMENT TYPE
+          ================================================== -->
+
+            <div class="mb-2">
+              {% if "Cultural" in t.treatment_type %}
+
+              <span class="badge bg-success-subtle text-success">
+                <i class="bi bi-flower1 me-1"></i>
+                វិធានការកសិកម្ម
+              </span>
+
+              {% elif "Chemical" in t.treatment_type %}
+
+              <span class="badge bg-warning-subtle text-warning">
+                <i class="bi bi-droplet-half me-1"></i>
+                វិធានការគីមី
+              </span>
+
+              {% elif "Biological" in t.treatment_type %}
+
+              <span class="badge bg-info-subtle text-info">
+                <i class="bi bi-bug me-1"></i>
+                វិធានការជីវសាស្ត្រ
+              </span>
+
+              {% elif "Physical" in t.treatment_type %}
+
+              <span class="badge bg-primary-subtle text-primary">
+                <i class="bi bi-tools me-1"></i>
+                វិធានការរូបវន្ត
+              </span>
+
+              {% elif "Integrated" in t.treatment_type %}
+
+              <span class="badge bg-dark-subtle text-dark">
+                <i class="bi bi-diagram-3 me-1"></i>
+                ការគ្រប់គ្រងចម្រុះ
+              </span>
+
+              {% else %}
+
+              <span class="badge bg-secondary-subtle text-secondary">
+                {{ t.treatment_type }}
+              </span>
+
+              {% endif %}
+            </div>
+
+            <!-- =================================================
+               METHOD
+          ================================================== -->
+
+            <h6 class="fw-bold mb-2">{{ t.method }}</h6>
+
+            <!-- =================================================
+               DESCRIPTION
+          ================================================== -->
+
+            <p class="text-muted small flex-grow-1 mb-3">
+              {{ t.description or "មិនមានការពិពណ៌នា។" }}
+            </p>
+
+            <!-- =================================================
+               ACTION BUTTONS
+          ================================================== -->
+
+            <div class="d-flex gap-2 mt-auto">
+              <!-- Explanation -->
+
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-sm rounded-pill flex-fill"
+                data-bs-toggle="modal"
+                data-bs-target="#treatmentExplanation{{ t.id }}"
+              >
+                <i class="bi bi-info-circle me-1"></i>
+                ពន្យល់
+              </button>
+
+              <!-- Apply Treatment -->
+
+              {% if diagnosis and diagnosis.monitoring_id %}
+
+              <a
+                href="{{ url_for(
+                  'treatment_history.create',
+                  monitoring_id=diagnosis.monitoring_id,
+                  diagnosis_history_id=diagnosis.id,
+                  treatment_id=t.id
+              ) }}"
+                class="btn btn-success btn-sm rounded-pill flex-fill"
+              >
+                <i class="bi bi-check-circle me-1"></i>
+                អនុវត្ត
+              </a>
+
+              {% else %}
+
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm rounded-pill flex-fill"
+                disabled
+              >
+                <i class="bi bi-exclamation-circle me-1"></i>
+                ត្រូវការ Monitoring
+              </button>
+
+              {% endif %}
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- =====================================================
+         TREATMENT EXPLANATION MODAL
+    ====================================================== -->
+
+      <div
+        class="modal fade"
+        id="treatmentExplanation{{ t.id }}"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 shadow rounded-4">
+            <!-- Header -->
+
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold">
+                <i class="bi bi-info-circle text-primary me-2"></i>
+
+                ព័ត៌មានអំពីវិធីព្យាបាល
+              </h5>
+
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <!-- Body -->
+
+            <div class="modal-body">
+              <!-- Disease -->
+
+              <div class="mb-3">
+                <small class="text-muted"> ជំងឺ </small>
+
+                <div class="fw-bold text-danger">
+                  {{ disease.disease_name }}
+                </div>
+              </div>
+
+              <!-- Treatment -->
+
+              <div class="mb-3">
+                <small class="text-muted"> វិធីព្យាបាល </small>
+
+                <div class="fw-bold">{{ t.method }}</div>
+              </div>
+
+              <!-- Treatment Type -->
+
+              <div class="mb-3">
+                <small class="text-muted"> ប្រភេទ </small>
+
+                <div>
+                  <span class="badge bg-success-subtle text-success">
+                    {{ t.treatment_type }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Priority -->
+
+              <div class="mb-3">
+                <small class="text-muted"> កម្រិតអាទិភាព </small>
+
+                <div>
+                  {% if t.priority == 1 %}
+
+                  <span class="badge bg-success">
+                    ⭐ Priority 1 — Recommended
+                  </span>
+
+                  {% elif t.priority == 2 %}
+
+                  <span class="badge bg-warning text-dark">
+                    Priority 2 — Alternative
+                  </span>
+
+                  {% else %}
+
+                  <span class="badge bg-secondary">
+                    Priority {{ t.priority }} — Additional
+                  </span>
+
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Why Recommended -->
+
+              <div class="alert alert-info">
+                <h6 class="fw-bold">
+                  <i class="bi bi-lightbulb me-1"></i>
+
+                  ហេតុអ្វីបានជាប្រព័ន្ធណែនាំ?
+                </h6>
+
+                {% if t.priority == 1 %}
+
+                <p class="mb-0">
+                  វិធីព្យាបាលនេះត្រូវបានកំណត់ជា
+                  <strong>Priority 1</strong>
+                  ដូច្នេះប្រព័ន្ធចាត់ទុកវាជា
+                  <strong>វិធីព្យាបាលដែលគួរពិចារណាជាចម្បង</strong>
+                  សម្រាប់ជំងឺ
+                  <strong>{{ disease.disease_name }}</strong>។
+                </p>
+
+                {% elif t.priority == 2 %}
+
+                <p class="mb-0">
+                  វិធីនេះត្រូវបានកំណត់ជា
+                  <strong>Priority 2</strong>
+                  ហើយត្រូវបានចាត់ទុកជា
+                  <strong>ជម្រើសជំនួស</strong>
+                  ប្រសិនបើវិធី Priority 1 មិនសមស្រប។
+                </p>
+
+                {% else %}
+
+                <p class="mb-0">
+                  វិធីនេះជាវិធីបន្ថែម ដែលអាចប្រើជាមួយវិធានការគ្រប់គ្រងផ្សេងទៀត
+                  ដើម្បីជួយគ្រប់គ្រងជំងឺ។
+                </p>
+
+                {% endif %}
+              </div>
+
+              <!-- Description -->
+
+              <div>
+                <small class="text-muted"> សេចក្ដីណែនាំ </small>
+
+                <p class="mt-2 mb-0">
+                  {{ t.description or "មិនមានការណែនាំបន្ថែម។" }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary rounded-pill px-4"
+                data-bs-dismiss="modal"
+              >
+                បិទ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
     </div>
 
-    <!-- Print Diagnosis  -->
-     <div class="mb-3">
-        <a href="{{ url_for('user.diagnosis_print', disease_id=disease.id) }}" target="_blank"
-           class="btn btn-outline-primary">
-            <i class="bi bi-printer me-1"></i> បោះពុម្ពលទ្ធផល
-        </a>
-     </div>
+    {% else %}
 
-    <!-- Back Button -->
-    <div class="text-end">
-        <a href="{{ url_for('user.diagnosis_result') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left-circle me-1"></i> ត្រឡប់ទៅលទ្ធផល
-        </a>
+    <!-- =====================================================
+       NO TREATMENT
+  ====================================================== -->
+
+    <div class="card border-0 bg-light rounded-4">
+      <div class="card-body text-center py-5">
+        <i class="bi bi-capsule text-muted" style="font-size: 45px"></i>
+
+        <h6 class="fw-bold mt-3">មិនមានវិធីព្យាបាល</h6>
+
+        <p class="text-muted mb-0">
+          បច្ចុប្បន្នមិនមានវិធីព្យាបាល សម្រាប់ជំងឺនេះទេ។
+        </p>
+      </div>
     </div>
 
+    {% endif %}
+  </div>
+
+  <!-- Preventive Measures -->
+  <!-- =====================================================
+     PREVENTIVE MEASURES
+====================================================== -->
+
+  <div class="mb-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold text-primary mb-1">
+          <i class="bi bi-shield-check me-2"></i>
+          វិធានការការពារ
+        </h5>
+
+        <small class="text-muted">
+          វិធីសាស្ត្រដែលអាចជួយការពារ និងកាត់បន្ថយការរីករាលដាលនៃជំងឺ
+        </small>
+      </div>
+
+      {% if preventions %}
+      <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+        <i class="bi bi-list-check me-1"></i>
+        {{ preventions|length }} វិធី
+      </span>
+      {% endif %}
+    </div>
+
+    {% if preventions %}
+
+    <div class="row g-3">
+      {% for p in preventions %}
+
+      <div class="col-md-6">
+        <!-- Prevention Card -->
+        <div
+          class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden {% if p.priority == 1 %} border-start border-4 border-success {% endif %}"
+        >
+          <!-- Image -->
+          {% if p.image %}
+
+          <img
+            src="{{ url_for(
+                        'static',
+                        filename='images/preventions/' ~ p.image
+                    ) }}"
+            alt="{{ p.method }}"
+            style="width: 100%; height: 170px; object-fit: cover"
+          />
+
+          {% else %}
+
+          <div
+            class="d-flex align-items-center justify-content-center bg-light"
+            style="height: 170px"
+          >
+            <i
+              class="bi bi-shield-check text-primary"
+              style="font-size: 55px"
+            ></i>
+          </div>
+
+          {% endif %}
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <!-- Priority -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              {% if p.priority == 1 %}
+
+              <span class="badge bg-success rounded-pill px-3 py-2">
+                <i class="bi bi-star-fill me-1"></i>
+                Recommended
+              </span>
+
+              {% elif p.priority == 2 %}
+
+              <span class="badge bg-primary rounded-pill px-3 py-2">
+                Alternative
+              </span>
+
+              {% else %}
+
+              <span class="badge bg-secondary rounded-pill px-3 py-2">
+                Additional
+              </span>
+
+              {% endif %}
+
+              <span class="badge bg-light text-dark border rounded-pill">
+                Priority {{ p.priority }}
+              </span>
+            </div>
+
+            <!-- Prevention Type -->
+            {% if p.prevention_type %}
+
+            <div class="mb-2">
+              <span class="badge bg-primary-subtle text-primary">
+                <i class="bi bi-tag me-1"></i>
+
+                {{ p.prevention_type }}
+              </span>
+            </div>
+
+            {% endif %}
+
+            <!-- Method -->
+            <h6 class="fw-bold mb-2">
+              <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+              {{ p.method }}
+            </h6>
+
+            <!-- Description -->
+            {% if p.description %}
+
+            <p class="text-muted small mb-0">{{ p.description }}</p>
+
+            {% else %}
+
+            <p class="text-muted small fst-italic mb-0">មិនមានការពិពណ៌នា។</p>
+
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+    </div>
+
+    {% else %}
+
+    <!-- Empty State -->
+
+    <div class="card border-0 bg-light rounded-4">
+      <div class="card-body text-center py-5">
+        <i class="bi bi-shield-x text-muted" style="font-size: 50px"></i>
+
+        <h6 class="fw-bold mt-3">មិនមានវិធានការការពារ</h6>
+
+        <p class="text-muted mb-0">
+          មិនទាន់មានព័ត៌មានអំពីវិធានការការពារ សម្រាប់ជំងឺនេះទេ។
+        </p>
+      </div>
+    </div>
+
+    {% endif %}
+  </div>
+
+  <!-- Expert Advice -->
+  <!-- <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title text-danger">អនុសាសន៍ពីអ្នកជំនាញ</h5>
+      <div class="alert alert-warning mb-0">
+        {% if certainty > 0.7 %} ⚠️ ជំងឺ {{ disease.disease_name }}
+        មានហានិភ័យខ្ពស់! សូមទាក់ទងអ្នកជំនាញភ្លាមៗ។ {% elif certainty > 0.4 %} ⚠️
+        មានហានិភ័យមធ្យម។ ត្រួតពិនិត្យដំណាំ និងអនុវត្តវិធានការព្យាបាល
+        និងការការពារ។ {% else %} ✅ មានហានិភ័យទាប។ រក្សាព្រឹត្តិការដាំដំណាំល្អ
+        និងអនុវត្តវិធានការការពារ។ {% endif %}
+      </div>
+    </div>
+  </div> -->
+  <!-- Expert Advice -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-danger text-white">
+      <h5 class="mb-0">
+        <i class="bi bi-person-check me-2"></i>
+        អនុសាសន៍ពីអ្នកជំនាញ
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <!-- ==============================
+             RISK LEVEL
+        =============================== -->
+
+      <div
+        class="alert {% if certainty > 0.7 %} alert-danger {% elif certainty > 0.4 %} alert-warning {% else %} alert-success {% endif %} mb-4"
+      >
+        {% if certainty > 0.7 %}
+
+        <strong> ⚠️ ហានិភ័យខ្ពស់ </strong>
+
+        <p class="mb-0 mt-1">
+          ជំងឺ
+          <strong>{{ disease.disease_name }}</strong>
+          មានកម្រិតទំនុកចិត្តខ្ពស់ ({{ "%.1f"|format(certainty * 100) }}%)។
+          សូមអនុវត្តវិធីព្យាបាលឱ្យបានឆាប់រហ័ស និងពិគ្រោះជាមួយអ្នកជំនាញកសិកម្ម។
+        </p>
+
+        {% elif certainty > 0.4 %}
+
+        <strong> ⚠️ ហានិភ័យមធ្យម </strong>
+
+        <p class="mb-0 mt-1">
+          ជំងឺ
+          <strong>{{ disease.disease_name }}</strong>
+          អាចកំពុងប៉ះពាល់ដល់ដំណាំ។ សូមត្រួតពិនិត្យដំណាំជាប្រចាំ
+          និងអនុវត្តការព្យាបាល និងការការពារ។
+        </p>
+
+        {% else %}
+
+        <strong> ✅ ហានិភ័យទាប </strong>
+
+        <p class="mb-0 mt-1">
+          កម្រិតហានិភ័យនៃជំងឺ
+          <strong>{{ disease.disease_name }}</strong>
+          នៅទាប។ សូមបន្តត្រួតពិនិត្យដំណាំ និងរក្សាអនាម័យក្នុងចម្ការ។
+        </p>
+
+        {% endif %}
+      </div>
+
+      <!-- ==============================
+             TREATMENT
+        =============================== -->
+
+      <div class="mb-4">
+        <h6 class="fw-bold text-success mb-3">
+          <i class="bi bi-capsule me-2"></i>
+
+          វិធីព្យាបាល
+        </h6>
+
+        {% if treatments %}
+
+        <div class="row g-3">
+          {% for treatment in treatments %}
+
+          <div class="col-md-6">
+            <div class="card h-100 border-success">
+              <div class="card-body">
+                <h6 class="fw-bold text-success">{{ treatment.method }}</h6>
+
+                {% if treatment.treatment_type %}
+
+                <span class="badge bg-success-subtle text-success mb-2">
+                  {{ treatment.treatment_type }}
+                </span>
+
+                {% endif %} {% if treatment.description %}
+
+                <p class="text-muted mb-0">{{ treatment.description }}</p>
+
+                {% else %}
+
+                <p class="text-muted mb-0">
+                  មិនទាន់មានព័ត៌មានលម្អិត អំពីវិធីព្យាបាលនេះទេ។
+                </p>
+
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+
+        {% else %}
+
+        <div class="alert alert-light border">
+          <i class="bi bi-info-circle me-2"></i>
+
+          មិនទាន់មានវិធីព្យាបាលសម្រាប់ជំងឺនេះទេ។
+          សូមពិគ្រោះជាមួយអ្នកជំនាញកសិកម្ម។
+        </div>
+
+        {% endif %}
+      </div>
+
+      <!-- ==============================
+             PREVENTION
+        =============================== -->
+      <div class="mt-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="fw-bold text-primary mb-1">
+              <i class="bi bi-shield-check me-2"></i>
+              វិធីការពារ
+            </h6>
+
+            <small class="text-muted">
+              វិធានការដែលអាចជួយការពារ និងកាត់បន្ថយការរីករាលដាលនៃជំងឺ
+            </small>
+          </div>
+
+          {% if preventions %}
+          <span class="badge bg-primary-subtle text-primary rounded-pill">
+            {{ preventions|length }} វិធី
+          </span>
+          {% endif %}
+        </div>
+
+        {% if preventions %}
+
+        <div class="row g-3">
+          {% for prevention in preventions %}
+
+          <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+              <!-- Image -->
+              {% if prevention.image %}
+
+              <img
+                src="{{ url_for(
+                        'static',
+                        filename='images/preventions/' ~ prevention.image
+                    ) }}"
+                alt="{{ prevention.method }}"
+                class="card-img-top rounded-top-4"
+                style="height: 160px; object-fit: cover"
+              />
+
+              {% else %}
+
+              <div
+                class="d-flex align-items-center justify-content-center bg-light rounded-top-4"
+                style="height: 160px"
+              >
+                <i
+                  class="bi bi-shield-check text-primary"
+                  style="font-size: 50px"
+                ></i>
+              </div>
+
+              {% endif %}
+
+              <!-- Body -->
+              <div class="card-body">
+                <!-- Priority -->
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  {% if prevention.priority == 1 %}
+
+                  <span class="badge bg-success">
+                    <i class="bi bi-star-fill me-1"></i>
+                    Recommended
+                  </span>
+
+                  {% elif prevention.priority == 2 %}
+
+                  <span class="badge bg-primary"> Alternative </span>
+
+                  {% else %}
+
+                  <span class="badge bg-secondary"> Additional </span>
+
+                  {% endif %}
+
+                  <span class="badge bg-light text-dark">
+                    Priority {{ prevention.priority }}
+                  </span>
+                </div>
+
+                <!-- Prevention Type -->
+                <div class="mb-2">
+                  <span class="badge bg-primary-subtle text-primary">
+                    <i class="bi bi-tag me-1"></i>
+
+                    {{ prevention.prevention_type }}
+                  </span>
+                </div>
+
+                <!-- Method -->
+                <h6 class="fw-bold mb-2">{{ prevention.method }}</h6>
+
+                <!-- Description -->
+                {% if prevention.description %}
+
+                <p class="text-muted small mb-0">
+                  {{ prevention.description }}
+                </p>
+
+                {% else %}
+
+                <p class="text-muted small mb-0">មិនមានការពិពណ៌នា។</p>
+
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+
+        {% else %}
+
+        <!-- No Prevention -->
+
+        <div class="card border-0 bg-light rounded-4">
+          <div class="card-body text-center py-5">
+            <i class="bi bi-shield-x text-muted" style="font-size: 45px"></i>
+
+            <h6 class="fw-bold mt-3">មិនទាន់មានវិធីការពារ</h6>
+
+            <p class="text-muted mb-0">
+              មិនទាន់មានព័ត៌មានអំពីវិធីការពារ សម្រាប់ជំងឺនេះទេ។
+            </p>
+          </div>
+        </div>
+
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Print Diagnosis  -->
+  <div class="mb-3">
+    <a
+      href="{{ url_for('user.diagnosis_print', disease_id=disease.id) }}"
+      target="_blank"
+      class="btn btn-outline-primary"
+    >
+      <i class="bi bi-printer me-1"></i> បោះពុម្ពលទ្ធផល
+    </a>
+  </div>
+
+  <!-- Back Button -->
+  <div class="text-end">
+    <a href="{{ url_for('user.diagnosis_result') }}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left-circle me-1"></i> ត្រឡប់ទៅលទ្ធផល
+    </a>
+  </div>
 </div>
 {% endblock %}
