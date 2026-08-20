@@ -7,6 +7,7 @@ from werkzeug.datastructures import FileStorage
 from app.forms.prevention_form import PreventionCreateForm, PreventionEditForm, PreventionConfirmDeleteForm, disease_choices
 from app.services.prevention_service import PreventionService
 from app.models.diseases import DiseaseTable
+from app.decorators.access import role_required, permission_required
 
 prevention_bp = Blueprint("prevention", __name__, url_prefix="/admin/preventions")
 
@@ -15,12 +16,16 @@ def allowed_file(filename):
 
 @prevention_bp.route("/")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_PREVENTION")
 def index():
     preventions = PreventionService.get_all()
     return render_template("prevention_page/index.html", preventions=preventions)
 
 @prevention_bp.route("/create", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("CREATE_PREVENTION")
 def create():
     form = PreventionCreateForm()
     form.disease_id.choices = [(d.id, d.disease_name) for d in DiseaseTable.query.all()]
@@ -45,6 +50,8 @@ def create():
 
 @prevention_bp.route("/<int:id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("EDIT_PREVENTION")
 def edit(id):
     prevention = PreventionService.get_by_id(id)
     form = PreventionEditForm(obj=prevention)
@@ -78,12 +85,16 @@ def edit(id):
 
 @prevention_bp.route("/<int:id>")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("DETAIL_PREVENTION")
 def detail(id):
     prevention = PreventionService.get_by_id(id)
     return render_template("prevention_page/detail.html", prevention=prevention)
 
 @prevention_bp.route("/<int:id>/delete", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("DELETE_PREVENTION")
 def delete(id):
     prevention = PreventionService.get_by_id(id)
     form = PreventionConfirmDeleteForm()

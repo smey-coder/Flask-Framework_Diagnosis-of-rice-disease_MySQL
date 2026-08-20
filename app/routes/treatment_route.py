@@ -8,6 +8,8 @@ from app.forms.treatment_forms import TreatmentCreateForm, TreatmentEditForm, Tr
 from app.services.treatment_service import TreatmentService
 from app.models.diseases import DiseaseTable
 
+from app.decorators.access import role_required, permission_required
+
 treatment_bp = Blueprint("treatment", __name__, url_prefix="/admin/treatments")
 
 def allowed_file(filename):
@@ -15,12 +17,16 @@ def allowed_file(filename):
 
 @treatment_bp.route("/")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_TREATMENT")
 def index():
     treatments = TreatmentService.get_all()
     return render_template("treatment_page/index.html", treatments=treatments)
 
 @treatment_bp.route("/create", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("CREATE_TREATMENT")
 def create():
     form = TreatmentCreateForm()
     form.disease_id.choices = [(d.id, d.disease_name) for d in DiseaseTable.query.all()]
@@ -45,6 +51,8 @@ def create():
 
 @treatment_bp.route("/<int:id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("EDIT_TREATMENT")
 def edit(id):
     treatment = TreatmentService.get_by_id(id)
     form = TreatmentEditForm(obj=treatment)
@@ -78,12 +86,16 @@ def edit(id):
 
 @treatment_bp.route("/<int:id>")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("DETAIL_TREATMENT")
 def detail(id):
     treatment = TreatmentService.get_by_id(id)
     return render_template("treatment_page/detail.html", treatment=treatment)
 
 @treatment_bp.route("/<int:id>/delete", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("DELETE_TREATMENT")
 def delete(id):
     treatments = TreatmentService.get_by_id(id)
     form = TreatmentConfirmDeleteForm()

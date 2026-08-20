@@ -13,9 +13,21 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+    <!-- Logo App -->
     <link rel="icon" href="{{ url_for('static', filename='images/logo_rice.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo_rice.png') }}">
 
+    <!-- Khmer + English Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+    <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Khmer:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+    >
     {% block extra_css %}{% endblock %}
 </head>
 

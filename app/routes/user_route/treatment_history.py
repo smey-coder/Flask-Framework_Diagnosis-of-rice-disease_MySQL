@@ -38,11 +38,7 @@ from app.forms.treatment_history_form import (
 # BLUEPRINT
 # ============================================================
 
-treatment_history_bp = Blueprint(
-    "treatment_history",
-    __name__,
-    url_prefix="/user/treatment-histories"
-)
+treatment_history_bp = Blueprint("treatment_history",__name__,url_prefix="/user/treatment-histories")
 
 
 # ============================================================

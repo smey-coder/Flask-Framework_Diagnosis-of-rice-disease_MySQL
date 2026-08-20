@@ -20,7 +20,7 @@ body {
 }
 
 .nav-link:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .hero {
@@ -674,8 +674,8 @@ body {
 
 .farm-notification-dropdown {
     position: relative;
+    list-style-type: none !important;
 }
-
 
 /* =========================================================
    🔔 NOTIFICATION BUTTON
@@ -1999,4 +1999,372 @@ body {
     color: #ffffff;
 
     transform: scale(1.05);
+}
+/* =========================================================
+   LOGOUT CONFIRMATION MODAL
+========================================================= */
+
+.logout-modal {
+    border: none;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+
+/* Close button */
+
+.logout-modal .btn-close {
+    margin: 12px 12px 0 auto;
+}
+
+
+/* Logout icon */
+
+.logout-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logout-icon {
+    width: 76px;
+    height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #fff1f2,
+        #ffe4e6
+    );
+
+    color: #dc3545;
+
+    font-size: 34px;
+
+    box-shadow:
+        0 8px 25px rgba(220, 53, 69, 0.12);
+}
+
+
+/* Khmer title */
+
+.logout-khmer-title {
+    font-family:
+        "Noto Sans Khmer",
+        sans-serif;
+
+    font-size: 14px;
+    color: #555;
+}
+
+
+/* User card */
+
+.logout-user-card {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 15px;
+
+    background: #f8f9fa;
+
+    border: 1px solid #e9ecef;
+
+    border-radius: 14px;
+
+    text-align: left;
+}
+
+
+/* User icon */
+
+.logout-user-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e9f7ef;
+
+    color: #198754;
+
+    font-size: 22px;
+}
+
+
+/* Security */
+
+.logout-security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 12px;
+
+    border-radius: 10px;
+
+    background: #f0fdf4;
+
+    color: #198754;
+
+    font-size: 12px;
+}
+
+.logout-security-note i {
+    font-size: 16px;
+}
+
+
+/* Cancel */
+
+.logout-cancel-btn {
+    border-radius: 11px;
+
+    padding: 10px 18px;
+
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.logout-cancel-btn:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+
+/* Logout */
+
+.logout-confirm-btn {
+    border-radius: 11px;
+
+    padding: 10px 18px;
+
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.logout-confirm-btn:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 16px rgba(220, 53, 69, 0.25);
+}
+
+
+/* Mobile */
+
+@media (max-width: 576px) {
+
+    .logout-modal {
+        margin: 15px;
+        border-radius: 18px;
+    }
+
+    .logout-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 28px;
+    }
+
+    .logout-modal h4 {
+        font-size: 20px;
+    }
+
+    .logout-user-card {
+        padding: 10px 12px;
+    }
+
+}
+/* =========================================================
+   NAVBAR USER PROFILE
+========================================================= */
+
+.user-navbar-profile {
+    padding: 5px 8px !important;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+}
+
+.user-navbar-profile:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.navbar-user-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 2px solid rgba(255, 255, 255, 0.8);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 700;
+    font-size: 15px;
+    
+}
+
+.navbar-user-avatar-default {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.user-navbar-info {
+    line-height: 1.15;
+    min-width: 100px;
+}
+
+.user-navbar-name {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.user-navbar-role {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   USER DROPDOWN
+========================================================= */
+
+.user-profile-dropdown {
+    min-width: 280px;
+    padding: 8px;
+
+    border-radius: 16px;
+
+    animation: userDropdownShow 0.2s ease;
+}
+
+@keyframes userDropdownShow {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   DROPDOWN USER HEADER
+========================================================= */
+
+.dropdown-user-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style-type: none;
+    padding: 12px;
+}
+
+.dropdown-user-avatar {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    border-radius: 50%;
+
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 19px;
+    font-weight: 700;
+
+    border: 2px solid #e9ecef;
+}
+
+.dropdown-user-avatar-default {
+    background: linear-gradient(
+        135deg,
+        #198754,
+        #20c997
+    );
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   DROPDOWN ITEMS
+========================================================= */
+
+.user-dropdown-item {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 12px !important;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    transition: all 0.2s ease;
+    
+}
+
+.user-dropdown-item i {
+    width: 20px;
+
+    font-size: 17px;
+
+    text-align: center;
+
+    
+}
+
+.user-dropdown-item:hover {
+    background: #f1f8f4;
+    transform: translateX(3px);
+}
+
+.user-dropdown-item.text-danger:hover {
+    background: #fff1f2;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .user-profile-dropdown {
+        min-width: 250px;
+    }
+
+    .navbar-user-avatar {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+
 }

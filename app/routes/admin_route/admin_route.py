@@ -99,8 +99,8 @@ def dashboard():
 # ---------- SETTINGS / PROFILE ----------
 @admin_bp.route("/settings", methods=["GET", "POST"])
 @login_required
-@role_required("Admin")
-@permission_required("PERMISSION_MANAGER_SYSTEM")
+@role_required("Admin", "Expert", "User")
+@permission_required("VIEW_SETTING")
 def settings():
     form = UserProfileForm(obj=current_user)
     if request.method == "POST":

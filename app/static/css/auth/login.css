@@ -93,39 +93,229 @@
   left: -100px;
 }
 
+/* =========================================
+   BRAND CONTENT
+========================================= */
+
 .brand-content {
-  position: relative;
-
-  z-index: 2;
-
-  max-width: 390px;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  text-align: center;
 }
 
-/* =====================================================
-   BRAND ICON
-===================================================== */
+/* =========================================
+   RICE LOGO
+========================================= */
 
 .brand-icon {
-  width: 90px;
-  height: 90px;
+  width: 95px;
+  height: 95px;
+
+  margin: 0 auto 22px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 28px;
+  border-radius: 50%;
 
-  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+.brand-icon img {
+  width: 68px;
+  height: 68px;
+
+  object-fit: contain;
+  display: block;
+}
+
+/* Logo animation */
+
+@keyframes logoFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* =========================================
+   BRAND TITLE
+========================================= */
+
+.brand-title {
+  margin: 0 0 10px;
+
+  font-size: 2.5rem;
+  font-weight: 800;
+
+  color: #ffffff;
+
+  letter-spacing: -0.5px;
+}
+
+/* =========================================
+   BRAND SUBTITLE
+========================================= */
+
+.brand-subtitle {
+  margin: 0 auto 35px;
+
+  color: rgba(255, 255, 255, 0.88);
+
+  font-size: 0.95rem;
+  line-height: 1.9;
+}
+
+.brand-subtitle span {
+  font-family: "Noto Sans Khmer", "Inter", sans-serif;
+
+  font-size: 0.9rem;
+}
+
+/* =========================================
+   FEATURE LIST
+========================================= */
+
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  width: 100%;
+  margin-top: 25px;
+}
+
+/* Rice information card */
+
+.rice-info-card {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 14px;
+
+  padding: 15px;
+
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  backdrop-filter: blur(8px);
+
+  transition: all 0.3s ease;
+}
+
+/* Hover */
+
+.rice-info-card:hover {
+  transform: translateY(-3px);
+
+  background: rgba(255, 255, 255, 0.16);
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon */
+
+.rice-info-card .feature-icon {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
 
   background: rgba(255, 255, 255, 0.15);
 
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 
-  backdrop-filter: blur(10px);
+  font-size: 20px;
+}
 
-  font-size: 42px;
+/* Content */
 
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+.feature-content {
+  text-align: left;
+}
+
+.feature-content h6 {
+  margin: 0 0 4px;
+
+  color: #ffffff;
+
+  font-size: 0.95rem;
+
+  font-weight: 700;
+}
+
+.feature-content p {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.78);
+
+  font-size: 0.78rem;
+
+  line-height: 1.7;
+}
+
+/* Khmer font */
+
+.feature-content p {
+  font-family: "Noto Sans Khmer", "Inter", sans-serif;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+  .brand-content {
+    max-width: 100%;
+  }
+
+  .brand-icon {
+    width: 75px;
+    height: 75px;
+
+    margin-bottom: 15px;
+  }
+
+  .brand-icon img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .brand-subtitle {
+    margin-bottom: 25px;
+  }
+
+  .feature-list {
+    gap: 10px;
+  }
+
+  .feature-list li {
+    padding: 11px 12px;
+  }
 }
 
 /* =====================================================

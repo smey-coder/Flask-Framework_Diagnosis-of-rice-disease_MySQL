@@ -13,18 +13,23 @@ from flask_login import login_required
 from app.forms.permission_forms import PermissionCreateForm, PermissionEditForm, PermissionConfirmDeleteForm
 from app.services.permission_service import PermissionService
 from flask_login import current_user
+from app.decorators.access import role_required, permission_required
 
 logger = logging.getLogger("app")
 permission_bp = Blueprint("tbl_permissions", __name__, url_prefix="/permissions")
 
 @permission_bp.route("/")
 @login_required
+@role_required("Admin","Expert")
+@permission_required("VIEW_PERMISSION")
 def index():
     permissions = PermissionService.get_permission_all()
     return render_template("permissions/index.html", permissions=permissions,  user=current_user)
 
 @permission_bp.route("/<int:permission_id>")
 @login_required
+@role_required("Admin","Expert")
+@permission_required("DETAIL_PERMISSION")
 def detail(permission_id: int):
     permission = PermissionService.get_permission_by_id(permission_id)
     if permission is None:
@@ -33,6 +38,8 @@ def detail(permission_id: int):
 
 @permission_bp.route("/create", methods=["GET", "POST"])
 @login_required
+@role_required("Admin","Expert")
+@permission_required("CREATE_PERMISSION")
 def create():
     form = PermissionCreateForm()
     if form.validate_on_submit():
@@ -98,6 +105,8 @@ def edit(permission_id: int):
 
 @permission_bp.route("/<int:permission_id>/delete", methods=["GET"])
 @login_required
+@role_required("Admin","Expert")
+@permission_required("DELETE_PERMISSION")
 def delete_confirm(permission_id: int):
     permission = PermissionService.get_permission_by_id(permission_id)
     if permission is None:
@@ -108,6 +117,8 @@ def delete_confirm(permission_id: int):
 
 @permission_bp.route("/<int:permission_id>/delete", methods=["POST"])
 @login_required
+@role_required("Admin","Expert")
+@permission_required("DELETE_PERMISSION")
 def delete(permission_id: int):
     permission = PermissionService.get_permission_by_id(permission_id)
     if permission is None:

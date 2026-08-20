@@ -94,6 +94,11 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.user_route.field_crop_routes import field_crop_bp
     from app.routes.user_route.crop_monitoring_routes import crop_monitoring_bp
     from app.routes.user_route.treatment_history import treatment_history_bp
+    #Admin and Expert
+    from app.routes.profile_routes import profile_bp
+    #User
+    from app.routes.user_route.profile_routes_user import profile_user_bp 
+    
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
@@ -113,6 +118,8 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(field_crop_bp)
     app.register_blueprint(crop_monitoring_bp)
     app.register_blueprint(treatment_history_bp)
+    app.register_blueprint(profile_bp)
+    app.register_blueprint(profile_user_bp)
 
     # ================= CREATE TABLES =================
     with app.app_context():

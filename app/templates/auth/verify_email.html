@@ -1,44 +1,160 @@
-{% extends "layouts/base.html" %}
-{% block title %}Verify Email{% endblock %}
+{% extends "layouts/base.html" %} {% block title %}Verify Email{% endblock %} {%
+block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/auth/verify_email.css') }}"
+/>
+<div class="verify-page">
+  <div class="verify-card">
+    <!-- ================= LEFT PANEL ================= -->
+    <div class="verify-brand">
+      <div class="brand-icon">
+        <i class="bi bi-shield-check"></i>
+      </div>
 
-{% block content %}
-<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
-    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
-        <div class="text-center mb-4">
-            <img src="{{ url_for('static', filename='images/verify.png') }}"
-                 alt="OTP Illustration"
-                 class="img-fluid"
-                 style="max-width: 120px;">
-        </div>
+      <h2>Rice Expert</h2>
 
-        <h3 class="text-center mb-3">Verify OTP</h3>
+      <p>Rice Disease Diagnosis System</p>
 
-        <p class="text-center text-muted mb-4">
-            Verification code has been sent to <strong>{{ email }}</strong>
-        </p>
+      <div class="security-icon">
+        <i class="bi bi-envelope-check"></i>
+      </div>
 
-
-        <form method="POST">
-            <div class="mb-3">
-                <label class="form-label">Enter OTP</label>
-                <input type="text"
-                       name="otp"
-                       class="form-control text-center fs-5"
-                       maxlength="6"
-                       placeholder="XXXXXX"
-                       required>
-            </div>
-
-            <button type="submit" class="btn btn-success w-100 py-2">
-                Verify Code
-            </button>
-        </form>
-
-        <div class="text-center mt-3">
-            <a href="{{ url_for('auth.forget_password') }}" class="text-decoration-none small">
-                Resend OTP
-            </a>
-        </div>
+      <span class="security-text"> Secure Email Verification </span>
     </div>
+
+    <!-- ================= RIGHT PANEL ================= -->
+    <div class="verify-content">
+      <!-- Header -->
+      <div class="verify-header">
+        <div class="verify-small-icon">
+          <i class="bi bi-key-fill"></i>
+        </div>
+
+        <h3>Verify Your Email</h3>
+
+        <p>Enter the 6-digit verification code sent to your email address.</p>
+      </div>
+
+      <!-- Email Information -->
+      <div class="email-box">
+        <div class="email-icon">
+          <i class="bi bi-envelope-fill"></i>
+        </div>
+
+        <div>
+          <small>Verification code sent to</small>
+
+          <strong> {{ email }} </strong>
+        </div>
+      </div>
+
+      <!-- OTP FORM -->
+      <form method="POST" id="verifyForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <div class="otp-field">
+          <label for="otp"> Verification Code </label>
+
+          <div class="otp-wrapper">
+            <i class="bi bi-shield-lock otp-icon"></i>
+
+            <input
+              type="text"
+              id="otp"
+              name="otp"
+              class="otp-input"
+              maxlength="6"
+              minlength="6"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              placeholder="000000"
+              pattern="[0-9]{6}"
+              required
+              autofocus
+            />
+          </div>
+
+          <small class="otp-help">
+            <i class="bi bi-info-circle me-1"></i>
+            Enter the 6-digit code from your email.
+          </small>
+        </div>
+
+        <!-- Verify Button -->
+        <button type="submit" class="verify-btn" id="verifyBtn">
+          <span id="verifyText">
+            <i class="bi bi-check-circle me-1"></i>
+            Verify Code
+          </span>
+
+          <span id="verifyLoading" class="d-none">
+            <span
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+            ></span>
+
+            Verifying...
+          </span>
+        </button>
+      </form>
+
+      <!-- Resend -->
+      <div class="resend-section">
+        <p>Didn't receive the code?</p>
+
+        <a href="{{ url_for('auth.forget_password') }}" class="resend-link">
+          <i class="bi bi-arrow-repeat me-1"></i>
+          Resend OTP
+        </a>
+      </div>
+
+      <!-- Security Note -->
+      <div class="security-note">
+        <i class="bi bi-shield-lock-fill"></i>
+
+        <span> Never share your verification code with anyone. </span>
+      </div>
+
+      <!-- Back -->
+      <div class="back-login">
+        <a href="{{ url_for('auth.login') }}">
+          <i class="bi bi-arrow-left me-1"></i>
+          Back to Sign In
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const otpInput = document.getElementById("otp");
+    const form = document.getElementById("verifyForm");
+    const button = document.getElementById("verifyBtn");
+
+    const verifyText = document.getElementById("verifyText");
+    const verifyLoading = document.getElementById("verifyLoading");
+
+    /* Only allow numbers */
+    otpInput.addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "").slice(0, 6);
+    });
+
+    /* Submit Loading */
+    form.addEventListener("submit", function () {
+      if (otpInput.value.length !== 6) {
+        return;
+      }
+
+      button.disabled = true;
+
+      verifyText.classList.add("d-none");
+      verifyLoading.classList.remove("d-none");
+    });
+  });
+</script>
+
 {% endblock %}

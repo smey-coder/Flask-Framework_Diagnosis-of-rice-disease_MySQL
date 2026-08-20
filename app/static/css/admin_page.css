@@ -919,3 +919,231 @@ body {
     background: #fff1f1;
     color: #dc3545 !important;
 }
+/* =========================================================
+   LOGOUT CONFIRMATION MODAL
+========================================================= */
+
+.logout-modal {
+    border: none;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+
+/* Close button */
+
+.logout-modal .btn-close {
+    margin: 12px 12px 0 auto;
+}
+
+
+/* Logout icon */
+
+.logout-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logout-icon {
+    width: 76px;
+    height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #fff1f2,
+        #ffe4e6
+    );
+
+    color: #dc3545;
+
+    font-size: 34px;
+
+    box-shadow:
+        0 8px 25px rgba(220, 53, 69, 0.12);
+}
+
+
+/* Khmer title */
+
+.logout-khmer-title {
+    font-family:
+        "Noto Sans Khmer",
+        sans-serif;
+
+    font-size: 14px;
+    color: #555;
+}
+
+
+/* User card */
+
+.logout-user-card {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 15px;
+
+    background: #f8f9fa;
+
+    border: 1px solid #e9ecef;
+
+    border-radius: 14px;
+
+    text-align: left;
+}
+
+
+/* User icon */
+
+.logout-user-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e9f7ef;
+
+    color: #198754;
+
+    font-size: 22px;
+}
+
+
+/* Security */
+
+.logout-security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 12px;
+
+    border-radius: 10px;
+
+    background: #f0fdf4;
+
+    color: #198754;
+
+    font-size: 12px;
+}
+
+.logout-security-note i {
+    font-size: 16px;
+}
+
+
+/* Cancel */
+
+.logout-cancel-btn {
+    border-radius: 11px;
+
+    padding: 10px 18px;
+
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.logout-cancel-btn:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+
+/* Logout */
+
+.logout-confirm-btn {
+    border-radius: 11px;
+
+    padding: 10px 18px;
+
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.logout-confirm-btn:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 16px rgba(220, 53, 69, 0.25);
+}
+
+
+/* Mobile */
+
+@media (max-width: 576px) {
+
+    .logout-modal {
+        margin: 15px;
+        border-radius: 18px;
+    }
+
+    .logout-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 28px;
+    }
+
+    .logout-modal h4 {
+        font-size: 20px;
+    }
+
+    .logout-user-card {
+        padding: 10px 12px;
+    }
+
+}
+.user-avatar-lg {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.user-avatar-image {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+}
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #198754, #20c997);
+  color: #fff;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.user-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}

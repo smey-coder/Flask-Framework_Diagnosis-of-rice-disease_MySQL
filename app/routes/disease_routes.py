@@ -22,6 +22,7 @@ from app.forms.diseases_forms import (
 )
 from app.services.disease_service import DiseaseService
 from decorators import require_admin, active_user_required
+from app.decorators.access import role_required, permission_required
 
 logger = logging.getLogger("app")
 

@@ -1,0 +1,914 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %}My Profile{%
+endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/profile.css') }}"
+/>
+
+<div class="profile-page">
+  <!-- =====================================================
+       SINGLE PROFILE IMAGE UPLOAD FORM
+  ====================================================== -->
+
+  {% if current_user.has_permission('UPDATE_PROFILE') %}
+
+  <form
+    method="POST"
+    action="{{ url_for('admin_profile.upload_image') }}"
+    enctype="multipart/form-data"
+    id="imageUploadForm"
+    class="d-none"
+  >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+   
+    <input
+      type="file"
+      id="profileImageInput"
+      name="image"
+      accept="image/jpeg,image/png,image/webp"
+    />
+   
+  </form>
+
+  {% endif %}
+
+  <!-- =====================================================
+       PROFILE HERO
+  ====================================================== -->
+
+  <section class="profile-hero">
+    
+    <div class="profile-cover">
+      <div class="cover-pattern"></div>
+    </div>
+
+    <div class="profile-hero-body">
+      <!-- ================= PROFILE AVATAR ================= -->
+
+      <div class="profile-avatar-wrapper">
+        {% if user.image %}
+
+        <img
+          src="{{ url_for('static', filename=user.image) }}"
+          alt="Profile Image"
+          class="profile-avatar"
+        />
+
+        {% else %}
+
+        <div class="profile-avatar profile-avatar-default">
+          <i class="bi bi-person-fill"></i>
+        </div>
+
+        {% endif %}
+
+        <!-- CAMERA BUTTON -->
+
+        {% if current_user.has_permission('UPDATE_PROFILE') %}
+
+        <button
+          type="button"
+          class="avatar-camera"
+          id="heroUploadButton"
+          title="Change profile image"
+        >
+          <i class="bi bi-camera-fill"></i>
+        </button>
+
+        {% endif %}
+      </div>
+
+      <!-- ================= USER INFORMATION ================= -->
+
+      <div class="profile-hero-info">
+        <div class="profile-title-row">
+          <div class="profile-name-wrapper">
+            <h2 class="profile-name mb-0">
+              {{ user.full_name or user.username }}
+            </h2>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+
+        <p class="profile-email">
+          <i class="bi bi-envelope"></i>
+          {{ user.email }}
+        </p>
+      </div>
+    </div>
+    
+  </section>
+
+  <!-- =====================================================
+       MAIN CONTENT
+  ====================================================== -->
+
+  <div class="row g-4 mt-1">
+   
+    <!-- =================================================
+     LEFT COLUMN
+================================================== -->
+
+    <div class="col-xl-4 col-lg-5">
+      <!-- =================================================
+       PROFILE IMAGE CARD
+  ================================================== -->
+
+      <div class="profile-card image-card">
+        <div class="card-heading">
+          <div class="heading-icon green">
+            <i class="bi bi-person-bounding-box"></i>
+          </div>
+
+          <div>
+            <h5>Profile Picture</h5>
+            <p>Manage your profile image</p>
+          </div>
+        </div>
+
+        <div class="profile-image-section">
+          {% if user.image %}
+
+          <img
+            src="{{ url_for('static', filename=user.image) }}"
+            alt="Profile Image"
+            class="profile-large-avatar"
+            id="profilePreview"
+          />
+
+          {% else %}
+
+          <div
+            class="profile-large-avatar profile-avatar-default"
+            id="profilePreview"
+          >
+            <i class="bi bi-person-fill"></i>
+          </div>
+
+          {% endif %}
+
+          <h4>{{ user.full_name or user.username }}</h4>
+
+          <p>{{ user.email }}</p>
+        </div>
+
+        <!-- IMAGE ACTIONS -->
+
+        {% if current_user.has_permission('UPDATE_PROFILE') %}
+
+        <div class="image-actions">
+          <!-- CHANGE PHOTO -->
+
+          <button
+            type="button"
+            class="btn btn-success profile-action-btn"
+            id="changePhotoButton"
+          >
+            <i class="bi bi-camera-fill me-2"></i>
+            Change Photo
+          </button>
+
+          <!-- REMOVE PHOTO -->
+
+          {% if user.image %}
+
+          <form
+            method="POST"
+            action="{{ url_for('admin_profile.remove_image') }}"
+            id="removeImageForm"
+          >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <button
+              type="submit"
+              class="btn btn-outline-danger profile-action-btn"
+            >
+              <i class="bi bi-trash3 me-2"></i>
+              Remove Photo
+            </button>
+          </form>
+
+          {% endif %}
+        </div>
+
+        <div class="image-help">
+          <i class="bi bi-info-circle me-1"></i>
+
+          JPG, JPEG, PNG or WEBP · Maximum 2 MB
+        </div>
+
+        {% endif %}
+      </div>
+
+      <!-- =================================================
+       ACCOUNT INFORMATION
+  ================================================== -->
+
+      <div class="profile-card">
+        <div class="card-heading">
+          <div class="heading-icon blue">
+            <i class="bi bi-person-vcard"></i>
+          </div>
+
+          <div>
+            <h5>Account Information</h5>
+            <p>Your account details</p>
+          </div>
+        </div>
+
+        <div class="account-info">
+          <!-- USERNAME -->
+
+          <div class="account-item">
+            <div class="account-item-icon">
+              <i class="bi bi-person"></i>
+            </div>
+
+            <div>
+              <small>Username</small>
+
+              <strong> {{ user.username }} </strong>
+            </div>
+          </div>
+
+          <!-- EMAIL -->
+
+          <div class="account-item">
+            <div class="account-item-icon">
+              <i class="bi bi-envelope"></i>
+            </div>
+
+            <div>
+              <small>Email Address</small>
+
+              <strong class="text-break"> {{ user.email }} </strong>
+            </div>
+          </div>
+
+          <!-- STATUS -->
+
+          <div class="account-item">
+            <div class="account-item-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+
+            <div>
+              <small>Account Status</small>
+
+              {% if user.is_active %}
+
+              <span class="status-badge status-active">
+                <i class="bi bi-check-circle-fill"></i>
+                Active
+              </span>
+
+              {% else %}
+
+              <span class="status-badge status-inactive">
+                <i class="bi bi-x-circle-fill"></i>
+                Inactive
+              </span>
+
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================
+     RIGHT COLUMN
+================================================== -->
+
+    <div class="col-xl-8 col-lg-7">
+      <!-- =================================================
+       EDIT PROFILE
+  ================================================== -->
+
+      {% if current_user.has_permission('UPDATE_PROFILE') %}
+
+      <div class="profile-card mb-4">
+        <div class="card-heading">
+          <div class="heading-icon green">
+            <i class="bi bi-pencil-square"></i>
+          </div>
+
+          <div>
+            <h5>Edit Profile</h5>
+            <p>Update your personal information</p>
+          </div>
+        </div>
+
+        <form
+          method="POST"
+          action="{{ url_for('admin_profile.update') }}"
+          class="profile-form"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+          <div class="row g-4">
+            <!-- USERNAME -->
+
+            <div class="col-md-6">
+              <label class="form-label"> Username </label>
+
+              <div class="profile-input-group">
+                <i class="bi bi-person"></i>
+
+                <input
+                  type="text"
+                  class="profile-input disabled-input"
+                  value="{{ user.username }}"
+                  disabled
+                />
+              </div>
+
+              <small class="field-help">
+                <i class="bi bi-lock-fill"></i>
+
+                Username cannot be changed.
+              </small>
+            </div>
+
+            <!-- FULL NAME -->
+
+            <div class="col-md-6">
+              <label for="full_name" class="form-label"> Full Name </label>
+
+              <div class="profile-input-group">
+                <i class="bi bi-person-badge"></i>
+
+                <input
+                  type="text"
+                  id="full_name"
+                  name="full_name"
+                  class="profile-input"
+                  value="{{ user.full_name or '' }}"
+                  placeholder="Enter your full name"
+                  autocomplete="name"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- EMAIL -->
+
+            <div class="col-12">
+              <label for="email" class="form-label"> Email Address </label>
+
+              <div class="profile-input-group">
+                <i class="bi bi-envelope"></i>
+
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="profile-input"
+                  value="{{ user.email }}"
+                  placeholder="Enter your email"
+                  autocomplete="email"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button type="submit" class="btn btn-success save-profile-btn">
+              <i class="bi bi-check-lg me-2"></i>
+
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {% endif %}
+
+      <!-- =================================================
+       CHANGE PASSWORD
+  ================================================== -->
+
+      {% if current_user.has_permission('CHANGE_PASSWORD') %}
+
+      <div class="profile-card password-card">
+        <div class="card-heading">
+          <div class="heading-icon orange">
+            <i class="bi bi-shield-lock"></i>
+          </div>
+
+          <div>
+            <h5>Change Password</h5>
+            <p>Keep your account secure</p>
+          </div>
+        </div>
+
+        <form
+          method="POST"
+          action="{{ url_for('admin_profile.change_password') }}"
+          id="changePasswordForm"
+          class="profile-form"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+          <!-- CURRENT PASSWORD -->
+
+          <div class="password-field-wrapper">
+            <label for="current_password"> Current Password </label>
+
+            <div class="profile-input-group">
+              <i class="bi bi-lock"></i>
+
+              <input
+                type="password"
+                id="current_password"
+                name="current_password"
+                class="profile-input password-field"
+                autocomplete="current-password"
+                placeholder="Enter current password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-target="current_password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- NEW PASSWORD -->
+
+          <div class="password-field-wrapper">
+            <label for="new_password"> New Password </label>
+
+            <div class="profile-input-group">
+              <i class="bi bi-key"></i>
+
+              <input
+                type="password"
+                id="new_password"
+                name="new_password"
+                class="profile-input password-field"
+                autocomplete="new-password"
+                placeholder="Create a strong password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-target="new_password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+
+            <!-- PASSWORD STRENGTH -->
+
+            <div class="password-strength">
+              <div class="strength-header">
+                <span>Password strength</span>
+
+                <strong id="strengthText"> — </strong>
+              </div>
+
+              <div class="strength-bar">
+                <span id="strengthBar"></span>
+              </div>
+
+              <div class="password-rules">
+                <span id="ruleLength">
+                  <i class="bi bi-circle"></i>
+                  8+ characters
+                </span>
+
+                <span id="ruleUpper">
+                  <i class="bi bi-circle"></i>
+                  Uppercase
+                </span>
+
+                <span id="ruleLower">
+                  <i class="bi bi-circle"></i>
+                  Lowercase
+                </span>
+
+                <span id="ruleNumber">
+                  <i class="bi bi-circle"></i>
+                  Number
+                </span>
+
+                <span id="ruleSpecial">
+                  <i class="bi bi-circle"></i>
+                  Special character
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONFIRM PASSWORD -->
+
+          <div class="password-field-wrapper">
+            <label for="confirm_password"> Confirm New Password </label>
+
+            <div class="profile-input-group">
+              <i class="bi bi-shield-check"></i>
+
+              <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                class="profile-input password-field"
+                autocomplete="new-password"
+                placeholder="Confirm your new password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-target="confirm_password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+
+            <div id="passwordMatch" class="password-match"></div>
+          </div>
+
+          <!-- SECURITY NOTE -->
+
+          <div class="security-note">
+            <div class="security-note-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+
+            <div>
+              <strong> Security Recommendation </strong>
+
+              <p>
+                Use at least 8 characters with uppercase, lowercase, number and
+                special character.
+              </p>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button
+              type="submit"
+              class="btn btn-warning change-password-btn"
+              id="changePasswordBtn"
+            >
+              <i class="bi bi-shield-lock me-2"></i>
+
+              Change Password
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {% endif %}
+    </div>
+    ```
+  </div>
+</div>
+
+{% endblock %} {% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/profile.css') }}"
+/>
+
+{% endblock %} {% block extra_js %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    /* =====================================================
+     PROFILE IMAGE UPLOAD
+  ====================================================== */
+
+    const imageInput = document.getElementById("profileImageInput");
+
+    const uploadForm = document.getElementById("imageUploadForm");
+
+    const heroUploadButton = document.getElementById("heroUploadButton");
+
+    const changePhotoButton = document.getElementById("changePhotoButton");
+
+    function openImageSelector() {
+      if (imageInput) {
+        imageInput.click();
+      }
+    }
+
+    if (heroUploadButton) {
+      heroUploadButton.addEventListener("click", openImageSelector);
+    }
+
+    if (changePhotoButton) {
+      changePhotoButton.addEventListener("click", openImageSelector);
+    }
+
+    if (imageInput) {
+      imageInput.addEventListener("change", function () {
+        if (!this.files || this.files.length === 0) {
+          return;
+        }
+
+        const file = this.files[0];
+
+        const maxSize = 2 * 1024 * 1024;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        /* FILE TYPE */
+
+        if (!allowedTypes.includes(file.type)) {
+          alert("Only JPG, JPEG, PNG and WEBP images are allowed.");
+
+          this.value = "";
+
+          return;
+        }
+
+        /* FILE SIZE */
+
+        if (file.size > maxSize) {
+          alert("Image size must be less than 2 MB.");
+
+          this.value = "";
+
+          return;
+        }
+
+        /* SUBMIT */
+
+        if (uploadForm) {
+          uploadForm.submit();
+        }
+      });
+    }
+
+    /* =====================================================
+     REMOVE IMAGE
+  ====================================================== */
+
+    const removeForm = document.getElementById("removeImageForm");
+
+    if (removeForm) {
+      removeForm.addEventListener("submit", function (event) {
+        const confirmed = confirm(
+          "Are you sure you want to remove your profile image?",
+        );
+
+        if (!confirmed) {
+          event.preventDefault();
+        }
+      });
+    }
+
+    /* =====================================================
+     SHOW / HIDE PASSWORD
+  ====================================================== */
+
+    document.querySelectorAll(".password-toggle").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const targetId = this.dataset.target;
+
+        const input = document.getElementById(targetId);
+
+        const icon = this.querySelector("i");
+
+        if (!input) {
+          return;
+        }
+
+        if (input.type === "password") {
+          input.type = "text";
+
+          icon.classList.remove("bi-eye");
+
+          icon.classList.add("bi-eye-slash");
+        } else {
+          input.type = "password";
+
+          icon.classList.remove("bi-eye-slash");
+
+          icon.classList.add("bi-eye");
+        }
+      });
+    });
+
+    /* =====================================================
+     PASSWORD STRENGTH
+  ====================================================== */
+
+    const newPassword = document.getElementById("new_password");
+
+    const strengthText = document.getElementById("strengthText");
+
+    const strengthBar = document.getElementById("strengthBar");
+
+    const rules = {
+      length: document.getElementById("ruleLength"),
+
+      upper: document.getElementById("ruleUpper"),
+
+      lower: document.getElementById("ruleLower"),
+
+      number: document.getElementById("ruleNumber"),
+
+      special: document.getElementById("ruleSpecial"),
+    };
+
+    function updateRule(element, valid) {
+      if (!element) {
+        return;
+      }
+
+      const icon = element.querySelector("i");
+
+      if (valid) {
+        element.classList.add("valid");
+
+        if (icon) {
+          icon.classList.remove("bi-circle");
+
+          icon.classList.add("bi-check-circle-fill");
+        }
+      } else {
+        element.classList.remove("valid");
+
+        if (icon) {
+          icon.classList.remove("bi-check-circle-fill");
+
+          icon.classList.add("bi-circle");
+        }
+      }
+    }
+
+    function checkPasswordStrength(password) {
+      const checks = {
+        length: password.length >= 8,
+
+        upper: /[A-Z]/.test(password),
+
+        lower: /[a-z]/.test(password),
+
+        number: /[0-9]/.test(password),
+
+        special: /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password),
+      };
+
+      updateRule(rules.length, checks.length);
+
+      updateRule(rules.upper, checks.upper);
+
+      updateRule(rules.lower, checks.lower);
+
+      updateRule(rules.number, checks.number);
+
+      updateRule(rules.special, checks.special);
+
+      const score = Object.values(checks).filter(Boolean).length;
+
+      if (!password) {
+        if (strengthText) {
+          strengthText.textContent = "—";
+        }
+
+        if (strengthBar) {
+          strengthBar.style.width = "0%";
+
+          strengthBar.className = "";
+        }
+
+        return false;
+      }
+
+      if (score <= 2) {
+        strengthText.textContent = "Weak";
+
+        strengthBar.style.width = "25%";
+
+        strengthBar.className = "strength-weak";
+      } else if (score === 3) {
+        strengthText.textContent = "Fair";
+
+        strengthBar.style.width = "50%";
+
+        strengthBar.className = "strength-fair";
+      } else if (score === 4) {
+        strengthText.textContent = "Good";
+
+        strengthBar.style.width = "75%";
+
+        strengthBar.className = "strength-good";
+      } else {
+        strengthText.textContent = "Strong";
+
+        strengthBar.style.width = "100%";
+
+        strengthBar.className = "strength-strong";
+      }
+
+      return score === 5;
+    }
+
+    /* =====================================================
+     PASSWORD MATCH
+  ====================================================== */
+
+    const confirmPassword = document.getElementById("confirm_password");
+
+    const passwordMatch = document.getElementById("passwordMatch");
+
+    function checkPasswordMatch() {
+      if (!confirmPassword || !passwordMatch || !newPassword) {
+        return false;
+      }
+
+      const password = newPassword.value;
+
+      const confirm = confirmPassword.value;
+
+      if (!confirm) {
+        passwordMatch.textContent = "";
+
+        passwordMatch.className = "password-match";
+
+        return false;
+      }
+
+      if (password === confirm) {
+        passwordMatch.innerHTML =
+          '<i class="bi bi-check-circle-fill"></i> Passwords match.';
+
+        passwordMatch.className = "password-match match-success";
+
+        return true;
+      }
+
+      passwordMatch.innerHTML =
+        '<i class="bi bi-x-circle-fill"></i> Passwords do not match.';
+
+      passwordMatch.className = "password-match match-error";
+
+      return false;
+    }
+
+    if (newPassword) {
+      newPassword.addEventListener("input", function () {
+        checkPasswordStrength(this.value);
+
+        checkPasswordMatch();
+      });
+    }
+
+    if (confirmPassword) {
+      confirmPassword.addEventListener("input", checkPasswordMatch);
+    }
+
+    /* =====================================================
+     CHANGE PASSWORD VALIDATION
+  ====================================================== */
+
+    const passwordForm = document.getElementById("changePasswordForm");
+
+    if (passwordForm) {
+      passwordForm.addEventListener("submit", function (event) {
+        const strong = checkPasswordStrength(newPassword.value);
+
+        const matched = checkPasswordMatch();
+
+        if (!strong) {
+          event.preventDefault();
+
+          alert("Please create a strong password before continuing.");
+
+          newPassword.focus();
+
+          return;
+        }
+
+        if (!matched) {
+          event.preventDefault();
+
+          alert("Passwords do not match.");
+
+          confirmPassword.focus();
+
+          return;
+        }
+      });
+    }
+  });
+</script>
+
+{% endblock %}

@@ -16,11 +16,7 @@ from app.forms.rule_condition_form import (
 from app.models.symptoms import SymptomsTable
 from app.services.rule_condition_service import RuleConditionService
 from app.decorators.access import role_required, permission_required
-rule_condition_bp = Blueprint(
-    "rule_condition",
-    __name__,
-    url_prefix="/admin/rule-conditions"
-)
+rule_condition_bp = Blueprint("rule_condition",__name__,url_prefix="/admin/rule-conditions")
 
 # ===================== INDEX =====================
 
