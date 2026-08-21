@@ -17,10 +17,46 @@ class FarmTable(db.Model):
         db.Text,
         nullable=True
     )
+    # =========================================================
+    # LOCATION
+    # =========================================================
+    # Example:
+    # "Kampong Cham"
+    province = db.Column(
+        db.String(100),
+        nullable=True
+    )
+    # Example:
+    # "Kang Meas"
+    district = db.Column(
+        db.String(100),
+        nullable=True
+    )
+
+    # Example:
+    # "Kokor"
+    commune = db.Column(
+        db.String(100),
+        nullable=True
+    )
     location = db.Column(
         db.String(255),
         nullable=True
     )
+     # =========================================================
+    # GPS LOCATION
+    # =========================================================
+
+    latitude = db.Column(
+        db.Numeric(10, 7),
+        nullable=True
+    )
+
+    longitude = db.Column(
+        db.Numeric(10, 7),
+        nullable=True
+    )
+
     status = db.Column(
         db.String(20),
         default="Active",

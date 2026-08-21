@@ -28,7 +28,9 @@
     "history": "History",
     "diagnostics" : "Diagnostics",
     "ricediseasediagnosticsystem": "Rice disease diagnostic system",
-    "fact_management_system": "Fact Management System"
+    "fact_management_system": "Fact Management System",
+    "rice_varieties": "Rice Varieties",
+    "growth_stages": "Growth Stages"
   },
   "dashboard": {
     "welcome": "Welcome to Rice Expert Dashboard",

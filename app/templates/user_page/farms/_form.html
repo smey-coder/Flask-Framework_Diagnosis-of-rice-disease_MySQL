@@ -16,6 +16,58 @@
     {% endfor %}
   </div>
 
+  <!-- =====================================================
+       PROVINCE
+  ====================================================== -->
+  <div class="mb-3">
+    {{ form.province.label(class="form-label fw-semibold") }}
+    <span class="text-danger">*</span>
+
+    {{ form.province(
+        class="form-select" ~ (" is-invalid" if form.province.errors else "")
+    ) }}
+
+    {% for error in form.province.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+
+  <!-- =====================================================
+       DISTRICT
+  ====================================================== -->
+  <div class="mb-3">
+    {{ form.district.label(class="form-label fw-semibold") }}
+    <span class="text-danger">*</span>
+
+    {{ form.district(
+        class="form-control" ~ (" is-invalid" if form.district.errors else ""),
+        placeholder="Enter district"
+    ) }}
+
+    {% for error in form.district.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+
+  <!-- =====================================================
+       COMMUNE
+  ====================================================== -->
+  <div class="mb-3">
+    {{ form.commune.label(class="form-label fw-semibold") }}
+    <span class="text-danger">*</span>
+
+    {{ form.commune(
+        class="form-control" ~ (" is-invalid" if form.commune.errors else ""),
+        placeholder="Enter commune"
+    ) }}
+
+    {% for error in form.commune.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+  </div>
+
   <!-- Location -->
   <div class="mb-3">
     {{ form.location.label( class="form-label fw-semibold" ) }}

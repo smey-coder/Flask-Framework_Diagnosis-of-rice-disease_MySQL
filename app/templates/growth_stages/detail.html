@@ -1,0 +1,146 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %} {{
+growth_stage.stage_name }} {% endblock %} {% block page_title %} Growth Stage
+Details {% endblock %} 
+{% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+      'static',
+      filename='css/growth_stage.css'
+  ) }}"
+/>
+<div class="container-fluid">
+  <!-- =====================================================
+       DETAIL CARD
+       ===================================================== -->
+
+  <div class="growth-detail-card card">
+    <div class="growth-detail-header">
+      <div class="growth-detail-heading">
+        <div class="growth-detail-icon">
+          <i class="bi bi-seedling"></i>
+        </div>
+
+        <div>
+          <h4>{{ growth_stage.stage_name }}</h4>
+
+          <span> Growth Stage #{{ growth_stage.id }} </span>
+        </div>
+      </div>
+
+      {% if growth_stage.status == "Active" %}
+
+      <span class="growth-status active"> Active </span>
+
+      {% else %}
+
+      <span class="growth-status inactive"> Inactive </span>
+
+      {% endif %}
+    </div>
+
+    <div class="growth-detail-body">
+      <div class="row g-3">
+        <div class="col-lg-4 col-md-6">
+          <div class="growth-detail-info">
+            <span>
+              <i class="bi bi-sort-numeric-up me-1"></i>
+              Stage Order
+            </span>
+
+            <strong> {{ growth_stage.stage_order }} </strong>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="growth-detail-info">
+            <span>
+              <i class="bi bi-translate me-1"></i>
+              Khmer Name
+            </span>
+
+            <strong>
+              {{ growth_stage.stage_name_kh or "Not specified" }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="growth-detail-info">
+            <span>
+              <i class="bi bi-circle-half me-1"></i>
+              Status
+            </span>
+
+            <strong> {{ growth_stage.status }} </strong>
+          </div>
+        </div>
+      </div>
+
+      {% if growth_stage.description %}
+
+      <div class="growth-detail-description">
+        <span> Description </span>
+
+        <p>{{ growth_stage.description }}</p>
+      </div>
+
+      {% endif %}
+
+      <!-- RELATIONSHIP -->
+
+      <div class="growth-related-section">
+        <div class="growth-related-card">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+
+          <div>
+            <span> Field Crops </span>
+
+            <strong> {{ growth_stage.field_crops|length }} </strong>
+          </div>
+        </div>
+
+        <div class="growth-related-card">
+          <i class="bi bi-activity"></i>
+
+          <div>
+            <span> Crop Monitorings </span>
+
+            <strong> {{ growth_stage.monitorings|length }} </strong>
+          </div>
+        </div>
+      </div>
+      <!-- ACTIONS -->
+      <div class="growth-detail-actions">
+        <a
+          href="{{ url_for(
+              'growth_stage.edit',
+              stage_id=growth_stage.id
+          ) }}"
+          class="btn btn-warning"
+        >
+          <i class="bi bi-pencil-square me-1"></i>
+          Edit
+        </a>
+
+        <a
+          href="{{ url_for(
+              'growth_stage.delete_confirm',
+              stage_id=growth_stage.id
+          ) }}"
+          class="btn btn-danger"
+        >
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </a>
+
+        <a href="{{ url_for('growth_stage.index') }}" class="btn btn-secondary">
+          <i class="bi bi-arrow-left me-1"></i>
+          Back
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

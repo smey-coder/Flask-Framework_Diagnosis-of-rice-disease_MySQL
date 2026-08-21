@@ -12,3 +12,4 @@ from .audit_routes import audit_bp
 from .rule_routes import rule_bp
 from .user_route.farm_routes import farm_bp
 from .profile_routes import profile_bp
+from .growth_stage import growth_stage_bp

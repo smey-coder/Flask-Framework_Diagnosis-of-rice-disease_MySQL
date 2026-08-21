@@ -17,7 +17,7 @@ class GrowthStageTable(db.Model):
     )
     stage_name_kh = db.Column(
         db.String(150),
-        nullable=True
+        nullable=False
     )
     # =========================================================
     # GROWTH STAGE INFORMATION

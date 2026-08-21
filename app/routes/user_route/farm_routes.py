@@ -77,6 +77,9 @@ def create():
             FarmService.create(
                 user_id=current_user.id,
                 farm_name=form.farm_name.data.strip(),
+                province=form.province.data,
+                district=form.district.data,
+                commune=form.commune.data,
                 description=(
                     form.description.data.strip()
                     if form.description.data
@@ -136,6 +139,9 @@ def edit(farm_id):
             FarmService.update(
                 farm=farm,
                 farm_name=form.farm_name.data.strip(),
+                province=form.province.data,
+                district=form.district.data,
+                commune=form.commune.data,
                 description=(
                     form.description.data.strip()
                     if form.description.data

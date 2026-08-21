@@ -1,0 +1,146 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %} Delete Growth
+Stage {% endblock %} {% block page_title %} Delete Growth Stage {% endblock %}
+{% block content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+      'static',
+      filename='css/growth_stage.css'
+  ) }}"
+/>
+
+<div class="container-fluid">
+  <!-- =====================================================
+       DELETE CARD
+  ====================================================== -->
+
+  <div class="growth-delete-card card">
+    <!-- DELETE ICON -->
+
+    <div class="growth-delete-icon">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+
+    <!-- TITLE -->
+
+    <h4 class="growth-delete-title">Delete Growth Stage?</h4>
+
+    <!-- MESSAGE -->
+
+    <p class="growth-delete-message">
+      Are you sure you want to delete
+
+      <strong> {{ growth_stage.stage_name }} </strong>
+
+      ?
+    </p>
+
+    <!-- =================================================
+         STAGE INFORMATION
+    ================================================== -->
+
+    <div class="growth-delete-info">
+      <!-- Stage Order -->
+
+      <div class="growth-delete-info-item">
+        <span class="growth-delete-info-label">
+          <i class="bi bi-list-ol me-1"></i>
+          Stage Order
+        </span>
+
+        <strong> {{ growth_stage.stage_order }} </strong>
+      </div>
+
+      <!-- Khmer Name -->
+
+      {% if growth_stage.stage_name_kh %}
+
+      <div class="growth-delete-info-item">
+        <span class="growth-delete-info-label">
+          <i class="bi bi-translate me-1"></i>
+          Khmer Name
+        </span>
+
+        <strong> {{ growth_stage.stage_name_kh }} </strong>
+      </div>
+
+      {% endif %}
+
+      <!-- Status -->
+
+      <div class="growth-delete-info-item">
+        <span class="growth-delete-info-label">
+          <i class="bi bi-circle-fill me-1"></i>
+          Status
+        </span>
+
+        {% if growth_stage.status == "Active" %}
+
+        <span class="badge bg-success"> Active </span>
+
+        {% else %}
+
+        <span class="badge bg-secondary"> {{ growth_stage.status }} </span>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- =================================================
+         WARNING
+    ================================================== -->
+
+    <div class="growth-delete-warning">
+      <i class="bi bi-info-circle-fill"></i>
+
+      <span>
+        This action cannot be undone. If this growth stage is being used by
+        field crops or crop monitoring, it may not be possible to delete it.
+      </span>
+    </div>
+
+    <!-- =================================================
+         ACTIONS
+    ================================================== -->
+
+    <form
+      method="POST"
+      action="{{ url_for(
+          'growth_stage.delete_confirm',
+          stage_id=growth_stage.id
+      ) }}"
+      class="growth-delete-actions"
+    >
+      <!-- CSRF TOKEN -->
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+      <!-- CANCEL -->
+
+      <a
+        href="{{ url_for(
+            'growth_stage.index'
+        ) }}"
+        class="btn btn-secondary"
+      >
+        <i class="bi bi-x-circle me-1"></i>
+
+        Cancel
+      </a>
+
+      <!-- DELETE -->
+
+      <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash-fill me-1"></i>
+
+        Yes, Delete
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

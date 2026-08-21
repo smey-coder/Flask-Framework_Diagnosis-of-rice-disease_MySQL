@@ -28,7 +28,10 @@
     "home": "ទំព័រដើម",
     "diagnostics": "ការធ្វើរោគវិនិច្ឆ័យ",
     "ricediseasediagnosticsystem" : "ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ",
-    "fact_management_system": "ប្រព័ន្ធគ្រប់គ្រងការពិត"
+    "fact_management_system": "ប្រព័ន្ធគ្រប់គ្រងការពិត",
+    "rice_varieties": "ពូជស្រូវ",
+    "growth_stages": "ដំណាក់កាលលូតលាស់"
+    
   },
   "navbar": {
     "home": "ទំព័រដើម",

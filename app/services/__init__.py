@@ -19,4 +19,5 @@ from .growth_stage_service import GrowthStageService
 from .crop_monitoring_service import CropMonitoringService
 from .treatment_history_service import TreatmentHistoryService
 from .profile_service import ProfileService
+from .growth_stage_service import GrowthStageService
 #from .audit_service import log_audit

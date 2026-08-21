@@ -26,7 +26,35 @@ FARM_STATUS_CHOICES = [
     ("Active", "Active"),
     ("Inactive", "Inactive"),
 ]
-
+# ========================================================= # CAMBODIA PROVINCES # ========================================================= 
+CAMBODIA_PROVINCES = [ 
+    ("", "Select Province"), 
+    ("Banteay Meanchey", "Banteay Meanchey"), 
+    ("Battambang", "Battambang"), 
+    ("Kampong Cham", "Kampong Cham"), 
+    ("Kampong Chhnang", "Kampong Chhnang"), 
+    ("Kampong Speu", "Kampong Speu"), 
+    ("Kampong Thom", "Kampong Thom"), 
+    ("Kampot", "Kampot"), 
+    ("Kandal", "Kandal"), 
+    ("Kep", "Kep"), 
+    ("Koh Kong", "Koh Kong"), 
+    ("Kratie", "Kratie"), 
+    ("Mondulkiri", "Mondulkiri"), 
+    ("Oddar Meanchey", "Oddar Meanchey"), 
+    ("Pailin", "Pailin"), 
+    ("Phnom Penh", "Phnom Penh"), 
+    ("Preah Sihanouk", "Preah Sihanouk"), 
+    ("Preah Vihear", "Preah Vihear"), 
+    ("Pursat", "Pursat"), 
+    ("Prey Veng", "Prey Veng"), 
+    ("Ratanakiri", "Ratanakiri"), 
+    ("Siem Reap", "Siem Reap"), 
+    ("Stung Treng", "Stung Treng"), 
+    ("Svay Rieng", "Svay Rieng"), 
+    ("Takeo", "Takeo"), 
+    ("Tboung Khmum", "Tboung Khmum"), 
+ ]
 
 # =========================================================
 # FARM CREATE FORM
@@ -47,7 +75,30 @@ class FarmCreateForm(FlaskForm):
             )
         ]
     )
+    # ----------------------------------------------------- # PROVINCE # ----------------------------------------------------- 
+    province = SelectField( 
+        "Province/ខេត្ត", 
+        choices=CAMBODIA_PROVINCES, 
+        validators=[ DataRequired( message="Please select a province." ) ] ) 
+    # ----------------------------------------------------- # DISTRICT # ----------------------------------------------------- 
+    district = StringField( 
+        "District/ស្រុក", 
+        validators=[ 
+            DataRequired(
+             message="District is required." ), 
+             Length( min=2, max=100, message=( "District must be between " "2 and 100 characters." ) ) ] ) 
+    # ----------------------------------------------------- # COMMUNE # ----------------------------------------------------- 
+    commune = StringField(
+        "Commune/ឃុំ", 
+        validators=[ 
+            DataRequired( message="Commune is required." ), 
+            Length( 
+                min=2, 
+                max=100, 
+                message=( "Commune must be between " "2 and 100 characters." ) ) 
 
+        ] )
+    
     description = TextAreaField(
         "Description",
         validators=[
@@ -116,8 +167,9 @@ class FarmEditForm(FlaskForm):
             )
         ]
     )
-
-
+    province = SelectField( "Province/ខេត្ត", choices=CAMBODIA_PROVINCES, validators=[ DataRequired( message="Please select a province." ) ] ) 
+    district = StringField( "District/ស្រុក", validators=[ DataRequired( message="District is required." ), Length( min=2, max=100, message=( "District must be between " "2 and 100 characters." ) ) ] ) 
+    commune = StringField( "Commune/ឃុំ", validators=[ DataRequired( message="Commune is required." ), Length( min=2, max=100, message=( "Commune must be between " "2 and 100 characters." ) ) ] )
     location = StringField(
         "Location",
         validators=[

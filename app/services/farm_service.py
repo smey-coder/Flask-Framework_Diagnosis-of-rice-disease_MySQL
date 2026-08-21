@@ -28,6 +28,9 @@ class FarmService:
     def create(
         user_id,
         farm_name,
+        province,
+        district,
+        commune,
         description=None,
         location=None,
         status="Active"
@@ -36,6 +39,9 @@ class FarmService:
         farm = FarmTable(
             user_id=user_id,
             farm_name=farm_name,
+            province=province,
+            district=district,
+            commune=commune,
             description=description,
             location=location,
             status=status
@@ -47,11 +53,17 @@ class FarmService:
     def update(
         farm,
         farm_name,
+        province,
+        district,
+        commune,
         description=None,
         location=None,
         status=None
     ):
         farm.farm_name = farm_name
+        farm.province = province
+        farm.district = district
+        farm.commune = commune
         farm.description = description
         farm.location = location
     

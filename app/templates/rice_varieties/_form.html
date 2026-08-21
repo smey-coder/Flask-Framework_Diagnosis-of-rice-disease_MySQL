@@ -1,0 +1,154 @@
+<form method="POST" action="{{ form_action }}" class="growth-stage-form" novalidate>
+  {{ form.hidden_tag() }}
+  <!-- =====================================================
+  STAGE NAME
+  ===================================================== -->
+
+  <div class="growth-form-group">
+
+    {{ form.stage_name.label(class="growth-form-label") }}
+
+    <span class="growth-required">*</span>
+
+    {{ form.stage_name(
+        class="form-control growth-form-control" ~
+        (" is-invalid" if form.stage_name.errors else ""),
+        placeholder="បញ្ចូលឈ្មោះដំណាក់កាលជាភាសាអង់គ្លេស"
+    ) }}
+
+    {% for error in form.stage_name.errors %}
+      <div class="invalid-feedback">
+        <i class="bi bi-exclamation-circle me-1"></i>
+        {{ error }}
+      </div>
+    {% endfor %}
+
+  </div>
+
+
+  <!-- =====================================================
+       KHMER NAME
+       ===================================================== -->
+
+  <div class="growth-form-group">
+
+    {{ form.stage_name_kh.label(class="growth-form-label") }}
+
+    {{ form.stage_name_kh(
+        class="form-control growth-form-control" ~
+        (" is-invalid" if form.stage_name_kh.errors else ""),
+        placeholder="បញ្ចូលឈ្មោះដំណាក់កាលជាភាសាខ្មែរ"
+    ) }}
+
+    {% for error in form.stage_name_kh.errors %}
+      <div class="invalid-feedback">
+        <i class="bi bi-exclamation-circle me-1"></i>
+        {{ error }}
+      </div>
+    {% endfor %}
+
+  </div>
+
+
+  <!-- =====================================================
+       STAGE ORDER
+       ===================================================== -->
+
+  <div class="growth-form-group">
+
+    {{ form.stage_order.label(class="growth-form-label") }}
+
+    <span class="growth-required">*</span>
+
+    {{ form.stage_order(
+        class="form-control growth-form-control" ~
+        (" is-invalid" if form.stage_order.errors else ""),
+        placeholder="Example: 1"
+    ) }}
+
+    <small class="growth-help-text">
+      <i class="bi bi-info-circle me-1"></i>
+      Stage order determines the sequence of rice growth stages.
+    </small>
+
+    {% for error in form.stage_order.errors %}
+      <div class="invalid-feedback">
+        <i class="bi bi-exclamation-circle me-1"></i>
+        {{ error }}
+      </div>
+    {% endfor %}
+
+  </div>
+
+
+  <!-- =====================================================
+       STATUS
+       ===================================================== -->
+
+  <div class="growth-form-group">
+
+    {{ form.status.label(class="growth-form-label") }}
+
+    <span class="growth-required">*</span>
+
+    {{ form.status(
+        class="form-select growth-form-control" ~
+        (" is-invalid" if form.status.errors else "")
+    ) }}
+
+    {% for error in form.status.errors %}
+      <div class="invalid-feedback">
+        <i class="bi bi-exclamation-circle me-1"></i>
+        {{ error }}
+      </div>
+    {% endfor %}
+
+  </div>
+
+
+  <!-- =====================================================
+       DESCRIPTION
+       ===================================================== -->
+
+  <div class="growth-form-group">
+
+    {{ form.description.label(class="growth-form-label") }}
+
+    {{ form.description(
+        class="form-control growth-form-control" ~
+        (" is-invalid" if form.description.errors else ""),
+        rows="5",
+        placeholder="Enter growth stage description..."
+    ) }}
+
+    {% for error in form.description.errors %}
+      <div class="invalid-feedback">
+        <i class="bi bi-exclamation-circle me-1"></i>
+        {{ error }}
+      </div>
+    {% endfor %}
+
+  </div>
+
+
+  <!-- =====================================================
+       ACTIONS
+       ===================================================== -->
+
+  <div class="growth-form-actions">
+
+    <a
+      href="{{ cancel_url }}"
+      class="btn btn-secondary"
+    >
+      <i class="bi bi-x-circle me-1"></i>
+      Cancel
+    </a>
+
+    {{ form.submit(
+        class="btn btn-success"
+    ) }}
+
+  </div>
+
+</form>
