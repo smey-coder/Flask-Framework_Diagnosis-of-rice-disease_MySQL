@@ -1,0 +1,133 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %}Delete
+Rice Variety{% endblock %} {% block page_title %}Delete Rice Variety{% endblock
+%} {% block content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/rice_variety.css') }}"
+/>
+
+<div class="container-fluid rice-management-page">
+  <!-- PAGE HEADER -->
+  <div class="rice-page-header rice-delete-page-header">
+    <div class="rice-header-content">
+      <div class="rice-header-icon rice-delete-header-icon">
+        <i class="bi bi-trash3"></i>
+      </div>
+
+      <div class="rice-header-text">
+        <h4 class="rice-page-title">Delete Rice Variety</h4>
+
+        <p class="rice-page-subtitle">
+          Remove a rice variety from your farm management system.
+        </p>
+      </div>
+    </div>
+
+    <div class="rice-breadcrumb">
+      <a href="{{ url_for('rice_variety.index') }}">
+        <i class="bi bi-grid"></i>
+        Rice Varieties
+      </a>
+
+      <i class="bi bi-chevron-right"></i>
+
+      <span>Delete</span>
+    </div>
+  </div>
+
+  <!-- DELETE CARD -->
+  <div class="rice-delete-wrapper">
+    <div class="rice-delete-card card">
+      <!-- WARNING ICON -->
+      <div class="rice-delete-icon">
+        <div class="rice-delete-icon-inner">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+      </div>
+
+      <!-- TITLE -->
+      <h4 class="rice-delete-title">Delete Rice Variety?</h4>
+
+      <!-- MESSAGE -->
+      <p class="rice-delete-message">
+        Are you sure you want to delete
+
+        <strong> {{ variety.variety_name }} </strong>
+
+        ?
+      </p>
+
+      <!-- VARIETY INFORMATION -->
+      <div class="rice-delete-info">
+        <div class="rice-delete-info-icon">
+          <i class="bi bi-seedling"></i>
+        </div>
+
+        <div class="rice-delete-info-content">
+          <span class="rice-delete-info-label"> Rice Variety </span>
+
+          <strong> {{ variety.variety_name }} </strong>
+
+          {% if variety.growth_duration_days %}
+          <small>
+            <i class="bi bi-calendar3"></i>
+
+            {{ variety.growth_duration_days }} days growth duration
+          </small>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- WARNING -->
+      <div class="rice-delete-warning">
+        <div class="rice-delete-warning-icon">
+          <i class="bi bi-info-circle-fill"></i>
+        </div>
+
+        <div class="rice-delete-warning-content">
+          <strong> Important </strong>
+
+          <span>
+            This action cannot be undone. If this rice variety is currently
+            being used by a field crop, it cannot be deleted.
+          </span>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <form
+        method="POST"
+        action="{{ url_for(
+          'rice_variety.delete_confirm',
+          variety_id=variety.id
+        ) }}"
+        class="rice-delete-actions"
+      >
+        {{ delete_form.hidden_tag() }}
+
+        <!-- CANCEL -->
+        <a
+          href="{{ url_for(
+            'rice_variety.detail',
+            variety_id=variety.id
+          ) }}"
+          class="btn btn-secondary rice-delete-cancel-btn"
+        >
+          <i class="bi bi-arrow-left"></i>
+
+          Cancel
+        </a>
+
+        <!-- DELETE -->
+        <button type="submit" class="btn btn-danger rice-delete-confirm-btn">
+          <i class="bi bi-trash3"></i>
+
+          Yes, Delete
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %} 

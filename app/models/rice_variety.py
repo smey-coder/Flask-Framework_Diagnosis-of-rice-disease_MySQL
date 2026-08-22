@@ -20,24 +20,25 @@ class RiceVarietyTable(db.Model):
             nullable=False
     )
 
+    growth_duration_days = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
     description = db.Column(
         db.Text,
         nullable=True
     )
-
-
     status = db.Column(
         db.String(20),
         default="Active",
         nullable=False
     )
-
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,
         nullable=False
     )
-
     updated_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,

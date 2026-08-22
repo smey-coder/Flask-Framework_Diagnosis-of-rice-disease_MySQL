@@ -8,6 +8,7 @@ from app.forms.farm_forms import FarmCreateForm, FarmEditForm, FarmConfirmDelete
 from app.forms.field_forms import FieldForm, FieldConfirmDeleteForm
 from app.forms.field_crop_form import FieldCropForm, FieldCropDeleteForm
 from app.forms.treatment_history_form import TreatmentHistoryForm
+from app.forms.rice_variety_forms import RiceVarietyForm
 __all__ = [
     "UserCreateForm",
     "UserEditForm",
@@ -33,6 +34,7 @@ __all__ = [
     "FieldConfirmDeleteForm",
     "FieldCropForm",
     "FieldCropDeleteForm",
-    "TreatmentHistoryForm"
+    "TreatmentHistoryForm",
+    "RiceVarietyForm"
     # "CitySearchForm"
 ]

@@ -1,9 +1,6 @@
-{% extends "layouts/admin_layout/admin.html" %} {% block title %} Growth Stages {%
-endblock %} {% block page_title %} Growth Stage Management {% endblock %} {%
-block styles %}
-
-
-{% endblock %} {% block content %}
+{% extends "layouts/admin_layout/admin.html" %} {% block title %} Growth Stages
+{% endblock %} {% block page_title %} Growth Stage Management {% endblock %} {%
+block styles %} {% endblock %} {% block content %}
 <link
   rel="stylesheet"
   href="{{ url_for(
@@ -142,13 +139,35 @@ block styles %}
             <td>
               <div class="growth-stage-name">
                 <span class="growth-stage-icon">
-                  <i class="bi bi-seedling"></i>
+                  {% if stage.stage_name == 'Germination' %}
+                  <i class="bi bi-droplet-fill"></i>
+
+                  {% elif stage.stage_name == 'Seedling' %}
+                  <i class="bi bi-flower1"></i>
+
+                  {% elif stage.stage_name == 'Tillering' %}
+                  <i class="bi bi-tree-fill"></i>
+
+                  {% elif stage.stage_name == 'Panicle Initiation' %}
+                  <i class="bi bi-stars"></i>
+
+                  {% elif stage.stage_name == 'Flowering' %}
+                  <i class="bi bi-flower2"></i>
+
+                  {% elif stage.stage_name == 'Grain Filling' %}
+                  <i class="bi bi-circle-fill"></i>
+
+                  {% elif stage.stage_name == 'Maturity' %}
+                  <i class="bi bi-check-circle-fill"></i>
+
+                  {% else %}
+                  <i class="bi bi-flower1"></i>
+                  {% endif %}
                 </span>
 
                 <div>
-                  <strong> {{ stage.stage_name }} </strong>
-
-                  <small> #{{ stage.id }} </small>
+                  <strong>{{ stage.stage_name }}</strong>
+                  <small>#{{ stage.id }}</small>
                 </div>
               </div>
             </td>

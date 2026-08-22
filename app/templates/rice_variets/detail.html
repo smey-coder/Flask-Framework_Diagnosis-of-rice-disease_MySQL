@@ -1,0 +1,194 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %} {{
+variety.variety_name }} {% endblock %} {% block page_title %} Rice Variety {%
+endblock %} {% block content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+      'static',
+      filename='css/rice_variety.css'
+  ) }}"
+/>
+
+<div class="container-fluid rice-management-page">
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
+  <div class="rice-detail-card card">
+    <div class="rice-detail-header">
+      <div class="rice-detail-heading">
+        <div class="rice-detail-icon">
+          <i class="bi bi-tree-fill"></i>
+        </div>
+
+        <div>
+          <h4>{{ variety.variety_name }}</h4>
+
+          <span> {{ variety.name_kh }} </span>
+        </div>
+      </div>
+
+      {% if variety.status == "Active" %}
+
+      <span class="rice-status rice-status-active">
+        <i class="bi bi-check-circle-fill"></i>
+        Active
+      </span>
+
+      {% else %}
+
+      <span class="rice-status rice-status-inactive">
+        <i class="bi bi-pause-circle-fill"></i>
+        Inactive
+      </span>
+
+      {% endif %}
+    </div>
+
+    <!-- =====================================================
+         BODY
+         ===================================================== -->
+
+    <div class="rice-detail-body">
+      <div class="row g-3">
+        <!-- ID -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="rice-detail-info">
+            <span> Variety ID </span>
+
+            <strong> #{{ variety.id }} </strong>
+          </div>
+        </div>
+
+        <!-- ENGLISH -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="rice-detail-info">
+            <span> English Name </span>
+
+            <strong> {{ variety.variety_name }} </strong>
+          </div>
+        </div>
+
+        <!-- KHMER -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="rice-detail-info">
+            <span> Khmer Name </span>
+
+            <strong> {{ variety.name_kh }} </strong>
+          </div>
+        </div>
+
+        <!-- DURATION -->
+
+        <div class="col-xl-3 col-md-6">
+          <div class="rice-detail-info">
+            <span> Growth Duration </span>
+
+            <strong class="rice-detail-duration">
+              <i class="bi bi-calendar3"></i>
+
+              {{ variety.growth_duration_days }} days
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================
+           DESCRIPTION
+           ================================================= -->
+
+      {% if variety.description %}
+
+      <div class="rice-detail-description">
+        <div class="rice-detail-description-title">
+          <i class="bi bi-card-text"></i>
+
+          Description
+        </div>
+
+        <p>{{ variety.description }}</p>
+      </div>
+
+      {% endif %}
+
+      <!-- =================================================
+           USAGE
+           ================================================= -->
+
+      <div class="rice-usage-card">
+        <div class="rice-usage-icon">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+        </div>
+
+        <div>
+          <span> Field Crop Usage </span>
+
+          <strong> {{ variety.field_crops|length }} field crop(s) </strong>
+        </div>
+      </div>
+
+      <!-- =================================================
+           TIMESTAMP
+           ================================================= -->
+
+      <div class="rice-detail-meta">
+        <div>
+          <span> Created </span>
+
+          <strong> {{ variety.created_at.strftime('%Y-%m-%d %H:%M') }} </strong>
+        </div>
+
+        <div>
+          <span> Last Updated </span>
+
+          <strong> {{ variety.updated_at.strftime('%Y-%m-%d %H:%M') }} </strong>
+        </div>
+      </div>
+
+      <!-- =================================================
+           ACTIONS
+           ================================================= -->
+
+      <div class="rice-detail-actions">
+        <a href="{{ url_for('rice_variety.index') }}" class="btn btn-secondary">
+          <i class="bi bi-arrow-left me-1"></i>
+          Back
+        </a>
+
+        {% if current_user.has_permission('UPDATE_RICE_VARIETY') %}
+
+        <a
+          href="{{ url_for(
+              'rice_variety.edit',
+              variety_id=variety.id
+          ) }}"
+          class="btn btn-warning"
+        >
+          <i class="bi bi-pencil-square me-1"></i>
+          Edit
+        </a>
+
+        {% endif %} {% if current_user.has_permission('DELETE_RICE_VARIETY') %}
+
+        <a
+          href="{{ url_for(
+              'rice_variety.delete_confirm',
+              variety_id=variety.id
+          ) }}"
+          class="btn btn-danger"
+        >
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </a>
+
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

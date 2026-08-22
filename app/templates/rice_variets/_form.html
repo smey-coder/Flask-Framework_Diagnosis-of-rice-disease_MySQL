@@ -1,0 +1,263 @@
+<form method="POST">
+
+  {{ form.hidden_tag() }}
+
+  <!-- =====================================================
+       VARIETY INFORMATION
+       ===================================================== -->
+
+  <div class="rice-form-section">
+
+    <div class="rice-form-section-header">
+
+      <div class="rice-form-section-icon">
+        <i class="bi bi-seedling"></i>
+      </div>
+
+      <div>
+        <h6>Rice Variety Information</h6>
+        <small>
+          Enter basic information about the rice variety.
+        </small>
+      </div>
+
+    </div>
+
+
+    <div class="row g-3">
+
+      <!-- VARIETY NAME -->
+
+      <div class="col-md-6">
+
+        <div class="rice-form-group">
+
+          {{ form.variety_name.label(
+              class="rice-form-label"
+          ) }}
+
+          <span class="rice-required">*</span>
+
+          {{ form.variety_name(
+              class="form-control rice-form-control"
+              + (" is-invalid" if form.variety_name.errors else "")
+          ) }}
+
+          {% if form.variety_name.errors %}
+
+            {% for error in form.variety_name.errors %}
+
+              <div class="rice-form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ error }}
+              </div>
+
+            {% endfor %}
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+
+      <!-- KHMER NAME -->
+
+      <div class="col-md-6">
+
+        <div class="rice-form-group">
+
+          {{ form.name_kh.label(
+              class="rice-form-label"
+          ) }}
+
+          <span class="rice-required">*</span>
+
+          {{ form.name_kh(
+              class="form-control rice-form-control"
+              + (" is-invalid" if form.name_kh.errors else "")
+          ) }}
+
+          {% if form.name_kh.errors %}
+
+            {% for error in form.name_kh.errors %}
+
+              <div class="rice-form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ error }}
+              </div>
+
+            {% endfor %}
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+
+      <!-- GROWTH DURATION -->
+
+      <div class="col-md-6">
+
+        <div class="rice-form-group">
+
+          {{ form.growth_duration_days.label(
+              class="rice-form-label"
+          ) }}
+
+          <span class="rice-required">*</span>
+
+          <div class="rice-input-group">
+
+            <span class="input-group-text">
+              <i class="bi bi-calendar3"></i>
+            </span>
+
+            {{ form.growth_duration_days(
+                class="form-control rice-form-control"
+                + (" is-invalid"
+                   if form.growth_duration_days.errors
+                   else "")
+            ) }}
+
+            <span class="input-group-text rice-unit">
+              days
+            </span>
+
+          </div>
+
+          {% if form.growth_duration_days.errors %}
+
+            {% for error in form.growth_duration_days.errors %}
+
+              <div class="rice-form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ error }}
+              </div>
+
+            {% endfor %}
+
+          {% endif %}
+
+          <small class="rice-help-text">
+            Example: 90, 100, 120 days
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- STATUS -->
+
+      <div class="col-md-6">
+
+        <div class="rice-form-group">
+
+          {{ form.status.label(
+              class="rice-form-label"
+          ) }}
+
+          <span class="rice-required">*</span>
+
+          {{ form.status(
+              class="form-select rice-form-control"
+              + (" is-invalid" if form.status.errors else "")
+          ) }}
+
+          {% if form.status.errors %}
+
+            {% for error in form.status.errors %}
+
+              <div class="rice-form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ error }}
+              </div>
+
+            {% endfor %}
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+
+      <!-- DESCRIPTION -->
+
+      <div class="col-12">
+
+        <div class="rice-form-group">
+
+          {{ form.description.label(
+              class="rice-form-label"
+          ) }}
+
+          {{ form.description(
+              class="form-control rice-form-control rice-textarea",
+              rows="5"
+          ) }}
+
+          {% if form.description.errors %}
+
+            {% for error in form.description.errors %}
+
+              <div class="rice-form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ error }}
+              </div>
+
+            {% endfor %}
+
+          {% endif %}
+
+          <small class="rice-help-text">
+            Optional description about this rice variety.
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       ACTIONS
+       ===================================================== -->
+
+  <div class="rice-form-actions">
+
+    <a
+      href="{{ url_for('rice_variety.index') }}"
+      class="btn btn-secondary"
+    >
+      <i class="bi bi-x-circle me-1"></i>
+      Cancel
+    </a>
+
+    <button
+      type="submit"
+      class="btn btn-success"
+    >
+
+      {% if variety %}
+
+        <i class="bi bi-check-circle me-1"></i>
+        Update Rice Variety
+
+      {% else %}
+
+        <i class="bi bi-plus-circle me-1"></i>
+        Create Rice Variety
+
+      {% endif %}
+
+    </button>
+
+  </div>
+
+</form>

@@ -1,0 +1,501 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %} Rice Varieties
+{% endblock %} {% block page_title %} Rice Varieties {% endblock %} {% block
+content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+      'static',
+      filename='css/rice_variety.css'
+  ) }}"
+/>
+
+<div class="container-fluid rice-page">
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+
+  <div class="rice-page-header">
+    <div class="rice-header-content">
+      <div class="rice-header-icon">
+        <i class="bi bi-tree-fill"></i>
+      </div>
+
+      <div>
+        <h4 class="rice-page-title">Rice Varieties</h4>
+
+        <p class="rice-page-subtitle">
+          Manage rice varieties, Khmer names, growth duration and status.
+        </p>
+      </div>
+    </div>
+
+    {% if current_user.has_permission('CREATE_RICE_VARIETY') %}
+
+    <a
+      href="{{ url_for('rice_variety.create') }}"
+      class="btn btn-success rice-add-btn"
+    >
+      <i class="bi bi-plus-circle me-1"></i>
+      Add Rice Variety
+    </a>
+
+    {% endif %}
+  </div>
+
+  <!-- =====================================================
+       SUMMARY
+       ===================================================== -->
+
+  {% set total_varieties = varieties|length %} {% set active_varieties =
+  varieties |selectattr("status", "equalto", "Active") |list |length %} {% set
+  inactive_varieties = total_varieties - active_varieties %}
+
+  <div class="rice-summary">
+    <!-- TOTAL -->
+
+    <div class="rice-summary-card total-card">
+      <div class="rice-summary-icon total">
+        <i class="bi bi-collection-fill"></i>
+      </div>
+
+      <div class="rice-summary-content">
+        <span class="rice-summary-label"> Total Varieties </span>
+
+        <strong class="rice-summary-value" id="totalVarieties">
+          {{ total_varieties }}
+        </strong>
+      </div>
+    </div>
+
+    <!-- ACTIVE -->
+
+    <div class="rice-summary-card active-card">
+      <div class="rice-summary-icon active">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+
+      <div class="rice-summary-content">
+        <span class="rice-summary-label"> Active </span>
+
+        <strong class="rice-summary-value" id="activeVarieties">
+          {{ active_varieties }}
+        </strong>
+      </div>
+    </div>
+
+    <!-- INACTIVE -->
+
+    <div class="rice-summary-card inactive-card">
+      <div class="rice-summary-icon inactive">
+        <i class="bi bi-pause-circle-fill"></i>
+      </div>
+
+      <div class="rice-summary-content">
+        <span class="rice-summary-label"> Inactive </span>
+
+        <strong class="rice-summary-value" id="inactiveVarieties">
+          {{ inactive_varieties }}
+        </strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       TABLE CARD
+       ===================================================== -->
+
+  <div class="card rice-table-card">
+    <!-- =================================================
+         TABLE HEADER
+         ================================================= -->
+
+    <div class="rice-table-header">
+      <div class="rice-table-title">
+        <div class="rice-table-title-icon">
+          <i class="bi bi-table"></i>
+        </div>
+
+        <div>
+          <h5>Rice Variety List</h5>
+
+          <small> View and manage all rice varieties </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================
+         FILTER BAR
+         ================================================= -->
+
+    <div class="rice-filter-bar">
+      <!-- SEARCH -->
+
+      <div class="rice-search">
+        <i class="bi bi-search"></i>
+
+        <input
+          type="text"
+          id="riceSearch"
+          class="form-control"
+          placeholder="Search variety name or Khmer name..."
+          autocomplete="off"
+        />
+
+        <button
+          type="button"
+          id="clearRiceSearch"
+          class="rice-clear-search"
+          title="Clear search"
+          style="display: none"
+        >
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+
+      <!-- STATUS -->
+
+      <div class="rice-status-filter">
+        <select id="riceStatusFilter" class="form-select">
+          <option value="all">All Status</option>
+
+          <option value="active">Active</option>
+
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <!-- RESULT -->
+
+      <div class="rice-result-count">
+        <strong id="riceResultCount"> {{ total_varieties }} </strong>
+
+        <span> results </span>
+      </div>
+    </div>
+
+    <!-- =================================================
+         TABLE
+         ================================================= -->
+
+    <div class="rice-table-wrapper">
+      {% if varieties %}
+
+      <div class="table-responsive">
+        <table class="table rice-variety-table" id="riceVarietyTable">
+          <thead>
+            <tr>
+              <th class="text-center">#</th>
+
+              <th>Rice Variety</th>
+
+              <th>Khmer Name</th>
+
+              <th class="text-center">Growth Duration</th>
+
+              <th class="text-center">Status</th>
+
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for variety in varieties %}
+
+            <tr
+              class="rice-variety-row"
+              data-name="{{ variety.variety_name|lower }}"
+              data-kh="{{ variety.name_kh|lower }}"
+              data-status="{{ variety.status|lower }}"
+            >
+              <!-- NUMBER -->
+
+              <td class="text-center">
+                <span class="rice-row-number"> {{ loop.index }} </span>
+              </td>
+
+              <!-- VARIETY NAME -->
+
+              <td>
+                <div class="rice-name-cell">
+                  <div class="rice-name-icon">
+                    <i class="bi bi-tree-fill"></i>
+                  </div>
+
+                  <div class="rice-name-content">
+                    <strong> {{ variety.variety_name }} </strong>
+
+                    <small> ID #{{ variety.id }} </small>
+                  </div>
+                </div>
+              </td>
+
+              <!-- KHMER NAME -->
+
+              <td>
+                <span class="rice-kh-name"> {{ variety.name_kh }} </span>
+              </td>
+
+              <!-- GROWTH DURATION -->
+
+              <td class="text-center">
+                <div class="rice-duration">
+                  <span class="rice-duration-number">
+                    {{ variety.growth_duration_days }}
+                  </span>
+
+                  <span class="rice-duration-unit"> days </span>
+                </div>
+              </td>
+
+              <!-- STATUS -->
+
+              <td class="text-center">
+                {% if variety.status == "Active" %}
+
+                <span class="rice-status active">
+                  <span class="status-dot"></span>
+
+                  Active
+                </span>
+
+                {% else %}
+
+                <span class="rice-status inactive">
+                  <span class="status-dot"></span>
+
+                  {{ variety.status }}
+                </span>
+
+                {% endif %}
+              </td>
+
+              <!-- ACTIONS -->
+
+              <td class="text-end">
+                <div class="rice-actions">
+                  <!-- VIEW -->
+
+                  {% if current_user.has_permission('VIEW_RICE_VARIETY') %}
+
+                  <a
+                    href="{{ url_for(
+                        'rice_variety.detail',
+                        variety_id=variety.id
+                    ) }}"
+                    class="btn btn-sm btn-outline-success rice-action-btn"
+                    title="View Details"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </a>
+
+                  {% endif %}
+
+                  <!-- EDIT -->
+
+                  {% if current_user.has_permission('UPDATE_RICE_VARIETY') %}
+
+                  <a
+                    href="{{ url_for(
+                        'rice_variety.edit',
+                        variety_id=variety.id
+                    ) }}"
+                    class="btn btn-sm btn-outline-warning rice-action-btn"
+                    title="Edit"
+                  >
+                    <i class="bi bi-pencil-square"></i>
+                  </a>
+
+                  {% endif %}
+
+                  <!-- DELETE -->
+
+                  {% if current_user.has_permission('DELETE_RICE_VARIETY') %}
+
+                  <a
+                    href="{{ url_for(
+                        'rice_variety.delete_confirm',
+                        variety_id=variety.id
+                    ) }}"
+                    class="btn btn-sm btn-outline-danger rice-action-btn"
+                    title="Delete"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </a>
+
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- =================================================
+           NO SEARCH RESULT
+           ================================================= -->
+
+      <div id="riceNoResults" class="rice-no-results d-none">
+        <div class="rice-no-results-icon">
+          <i class="bi bi-search"></i>
+        </div>
+
+        <h6>No rice varieties found</h6>
+
+        <p>Try changing your search keyword or status filter.</p>
+
+        <button
+          type="button"
+          class="btn btn-outline-success btn-sm"
+          id="resetRiceFilter"
+        >
+          <i class="bi bi-arrow-counterclockwise me-1"></i>
+          Reset Filter
+        </button>
+      </div>
+
+      {% else %}
+
+      <!-- =================================================
+           EMPTY DATABASE
+           ================================================= -->
+
+      <div class="rice-empty-state">
+        <div class="rice-empty-icon">
+          <i class="bi bi-seedling"></i>
+        </div>
+
+        <h5>No Rice Varieties</h5>
+
+        <p>You haven't added any rice varieties yet.</p>
+
+        {% if current_user.has_permission('CREATE_RICE_VARIETY') %}
+
+        <a href="{{ url_for('rice_variety.create') }}" class="btn btn-success">
+          <i class="bi bi-plus-circle me-1"></i>
+
+          Add First Rice Variety
+        </a>
+
+        {% endif %}
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     SEARCH / FILTER JAVASCRIPT
+     ===================================================== -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("riceSearch");
+
+    const statusFilter = document.getElementById("riceStatusFilter");
+
+    const clearButton = document.getElementById("clearRiceSearch");
+
+    const resetButton = document.getElementById("resetRiceFilter");
+
+    const rows = document.querySelectorAll(".rice-variety-row");
+
+    const resultCount = document.getElementById("riceResultCount");
+
+    const noResults = document.getElementById("riceNoResults");
+
+    function filterRiceVarieties() {
+      const searchValue = searchInput
+        ? searchInput.value.trim().toLowerCase()
+        : "";
+
+      const statusValue = statusFilter ? statusFilter.value : "all";
+
+      let visibleCount = 0;
+
+      rows.forEach(function (row) {
+        const name = row.dataset.name || "";
+
+        const khName = row.dataset.kh || "";
+
+        const status = row.dataset.status || "";
+
+        const matchesSearch =
+          name.includes(searchValue) || khName.includes(searchValue);
+
+        const matchesStatus = statusValue === "all" || status === statusValue;
+
+        if (matchesSearch && matchesStatus) {
+          row.style.display = "";
+
+          visibleCount++;
+        } else {
+          row.style.display = "none";
+        }
+      });
+
+      /* RESULT COUNT */
+
+      if (resultCount) {
+        resultCount.textContent = visibleCount;
+      }
+
+      /* NO RESULT */
+
+      if (noResults) {
+        if (visibleCount === 0) {
+          noResults.classList.remove("d-none");
+        } else {
+          noResults.classList.add("d-none");
+        }
+      }
+
+      /* CLEAR BUTTON */
+
+      if (clearButton) {
+        clearButton.style.display = searchValue ? "flex" : "none";
+      }
+    }
+
+    /* SEARCH */
+
+    if (searchInput) {
+      searchInput.addEventListener("input", filterRiceVarieties);
+    }
+
+    /* STATUS */
+
+    if (statusFilter) {
+      statusFilter.addEventListener("change", filterRiceVarieties);
+    }
+
+    /* CLEAR SEARCH */
+
+    if (clearButton) {
+      clearButton.addEventListener("click", function () {
+        searchInput.value = "";
+
+        filterRiceVarieties();
+
+        searchInput.focus();
+      });
+    }
+
+    /* RESET FILTER */
+
+    if (resetButton) {
+      resetButton.addEventListener("click", function () {
+        searchInput.value = "";
+
+        statusFilter.value = "all";
+
+        filterRiceVarieties();
+      });
+    }
+  });
+</script>
+
+{% endblock %}

@@ -5,7 +5,7 @@ from app.models.rice_variety import RiceVarietyTable
 class RiceVarietyService:
 
     # =========================================================
-    # GET ALL RICE VARIETIES
+    # GET ALL
     # =========================================================
 
     @staticmethod
@@ -14,36 +14,34 @@ class RiceVarietyService:
         try:
 
             varieties = db.session.scalars(
-
                 db.select(RiceVarietyTable)
                 .order_by(
                     RiceVarietyTable.id.desc()
                 )
-
             ).all()
 
             return varieties
 
         except Exception as e:
 
+            db.session.rollback()
+
             print(
                 f"RiceVarietyService.get_all() error: {e}"
             )
 
-            db.session.rollback()
-
             raise
 
-
     # =========================================================
-    # GET ACTIVE RICE VARIETIES
+    # GET ACTIVE
     # =========================================================
 
     @staticmethod
     def get_active():
-        try:
-            varieties = db.session.scalars(
 
+        try:
+
+            varieties = db.session.scalars(
                 db.select(RiceVarietyTable)
                 .where(
                     RiceVarietyTable.status == "Active"
@@ -51,24 +49,22 @@ class RiceVarietyService:
                 .order_by(
                     RiceVarietyTable.name_kh.asc()
                 )
-
             ).all()
 
             return varieties
 
         except Exception as e:
 
+            db.session.rollback()
+
             print(
                 f"RiceVarietyService.get_active() error: {e}"
             )
 
-            db.session.rollback()
-
             raise
 
-
     # =========================================================
-    # GET RICE VARIETY BY ID
+    # GET BY ID
     # =========================================================
 
     @staticmethod
@@ -77,42 +73,94 @@ class RiceVarietyService:
         try:
 
             variety = db.session.scalar(
-
                 db.select(RiceVarietyTable)
                 .where(
                     RiceVarietyTable.id == variety_id
                 )
-
             )
 
             return variety
 
         except Exception as e:
 
+            db.session.rollback()
+
             print(
                 f"RiceVarietyService.get_by_id() error: {e}"
             )
 
-            db.session.rollback()
-
             raise
 
-
     # =========================================================
-    # CREATE RICE VARIETY
+    # CREATE
     # =========================================================
 
     @staticmethod
     def create(
-        name,
+        variety_name,
+        name_kh,
+        growth_duration_days,
         description=None,
         status="Active"
     ):
 
         try:
+
+            # -------------------------------------------------
+            # CHECK DUPLICATE ENGLISH NAME
+            # -------------------------------------------------
+
+            existing_name = db.session.scalar(
+
+                db.select(RiceVarietyTable)
+                .where(
+                    RiceVarietyTable.variety_name
+                    == variety_name
+                )
+            )
+
+            if existing_name:
+
+                return (
+                    False,
+                    "Rice variety name already exists."
+                )
+
+            # -------------------------------------------------
+            # CHECK DUPLICATE KHMER NAME
+            # -------------------------------------------------
+
+            existing_kh = db.session.scalar(
+
+                db.select(RiceVarietyTable)
+                .where(
+                    RiceVarietyTable.name_kh
+                    == name_kh
+                )
+            )
+
+            if existing_kh:
+
+                return (
+                    False,
+                    "Khmer rice variety name already exists."
+                )
+
+            # -------------------------------------------------
+            # CREATE
+            # -------------------------------------------------
+
             variety = RiceVarietyTable(
-                name=name,
+
+                variety_name=variety_name,
+
+                name_kh=name_kh,
+
+                growth_duration_days=
+                    growth_duration_days,
+
                 description=description,
+
                 status=status
             )
 
@@ -122,7 +170,10 @@ class RiceVarietyService:
 
             db.session.refresh(variety)
 
-            return variety
+            return (
+                True,
+                None
+            )
 
         except Exception as e:
 
@@ -132,24 +183,83 @@ class RiceVarietyService:
                 f"RiceVarietyService.create() error: {e}"
             )
 
-            raise
-
+            return (
+                False,
+                "Unable to create rice variety."
+            )
 
     # =========================================================
-    # UPDATE RICE VARIETY
+    # UPDATE
     # =========================================================
 
     @staticmethod
     def update(
         variety,
-        name,
+        variety_name,
+        name_kh,
+        growth_duration_days,
         description=None,
         status="Active"
     ):
 
         try:
 
-            variety.name = name
+            # -------------------------------------------------
+            # CHECK DUPLICATE ENGLISH NAME
+            # -------------------------------------------------
+
+            existing_name = db.session.scalar(
+
+                db.select(RiceVarietyTable)
+                .where(
+                    RiceVarietyTable.variety_name
+                    == variety_name,
+
+                    RiceVarietyTable.id
+                    != variety.id
+                )
+            )
+
+            if existing_name:
+
+                return (
+                    False,
+                    "Rice variety name already exists."
+                )
+
+            # -------------------------------------------------
+            # CHECK DUPLICATE KHMER NAME
+            # -------------------------------------------------
+
+            existing_kh = db.session.scalar(
+
+                db.select(RiceVarietyTable)
+                .where(
+                    RiceVarietyTable.name_kh
+                    == name_kh,
+
+                    RiceVarietyTable.id
+                    != variety.id
+                )
+            )
+
+            if existing_kh:
+
+                return (
+                    False,
+                    "Khmer rice variety name already exists."
+                )
+
+            # -------------------------------------------------
+            # UPDATE
+            # -------------------------------------------------
+
+            variety.variety_name = variety_name
+
+            variety.name_kh = name_kh
+
+            variety.growth_duration_days = \
+                growth_duration_days
 
             variety.description = description
 
@@ -159,7 +269,10 @@ class RiceVarietyService:
 
             db.session.refresh(variety)
 
-            return variety
+            return (
+                True,
+                None
+            )
 
         except Exception as e:
 
@@ -169,11 +282,13 @@ class RiceVarietyService:
                 f"RiceVarietyService.update() error: {e}"
             )
 
-            raise
-
+            return (
+                False,
+                "Unable to update rice variety."
+            )
 
     # =========================================================
-    # DELETE RICE VARIETY
+    # DELETE
     # =========================================================
 
     @staticmethod
@@ -181,11 +296,29 @@ class RiceVarietyService:
 
         try:
 
+            # -------------------------------------------------
+            # CHECK FIELD CROP RELATIONSHIP
+            # -------------------------------------------------
+
+            if variety.field_crops:
+
+                return (
+                    False,
+                    "Cannot delete this rice variety because it is being used by a field crop."
+                )
+
+            # -------------------------------------------------
+            # DELETE
+            # -------------------------------------------------
+
             db.session.delete(variety)
 
             db.session.commit()
 
-            return True
+            return (
+                True,
+                None
+            )
 
         except Exception as e:
 
@@ -195,4 +328,7 @@ class RiceVarietyService:
                 f"RiceVarietyService.delete() error: {e}"
             )
 
-            raise
+            return (
+                False,
+                "Unable to delete rice variety."
+            )

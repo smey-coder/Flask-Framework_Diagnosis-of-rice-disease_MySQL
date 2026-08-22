@@ -20,6 +20,7 @@ from app.forms.diseases_forms import (
     DiseaseConfirmDeleteForm,
     DiseaseSearchForm,
 )
+from app.models.diseases import DiseaseTable
 from app.services.disease_service import DiseaseService
 from decorators import require_admin, active_user_required
 from app.decorators.access import role_required, permission_required
@@ -43,23 +44,50 @@ def index():
     try:
         page = request.args.get("page", 1, type=int)
         search_form = DiseaseSearchForm(request.args, meta={"csrf_enabled": False})
+    
         
         disease_name = request.args.get("disease_name", "").strip()
         disease_type = request.args.get("disease_type", "").strip()
         severity_level = request.args.get("severity_level", "").strip()
+        is_active = request.args.get(
+            "is_active", ""
+        ).strip()
         
         diseases = DiseaseService.search_diseases(
             disease_name=disease_name if disease_name else None,
             disease_type=disease_type if disease_type else None,
             severity_level=severity_level if severity_level else None,
+            is_active=is_active if is_active != "" else None,
             page=page,
             per_page=10
         )
+        # =====================================================
+        # SUMMARY
+        # =====================================================
+
+        total_count = DiseaseTable.query.count()
+
+        active_count = DiseaseTable.query.filter_by(
+            is_active=True
+        ).count()
+
+        inactive_count = DiseaseTable.query.filter_by(
+            is_active=False
+        ).count()
+
+        # Use the actual value stored in your database.
+        high_count = DiseaseTable.query.filter(
+            DiseaseTable.severity_level == "High(ខ្ពស់)"
+        ).count()
         
         return render_template(
             "disease_page/index.html",
             diseases=diseases,
             search_form=search_form,
+            total_count=total_count,
+            active_count=active_count,
+            inactive_count=inactive_count,
+            high_count=high_count,
             current_user=current_user
         )
     except Exception as e:

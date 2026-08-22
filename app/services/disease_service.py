@@ -54,7 +54,7 @@ class DiseaseService:
         return DiseaseTable.query.get(disease_id)
 
     @staticmethod
-    def search_diseases(disease_name=None, disease_type=None, severity_level=None, page=1, per_page=10):
+    def search_diseases(disease_name=None, disease_type=None, severity_level=None, is_active=None,page=1, per_page=10):
         """Search diseases by filters with pagination"""
         query = DiseaseTable.query
         if disease_name:
@@ -63,6 +63,19 @@ class DiseaseService:
             query = query.filter(DiseaseTable.disease_type == disease_type)
         if severity_level:
             query = query.filter(DiseaseTable.severity_level == severity_level)
+
+        # Status
+        if is_active is not None:
+
+            if is_active == "1":
+                query = query.filter(
+                    DiseaseTable.is_active.is_(True)
+                )
+
+            elif is_active == "0":
+                query = query.filter(
+                    DiseaseTable.is_active.is_(False)
+                )
         query = query.order_by(DiseaseTable.id.desc())
         return query.paginate(page=page, per_page=per_page, error_out=False)
 

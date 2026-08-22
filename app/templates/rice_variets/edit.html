@@ -1,0 +1,49 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %} Edit Rice
+Variety {% endblock %} {% block page_title %} Rice Variety {% endblock %} {%
+block content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+      'static',
+      filename='css/rice_variety.css'
+  ) }}"
+/>
+
+<div class="container-fluid rice-management-page">
+  <!-- PAGE HEADER -->
+
+  <div class="rice-page-header">
+    <div class="rice-header-content">
+      <div class="rice-header-icon">
+        <i class="bi bi-pencil-square"></i>
+      </div>
+
+      <div>
+        <h4 class="rice-page-title">Edit Rice Variety</h4>
+
+        <p class="rice-page-subtitle">Update rice variety information.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+
+  <div class="rice-form-card card">
+    <div class="rice-form-header">
+      <div class="rice-form-header-icon">
+        <i class="bi bi-pencil-square"></i>
+      </div>
+
+      <div>
+        <h5>Update Rice Variety</h5>
+
+        <small> {{ variety.variety_name }} </small>
+      </div>
+    </div>
+
+    <div class="rice-form-body">{% include "rice_variets/_form.html" %}</div>
+  </div>
+</div>
+
+{% endblock %}

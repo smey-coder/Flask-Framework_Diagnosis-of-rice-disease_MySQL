@@ -1,160 +1,652 @@
-{% extends "layouts/user_layout/user.html"%}
+{% extends "layouts/user_layout/user.html" %}
 
 {% block title %}Diseases - Rice Disease Diagnosis System{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h1>Diseases</h1>
+
+<div class="container-fluid disease-page mt-4">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+    <div class="disease-page-header mb-4">
+        <div>
+            <span class="disease-subtitle">
+                Rice Disease Diagnosis System
+            </span>
+
+            <h1 class="disease-title">
+                <i class="bi bi-virus2"></i>
+                Diseases
+            </h1>
+
+            <p class="disease-description">
+                Browse and search rice diseases available in the diagnosis system.
+            </p>
         </div>
-        <!-- <div class="col-md-6 text-end">
-            {% if current_user.has_role("Admin") %}
-            <a href="{{ url_for('tbl_diseases.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New Disease
-            </a>
-            {% endif %}
-        </div> -->
+
+        <div class="disease-count">
+            <i class="bi bi-database"></i>
+            <span>{{ diseases.total }}</span>
+            <small>Diseases</small>
+        </div>
     </div>
 
-    <!-- Search Form -->
-    <!-- <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" action="{{ url_for('tbl_diseases.index') }}">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        {{ search_form.disease_name(class="form-control", placeholder="Search by name...") }}
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        {{ search_form.disease_type(class="form-control") }}
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        {{ search_form.severity_level(class="form-control") }}
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <button type="submit" class="btn btn-info w-100">Search</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div> -->
 
-    <!-- Diseases Table -->
-    <div class="card">
+    <!-- =====================================================
+         SEARCH & FILTER
+    ====================================================== -->
+    <div class="card disease-filter-card mb-4">
+
+        <div class="card-body">
+
+            <form
+                method="GET"
+                action="{{ url_for('user.disease_index') }}"
+            >
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- Search -->
+                    <div class="col-lg-5 col-md-6">
+
+                        <label for="disease_name" class="form-label">
+                            <i class="bi bi-search"></i>
+                            Search Disease
+                        </label>
+
+                        <div class="search-input-wrapper">
+
+                            <i class="bi bi-search search-icon"></i>
+
+                            <input
+                                type="text"
+                                id="disease_name"
+                                name="disease_name"
+                                class="form-control disease-search-input"
+                                placeholder="Search disease name..."
+                                value="{{ request.args.get('disease_name', '') }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Disease Type -->
+                    <div class="col-lg-2 col-md-6">
+
+                        <label for="disease_type" class="form-label">
+                            <i class="bi bi-tags"></i>
+                            Type
+                        </label>
+
+                        <select
+                            id="disease_type"
+                            name="disease_type"
+                            class="form-select"
+                        >
+
+                            <option value="">All Types</option>
+
+                            <option
+                                value="Fungal"
+                                {% if request.args.get('disease_type') == 'Fungal' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Fungal
+                            </option>
+
+                            <option
+                                value="Bacterial"
+                                {% if request.args.get('disease_type') == 'Bacterial' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Bacterial
+                            </option>
+
+                            <option
+                                value="Viral"
+                                {% if request.args.get('disease_type') == 'Viral' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Viral
+                            </option>
+
+                            <option
+                                value="Pest"
+                                {% if request.args.get('disease_type') == 'Pest' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Pest
+                            </option>
+
+                            <option
+                                value="Other"
+                                {% if request.args.get('disease_type') == 'Other' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Severity -->
+                    <div class="col-lg-2 col-md-6">
+
+                        <label for="severity_level" class="form-label">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Severity
+                        </label>
+
+                        <select
+                            id="severity_level"
+                            name="severity_level"
+                            class="form-select"
+                        >
+
+                            <option value="">All Severity</option>
+
+                            <option
+                                value="Low"
+                                {% if request.args.get('severity_level') == 'Low' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Low
+                            </option>
+
+                            <option
+                                value="Medium"
+                                {% if request.args.get('severity_level') == 'Medium' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Medium
+                            </option>
+
+                            <option
+                                value="High"
+                                {% if request.args.get('severity_level') == 'High' %}
+                                    selected
+                                {% endif %}
+                            >
+                                High
+                            </option>
+
+                            <option
+                                value="Critical"
+                                {% if request.args.get('severity_level') == 'Critical' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Critical
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Status -->
+                    <div class="col-lg-1 col-md-6">
+
+                        <label for="status" class="form-label">
+                            Status
+                        </label>
+
+                        <select
+                            id="status"
+                            name="status"
+                            class="form-select"
+                        >
+
+                            <option
+                                value=""
+                                {% if not request.args.get('status') %}
+                                    selected
+                                {% endif %}
+                            >
+                                All
+                            </option>
+
+                            <option
+                                value="active"
+                                {% if request.args.get('status') == 'active' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Active
+                            </option>
+
+                            <option
+                                value="inactive"
+                                {% if request.args.get('status') == 'inactive' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+                    <div class="col-lg-2 col-md-12">
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary disease-search-btn"
+                            >
+                                <i class="bi bi-search"></i>
+                                Search
+                            </button>
+
+                            <a
+                                href="{{ url_for('user.disease_index') }}"
+                                class="btn btn-light disease-reset-btn"
+                                title="Reset filters"
+                            >
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+
+            <!-- Active Filters -->
+            {% if request.args.get('disease_name')
+                or request.args.get('disease_type')
+                or request.args.get('severity_level')
+                or request.args.get('status') %}
+
+            <div class="active-filters mt-3">
+
+                <span class="active-filter-label">
+                    <i class="bi bi-funnel"></i>
+                    Active filters:
+                </span>
+
+                {% if request.args.get('disease_name') %}
+                <span class="filter-badge">
+                    Search: {{ request.args.get('disease_name') }}
+                </span>
+                {% endif %}
+
+                {% if request.args.get('disease_type') %}
+                <span class="filter-badge">
+                    Type: {{ request.args.get('disease_type') }}
+                </span>
+                {% endif %}
+
+                {% if request.args.get('severity_level') %}
+                <span class="filter-badge">
+                    Severity: {{ request.args.get('severity_level') }}
+                </span>
+                {% endif %}
+
+                {% if request.args.get('status') %}
+                <span class="filter-badge">
+                    Status: {{ request.args.get('status') }}
+                </span>
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DISEASE TABLE
+    ====================================================== -->
+    <div class="card disease-table-card">
+
+        <div class="card-header disease-table-header">
+
+            <div>
+                <h5 class="mb-1">
+                    <i class="bi bi-list-ul"></i>
+                    Disease List
+                </h5>
+
+                <small>
+                    Showing
+                    <strong>{{ diseases.items|length }}</strong>
+                    of
+                    <strong>{{ diseases.total }}</strong>
+                    diseases
+                </small>
+            </div>
+
+        </div>
+
+
         <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0">
-                <thead class="table-light">
+
+            <table class="table disease-table mb-0">
+
+                <thead>
+
                     <tr>
-                        <th>ID</th>
+                        <th width="70">ID</th>
                         <th>Disease Name</th>
                         <th>Type</th>
                         <th>Severity</th>
                         <th>Status</th>
                     </tr>
+
                 </thead>
+
+
                 <tbody>
+
                     {% if diseases.items %}
+
                         {% for disease in diseases.items %}
+
                         <tr>
-                            <td>{{ disease.id }}</td>
+
+                            <!-- ID -->
                             <td>
-                                <!-- <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}">
-                                    {{ disease.disease_name }}
-                                </a> -->
-                                {{ disease.disease_name }}
+                                <span class="disease-id">
+                                    #{{ disease.id }}
+                                </span>
                             </td>
+
+
+                            <!-- Disease Name -->
                             <td>
-                                <span class="badge bg-secondary">{{ disease.disease_type }}</span>
+
+                                <div class="disease-name-cell">
+
+                                    <div class="disease-icon">
+                                        <i class="bi bi-virus2"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            {{ disease.disease_name }}
+                                        </strong>
+
+                                        <small>
+                                            Rice Disease
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
                             </td>
+
+
+                            <!-- Type -->
                             <td>
+
+                                {% if disease.disease_type %}
+
+                                <span class="disease-type-badge">
+                                    <i class="bi bi-tag"></i>
+                                    {{ disease.disease_type }}
+                                </span>
+
+                                {% else %}
+
+                                <span class="text-muted">
+                                    —
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Severity -->
+                            <td>
+
                                 {% if disease.severity_level == "Critical" %}
-                                    <span class="badge bg-danger">{{ disease.severity_level }}</span>
+
+                                    <span class="severity-badge severity-critical">
+                                        <i class="bi bi-exclamation-octagon-fill"></i>
+                                        Critical
+                                    </span>
+
                                 {% elif disease.severity_level == "High" %}
-                                    <span class="badge bg-warning">{{ disease.severity_level }}</span>
+
+                                    <span class="severity-badge severity-high">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        High
+                                    </span>
+
                                 {% elif disease.severity_level == "Medium" %}
-                                    <span class="badge bg-info">{{ disease.severity_level }}</span>
+
+                                    <span class="severity-badge severity-medium">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        Medium
+                                    </span>
+
                                 {% else %}
-                                    <span class="badge bg-success">{{ disease.severity_level }}</span>
+
+                                    <span class="severity-badge severity-low">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        {{ disease.severity_level }}
+                                    </span>
+
                                 {% endif %}
+
                             </td>
+
+
+                            <!-- Status -->
                             <td>
+
                                 {% if disease.is_active %}
-                                    <span class="badge bg-success">Active</span>
+
+                                    <span class="status-badge status-active">
+                                        <span class="status-dot"></span>
+                                        Active
+                                    </span>
+
                                 {% else %}
-                                    <span class="badge bg-secondary">Inactive</span>
+
+                                    <span class="status-badge status-inactive">
+                                        <span class="status-dot"></span>
+                                        Inactive
+                                    </span>
+
                                 {% endif %}
+
                             </td>
-                            <!-- <td>
-                                <a href="{{ url_for('tbl_diseases.detail', disease_id=disease.id) }}" 
-                                   class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                                {% if current_user.has_role("Admin") %}
-                                <a href="{{ url_for('tbl_diseases.edit', disease_id=disease.id) }}" 
-                                   class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <a href="{{ url_for('tbl_diseases.delete', disease_id=disease.id) }}" 
-                                   class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Delete
-                                </a>
-                                {% endif %}
-                            </td> -->
+
                         </tr>
+
                         {% endfor %}
+
                     {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center py-4">
-                            <p class="text-muted">No diseases found.</p>
-                        </td>
-                    </tr>
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="empty-disease-state"
+                            >
+
+                                <div>
+
+                                    <i class="bi bi-search"></i>
+
+                                    <h5>
+                                        No diseases found
+                                    </h5>
+
+                                    <p>
+                                        Try changing your search or filter criteria.
+                                    </p>
+
+                                    <a
+                                        href="{{ url_for('user.disease_index') }}"
+                                        class="btn btn-outline-primary btn-sm"
+                                    >
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                        Clear Filters
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
                     {% endif %}
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
 
-    <!-- Pagination -->
+
+    <!-- =====================================================
+         PAGINATION
+    ====================================================== -->
     {% if diseases.pages > 1 %}
-    <nav aria-label="Page navigation" class="mt-4">
+
+    <nav
+        aria-label="Disease pagination"
+        class="disease-pagination mt-4"
+    >
+
         <ul class="pagination justify-content-center">
+
+            <!-- Previous -->
             {% if diseases.has_prev %}
+
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('user.disease_index', page=diseases.prev_num) }}">
+
+                <a
+                    class="page-link"
+                    href="{{ url_for(
+                        'user.disease_index',
+                        page=diseases.prev_num,
+                        disease_name=request.args.get('disease_name', ''),
+                        disease_type=request.args.get('disease_type', ''),
+                        severity_level=request.args.get('severity_level', ''),
+                        status=request.args.get('status', '')
+                    ) }}"
+                >
+                    <i class="bi bi-chevron-left"></i>
                     Previous
                 </a>
+
             </li>
+
             {% endif %}
 
-            {% for page_num in diseases.iter_pages(left_edge=1, right_edge=10) %}
+
+            <!-- Pages -->
+            {% for page_num in diseases.iter_pages(
+                left_edge=1,
+                right_edge=1,
+                left_current=2,
+                right_current=2
+            ) %}
+
                 {% if page_num %}
+
                     {% if page_num == diseases.page %}
+
                     <li class="page-item active">
-                        <span class="page-link">{{ page_num }}</span>
+                        <span class="page-link">
+                            {{ page_num }}
+                        </span>
                     </li>
+
                     {% else %}
+
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('user.disease_index', page=page_num) }}">
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'user.disease_index',
+                                page=page_num,
+                                disease_name=request.args.get('disease_name', ''),
+                                disease_type=request.args.get('disease_type', ''),
+                                severity_level=request.args.get('severity_level', ''),
+                                status=request.args.get('status', '')
+                            ) }}"
+                        >
                             {{ page_num }}
                         </a>
+
                     </li>
+
                     {% endif %}
+
                 {% else %}
+
                     <li class="page-item disabled">
                         <span class="page-link">...</span>
                     </li>
+
                 {% endif %}
+
             {% endfor %}
 
+
+            <!-- Next -->
             {% if diseases.has_next %}
+
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('user.disease_index', page=diseases.next_num) }}">
+
+                <a
+                    class="page-link"
+                    href="{{ url_for(
+                        'user.disease_index',
+                        page=diseases.next_num,
+                        disease_name=request.args.get('disease_name', ''),
+                        disease_type=request.args.get('disease_type', ''),
+                        severity_level=request.args.get('severity_level', ''),
+                        status=request.args.get('status', '')
+                    ) }}"
+                >
                     Next
+                    <i class="bi bi-chevron-right"></i>
                 </a>
+
             </li>
+
             {% endif %}
+
         </ul>
+
     </nav>
+
     {% endif %}
+
 </div>
+
 {% endblock %}

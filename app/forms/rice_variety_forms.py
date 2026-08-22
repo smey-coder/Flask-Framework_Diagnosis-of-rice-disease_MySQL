@@ -23,12 +23,11 @@ GROWTH_STAGE_STATUS_CHOICES = [
 ]
 
 
-class GrowthStageForm(FlaskForm):
+class RiceVarietyForm(FlaskForm):
 
     # =========================================================
     # STAGE NAME
     # =========================================================
-
     variety_name = StringField(
         "English Name",
         validators=[
@@ -75,16 +74,16 @@ class GrowthStageForm(FlaskForm):
     # STAGE ORDER
     # =========================================================
 
-    stage_order = IntegerField(
-        "Stage Order",
+    growth_duration_days = IntegerField(
+        "Growth Duration Days",
         validators=[
             DataRequired(
-                message="Stage order is required."
+                message="Growth Duration Day is required."
             ),
             NumberRange(
                 min=1,
-                max=100,
-                message="Stage order must be between 1 and 100."
+                max=500,
+                message="Growth Duration Day must be between 1 and 100."
             )
         ]
     )
@@ -110,3 +109,6 @@ class GrowthStageForm(FlaskForm):
     submit = SubmitField(
         "Save Growth Stage"
     )
+class DeleteConfirmForm(FlaskForm):
+
+    submit = SubmitField("Yes, Delete")

@@ -23,73 +23,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/user_page.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='images/logo_rice.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo_rice.png') }}">
-
-    {% block extra_css %}{% endblock %}
-    <style>
-        body, .card, .navbar, .list-group-item {
-            transition: background 0.3s, color 0.3s;
-        }
-        .notif-item:hover {
-            background: #f1f5ff;
-            border-radius: 8px;
-            transition: 0.2s;
-        }
-
-        #notif-count {
-            font-size: 10px;
-        }
-        /* DARK MODE GLOBAL */
-        .dark-mode {
-            background-color: #121212 !important;
-            color: #ffffff !important;
-        }
-
-        /* Cards */
-        .dark-mode .card {
-            background-color: #1e1e1e;
-            color: #ffffff;
-        }
-
-        /* Navbar */
-        .dark-mode .navbar {
-            background-color: #1db2d7 !important;
-        }
-
-        /* Sidebar */
-        .dark-mode .list-group-item {
-            background-color: #0e0f10;
-            color: #ffffff;
-            border-color: #333;
-        }
-
-        /* Active item */
-        .dark-mode .list-group-item.active {
-            background-color: #0d6efd;
-        }
-
-        /* Inputs */
-        .dark-mode input,
-        .dark-mode select,
-        .dark-mode textarea {
-            background-color: #2a2a2a;
-            color: white;
-            border: 1px solid #444;
-        }
-
-        /* Modal */
-        .dark-mode .modal-content {
-            background-color: #1e1e1e;
-            color: white;
-        }
-        .btn-close {
-            opacity: 0.7;
-            transition: 0.2s ease;
-        }
-        .btn-close:hover {
-            opacity: 1;
-            transform: scale(1.2);
-        }
-    </style>
 </head>
 <!-- Logout Confirmation Modal -->
 <!-- <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
@@ -222,6 +155,16 @@
   </div>
 </div>
 <body id="mainBody">
+<!-- Back To Top Button -->
+<button
+    type="button"
+    id="backToTopBtn"
+    class="back-to-top-btn"
+    aria-label="Back to top"
+    title="Back to top"
+>
+    <i class="bi bi-chevron-up"></i>
+</button>
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm sticky-top">
     <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
@@ -232,6 +175,7 @@
                 height="40" 
                 class="d-inline-block align-text-top rounded-circle shadow-sm">
             <!-- {{lang.sidebar.ricediseasediagnosticsystem}} -->
+             RDDS
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -306,32 +250,6 @@
                     >
                         <i class="i bi-clipboard2-pulse me-2"></i>
                         Crop Monitorings
-                    </a>
-                </li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-
-                <!-- Rice Varieties -->
-                <li>
-                    <a
-                        class="dropdown-item {% if request.endpoint.startswith('farms.') %}active{% endif %}"
-                        href="{{ url_for('farms.index') }}"
-                    >
-                        <i class="bi bi-flower1 me-2"></i>
-                        Rice Varieties
-                    </a>
-                </li>
-
-
-                <!-- Growth Stages -->
-                <li>
-                    <a
-                        class="dropdown-item {% if request.endpoint.startswith('farms.') %}active{% endif %}"
-                        href="{{ url_for('farms.index') }}"
-                    >
-                        <i class="bi bi-bar-chart-steps me-2"></i>
-                        Growth Stages
                     </a>
                 </li>
 
@@ -779,9 +697,10 @@
 
 <!-- ================= JS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-{% block extra_js %}{% endblock %}
+
+<!-- <script src="{{ url_for('static', filename='js/user.js') }}"></script> -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
     // =========================================================
     // CSRF TOKEN
     // ========================================================
@@ -1784,12 +1703,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const toggle = document.getElementById("darkModeToggle");
 
-    // ✅ Apply saved mode on ALL pages
+    //Apply saved mode on ALL pages
     if (localStorage.getItem("darkMode") === "enabled") {
         document.body.classList.add("dark-mode");
     }
 
-    // ✅ Only attach event if toggle exists (settings page)
+    // Only attach event if toggle exists (settings page)
     if (toggle) {
 
         // sync toggle state
@@ -1807,6 +1726,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+//Pup up button
+document.addEventListener("DOMContentLoaded", function () {
+
+    const backToTopBtn = document.getElementById("backToTopBtn");
+
+    function toggleBackToTop() {
+        if (window.scrollY > 300) {
+            backToTopBtn.classList.add("show");
+        } else {
+            backToTopBtn.classList.remove("show");
+        }
+    }
+
+    window.addEventListener("scroll", toggleBackToTop);
+
+    backToTopBtn.addEventListener("click", function () {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+
+    toggleBackToTop();
+});
+
 </script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

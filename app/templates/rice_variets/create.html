@@ -1,0 +1,64 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %}Create Rice
+Variety{% endblock %} {% block page_title %}Rice Variety{% endblock %} {% block
+content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/rice_variety.css') }}"
+/>
+
+<div class="container-fluid rice-management-page">
+  <!-- PAGE HEADER -->
+  <div class="rice-page-header">
+    <div class="rice-header-content">
+      <div class="rice-header-icon">
+        <i class="bi bi-tree-fill"></i>
+      </div>
+
+      <div class="rice-header-text">
+        <h4 class="rice-page-title">Create Rice Variety</h4>
+
+        <p class="rice-page-subtitle">
+          Add a new rice variety to your farm management system.
+        </p>
+      </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="rice-breadcrumb">
+      <a href="{{ url_for('rice_variety.index') }}">
+        <i class="bi bi-grid"></i>
+        Rice Varieties
+      </a>
+
+      <i class="bi bi-chevron-right"></i>
+
+      <span>Create</span>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="rice-form-card card">
+    <!-- FORM HEADER -->
+    <div class="rice-form-header">
+      <div class="rice-form-header-left">
+        <div class="rice-form-header-icon">
+          <i class="bi bi-plus-circle"></i>
+        </div>
+
+        <div>
+          <h5 class="mb-1">Create Rice Variety</h5>
+
+          <small> Enter the information for the new rice variety. </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM BODY -->
+    <div class="rice-form-body">
+      {% set variety = None %} {% include "rice_variets/_form.html" %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
