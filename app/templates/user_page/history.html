@@ -1,6 +1,12 @@
 {% extends "layouts/user_layout/user.html" %} {% block title %}Diagnosis
 History{% endblock %} {% block content %}
-
+<link
+  rel="stylesheet"
+  href="{{ url_for(
+        'static',
+        filename='css/diagnosis_history.css'
+    ) }}"
+/>
 <div class="diagnosis-history-page">
   <!-- =========================================================
          PAGE HEADER

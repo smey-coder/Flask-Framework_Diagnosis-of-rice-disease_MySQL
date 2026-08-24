@@ -22,6 +22,24 @@
          {% endfor %}
    </div>
    {% endif %}
+   <!-- Status -->
+   <div class="col-md-6">
+        <label for="{{ form.status.id }}" class="form-label">
+            Status
+            <span class="text-danger">*</span>
+        </label>
+
+        {{ form.status(
+            class="form-select"
+        ) }}
+
+        {% for error in form.status.errors %}
+            <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                {{ error }}
+            </div>
+        {% endfor %}
+    </div>
 
    <div class="mb-3">
       <label class="form-label">{{ form.permission_ids.label.text }}</label>

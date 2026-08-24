@@ -886,3 +886,437 @@
 
   box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
 }
+/* =========================================================
+   MONITORING TABLE
+========================================================= */
+
+.monitoring-table-card {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.monitoring-search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.monitoring-search {
+  width: 100%;
+  height: 44px;
+
+  padding-left: 42px;
+  padding-right: 42px;
+
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  font-size: 0.9rem;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.monitoring-search:hover {
+  border-color: #adb5bd;
+}
+
+.monitoring-search:focus {
+  border-color: #198754;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.12);
+
+  outline: none;
+}
+
+.monitoring-search::placeholder {
+  color: #9aa0a6;
+}
+
+.monitoring-search-icon {
+  position: absolute;
+
+  left: 15px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #198754;
+
+  font-size: 1rem;
+
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+.monitoring-search-clear {
+  position: absolute;
+
+  right: 10px;
+  top: 50%;
+
+  width: 30px;
+  height: 30px;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  color: #adb5bd;
+
+  cursor: pointer;
+
+  z-index: 3;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.monitoring-search-clear:hover {
+  color: #dc3545;
+
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.monitoring-table {
+  min-width: 1100px;
+}
+
+.monitoring-table thead th {
+  padding-top: 14px;
+  padding-bottom: 14px;
+
+  font-size: 0.78rem;
+
+  font-weight: 700;
+
+  color: #495057;
+
+  white-space: nowrap;
+
+  border-bottom: 1px solid #dee2e6;
+}
+
+.monitoring-table tbody td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+
+  font-size: 0.88rem;
+
+  vertical-align: middle;
+}
+
+.monitoring-row {
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.monitoring-row:hover {
+  background-color: rgba(25, 135, 84, 0.035);
+}
+
+/* =========================================================
+   FIELD
+========================================================= */
+
+.monitoring-field-name {
+  font-weight: 600;
+
+  color: #212529;
+
+  white-space: nowrap;
+}
+
+.monitoring-date {
+  white-space: nowrap;
+
+  color: #495057;
+}
+
+/* =========================================================
+   GROWTH STAGE
+========================================================= */
+
+.monitoring-stage-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  background: #e8f5e9;
+
+  color: #198754;
+
+  font-size: 0.75rem;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   PLANT HEIGHT
+========================================================= */
+
+.plant-height {
+  font-weight: 600;
+
+  color: #343a40;
+
+  white-space: nowrap;
+}
+
+.plant-height small {
+  font-weight: 400;
+
+  color: #6c757d;
+}
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+
+.status-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  font-size: 0.72rem;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.status-good,
+.status-healthy {
+  background: #d1e7dd;
+
+  color: #146c43;
+}
+
+.status-low,
+.status-moderate {
+  background: #fff3cd;
+
+  color: #997404;
+}
+
+.status-high {
+  background: #cff4fc;
+
+  color: #087990;
+}
+
+.status-poor,
+.status-critical {
+  background: #f8d7da;
+
+  color: #b02a37;
+}
+
+.status-default {
+  background: #e9ecef;
+
+  color: #495057;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.monitoring-actions {
+  display: inline-flex;
+
+  gap: 5px;
+}
+
+.monitoring-actions .btn {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.monitoring-empty-state {
+  padding: 25px 15px;
+}
+
+.empty-icon {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f1f8f4;
+
+  color: #198754;
+
+  font-size: 2rem;
+}
+
+.monitoring-empty-state h5 {
+  font-weight: 700;
+
+  color: #343a40;
+}
+
+.monitoring-empty-state p {
+  color: #6c757d;
+
+  margin-bottom: 20px;
+}
+
+/* =========================================================
+   NO SEARCH RESULT
+========================================================= */
+
+.monitoring-no-result {
+  padding: 25px 15px;
+
+  animation: monitoringFadeIn 0.25s ease;
+}
+
+.no-result-icon {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f8f9fa;
+
+  color: #6c757d;
+
+  font-size: 1.8rem;
+}
+
+.monitoring-no-result h5 {
+  margin-bottom: 8px;
+
+  font-weight: 700;
+
+  color: #343a40;
+}
+
+.monitoring-no-result p {
+  margin-bottom: 18px;
+
+  color: #6c757d;
+
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   SEARCH ANIMATION
+========================================================= */
+
+@keyframes monitoringFadeIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 992px) {
+  .monitoring-search {
+    height: 42px;
+  }
+}
+
+@media (max-width: 768px) {
+  .monitoring-table-card .card-header {
+    padding: 15px !important;
+  }
+
+  .monitoring-search-wrapper {
+    margin-top: 4px;
+  }
+
+  .monitoring-table {
+    min-width: 1100px;
+  }
+}
+
+@media (max-width: 576px) {
+  .monitoring-search {
+    height: 40px;
+
+    font-size: 0.84rem;
+
+    padding-left: 38px;
+  }
+
+  .monitoring-search-icon {
+    left: 13px;
+  }
+
+  .monitoring-table tbody td {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}

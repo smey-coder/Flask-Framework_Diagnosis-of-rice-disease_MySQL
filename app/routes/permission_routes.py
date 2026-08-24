@@ -69,6 +69,8 @@ def create():
 
 @permission_bp.route("/<int:permission_id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("Admin","Expert")
+@permission_required("EDIT_PERMISSION")
 def edit(permission_id: int):
     permission = PermissionService.get_permission_by_id(permission_id)
     if permission is None:

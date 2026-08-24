@@ -8,4 +8,5 @@ from .field_crop import FieldCropTable
 from .growth_stage import GrowthStageTable
 from .crop_monitoring import CropMonitoringTable
 from .treatment_histories import TreatmentHistoryTable
+from .harvest import Harvest
 __all__ = ["UserTable", "RoleTable", "PermissionTable"]

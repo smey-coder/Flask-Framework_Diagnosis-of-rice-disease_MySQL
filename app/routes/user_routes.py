@@ -7,6 +7,7 @@ from flask import (
     abort,
 )
 from flask_login import login_required
+from app.decorators.access import role_required, permission_required
 
 from app.forms.user_forms import UserCreateForm, UserEditForm, UserConfirmDeleteForm
 from app.services.user_service import UserService
@@ -15,12 +16,17 @@ from app.models.role import RoleTable
 user_bp = Blueprint("tbl_users", __name__, url_prefix="/users")
 @user_bp.route("/")
 @login_required
+@role_required("Admin")
+@permission_required("VIEW_USER")
 def index():
+    
     users = UserService.get_user_all()
     return render_template("users/index.html", users=users)
 
 @user_bp.route("/<int:user_id>")
 @login_required
+@role_required("Admin")
+@permission_required("DETAIL_USER")
 def detail(user_id: int):
     user = UserService.get_user_by_id(user_id)
     if user is None:
@@ -29,6 +35,8 @@ def detail(user_id: int):
 
 @user_bp.route("/create", methods=["GET", "POST"])
 @login_required
+@role_required("Admin")
+@permission_required("CREATE_USER")
 def create():
     form = UserCreateForm()
     
@@ -52,6 +60,8 @@ def create():
 
 @user_bp.route("/<int:user_id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("Admin")
+@permission_required("EDIT_USER")
 def edit(user_id: int):
     user = UserService.get_user_by_id(user_id)
     if user is None:
@@ -79,6 +89,8 @@ def edit(user_id: int):
 
 @user_bp.route("/<int:user_id>/delete", methods=["GET"])
 @login_required
+@role_required("Admin")
+@permission_required("DELETE_USER")
 def delete_confirm(user_id: int):
     user = UserService.get_user_by_id(user_id)
     if user is None:
@@ -89,6 +101,8 @@ def delete_confirm(user_id: int):
 
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
 @login_required
+@role_required("Admin")
+@permission_required("DELETE_USER")
 def delete(user_id: int):
     user = UserService.get_user_by_id(user_id)
     if user is None:

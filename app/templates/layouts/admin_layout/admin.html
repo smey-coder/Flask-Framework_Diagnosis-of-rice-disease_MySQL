@@ -494,13 +494,37 @@
 
             {% endif %}
 
-            <!-- ================= REPORTS ================= -->
+            <!-- ================= REPORTS SECTION ================= -->
             <li class="sidebar-section">
               <span>
                 <i class="bi bi-bar-chart-fill me-1"></i>
-                {{ lang.sidebar.reports }}
+                {{ lang.sidebar.reports if lang and lang.sidebar and lang.sidebar.reports else 'របាយការណ៍ / Reports' }}
               </span>
             </li>
+
+            <!-- Admin Report Link -->
+            {% if current_user.is_authenticated and current_user.has_role('Admin') %}
+            <li class="nav-item">
+              <a href="{{ url_for('admin.admin_report') }}" 
+                class="nav-link report-link {% if request.endpoint == 'admin.admin_report' %}active admin-active{% endif %}">
+                <i class="bi bi-shield-lock-fill nav-icon text-primary"></i>
+                <span class="link-text">របាយការណ៍ Admin</span>
+                <span class="badge badge-subtle-blue ms-auto">Console</span>
+              </a>
+            </li>
+            {% endif %}
+
+            <!-- Expert Report Link -->
+            {% if current_user.is_authenticated and (current_user.has_role('Expert') or current_user.has_role('Admin')) %}
+            <li class="nav-item">
+              <a href="{{ url_for('admin.expert_report') }}" 
+                class="nav-link report-link {% if request.endpoint == 'admin.expert_report' %}active expert-active{% endif %}">
+                <i class="bi bi-patch-check-fill nav-icon text-purple"></i>
+                <span class="link-text">របាយការណ៍ Expert</span>
+                <span class="badge badge-subtle-purple ms-auto">Audit</span>
+              </a>
+            </li>
+            {% endif %}
 
             <!-- AUDIT -->
             {% if current_user.has_permission('VIEW_AUDIT_LOG') %}
@@ -508,7 +532,7 @@
             <li class="nav-item">
               <a
                 href="{{ url_for('audit.index') }}"
-                class="sidebar-link {% if request.blueprint == 'audit_bp' %} active {% endif %}"
+                class="sidebar-link {% if request.blueprint == 'audit' %} active {% endif %}"
               >
                 <span class="sidebar-icon">
                   <i class="bi bi-journal-text"></i>

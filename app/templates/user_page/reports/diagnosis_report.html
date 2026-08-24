@@ -1,0 +1,235 @@
+{% extends "layouts/user_layout/user.html" %} {% block title
+%}របាយការណ៍រោគវិនិច្ឆ័យ - User Report{% endblock %} {% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/reports/user_report.css') }}"
+/>
+<div class="container-fluid px-4 py-3">
+  <div class="user-report-wrapper">
+    <div class="report-card">
+      <!-- Report Header -->
+      <div class="report-header">
+        <div class="report-title-section">
+          <div class="report-icon">
+            <i class="bi bi-file-earmark-bar-graph-fill"></i>
+          </div>
+          <div>
+            <h3 class="report-heading">
+              របាយការណ៍រោគវិនិច្ឆ័យ និង សកម្មភាព / Activity Report
+            </h3>
+            <p class="report-subheading">
+              Personal analysis, disease severity metrics, and account health
+              summary.
+            </p>
+          </div>
+        </div>
+        <button
+          onclick="window.print()"
+          class="btn btn-outline-success print-btn"
+        >
+          <i class="bi bi-printer me-1"></i> បោះពុម្ព / Print Report
+        </button>
+      </div>
+
+      <!-- Key Performance Metrics Grid -->
+      <div class="metrics-grid">
+        <!-- Total Diagnoses -->
+        <div class="metric-box">
+          <span class="metric-label">ការវិភាគសរុប (Total Diagnoses)</span>
+          <div class="metric-value-group">
+            <span class="metric-number"
+              >{{ histories|length if histories else 0 }}</span
+            >
+            <span class="metric-badge badge-green">Records</span>
+          </div>
+        </div>
+
+        <!-- Average Confidence -->
+        <div class="metric-box">
+          <span class="metric-label">កម្រិតភាពច្បាស់ (Avg Precision)</span>
+          <div class="metric-value-group">
+            <span class="metric-number">
+              {% if histories and histories|length > 0 %} {{ ((histories |
+              map(attribute='confidence') | map('float') | sum) /
+              histories|length * 100) | round(1) }}% {% else %} 0% {% endif %}
+            </span>
+            <span class="metric-badge badge-blue">Model Accuracy</span>
+          </div>
+        </div>
+
+        <!-- High Severity Count -->
+        <div class="metric-box">
+          <span class="metric-label">កម្រិតធ្ងន់ធ្ងរ (High Severity)</span>
+          <div class="metric-value-group">
+            <span class="metric-number text-danger">
+              {{ histories | selectattr('severity_level', 'equalto',
+              'High(ខ្ពស់)') | list | length if histories else 0 }}
+            </span>
+            <span class="metric-badge badge-red">Critical</span>
+          </div>
+        </div>
+
+        <!-- Recent Activity Date -->
+        <div class="metric-box">
+          <span class="metric-label">កាលបរិច្ឆេទចុងក្រោយ (Latest)</span>
+          <div class="metric-value-group">
+            <span class="metric-number text-dark" style="font-size: 16px">
+              {% if histories and histories|length > 0 %} {{
+              histories[0].created_at.strftime('%d %b %Y') }} {% else %} N/A {%
+              endif %}
+            </span>
+            <span class="metric-badge badge-gray">Timeline</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Analytical Body -->
+      <div class="report-body">
+        <!-- Severity Breakdown -->
+        <div class="report-section">
+          <h5 class="section-title">
+            <i class="bi bi-pie-chart me-2 text-success"></i> កម្រិតនៃជំងឺស្រូវ
+            (Severity Distribution)
+          </h5>
+          <div class="table-responsive">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>កម្រិត (Severity)</th>
+                  <th class="text-end">ចំនួន (Count)</th>
+                  <th class="text-end">ភាគរយ (Percentage)</th>
+                </tr>
+              </thead>
+              <tbody>
+                 <!-- Very High Risk Row -->
+                <tr>
+                  <td>
+                    <span class="status-pill pill-high"
+                      >Very high (ខ្ពស់ណាស់)</span
+                    >
+                  </td>
+                  {% set very_high_count = histories |
+                  selectattr('disease.severity_level', 'equalto', 'Very
+                  high(ខ្ពស់ណាស់)') | list | length if histories else 0 %}
+                  <td class="text-end fw-bold">{{ very_high_count }}</td>
+                  <td class="text-end text-muted">
+                    {% if histories and histories|length > 0 %} {{
+                    ((very_high_count / histories|length) * 100) | round(1) }}%
+                    {% else %} 0% {% endif %}
+                  </td>
+                </tr>
+                <!-- High Risk Row -->
+                <tr>
+                  <td>
+                    <span class="status-pill pill-high">High (ខ្ពស់)</span>
+                  </td>
+                  {% set high_count = histories |
+                  selectattr('disease.severity_level', 'equalto', 'High(ខ្ពស់)')
+                  | list | length if histories else 0 %}
+                  <td class="text-end fw-bold">{{ high_count }}</td>
+                  <td class="text-end text-muted">
+                    {% if histories and histories|length > 0 %} {{ ((high_count
+                    / histories|length) * 100) | round(1) }}% {% else %} 0% {%
+                    endif %}
+                  </td>
+                </tr>
+
+                <!-- Medium Risk Row -->
+                <tr>
+                  <td>
+                    <span class="status-pill pill-medium">Medium (មធ្យម)</span>
+                  </td>
+                  {% set medium_count = histories |
+                  selectattr('disease.severity_level', 'equalto',
+                  'Medium(មធ្យម)') | list | length if histories else 0 %}
+                  <td class="text-end fw-bold">{{ medium_count }}</td>
+                  <td class="text-end text-muted">
+                    {% if histories and histories|length > 0 %} {{
+                    ((medium_count / histories|length) * 100) | round(1) }}% {%
+                    else %} 0% {% endif %}
+                  </td>
+                </tr>
+
+                <!-- Low Risk Row -->
+                <tr>
+                  <td><span class="status-pill pill-low">Low (ទាប)</span></td>
+                  {% set low_count = histories |
+                  selectattr('disease.severity_level', 'equalto', 'Low(ទាប)') |
+                  list | length if histories else 0 %}
+                  <td class="text-end fw-bold">{{ low_count }}</td>
+                  <td class="text-end text-muted">
+                    {% if histories and histories|length > 0 %} {{ ((low_count /
+                    histories|length) * 100) | round(1) }}% {% else %} 0% {%
+                    endif %}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Account & Crop Health Overview -->
+        <div class="report-section">
+          <h5 class="section-title">
+            <i class="bi bi-person-badge me-2 text-primary"></i> ព័ត៌មានគណនី និង
+            សុខភាពដំណាំ (Profile Health)
+          </h5>
+          <div class="account-summary-list">
+            <div class="summary-item">
+              <span class="item-label">គណនីអ្នកប្រើប្រាស់ (Email)</span>
+              <span class="item-value fw-semibold"
+                >{{ current_user.email if current_user else 'Authenticated User'
+                }}</span
+              >
+            </div>
+            <div class="summary-item">
+              <span class="item-label">តួនាទី (Role)</span>
+              <span class="item-value">
+                <span class="status-pill pill-blue"
+                  >{{ current_user.role.name if current_user and
+                  current_user.role else 'User' }}</span
+                >
+              </span>
+            </div>
+            <div class="summary-item">
+              <span class="item-label">ស្ថានភាពសុខភាពដំណាំ (Crop Status)</span>
+              <span class="item-value fw-bold">
+                {% set high_count = histories | selectattr('severity_level',
+                'equalto', 'High(ខ្ពស់)') | list | length if histories else 0 %}
+                {% if high_count > 2 %}
+                <span class="text-danger"
+                  ><i class="bi bi-exclamation-octagon-fill me-1"></i>
+                  ប្រឈមហានិភ័យខ្ពស់ (High Risk)</span
+                >
+                {% elif high_count > 0 %}
+                <span class="text-warning"
+                  ><i class="bi bi-exclamation-triangle-fill me-1"></i>
+                  គួរយកចិត្តទុកដាក់ (Moderate Risk)</span
+                >
+                {% else %}
+                <span class="text-success"
+                  ><i class="bi bi-check-circle-fill me-1"></i> មានសុវត្ថិភាព
+                  (Healthy)</span
+                >
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Metadata -->
+      <div class="report-footer">
+        <span
+          ><i class="bi bi-shield-check me-1 text-success"></i>
+          ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ (Rice Disease Diagnosis System)</span
+        >
+        <span
+          >កាលបរិច្ឆេទបង្កើត:
+          <strong class="text-dark">{{ current_time }}</strong></span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

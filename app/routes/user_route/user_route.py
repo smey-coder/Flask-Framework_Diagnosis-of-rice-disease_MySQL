@@ -11,6 +11,7 @@ from app import services
 from app.decorators.access import role_required, permission_required
 from app.forms.diagnosis_form import DiagnosisForm
 from app.forms.diseases_forms import DiseaseSearchForm
+from app.forms.harvest_form import HarvestForm
 from app.forms.user_forms import DeleteAccountForm, UserEditForm, UserProfileForm
 from app.forms.weather_form import CitySearchForm
 from app.models.UserNotification import UserNotification
@@ -20,12 +21,14 @@ from app.models.diseases import DiseaseTable
 from app.models.farm import FarmTable
 from app.models.field import FieldTable
 from app.models.field_crop import FieldCropTable
+from app.models.harvest import Harvest
 from app.models.role import RoleTable
 from app.models.rule_conditions import RuleConditionsTable
 from app.models.rules import RulesTable
 from app.models.symptoms import SymptomsTable
 from app.models.user import UserTable
 from app.services.disease_service import DiseaseService
+from app.services.harvest_service import HarvestService
 from app.services.user_service import UserService
 from app.services.weather_service import WeatherService
 from extensions import db
@@ -78,47 +81,44 @@ CAMBODIA_CITIES = [
 @login_required
 @role_required("User")
 def dashboard():
-
     form = CitySearchForm()
-
     search_results = []
-
     selected_city_weather = None
-
     current_date = datetime.now().strftime("%d-%m-%Y %H:%M")
 
-    try:
+    # 1. ទាញយក Farm របស់ User ដែលសកម្ម (Active)
+    user_farm = FarmTable.query.filter_by(
+        user_id=current_user.id, 
+        status="Active"
+    ).first()
 
+    harvest_summary = None
+
+    try:
         # =====================================================
         # WEATHER
         # =====================================================
-
         selected_city_id = request.args.get("city_id")
+        if user_farm:
+            harvest_summary = HarvestService.get_user_harvest_summary(current_user.id)
 
-        if selected_city_id:
-
-            selected_city_weather = WeatherService.get_weather(
-                selected_city_id
-            )
-
-        if form.validate_on_submit():
-
-            selected_city_name = form.city.data
-
-            if selected_city_name:
-
-                selected_city_weather = WeatherService.get_weather(
-                    selected_city_name
-                )
-
-
+        if form.validate_on_submit() and form.city.data:
+            selected_city_weather = WeatherService.get_weather(form.city.data)
+        elif selected_city_id:
+            selected_city_weather = WeatherService.get_weather(selected_city_id)
+        elif user_farm:
+        # AUTO: ទាញយកតាម Farm (GPS ឬ Province) ជាស្វ័យប្រវត្តិ
+            selected_city_weather = WeatherService.get_weather_by_farm(user_farm)
+            # 2. Get Harvest & Financial Metrics
+           
         # =====================================================
         # DISEASE
         # =====================================================
+        # Debugging print statement (check terminal logs!)
+        print(f"DEBUG: Farm = {user_farm}")
+        print(f"DEBUG: Weather Data = {selected_city_weather}")
 
         default_disease = DiseaseTable.query.first()
-
-
         # =====================================================
         # RECENT DISEASE ACTIVITIES
         # =====================================================
@@ -219,37 +219,22 @@ def dashboard():
 
         )
 
-
         growing_crops = sum(
-
             1
-
             for crop in field_crops
-
             if crop.status == "Growing"
-
         )
-
-
         harvested_crops = sum(
-
             1
-
             for crop in field_crops
-
             if crop.status == "Harvested"
-
         )
-
 
         completed_crops = sum(
-
             1
-
             for crop in field_crops
 
             if crop.status == "Completed"
-
         )
 
 
@@ -341,7 +326,7 @@ def dashboard():
             search_results=search_results,
 
             selected_city_weather=selected_city_weather,
-
+            summary=harvest_summary,
             form=form,
 
             current_date=current_date,
@@ -3207,3 +3192,150 @@ def monitoring_history(farm_id, field_crop_id):
                 "field_crops.index"
             )
         )
+@user_bp.route("/harvest/create", methods=["GET", "POST"])
+@login_required
+@role_required("User")
+def add_harvest():
+    farms = FarmTable.query.filter_by(user_id=current_user.id, status="Active").all()
+    
+    if not farms:
+        flash("សូមចុះឈ្មោះកសិដ្ឋានជាមុនសិន!", "warning")
+        return redirect(url_for('user.dashboard'))
+
+    form = HarvestForm()
+    # Populate Farm options (must be int IDs)
+    form.farm_id.choices = [(f.id, f.farm_name) for f in farms]
+
+    # Re-bind choices dynamically during POST submit
+    if request.method == 'POST':
+        selected_farm = request.form.get('farm_id', type=int)
+        selected_field = request.form.get('field_id', type=int)
+        
+        # 1. Re-bind Fields
+        if selected_farm:
+            fields = FieldTable.query.filter_by(farm_id=selected_farm).all()
+            form.field_id.choices = [(f.id, f.field_name) for f in fields]
+        else:
+            form.field_id.choices = []
+
+        # 2. Re-bind FieldCrops (MUST include status="Active" to match API)
+        if selected_field:
+            crops = (
+                FieldCropTable.query.options(db.joinedload(FieldCropTable.rice_variety))
+                .filter_by(field_id=selected_field, status="Active")
+                .all()
+            )
+            form.field_crop_id.choices = [
+                (
+                    fc.id, 
+                    f"{fc.rice_variety.variety_name} (ដាំ: {fc.planting_date.strftime('%Y-%m-%d') if fc.planting_date else 'N/A'})"
+                ) 
+                for fc in crops
+            ]
+        else:
+            form.field_crop_id.choices = []
+
+    if form.validate_on_submit():
+        try:
+            currency = form.currency.data
+            exchange_rate = float(form.exchange_rate.data or 4100.0)
+            quantity_tons = float(form.quantity_tons.data)
+            raw_price = float(form.price_per_ton.data)
+            raw_cost = float(form.total_cost.data)
+
+            # Convert KHR to USD if needed
+            price_usd = raw_price / exchange_rate if currency == 'KHR' else raw_price
+            cost_usd = raw_cost / exchange_rate if currency == 'KHR' else raw_cost
+
+            total_revenue_usd = round(quantity_tons * price_usd, 2)
+            net_profit_usd = round(total_revenue_usd - cost_usd, 2)
+
+            new_harvest = Harvest(
+                field_crop_id=form.field_crop_id.data,
+                harvest_date=form.harvest_date.data,
+                quantity_tons=quantity_tons,
+                quality_grade=form.quality_grade.data,
+                currency=currency,
+                exchange_rate=exchange_rate,
+                price_per_ton=round(price_usd, 2),
+                total_cost=round(cost_usd, 2),
+                total_revenue=total_revenue_usd,
+                net_profit=net_profit_usd
+            )
+
+            db.session.add(new_harvest)
+            db.session.commit()
+
+            flash("រក្សាទុកទិន្នន័យប្រមូលផលបានជោគជ័យ!", "success")
+            return redirect(url_for('user.dashboard'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"មានបញ្ហាក្នុងការរក្សាទុក: {str(e)}", "danger")
+
+    return render_template('user_page/harvest/harvest_form.html', form=form)
+
+@user_bp.route("/api/fields/<int:farm_id>", methods=["GET"])
+@login_required
+@role_required("User")
+def get_fields_by_farm(farm_id: int):
+    """Retrieves all fields associated with a given farm ID for dropdown population."""
+    fields = FieldTable.query.filter_by(farm_id=farm_id).all()
+
+    return jsonify([
+        {
+            "id": f.id,
+            "name": f.field_name
+        }
+        for f in fields
+    ]), 200
+
+
+@user_bp.route("/api/field-crops/<int:field_id>", methods=["GET"])
+@login_required
+@role_required("User")
+def get_crops_by_field(field_id: int):
+    """Retrieves active crops and planting dates for a specific field ID.
+
+    Uses joinedload to eliminate N+1 query overhead on rice_variety.
+    """
+    field_crops = (
+        FieldCropTable.query.options(db.joinedload(FieldCropTable.rice_variety))
+        .filter_by(field_id=field_id, status="Active")
+        .all()
+    )
+
+    return jsonify([
+        {
+            "id": fc.id,
+            "name": (
+                f"{fc.rice_variety.variety_name} "
+                f"(ដាំ: {fc.planting_date.strftime('%Y-%m-%d') if fc.planting_date else 'N/A'})"
+            )
+        }
+        for fc in field_crops
+    ]), 200
+
+@user_bp.route("/diagnosis-report", methods=["GET"])
+@login_required
+@role_required("User")
+def diagnosis_report():
+    """
+    Renders the diagnosis & activity report for the currently logged-in user.
+    """
+    # 1. Fetch user diagnosis history sorted by newest first
+    # Adjust 'DiagnosisHistory' to match your actual SQLAlchemy model name
+    histories = DiagnosisHistoryTable.query.filter_by(user_id=current_user.id)\
+                                      .order_by(DiagnosisHistoryTable.created_at.desc())\
+                                      .all()
+
+    # 2. Format current time for report footer metadata
+    current_time_str = datetime.now().strftime("%d %b %Y, %I:%M %p")
+
+    # 3. Render report view passing required context
+    return render_template(
+        "user_page/reports/diagnosis_report.html",
+        user=current_user,
+        histories=histories,
+        current_time=current_time_str
+    )

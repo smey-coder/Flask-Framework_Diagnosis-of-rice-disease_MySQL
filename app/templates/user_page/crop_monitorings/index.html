@@ -1,19 +1,14 @@
 {% extends "layouts/user_layout/user.html" %} {% block title %} Crop Monitoring
-{% endblock %} {% block page_title %} Crop Monitoring {% endblock %} {% block
-styles %}
-
+{% endblock %} {% block page_title %} Crop Monitoring {% endblock %} 
+{% block content %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/crop_monitoring.css') }}"
 />
-
-{% endblock %} {% block content %}
-
 <div class="container-fluid py-4">
   <!-- =====================================================
          HEADER
     ====================================================== -->
-
   <div
     class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4"
   >
@@ -208,221 +203,914 @@ styles %}
           </div>
         </div>
       </div>
-    <!-- =====================================================
-         TABLE
-    ====================================================== -->
+      <!-- =====================================================
+          MONITORING RECORDS
+      ====================================================== -->
 
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white border-0 py-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <h5 class="fw-bold mb-0">
-            <i class="bi bi-list-check text-success me-2"></i>
+      <div class="card border-0 shadow-sm monitoring-table-card">
 
-            Monitoring Records
-          </h5>
+        <!-- =====================================================
+            HEADER
+        ====================================================== -->
+
+        <div class="card-header bg-white border-0 py-3">
+
+          <div class="row g-3 align-items-center">
+
+            <!-- TITLE -->
+
+            <div class="col-lg-5 col-md-6">
+
+              <h5 class="fw-bold mb-0">
+                <i class="bi bi-list-check text-success me-2"></i>
+                Monitoring Records
+              </h5>
+
+              <small class="text-muted">
+                View and manage your crop monitoring records
+              </small>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="col-lg-7 col-md-6">
+
+              <div class="monitoring-search-wrapper">
+
+                <i class="bi bi-search monitoring-search-icon"></i>
+
+                <input
+                  type="text"
+                  id="monitoringSearch"
+                  class="form-control monitoring-search"
+                  placeholder="Search field, farm, crop, stage, status..."
+                  autocomplete="off"
+                >
+
+                <button
+                  type="button"
+                  id="clearMonitoringSearch"
+                  class="monitoring-search-clear"
+                  title="Clear search"
+                  aria-label="Clear search"
+                >
+                  <i class="bi bi-x-circle-fill"></i>
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
+
+
+        <!-- =====================================================
+            TABLE
+        ====================================================== -->
+
+        <div class="card-body p-0">
+
+          <div class="table-responsive">
+
+            <table
+              class="table table-hover align-middle mb-0 monitoring-table"
+            >
+
+              <!-- =================================================
+                  TABLE HEADER
+              ================================================== -->
+
+              <thead class="table-light">
+
+                <tr>
+
+                  <th class="ps-4">
+                    #
+                  </th>
+
+                  <th>
+                    Field Crop
+                  </th>
+
+                  <th>
+                    Date
+                  </th>
+
+                  <th>
+                    Growth Stage
+                  </th>
+
+                  <th>
+                    Plant Height
+                  </th>
+
+                  <th>
+                    Water
+                  </th>
+
+                  <th>
+                    Plant Condition
+                  </th>
+
+                  <th>
+                    Pest
+                  </th>
+
+                  <th>
+                    Disease
+                  </th>
+
+                  <th class="text-end pe-4">
+                    Action
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <!-- =================================================
+                  TABLE BODY
+              ================================================== -->
+
+              <tbody id="monitoringTableBody">
+
+                {% if monitorings %}
+
+                  {% for monitoring in monitorings %}
+
+                  <tr class="monitoring-row">
+
+                    <!-- =========================================
+                        NUMBER
+                    ========================================== -->
+
+                    <td class="ps-4 fw-semibold monitoring-number">
+
+                      {{ loop.index }}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        FIELD CROP
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.field_crop %}
+
+                        <div class="monitoring-field-name">
+
+                          <i class="bi bi-grid-3x3-gap-fill text-success me-1"></i>
+
+                          {% if monitoring.field_crop.field %}
+
+                            {{ monitoring.field_crop.field.field_name }}
+
+                          {% else %}
+
+                            N/A
+
+                          {% endif %}
+
+                        </div>
+
+
+                        <!-- FARM -->
+
+                        {% if monitoring.field_crop.field
+                              and monitoring.field_crop.field.farm %}
+
+                          <small class="text-muted d-block">
+
+                            <i class="bi bi-house-door me-1"></i>
+
+                            {{ monitoring.field_crop.field.farm.farm_name }}
+
+                          </small>
+
+                        {% endif %}
+
+
+                        <!-- RICE VARIETY -->
+
+                        {% if monitoring.field_crop.rice_variety %}
+
+                          <small class="text-muted d-block">
+
+                            <i class="bi bi-flower1 me-1"></i>
+
+                            {{ monitoring.field_crop.rice_variety.variety_name }}
+
+                          </small>
+
+                        {% endif %}
+
+                      {% else %}
+
+                        <span class="text-muted">
+                          N/A
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        DATE
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.monitoring_date %}
+
+                        <div class="monitoring-date">
+
+                          <i class="bi bi-calendar3 me-1"></i>
+
+                          {{ monitoring.monitoring_date.strftime("%d-%m-%Y") }}
+
+                        </div>
+
+                      {% else %}
+
+                        <span class="text-muted">
+                          -
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        GROWTH STAGE
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.growth_stage %}
+
+                        <span class="monitoring-stage-badge">
+
+                          <i class="bi bi-bar-chart-steps me-1"></i>
+
+                          {{ monitoring.growth_stage.stage_name }}
+
+                        </span>
+
+
+                        {% if monitoring.growth_stage.stage_name_kh %}
+
+                          <small class="d-block text-muted mt-1">
+
+                            {{ monitoring.growth_stage.stage_name_kh }}
+
+                          </small>
+
+                        {% endif %}
+
+                      {% else %}
+
+                        <span class="text-muted">
+                          -
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        PLANT HEIGHT
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.plant_height is not none %}
+
+                        <span class="plant-height">
+
+                          {{ monitoring.plant_height }}
+
+                          <small>cm</small>
+
+                        </span>
+
+                      {% else %}
+
+                        <span class="text-muted">
+                          -
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        WATER
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.water_status %}
+
+                        {% if monitoring.water_status == "Good" %}
+
+                          <span class="status-badge status-good">
+
+                            <i class="bi bi-droplet-fill"></i>
+
+                            Good
+
+                          </span>
+
+                        {% elif monitoring.water_status == "Low" %}
+
+                          <span class="status-badge status-low">
+
+                            <i class="bi bi-droplet"></i>
+
+                            Low
+
+                          </span>
+
+                        {% elif monitoring.water_status == "High" %}
+
+                          <span class="status-badge status-high">
+
+                            <i class="bi bi-droplet-fill"></i>
+
+                            High
+
+                          </span>
+
+                        {% else %}
+
+                          <span class="status-badge status-default">
+
+                            {{ monitoring.water_status }}
+
+                          </span>
+
+                        {% endif %}
+
+                      {% else %}
+
+                        <span class="text-muted">
+                          -
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        PLANT CONDITION
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.plant_condition == "Healthy" %}
+
+                        <span class="status-badge status-healthy">
+
+                          <i class="bi bi-check-circle-fill"></i>
+
+                          Healthy
+
+                        </span>
+
+                      {% elif monitoring.plant_condition == "Moderate" %}
+
+                        <span class="status-badge status-moderate">
+
+                          <i class="bi bi-exclamation-circle-fill"></i>
+
+                          Moderate
+
+                        </span>
+
+                      {% elif monitoring.plant_condition == "Poor" %}
+
+                        <span class="status-badge status-poor">
+
+                          <i class="bi bi-exclamation-triangle-fill"></i>
+
+                          Poor
+
+                        </span>
+
+                      {% elif monitoring.plant_condition == "Critical" %}
+
+                        <span class="status-badge status-critical">
+
+                          <i class="bi bi-x-circle-fill"></i>
+
+                          Critical
+
+                        </span>
+
+                      {% elif monitoring.plant_condition %}
+
+                        <span class="status-badge status-default">
+
+                          {{ monitoring.plant_condition }}
+
+                        </span>
+
+                      {% else %}
+
+                        <span class="text-muted">
+                          -
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        PEST
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.pest_status %}
+
+                        {% if monitoring.pest_status == "Detected" %}
+
+                          <span class="status-badge status-critical">
+
+                            <i class="bi bi-bug-fill"></i>
+
+                            Detected
+
+                          </span>
+
+                        {% elif monitoring.pest_status == "Low" %}
+
+                          <span class="status-badge status-moderate">
+
+                            <i class="bi bi-bug"></i>
+
+                            Low
+
+                          </span>
+
+                        {% else %}
+
+                          <span class="status-badge status-healthy">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            {{ monitoring.pest_status }}
+
+                          </span>
+
+                        {% endif %}
+
+                      {% else %}
+
+                        <span class="text-muted">
+                          -
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        DISEASE
+                    ========================================== -->
+
+                    <td>
+
+                      {% if monitoring.disease_status %}
+
+                        {% if monitoring.disease_status == "Detected" %}
+
+                          <span class="status-badge status-critical">
+
+                            <i class="bi bi-virus"></i>
+
+                            Detected
+
+                          </span>
+
+                        {% else %}
+
+                          <span class="status-badge status-healthy">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            {{ monitoring.disease_status }}
+
+                          </span>
+
+                        {% endif %}
+
+                      {% else %}
+
+                        <span class="status-badge status-healthy">
+
+                          <i class="bi bi-check-circle-fill"></i>
+
+                          None
+
+                        </span>
+
+                      {% endif %}
+
+                    </td>
+
+
+                    <!-- =========================================
+                        ACTION
+                    ========================================== -->
+
+                    <td class="text-end pe-4">
+
+                      <div class="monitoring-actions">
+
+                        <!-- EDIT -->
+
+                        <a
+                          href="{{ url_for(
+                            'crop_monitoring.edit',
+                            monitoring_id=monitoring.id
+                          ) }}"
+                          class="btn btn-sm btn-outline-primary"
+                          title="Edit monitoring"
+                        >
+
+                          <i class="bi bi-pencil"></i>
+
+                        </a>
+
+
+                        <!-- DELETE -->
+
+                        <a
+                          href="{{ url_for(
+                            'crop_monitoring.delete',
+                            monitoring_id=monitoring.id
+                          ) }}"
+                          class="btn btn-sm btn-outline-danger"
+                          title="Delete monitoring"
+                          onclick="
+                            return confirm(
+                              'Are you sure you want to delete this monitoring record?'
+                            );
+                          "
+                        >
+
+                          <i class="bi bi-trash"></i>
+
+                        </a>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                  {% endfor %}
+
+
+                  <!-- =============================================
+                      NO SEARCH RESULT
+                  ============================================== -->
+
+                  <tr
+                    id="noMonitoringSearchResult"
+                    style="display: none;"
+                  >
+
+                    <td
+                      colspan="10"
+                      class="text-center py-5"
+                    >
+
+                      <div class="monitoring-no-result">
+
+                        <div class="no-result-icon">
+
+                          <i class="bi bi-search"></i>
+
+                        </div>
+
+                        <h5>
+                          No monitoring records found
+                        </h5>
+
+                        <p>
+                          Try searching with another field, crop,
+                          growth stage or status.
+                        </p>
+
+                        <button
+                          type="button"
+                          id="clearSearchResult"
+                          class="btn btn-outline-success btn-sm"
+                        >
+
+                          <i class="bi bi-arrow-counterclockwise me-1"></i>
+
+                          Clear Search
+
+                        </button>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+
+                {% else %}
+
+                  <!-- =============================================
+                      NO DATA
+                  ============================================== -->
+
+                  <tr>
+
+                    <td
+                      colspan="10"
+                      class="text-center py-5"
+                    >
+
+                      <div class="monitoring-empty-state">
+
+                        <div class="empty-icon">
+
+                          <i class="bi bi-clipboard-x"></i>
+
+                        </div>
+
+                        <h5 class="mt-3">
+                          No monitoring records
+                        </h5>
+
+                        <p>
+                          Start monitoring your rice crop.
+                        </p>
+
+                        <a
+                          href="{{ url_for(
+                            'crop_monitoring.create'
+                          ) }}"
+                          class="btn btn-success"
+                        >
+
+                          <i class="bi bi-plus-circle me-1"></i>
+
+                          Add Monitoring
+
+                        </a>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                {% endif %}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th class="ps-4">#</th>
 
-                <th>Field Crop</th>
+      <!-- =====================================================
+          MONITORING SEARCH JAVASCRIPT
+      ====================================================== -->
 
-                <th>Date</th>
+      <script>
 
-                <th>Growth Stage</th>
+      document.addEventListener(
+        "DOMContentLoaded",
+        function () {
 
-                <th>Plant Height</th>
+          const searchInput =
+            document.getElementById(
+              "monitoringSearch"
+            );
 
-                <th>Water</th>
+          const clearButton =
+            document.getElementById(
+              "clearMonitoringSearch"
+            );
 
-                <th>Plant Condition</th>
+          const clearSearchResult =
+            document.getElementById(
+              "clearSearchResult"
+            );
 
-                <th>Pest</th>
+          const rows =
+            document.querySelectorAll(
+              ".monitoring-row"
+            );
 
-                <th>Disease</th>
+          const noResult =
+            document.getElementById(
+              "noMonitoringSearchResult"
+            );
 
-                <th class="text-end pe-4">Action</th>
-              </tr>
-            </thead>
 
-            <tbody>
-              {% if monitorings %} {% for monitoring in monitorings %}
+          // =====================================================
+          // SEARCH FUNCTION
+          // =====================================================
 
-              <tr>
-                <td class="ps-4 fw-semibold">{{ loop.index }}</td>
+          function searchMonitoring() {
 
-                <!-- FIELD CROP -->
+            if (!searchInput) {
+              return;
+            }
 
-                <td>
-                  {% if monitoring.field_crop %}
+            const searchValue =
+              searchInput.value
+                .trim()
+                .toLowerCase();
 
-                  <div class="fw-semibold">
-                    <i class="bi bi-grid-3x3-gap text-success me-1"></i>
 
-                    {{ monitoring.field_crop.field.field_name }}
-                  </div>
+            let visibleRows = 0;
 
-                  <small class="text-muted">
-                    {{ monitoring .field_crop .rice_variety .variety_name }}
-                  </small>
 
-                  {% else %}
+            rows.forEach(
+              function (row) {
 
-                  <span class="text-muted"> N/A </span>
+                const rowText =
+                  row.textContent
+                    .toLowerCase();
 
-                  {% endif %}
-                </td>
 
-                <!-- DATE -->
+                const matched =
+                  searchValue === "" ||
+                  rowText.includes(
+                    searchValue
+                  );
 
-                <td>
-                  {% if monitoring.monitoring_date %} {{
-                  monitoring.monitoring_date .strftime("%d-%m-%Y") }} {% else %}
-                  - {% endif %}
-                </td>
 
-                <!-- GROWTH STAGE -->
+                if (matched) {
 
-                <td>
-                  {% if monitoring.growth_stage %}
+                  row.style.display = "";
 
-                  <span class="badge bg-success-subtle text-success">
-                    {{ monitoring .growth_stage .stage_name }} - {{ monitoring .growth_stage .stage_name_kh }}
-                  </span>
+                  visibleRows++;
 
-                  {% else %}
+                } else {
 
-                  <span class="text-muted"> - </span>
+                  row.style.display =
+                    "none";
 
-                  {% endif %}
-                </td>
+                }
 
-                <!-- PLANT HEIGHT -->
+              }
+            );
 
-                <td>
-                  {% if monitoring.plant_height is not none %} {{
-                  monitoring.plant_height }} cm {% else %} - {% endif %}
-                </td>
 
-                <!-- WATER -->
+            // ===================================================
+            // NO RESULT
+            // ===================================================
 
-                <td>
-                  {% if monitoring.water_status %}
+            if (noResult) {
 
-                  <span
-                    class="badge {% if monitoring.water_status == 'Good' %} bg-success {% elif monitoring.water_status == 'Low' %} bg-warning text-dark {% elif monitoring.water_status == 'High' %} bg-info {% else %} bg-secondary {% endif %}"
-                  >
-                    {{ monitoring.water_status }}
-                  </span>
+              if (
+                searchValue !== "" &&
+                visibleRows === 0
+              ) {
 
-                  {% else %} - {% endif %}
-                </td>
+                noResult.style.display =
+                  "table-row";
 
-                <!-- PLANT CONDITION -->
+              } else {
 
-                <td>
-                  {% if monitoring.plant_condition %} {{
-                  monitoring.plant_condition }} {% else %} - {% endif %}
-                </td>
+                noResult.style.display =
+                  "none";
 
-                <!-- PEST -->
+              }
 
-                <td>
-                  {% if monitoring.pest_status %}
+            }
 
-                  <span
-                    class="badge {% if monitoring.pest_status == 'Detected' %} bg-danger {% elif monitoring.pest_status == 'Low' %} bg-warning text-dark {% else %} bg-success {% endif %}"
-                  >
-                    {{ monitoring.pest_status }}
-                  </span>
 
-                  {% else %} - {% endif %}
-                </td>
+            // ===================================================
+            // CLEAR BUTTON
+            // ===================================================
 
-                <!-- DISEASE -->
+            if (clearButton) {
 
-                <td>
-                  {% if monitoring.disease_status %}
+              if (searchValue !== "") {
 
-                  <span
-                    class="badge {% if monitoring.disease_status == 'Detected' %} bg-danger {% else %} bg-success {% endif %}"
-                  >
-                    {{ monitoring.disease_status }}
-                  </span>
+                clearButton.style.display =
+                  "flex";
 
-                  {% else %}
+              } else {
 
-                  <span class="badge bg-success"> None </span>
+                clearButton.style.display =
+                  "none";
 
-                  {% endif %}
-                </td>
+              }
 
-                <!-- ACTION -->
+            }
 
-                <td class="text-end pe-4">
-                  <div class="btn-group">
-                    <a
-                      href="{{ url_for(
-                                            'crop_monitoring.edit',
-                                            monitoring_id=monitoring.id
-                                        ) }}"
-                      class="btn btn-sm btn-outline-primary"
-                      title="Edit"
-                    >
-                      <i class="bi bi-pencil"></i>
-                    </a>
+          }
 
-                    <a
-                      href="{{ url_for(
-                                            'crop_monitoring.delete',
-                                            monitoring_id=monitoring.id
-                                        ) }}"
-                      class="btn btn-sm btn-outline-danger"
-                      title="Delete"
-                    >
-                      <i class="bi bi-trash"></i>
-                    </a>
-                  </div>
-                </td>
-              </tr>
 
-              {% endfor %} {% else %}
+          // =====================================================
+          // SEARCH INPUT
+          // =====================================================
 
-              <tr>
-                <td colspan="10" class="text-center py-5">
-                  <div class="text-muted">
-                    <i class="bi bi-clipboard-x fs-1"></i>
+          if (searchInput) {
 
-                    <h5 class="mt-3">No monitoring records</h5>
+            searchInput.addEventListener(
+              "input",
+              searchMonitoring
+            );
 
-                    <p>Start monitoring your rice crop.</p>
+          }
 
-                    <a
-                      href="{{ url_for(
-                                            'crop_monitoring.create'
-                                        ) }}"
-                      class="btn btn-success"
-                    >
-                      <i class="bi bi-plus-circle me-1"></i>
 
-                      Add Monitoring
-                    </a>
-                  </div>
-                </td>
-              </tr>
+          // =====================================================
+          // CLEAR SEARCH
+          // =====================================================
 
-              {% endif %}
-            </tbody>
-          </table>
-        </div>
-      </div>
+          function clearSearch() {
+
+            if (!searchInput) {
+              return;
+            }
+
+            searchInput.value = "";
+
+            searchInput.focus();
+
+            searchMonitoring();
+
+          }
+
+
+          if (clearButton) {
+
+            clearButton.addEventListener(
+              "click",
+              clearSearch
+            );
+
+          }
+
+
+          if (clearSearchResult) {
+
+            clearSearchResult.addEventListener(
+              "click",
+              clearSearch
+            );
+
+          }
+
+
+          // =====================================================
+          // ESC KEY
+          // =====================================================
+
+          if (searchInput) {
+
+            searchInput.addEventListener(
+              "keydown",
+              function (event) {
+
+                if (event.key === "Escape") {
+
+                  clearSearch();
+
+                }
+
+              }
+            );
+
+          }
+
+        }
+      );
+
+      </script>
     </div>
   </div>
-
   {% endblock %}
 </div>

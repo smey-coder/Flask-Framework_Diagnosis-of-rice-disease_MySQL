@@ -283,11 +283,8 @@
                 class="dropdown-menu"
                 aria-labelledby="historyDropdown"
             >
-
                 <!-- Diagnosis History -->
-
                 <li>
-
                     <a
                         class="dropdown-item
                         {% if request.endpoint == 'user.diagnosis_history' %}
@@ -295,20 +292,12 @@
                         {% endif %}"
                         href="{{ url_for('user.diagnosis_history') }}"
                     >
-
                         <i class="bi bi-heart-pulse text-danger me-2"></i>
-
                         Diagnosis History
-
                     </a>
-
                 </li>
-
-
                 <!-- Treatment History -->
-
                 <li>
-
                     <a
                         class="dropdown-item
                         {% if request.endpoint == 'treatment_history.index' %}
@@ -316,15 +305,26 @@
                         {% endif %}"
                         href="{{ url_for('treatment_history.index') }}"
                     >
-
                         <i class="bi bi-capsule text-success me-2"></i>
 
                         Treatment History
-
                     </a>
-
                 </li>
 
+                <!-- Report -->
+                <li>
+                    <a
+                        class="dropdown-item
+                        {% if request.endpoint == 'user.diagnosis_report' %}
+                            active
+                        {% endif %}"
+                        href="{{ url_for('user.diagnosis_report') }}"
+                    >
+                        <i class="bi bi-bar-chart-line-fill me-2"></i>
+
+                        Report
+                    </a>
+                </li>
             </ul>
 
         </li>

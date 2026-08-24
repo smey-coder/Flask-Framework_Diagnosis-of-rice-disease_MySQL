@@ -6,21 +6,25 @@ from flask import(
     url_for,
     abort,
 )
-
 from flask_login import login_required
 from app.forms.role_forms import RoleCreateForm, RoleEditForm, RoleConfirmDeleteForm
 from app.services.role_service import RoleService
+from app.decorators.access import role_required, permission_required
 
 role_bp = Blueprint("tbl_roles", __name__, url_prefix="/roles")
 
 @role_bp.route("/")
 @login_required
+@role_required("Admin")
+@permission_required("VIEW_ROLE")
 def index():
     roles = RoleService.get_role_all()
     return render_template("roles/index.html", roles=roles)
     
 @role_bp.route("/<int:role_id>")
 @login_required
+@role_required("Admin")
+@permission_required("VIEW_ROLE")
 def detail(role_id: int):
     role = RoleService.get_role_by_id(role_id)
     if role is None:
@@ -30,12 +34,15 @@ def detail(role_id: int):
 
 @role_bp.route("/create", methods=["GET", "POST"])
 @login_required
+@role_required("Admin")
+@permission_required("CREATE_ROLE")
 def create():
     form = RoleCreateForm()
     if form.validate_on_submit():
         data = {
             "name" : form.name.data,
             "description" : form.description.data,
+            "status": form.status.data
         }
         permission_ids = form.permission_ids.data
         try:
@@ -54,6 +61,8 @@ def create():
 
 @role_bp.route("/<int:role_id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("Admin")
+@permission_required("EDIT_ROLE")
 def edit(role_id: int):
     role = RoleService.get_role_by_id(role_id)
     if role is None:
@@ -64,6 +73,7 @@ def edit(role_id: int):
         data = {
             "name" : form.name.data,
             "description" : form.description.data,
+            "status": form.status.data
         }
         permission_ids = form.permission_ids.data
         try:
@@ -83,6 +93,8 @@ def edit(role_id: int):
 
 @role_bp.route("/<int:role_id>/delete", methods=["GET"])
 @login_required
+@role_required("Admin")
+@permission_required("DELETE_ROLE")
 def delete_confirm(role_id: int):
     role = RoleService.get_role_by_id(role_id)
     if role is None:
@@ -93,6 +105,8 @@ def delete_confirm(role_id: int):
 
 @role_bp.route("/<int:role_id>/delete", methods=["POST"])
 @login_required
+@role_required("Admin")
+@permission_required("DELETE_ROLE")
 def delete(role_id: int):
     role = RoleService.get_role_by_id(role_id)
     if role is None:

@@ -14,7 +14,7 @@ from flask_login import (
     current_user
 )
 
-from app.decorators.access import role_required
+from app.decorators.access import role_required, permission_required
 from extensions import db
 
 from app.forms.crop_monitoring_form import (

@@ -52,7 +52,8 @@ class RoleService:
         """Create a new role with optional permissions"""
         role = RoleTable(
             name=data["name"],
-            description=data.get("description", "")
+            description=data.get("description", ""),
+            status="Active"
         )
 
         if permission_ids:
@@ -77,6 +78,7 @@ class RoleService:
             after_data={
                 "name": role.name,
                 "description": role.description,
+                "status": role.status,
                 "permissions": [p.name for p in role.permissions]
             }
         )
@@ -92,12 +94,14 @@ class RoleService:
         before_data = {
             "name": role.name,
             "description": role.description,
+            "status": role.status,
             "permissions": [p.name for p in role.permissions]
         }
 
         # -------- UPDATE FIELDS --------
         role.name = data.get("name", role.name)
         role.description = data.get("description", role.description)
+        role.status = data.get("status", role.status)
 
         if permission_ids is not None:
             if permission_ids:
@@ -135,6 +139,7 @@ class RoleService:
         before_data = {
             "name": role.name,
             "description": role.description,
+            "status": role.status,
             "permissions": [p.name for p in role.permissions]
         }
 

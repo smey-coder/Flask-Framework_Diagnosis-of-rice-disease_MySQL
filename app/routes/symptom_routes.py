@@ -21,7 +21,7 @@ from app.forms.symptom_forms import (
 )
 from app.services.symptom_service import SymptomService
 from app.models.symptoms import SymptomsTable
-from decorators import require_admin, require_permission, require_role, active_user_required
+# from decorators import require_admin, require_permission, require_role, active_user_required
 from app.decorators.access import role_required, permission_required
 from extensions import db
 

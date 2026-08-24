@@ -39,9 +39,7 @@ rice_variety_bp = Blueprint(
 @role_required("Admin", "Expert")
 @permission_required("VIEW_RICE_VARIETY")
 def index():
-
     try:
-
         varieties = RiceVarietyService.get_all()
 
         return render_template(

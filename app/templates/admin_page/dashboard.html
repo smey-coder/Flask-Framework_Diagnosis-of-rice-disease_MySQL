@@ -399,9 +399,9 @@
           </div>
 
           <div>
-            <div class="stat-label">Roles</div>
+            <div class="stat-label">Total Roles</div>
 
-            <div class="stat-number">{{ stats.roles|default(0) }}</div>
+            <div class="stat-number">{{ stats['roles'] if stats else 'N/A' }}</div>
           </div>
         </div>
       </div>
@@ -439,7 +439,7 @@
           <div>
             <div class="stat-label">Audit Logs</div>
 
-            <div class="stat-number">{{ stats.audit_logs|default(0) }}</div>
+            <div class="stat-number">{{ stats.total_logs if stats else 0 }}</div>
           </div>
         </div>
       </div>
@@ -574,7 +574,7 @@
             <div class="stat-label">Diagnoses</div>
 
             <div class="stat-number text-primary">
-              {{ stats.diagnoses|default(0) }}
+              {{ stats.diagnosis|default(0) }}
             </div>
           </div>
         </div>

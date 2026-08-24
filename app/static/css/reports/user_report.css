@@ -1,0 +1,349 @@
+/* ==========================================================================
+   RICE DISEASE DIAGNOSIS - USER REPORT COMPONENT STYLES
+   ========================================================================== */
+
+/* 1. Global CSS Custom Properties & Variables */
+:root {
+  /* Color Palette */
+  --ur-green-primary: #198754;
+  --ur-green-hover: #146c43;
+  --ur-green-light: #e8f7ef;
+  --ur-green-border: #a3e0c0;
+  
+  --ur-blue-primary: #0d6efd;
+  --ur-blue-light: #eef4ff;
+  
+  --ur-red-primary: #dc3545;
+  --ur-red-light: #fdebec;
+  
+  --ur-yellow-primary: #b97800;
+  --ur-yellow-light: #fff3dc;
+
+  --ur-gray-100: #fafbfc;
+  --ur-gray-200: #f1f3f5;
+  --ur-gray-300: #e9ecef;
+  --ur-gray-600: #6c757d;
+  --ur-gray-900: #212529;
+
+  /* Layout & Geometry */
+  --ur-border-radius-lg: 16px;
+  --ur-border-radius-md: 10px;
+  --ur-border-radius-sm: 6px;
+  --ur-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+
+  /* Font Stacks (with Khmer typography prioritization) */
+  --ur-font-family: 'Kantumruy Pro', 'Hanuman', 'Siemreap', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 2. Container & Outer Wrapper */
+.user-report-wrapper {
+  width: 100%;
+  margin: 10px 0 30px 0;
+  font-family: var(--ur-font-family);
+  color: var(--ur-gray-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+.report-card {
+  background: #ffffff;
+  border: 1px solid var(--ur-gray-300);
+  border-radius: var(--ur-border-radius-lg);
+  box-shadow: var(--ur-card-shadow);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+/* 3. Header Section */
+.report-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--ur-gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+}
+
+.report-title-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.report-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--ur-green-light);
+  border: 1px solid var(--ur-green-border);
+  color: var(--ur-green-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.report-heading {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ur-gray-900);
+  line-height: 1.35;
+}
+
+.report-subheading {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--ur-gray-600);
+}
+
+.print-btn {
+  border-radius: var(--ur-border-radius-md);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 18px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.print-btn:hover {
+  background-color: var(--ur-green-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.25);
+}
+
+/* 4. Metrics Summary Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  padding: 24px 28px;
+  background: var(--ur-gray-100);
+  border-bottom: 1px solid var(--ur-gray-300);
+}
+
+.metric-box {
+  background: #ffffff;
+  border: 1px solid var(--ur-gray-300);
+  border-radius: var(--ur-border-radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ur-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.metric-value-group {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.metric-number {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.metric-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  line-height: 1.2;
+}
+
+.badge-green { background: var(--ur-green-light); color: var(--ur-green-primary); }
+.badge-blue  { background: var(--ur-blue-light);  color: var(--ur-blue-primary); }
+.badge-red   { background: var(--ur-red-light);   color: var(--ur-red-primary); }
+.badge-gray  { background: var(--ur-gray-200);   color: var(--ur-gray-600); }
+
+/* 5. Report Main Analytical Body */
+.report-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 28px;
+}
+
+.report-section {
+  border: 1px solid var(--ur-gray-300);
+  border-radius: var(--ur-border-radius-md);
+  padding: 20px;
+  background: #ffffff;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ur-gray-300);
+  color: var(--ur-gray-900);
+  display: flex;
+  align-items: center;
+}
+
+/* 6. Data Tables */
+.report-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.report-table th {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ur-gray-600);
+  text-transform: uppercase;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ur-gray-300);
+  background: var(--ur-gray-100);
+}
+
+.report-table th:first-child { border-top-left-radius: var(--ur-border-radius-sm); }
+.report-table th:last-child  { border-top-right-radius: var(--ur-border-radius-sm); }
+
+.report-table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--ur-gray-200);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.report-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* 7. Status Pills */
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.pill-high   { background: var(--ur-red-light);    color: var(--ur-red-primary); }
+.pill-medium { background: var(--ur-yellow-light); color: var(--ur-yellow-primary); }
+.pill-low    { background: var(--ur-green-light);  color: var(--ur-green-primary); }
+.pill-blue   { background: var(--ur-blue-light);   color: var(--ur-blue-primary); }
+
+/* 8. Summary List Items */
+.account-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--ur-gray-300);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.item-label {
+  color: var(--ur-gray-600);
+  font-weight: 500;
+}
+
+.item-value {
+  color: var(--ur-gray-900);
+}
+
+/* 9. Footer Section */
+.report-footer {
+  padding: 16px 28px;
+  background: var(--ur-gray-100);
+  border-top: 1px solid var(--ur-gray-300);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ur-gray-600);
+}
+
+/* 10. Responsiveness & Mobile Enhancements */
+@media (max-width: 992px) {
+  .report-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .print-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .metrics-grid {
+    padding: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .report-body {
+    padding: 16px;
+  }
+
+  .report-footer {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
+
+/* 11. Optimized Print Media Controls */
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .user-report-wrapper {
+    margin: 0 !important;
+  }
+
+  .print-btn {
+    display: none !important;
+  }
+
+  .report-card {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .metrics-grid,
+  .report-footer {
+    background: #ffffff !important;
+  }
+
+  .report-section {
+    page-break-inside: avoid;
+  }
+}

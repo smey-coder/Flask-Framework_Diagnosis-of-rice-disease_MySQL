@@ -1,0 +1,352 @@
+{% extends "layouts/user_layout/user.html" %} 
+{% block title %}About - Rice Disease Diagnosis System{% endblock %} 
+{% block page_title %}About{% endblock %} 
+
+{% block content %}
+<style>
+  :root {
+    --agri-primary: #2e7d32;
+    --agri-primary-hover: #1b5e20;
+    --agri-light-bg: #f8faf8;
+    --agri-border: #d1d5db;
+    --agri-focus-ring: rgba(46, 125, 50, 0.25);
+    --agri-text: #1f2937;
+    --agri-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .harvest-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: var(--agri-card-shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--agri-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid #e8f5e9;
+    padding-bottom: 0.5rem;
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.35rem;
+  }
+
+  .form-control, .form-select {
+    border: 1.5px solid var(--agri-border);
+    border-radius: 8px;
+    padding: 0.625rem 0.85rem;
+    font-size: 0.95rem;
+    color: var(--agri-text);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: var(--agri-primary);
+    box-shadow: 0 0 0 3.5px var(--agri-focus-ring);
+    outline: none;
+  }
+
+  .input-group-text {
+    background-color: #f3f4f6;
+    border: 1.5px solid var(--agri-border);
+    color: #4b5563;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .btn-submit-harvest {
+    background-color: var(--agri-primary);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.85rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(46, 125, 50, 0.25);
+  }
+
+  .btn-submit-harvest:hover {
+    background-color: var(--agri-primary-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .summary-banner {
+    background-color: #e8f5e9;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-left: 4px solid var(--agri-primary);
+  }
+</style>
+
+<form method="POST" action="" class="needs-validation" novalidate>
+  {{ form.hidden_tag() }}
+
+  <!-- 1. LOCATION & CROP SELECTION -->
+  <div class="harvest-card">
+    <div class="section-title">
+      <i class="bi bi-geo-alt-fill"></i> 📍 ទីតាំង និងដំណាំ (Location & Crop)
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4">
+        {{ form.farm_id.label(class="form-label") }}
+        {{ form.farm_id(class="form-select" + (" is-invalid" if form.farm_id.errors else ""), id="farm_select") }}
+        {% for error in form.farm_id.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.field_id.label(class="form-label") }}
+        {{ form.field_id(class="form-select" + (" is-invalid" if form.field_id.errors else ""), id="field_select") }}
+        {% for error in form.field_id.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.field_crop_id.label(class="form-label") }}
+        {{ form.field_crop_id(class="form-select" + (" is-invalid" if form.field_crop_id.errors else ""), id="crop_select") }}
+        {% for error in form.field_crop_id.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HARVEST DETAILS -->
+  <div class="harvest-card">
+    <div class="section-title">
+      <i class="bi bi-calendar-check-fill"></i> 🌾 ព័ត៌មានប្រមូលផល (Harvest Details)
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4">
+        {{ form.harvest_date.label(class="form-label") }}
+        {{ form.harvest_date(class="form-control" + (" is-invalid" if form.harvest_date.errors else ""), type="date") }}
+        {% for error in form.harvest_date.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.quality_grade.label(class="form-label") }}
+        {{ form.quality_grade(class="form-select" + (" is-invalid" if form.quality_grade.errors else "")) }}
+        {% for error in form.quality_grade.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.quantity_tons.label(class="form-label") }}
+        <div class="input-group">
+          {{ form.quantity_tons(class="form-control" + (" is-invalid" if form.quantity_tons.errors else ""), id="quantity_input", placeholder="0.00") }}
+          <span class="input-group-text">តោន (Tons)</span>
+        </div>
+        {% for error in form.quantity_tons.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. FINANCIALS -->
+  <div class="harvest-card">
+    <div class="section-title">
+      <i class="bi bi-cash-stack"></i> 💵 ព័ត៌មានហិរញ្ញវត្ថុ (Financials)
+    </div>
+    <div class="row g-3">
+      <div class="col-md-3">
+        {{ form.currency.label(class="form-label") }}
+        {{ form.currency(class="form-select", id="currency_select") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.exchange_rate.label(class="form-label") }}
+        {{ form.exchange_rate(class="form-control", id="rate_input") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.price_per_ton.label(class="form-label") }}
+        <div class="input-group">
+          <span class="input-group-text currency-symbol">$</span>
+          {{ form.price_per_ton(class="form-control" + (" is-invalid" if form.price_per_ton.errors else ""), id="price_input", placeholder="0.00") }}
+        </div>
+        {% for error in form.price_per_ton.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.total_cost.label(class="form-label") }}
+        <div class="input-group">
+          <span class="input-group-text currency-symbol">$</span>
+          {{ form.total_cost(class="form-control" + (" is-invalid" if form.total_cost.errors else ""), id="cost_input", placeholder="0.00") }}
+        </div>
+        {% for error in form.total_cost.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Live Calculation Display Banner -->
+    <div class="summary-banner mt-3 d-flex justify-content-between align-items-center">
+      <div>
+        <small class="text-muted d-block">ចំណូលសរុបប៉ាន់ស្មាន (Est. Revenue):</small>
+        <span class="fw-bold text-success fs-5" id="est_revenue">$0.00</span>
+      </div>
+      <div>
+        <small class="text-muted d-block">ប្រាក់ចំណេញសុទ្ធប៉ាន់ស្មាន (Est. Net Profit):</small>
+        <span class="fw-bold text-primary fs-5" id="est_profit">$0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-submit-harvest btn-lg w-100 mt-2">
+    💾 រក្សាទុកទិន្នន័យប្រមូលផល (Save Harvest Record)
+  </button>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const farmSelect = document.getElementById("farm_select");
+  const fieldSelect = document.getElementById("field_select");
+  const cropSelect = document.getElementById("crop_select");
+
+  if (!farmSelect || !fieldSelect || !cropSelect) return;
+
+  // 1. Function ទាញយក Field (ស្រែ)
+  function loadFields(farmId, selectedFieldId = null) {
+    fieldSelect.innerHTML = '<option value="">កំពុងទាញយក... (Loading...)</option>';
+    cropSelect.innerHTML = '<option value="">-- ជ្រើសរើសដំណាំ --</option>';
+
+    // បង្កើត URL ដោយស្វ័យប្រវត្តិតាម Flask Blueprint
+    const baseUrl = "{{ url_for('user.get_fields_by_farm', farm_id=0) }}";
+    const apiUrl = baseUrl.replace('/0', '/' + farmId);
+
+    fetch(apiUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP Status: " + res.status);
+        return res.json();
+      })
+      .then((data) => {
+        fieldSelect.innerHTML = '<option value="">-- ជ្រើសរើសស្រែ/ក្បាលដី --</option>';
+        data.forEach((item) => {
+          const opt = document.createElement("option");
+          opt.value = item.id;
+          opt.textContent = item.name;
+          if (selectedFieldId && String(item.id) === String(selectedFieldId)) {
+            opt.selected = true;
+          }
+          fieldSelect.appendChild(opt);
+        });
+
+        if (selectedFieldId) {
+          loadFieldCrops(selectedFieldId, cropSelect.value);
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading fields:", err);
+        fieldSelect.innerHTML = '<option value="">-- មានបញ្ហាក្នុងការទាញយក --</option>';
+      });
+  }
+
+  // 2. Function ទាញយក Crop (ដំណាំ)
+  function loadFieldCrops(fieldId, selectedCropId = null) {
+    cropSelect.innerHTML = '<option value="">កំពុងទាញយក... (Loading...)</option>';
+
+    const baseUrl = "{{ url_for('user.get_crops_by_field', field_id=0) }}";
+    const apiUrl = baseUrl.replace('/0', '/' + fieldId);
+
+    fetch(apiUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP Status: " + res.status);
+        return res.json();
+      })
+      .then((data) => {
+        cropSelect.innerHTML = '<option value="">-- ជ្រើសរើសដំណាំ --</option>';
+        data.forEach((item) => {
+          const opt = document.createElement("option");
+          opt.value = item.id;
+          opt.textContent = item.name;
+          if (selectedCropId && String(item.id) === String(selectedCropId)) {
+            opt.selected = true;
+          }
+          cropSelect.appendChild(opt);
+        });
+      })
+      .catch((err) => {
+        console.error("Error loading crops:", err);
+        cropSelect.innerHTML = '<option value="">-- មានបញ្ហាក្នុងការទាញយក --</option>';
+      });
+  }
+
+  // Event Listeners
+  farmSelect.addEventListener("change", function () {
+    if (this.value) {
+      loadFields(this.value);
+    } else {
+      fieldSelect.innerHTML = '<option value="">-- ជ្រើសរើសស្រែ/ក្បាលដី --</option>';
+      cropSelect.innerHTML = '<option value="">-- ជ្រើសរើសដំណាំ --</option>';
+    }
+  });
+
+  fieldSelect.addEventListener("change", function () {
+    if (this.value) {
+      loadFieldCrops(this.value);
+    } else {
+      cropSelect.innerHTML = '<option value="">-- ជ្រើសរើសដំណាំ --</option>';
+    }
+  });
+
+  // Load ដំបូងប្រសិនបើមានជ្រើសរើសស្រាប់ (រៀបចំ dynamic value)
+  if (farmSelect.value) {
+    loadFields(farmSelect.value, fieldSelect.value);
+  }
+});
+
+  // --- Live Calculations ---
+  const qtyInput = document.getElementById('quantity_input');
+  const priceInput = document.getElementById('price_input');
+  const costInput = document.getElementById('cost_input');
+  const currencySelect = document.getElementById('currency_select');
+  const rateInput = document.getElementById('rate_input');
+  const estRevenue = document.getElementById('est_revenue');
+  const estProfit = document.getElementById('est_profit');
+  const currencySymbols = document.querySelectorAll('.currency-symbol');
+
+  function updateCalculations() {
+    const qty = parseFloat(qtyInput.value) || 0;
+    const price = parseFloat(priceInput.value) || 0;
+    const cost = parseFloat(costInput.value) || 0;
+    const currency = currencySelect.value;
+    const symbol = currency === 'KHR' ? '៛' : '$';
+
+    currencySymbols.forEach(el => el.textContent = symbol);
+
+    const revenue = qty * price;
+    const profit = revenue - cost;
+
+    estRevenue.textContent = `${symbol}${revenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    estProfit.textContent = `${symbol}${profit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  }
+
+  [qtyInput, priceInput, costInput, currencySelect, rateInput].forEach(element => {
+    if (element) {
+      element.addEventListener('input', updateCalculations);
+      element.addEventListener('change', updateCalculations);
+    }
+  });
+</script>
+{% endblock %}

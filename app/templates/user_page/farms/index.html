@@ -1,6 +1,6 @@
 {% extends "layouts/user_layout/user.html" %} {% block title %} Farm Management
-{% endblock %} {% block page_title %} Farm Management {% endblock %} 
- {% block content %}
+{% endblock %} {% block page_title %} Farm Management {% endblock %} {% block
+content %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/farm.css') }}"
@@ -33,32 +33,6 @@
       Add Farm
     </a>
   </div>
-
-  <!-- =====================================================
-       FLASH MESSAGE
-       ===================================================== -->
-
-  {% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %}
-
-  <div class="farm-alert-container">
-    {% for category, message in messages %}
-
-    <div
-      class="alert alert-{{ category }} alert-dismissible fade show farm-alert"
-      role="alert"
-    >
-      <i class="bi bi-info-circle me-2"></i>
-
-      {{ message }}
-
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-
-    {% endfor %}
-  </div>
-
-  {% endif %} {% endwith %}
 
   <!-- =====================================================
        SUMMARY
@@ -260,7 +234,6 @@
           <!-- STATISTICS -->
 
           <div class="farm-stat-row">
-
             <!-- FIELDS -->
 
             <div class="farm-stat">

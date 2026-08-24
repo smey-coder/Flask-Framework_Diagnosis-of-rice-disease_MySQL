@@ -23,6 +23,7 @@ MODULE_CHOICES = [
     ("Rice Varieties", "Rice Varieties"),
     ("Growth Stage", "Growth Stage"),
     ("System", "System"),
+    ("Report", "Report"),
 ]
 class PermissionCreateForm(FlaskForm):
     

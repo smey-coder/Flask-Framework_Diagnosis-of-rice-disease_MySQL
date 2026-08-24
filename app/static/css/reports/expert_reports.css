@@ -1,0 +1,259 @@
+/* ==========================================================================
+   EXPERT REPORT & AUDIT STYLES (expert_report.css)
+   ========================================================================== */
+
+:root {
+  /* Expert Brand Identity (Purple Theme) */
+  --expert-primary: #6f42c1;
+  --expert-hover: #59359a;
+  --expert-light: #f3ebff;
+  --expert-border-accent: #d8c2fc;
+
+  /* Status & Risk Colors */
+  --risk-high-bg: #fdebec;
+  --risk-high-text: #dc3545;
+  --risk-high-border: #f8b4b9;
+
+  --status-complete-bg: #e8f7ef;
+  --status-complete-text: #198754;
+
+  --status-pending-bg: #fff3dc;
+  --status-pending-text: #b97800;
+
+  /* Neutral Surface Palette */
+  --neutral-bg: #fafbfc;
+  --neutral-subtle: #f1f3f5;
+  --neutral-border: #e9ecef;
+  --neutral-muted: #6c757d;
+  --neutral-dark: #212529;
+
+  /* Typography */
+  --font-stack: 'Kantumruy Pro', 'Hanuman', 'Siemreap', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.report-wrapper {
+  width: 100%;
+  margin: 10px 0 30px 0;
+  font-family: var(--font-stack);
+  color: var(--neutral-dark);
+}
+
+.report-card {
+  background: #ffffff;
+  border: 1px solid var(--neutral-border);
+  border-top: 5px solid var(--expert-primary);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Header Section */
+.report-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--neutral-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+}
+
+.report-title-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.report-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--expert-light);
+  color: var(--expert-primary);
+  border: 1px solid var(--expert-border-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.report-heading {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.report-subheading {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--neutral-muted);
+}
+
+.print-btn {
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 18px;
+  white-space: nowrap;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 24px 28px;
+  background: var(--neutral-bg);
+  border-bottom: 1px solid var(--neutral-border);
+}
+
+.metric-box {
+  background: #ffffff;
+  border: 1px solid var(--neutral-border);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--neutral-muted);
+  text-transform: uppercase;
+}
+
+.metric-number {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--neutral-dark);
+}
+
+/* Expert Body Section */
+.report-body {
+  padding: 28px;
+}
+
+.report-section {
+  border: 1px solid var(--neutral-border);
+  border-radius: 12px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--neutral-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* High Risk Case Table */
+.report-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.report-table th {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--neutral-muted);
+  text-transform: uppercase;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--neutral-border);
+  background: var(--neutral-bg);
+  text-align: left;
+}
+
+.report-table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--neutral-border);
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+.report-table tbody tr:hover {
+  background-color: var(--expert-light);
+}
+
+/* Specialized Table Indicators */
+.confidence-bar-container {
+  width: 100px;
+  height: 6px;
+  background: var(--neutral-subtle);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.confidence-bar-fill {
+  height: 100%;
+  background: var(--expert-primary);
+  border-radius: 3px;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.pill-high-risk {
+  background: var(--risk-high-bg);
+  color: var(--risk-high-text);
+  border: 1px solid var(--risk-high-border);
+}
+
+.pill-completed {
+  background: var(--status-complete-bg);
+  color: var(--status-complete-text);
+}
+
+.pill-pending {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
+}
+
+.symptoms-text {
+  font-size: 12.5px;
+  color: var(--neutral-muted);
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Footer Section */
+.report-footer {
+  padding: 16px 28px;
+  background: var(--neutral-bg);
+  border-top: 1px solid var(--neutral-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--neutral-muted);
+}
+
+/* Print Styles */
+@media print {
+  .print-btn { display: none !important; }
+  .report-card { border: none !important; box-shadow: none !important; }
+  .metrics-grid, .report-footer { background: #ffffff !important; }
+}

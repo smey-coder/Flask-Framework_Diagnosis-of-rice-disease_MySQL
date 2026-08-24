@@ -169,6 +169,8 @@ endblock %} {% block content %}
 
             <th>Description</th>
 
+            <th>Status</th>
+
             <th class="text-center">Permissions</th>
 
             <th class="text-center role-actions">Actions</th>
@@ -218,6 +220,19 @@ endblock %} {% block content %}
 
               <span class="text-muted"> No description </span>
 
+              {% endif %}
+            </td>
+
+             <!-- Status -->
+            <td>
+              {% if role.status == "Active" %}
+                  <span class="badge bg-success">
+                      Active
+                  </span>
+              {% else %}
+                  <span class="badge bg-secondary">
+                      Inactive
+                  </span>
               {% endif %}
             </td>
 

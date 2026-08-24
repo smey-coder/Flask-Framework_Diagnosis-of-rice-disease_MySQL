@@ -1,18 +1,31 @@
+from collections import Counter
+import csv
+from datetime import datetime
+import json
+import os
+
 from flask import Blueprint, abort, current_app, render_template, redirect, request, url_for, flash, session
 from flask_login import login_required, current_user
 from functools import wraps
 
 import requests
+from sqlalchemy import func, or_
+from sqlalchemy.orm import joinedload
 from app.forms.diagnosis_form import DiagnosisForm
+from app.models import user
+from app.models.diagnosis_history import DiagnosisHistoryTable
+from app.models.permission import PermissionTable
+from app.models.preventions import PreventionTable
 from app.models.symptoms import SymptomsTable
 from app.models.diseases import DiseaseTable
+from app.models.treatments import TreatmentTable
 from app.services import diagnosis_service
 from app.services.diagnosis_service import DiagnosisService
 from app.models.user import UserTable
 from app.models.rules import RulesTable
 from app.services.user_service import UserService
 from extensions import db
-from app.services.audit_service import log_audit
+from app.services.audit_service import get_audit_file_path, log_audit
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.forms.user_forms import UserEditForm, UserProfileForm
 from app.models.role import RoleTable
@@ -69,10 +82,30 @@ def dashboard():
 
     stats = {
         "users": UserTable.query.count(),
+        "roles": RoleTable.query.count(),
+        "permissions": PermissionTable.query.count(),
         "diseases": DiseaseTable.query.count(),
         "symptoms": SymptomsTable.query.count(),
-        "rules": RulesTable.query.count()
+        "rules": RulesTable.query.count(),
+        "treatments": TreatmentTable.query.count(),
+        "preventions": PreventionTable.query.count(),
+        "diagnosis": DiagnosisHistoryTable.query.count()
     }
+    auth_logs = []
+    file_path = get_audit_file_path()
+
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, mode="r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                auth_logs = list(reader)
+        except Exception as e:
+            print(f"Error reading audit CSV log: {e}")
+
+    # Add calculated stats matching your CSV headers: action, email, ip_address
+    stats["total_logs"] = len(auth_logs)
+    stats["login_success"] = sum(1 for log in auth_logs if log.get("action") == "LOGIN_SUCCESS")
+    stats["login_failed"] = sum(1 for log in auth_logs if log.get("action") == "LOGIN_FAILED")
 
     form = CitySearchForm()
     search_results = []
@@ -92,9 +125,159 @@ def dashboard():
         "admin_page/dashboard.html",
         user=current_user,
         stats=stats,
+        auth_logs=auth_logs,      # Recommended variable name
+        log_audit=auth_logs,
         form=form,
         search_results=search_results,
         selected_city_weather=selected_city_weather
+    )
+#Report
+@admin_bp.route("/admin/report", methods=["GET"])
+@login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_REPORT_ADMIN")
+def admin_report():
+    # 1. Flexible Role Checking (Admin only)
+    user_roles = [r.name.lower() for r in current_user.roles if r.name]
+    if 'admin' not in user_roles:
+        flash("អ្នកមិនមានសិទ្ធិចូលមើលទំព័រនេះទេ! (Admin Access Required)", "danger")
+        return redirect(url_for('admin.dashboard'))
+
+    # 2. Total System Metrics
+    total_users = UserTable.query.count()
+    total_diagnoses = DiagnosisHistoryTable.query.count()
+    
+    # 3. Top 5 Frequent Diseases (JOIN DiagnosisHistoryTable -> DiseaseTable)
+    top_diseases = db.session.query(
+        DiseaseTable.disease_name, 
+        func.count(DiagnosisHistoryTable.id).label('count')
+    ).join(DiseaseTable, DiagnosisHistoryTable.disease_id == DiseaseTable.id)\
+     .group_by(DiseaseTable.id, DiseaseTable.disease_name)\
+     .order_by(func.count(DiagnosisHistoryTable.id).desc())\
+     .limit(5).all()
+
+    # 4. Severity Distribution Mapping (JOIN DiagnosisHistoryTable -> DiseaseTable)
+    severity_stats_raw = db.session.query(
+        DiseaseTable.severity_level, 
+        func.count(DiagnosisHistoryTable.id)
+    ).join(DiseaseTable, DiagnosisHistoryTable.disease_id == DiseaseTable.id)\
+     .group_by(DiseaseTable.severity_level).all()
+
+    # Convert query list of tuples into a clean dictionary
+    severity_stats = {severity: count for severity, count in severity_stats_raw if severity}
+
+    return render_template(
+        "admin_page/reports/admin_report.html",
+        total_users=total_users,
+        total_diagnoses=total_diagnoses,
+        top_diseases=top_diseases,
+        severity_stats=severity_stats,
+        current_time=datetime.now().strftime("%d %b %Y, %I:%M %p")
+    )
+
+
+@admin_bp.route("/expert/report", methods=["GET"])
+@login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_REPORT_EXPERT")
+def expert_report():
+    # 1. Role Authorization (Requires 'expert' or 'admin')
+    user_roles = [r.name.lower() for r in current_user.roles if r.name]
+    if not any(role in user_roles for role in ['expert', 'admin']):
+        flash("អ្នកមិនមានសិទ្ធិចូលមើលទំព័រនេះទេ! (Expert Access Required)", "danger")
+        return redirect(url_for('admin.dashboard'))
+
+    # 2. Extract Query Parameters for Filtering
+    search_query = request.args.get('q', '').strip()
+    selected_severity = request.args.get('severity', '').strip()
+
+    # 3. Base Query: Join Diagnosis History with Diseases Table
+    query = db.session.query(DiagnosisHistoryTable, DiseaseTable)\
+        .join(DiseaseTable, DiagnosisHistoryTable.disease_id == DiseaseTable.id)
+
+    # Filter by selected severity, or default to filtering High/Very High severity records
+    if selected_severity:
+        query = query.filter(DiseaseTable.severity_level == selected_severity)
+    else:
+        query = query.filter(DiseaseTable.severity_level.ilike('%high%'))
+
+    # Text Search Filter (User Name or Disease Name)
+    if search_query:
+        query = query.filter(
+            or_(
+                DiagnosisHistoryTable.user_name.ilike(f'%{search_query}%'),
+                DiseaseTable.disease_name.ilike(f'%{search_query}%')
+            )
+        )
+
+    high_risk_cases = query.order_by(DiagnosisHistoryTable.created_at.desc()).all()
+
+    # 4. Count Total Completed Diagnostic Cases
+    reviewed_cases = DiagnosisHistoryTable.query.filter(
+        DiagnosisHistoryTable.status == "Completed"
+    ).count()
+
+    # 5. Pre-resolve Symptom Names in Python
+    # Create lookup map {id: name} from SymptomTable
+    symptom_map = {s.id: s.symptom_name for s in SymptomsTable.query.all()}
+    
+    processed_cases = []
+    for case, disease in high_risk_cases:
+        # Extract symptom IDs using safe helper or raw column
+        if hasattr(case, 'get_symptoms'):
+            try:
+                raw_ids = case.get_symptoms()
+            except Exception:
+                raw_ids = [case.selected_symptoms]
+        else:
+            raw_ids = [case.selected_symptoms]
+
+        # Ensure raw_ids is an iterable list
+        if isinstance(raw_ids, (int, str)):
+            raw_ids = [raw_ids]
+        elif not isinstance(raw_ids, (list, tuple)):
+            raw_ids = []
+
+        # Convert IDs to readable symptom names
+        names = []
+        for sid in raw_ids:
+            try:
+                clean_id = int(sid)
+                if clean_id in symptom_map:
+                    names.append(symptom_map[clean_id])
+            except (ValueError, TypeError):
+                # If sid is already a name string (not an ID)
+                if isinstance(sid, str) and sid.strip():
+                    names.append(sid.strip())
+
+        symptom_str = ', '.join(names) if names else (case.selected_symptoms or 'N/A')
+
+        processed_cases.append({
+            'case': case,
+            'disease': disease,
+            'symptom_str': symptom_str
+        })
+        # 1. Aggregate Disease Frequency for Chart
+    disease_counts = Counter()
+    for case, disease in high_risk_cases:
+        disease_name = disease.disease_name if disease else "Unknown"
+        disease_counts[disease_name] += 1
+
+    # Extract labels and values
+    chart_labels = list(disease_counts.keys())
+    chart_values = list(disease_counts.values())
+
+    # 6. Render Template with Context
+    return render_template(
+        "admin_page/reports/expert_report.html",
+        processed_cases=processed_cases,
+        high_risk_cases=high_risk_cases,  # Retained for count calculations
+        reviewed_cases=reviewed_cases,
+        search_query=search_query,
+        selected_severity=selected_severity,
+        chart_labels_json=json.dumps(chart_labels),
+        chart_values_json=json.dumps(chart_values),
+        current_time=datetime.now().strftime("%d %b %Y, %I:%M %p")
     )
 # ---------- SETTINGS / PROFILE ----------
 @admin_bp.route("/settings", methods=["GET", "POST"])

@@ -2,6 +2,7 @@ from extensions import db
 from datetime import datetime
 from app.models.diseases import DiseaseTable
 from app.models.user import UserTable  # Assuming you have a UserTable
+import json
 
 class DiagnosisHistoryTable(db.Model):
     __tablename__ = 'tbl_diagnosis_history'
@@ -43,12 +44,41 @@ class DiagnosisHistoryTable(db.Model):
     def set_symptoms(self, symptoms: list):
         """Store selected symptoms as JSON string"""
         import json
-        self.selected_symptoms = json.dumps(symptoms)
+        if isinstance(symptoms, list):
+            self.selected_symptoms = json.dumps(symptoms)
+        else:
+            self.selected_symptoms = json.dumps([symptoms])
 
     def get_symptoms(self) -> list:
-        """Retrieve symptoms as Python list"""
-        import json
-        return json.loads(self.selected_symptoms or "[]")
+        """Retrieve symptoms as Python list safely without raising JSONDecodeError"""
+        if not self.selected_symptoms:
+            return []
+        # If already a list or tuple object
+        if isinstance(self.selected_symptoms, (list, tuple)):
+            return list(self.selected_symptoms)
+
+        # If stored as a single int/float
+        if isinstance(self.selected_symptoms, (int, float)):
+            return [int(self.selected_symptoms)]
+
+        val_str = str(self.selected_symptoms).strip()
+
+        # Attempt standard JSON decoding
+        try:
+            data = json.loads(val_str)
+            if isinstance(data, list):
+                return data
+            elif isinstance(data, (int, str)):
+                return [data]
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+        # Fallback 1: Handle comma-separated strings (e.g., "1, 2, 3")
+        if "," in val_str:
+            return [item.strip() for item in val_str.split(",") if item.strip()]
+
+        # Fallback 2: Plain string single ID (e.g., "1")
+        return [val_str]
 
     def __repr__(self):
         return f"<DiagnosisHistory {self.id} - User {self.user_name} - Disease {self.disease_id}>"

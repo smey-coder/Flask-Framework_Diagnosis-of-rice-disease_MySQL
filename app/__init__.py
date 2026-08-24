@@ -100,7 +100,7 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.user_route.profile_routes_user import profile_user_bp 
     from app.routes.growth_stage import growth_stage_bp
     from app.routes.rice_variety_routes import rice_variety_bp
-    
+  
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
@@ -124,6 +124,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(profile_user_bp)
     app.register_blueprint(growth_stage_bp)
     app.register_blueprint(rice_variety_bp)
+
 
     # ================= CREATE TABLES =================
     with app.app_context():

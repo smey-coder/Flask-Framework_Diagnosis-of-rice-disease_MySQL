@@ -1,6 +1,6 @@
 from collections import defaultdict
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
+from wtforms import SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, ValidationError
 from app.models import RoleTable, PermissionTable
 from extensions import db
@@ -48,6 +48,23 @@ class RoleCreateForm(FlaskForm):
         validators=[Length(max=255)],
         render_kw={"placeholder": "Short description (Optional)"},
     )
+     # =========================================================
+    # STATUS
+    # =========================================================
+
+    status = SelectField(
+        "Status",
+        choices=[
+            ("Active", "Active"),
+            ("Inactive", "Inactive")
+        ],
+        validators=[
+            DataRequired(
+                message="Status is required."
+            )
+        ],
+        default="Active"
+    )
     permission_ids = MultiCheckboxField(
         "Permissions",
         coerce=int,
@@ -79,7 +96,19 @@ class RoleEditForm(FlaskForm):
     )
     
     description = TextAreaField("Description")
-    
+    status = SelectField(
+            "Status",
+            choices=[
+                ("Active", "Active"),
+                ("Inactive", "Inactive")
+            ],
+            validators=[
+                DataRequired(
+                    message="Status is required."
+                )
+            ],
+            default="Active"
+    )
     permission_ids = MultiCheckboxField(
         "Permissions",
         coerce=int,

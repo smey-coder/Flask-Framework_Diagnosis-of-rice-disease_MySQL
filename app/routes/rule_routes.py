@@ -10,6 +10,7 @@ from app.forms.rule_form import (
     RuleConfirmDelete
 )
 from app.services.rule_service import RuleService
+from app.decorators.access import role_required, permission_required
 
 rule_bp = Blueprint("rules", __name__, url_prefix="/rules")
 
@@ -17,6 +18,8 @@ rule_bp = Blueprint("rules", __name__, url_prefix="/rules")
 # ========================= INDEX =========================
 @rule_bp.route("/")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_RULE")
 def index():
     """Display all rules"""
     rules = RuleService.get_all_rules()
@@ -30,6 +33,8 @@ def index():
 # ========================= CREATE =========================
 @rule_bp.route("/create", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("CREATE_RULE")
 def create():
     """Create a new rule"""
     form = RuleCreateForm()
@@ -50,6 +55,8 @@ def create():
 # ========================= DETAIL =========================
 @rule_bp.route("/<int:rule_id>")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_RULE")
 def detail(rule_id):
     """View rule detail"""
     rule = RuleService.get_rule_by_id(rule_id)
@@ -61,6 +68,8 @@ def detail(rule_id):
 # ========================= EDIT =========================
 @rule_bp.route("/<int:rule_id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("EDIT_RULE")
 def edit(rule_id):
     """Edit rule"""
     rule = RuleService.get_rule_by_id(rule_id)
@@ -85,6 +94,8 @@ def edit(rule_id):
 # ========================= DELETE =========================
 @rule_bp.route("/<int:rule_id>/delete", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("DELETE_RULE")
 def delete(rule_id):
     """Delete a rule by ID"""
     # Fetch the rule with eager-loaded disease to prevent DetachedInstanceError

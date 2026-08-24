@@ -111,6 +111,7 @@ class FieldCropForm(FlaskForm):
         "Status",
         choices=[
             ("Active", "Active"),
+            ("Growing", "Growing"),
             ("Completed", "Completed"),
             ("Harvested", "Harvested"),
             ("Cancelled", "Cancelled")

@@ -1,0 +1,331 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title
+%}របាយការណ៍អ្នកជំនាញ - Expert Analysis Report{% endblock %} {% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/reports/expert_reports.css') }}"
+/>
+<div class="container-fluid px-4 py-3">
+  <div class="report-wrapper">
+    <div class="report-card border-top-expert">
+      <!-- Report Header -->
+      <div class="report-header">
+        <div class="report-title-section">
+          <div class="report-icon icon-expert">
+            <i class="bi bi-award-fill"></i>
+          </div>
+          <div>
+            <h3 class="report-heading">
+              របាយការណ៍ផ្នែកអ្នកជំនាញ / Expert Analysis & Review Report
+            </h3>
+            <p class="report-subheading">
+              High-risk outbreak surveillance, disease verification metrics, and
+              field diagnostics.
+            </p>
+          </div>
+        </div>
+        <div class="report-actions">
+          <button
+            onclick="window.print()"
+            class="btn btn-outline-success print-btn"
+          >
+            <i class="bi bi-printer me-1"></i> បោះពុម្ព / Print
+          </button>
+        </div>
+      </div>
+
+      <!-- Expert Metrics Grid -->
+      <div class="metrics-grid mb-4">
+        <div class="metric-box">
+          <span class="metric-label">ករណីធ្ងន់ធ្ងរ (Critical Cases)</span>
+          <div class="metric-value-group">
+            <span class="metric-number text-danger"
+              >{{ high_risk_cases|length if high_risk_cases else 0 }}</span
+            >
+            <span class="metric-badge badge-red">Requires Action</span>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label"
+            >ករណីវិនិច្ឆ័យរួចរាល់ (Completed Cases)</span
+          >
+          <div class="metric-value-group">
+            <span class="metric-number text-primary"
+              >{{ reviewed_cases if reviewed_cases else 0 }}</span
+            >
+            <span class="metric-badge badge-blue">Completed</span>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">អត្រាផ្ទៀងផ្ទាត់ (Verification Rate)</span>
+          <div class="metric-value-group">
+            <span class="metric-number text-success">
+              {% if high_risk_cases and high_risk_cases|length > 0 and
+              reviewed_cases %} {{ ((reviewed_cases / high_risk_cases|length) *
+              100) | round(1) }}% {% else %} 100% {% endif %}
+            </span>
+            <span class="metric-badge badge-green">Accuracy Audit</span>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">អ្នកជំនាញពិនិត្យ (Reviewer)</span>
+          <div class="metric-value-group">
+            <span class="metric-number text-dark" style="font-size: 15px">
+              {{ current_user.email.split('@')[0] if current_user.email else
+              'Expert' }}
+            </span>
+            <span class="metric-badge badge-gray">Expert Account</span>
+          </div>
+        </div>
+      </div>
+      <!-- Chart.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- Visual Analytics Section -->
+        <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                <h6 class="card-title fw-bold text-secondary mb-0">
+                <i class="bi bi-pie-chart-fill me-2 text-primary"></i> របាយបែងចែកជំងឺដែលបានវិនិច្ឆ័យ (Diagnosis Distribution)
+                </h6>
+                <span class="badge bg-light text-dark border">Real-time Data</span>
+            </div>
+            <div class="card-body p-4">
+                <!-- Canvas Container -->
+                <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="diagnosisChart"></canvas>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        <!-- Chart Script -->
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Safe JSON Injection from Flask
+            const rawLabels = {{ chart_labels_json | safe }};
+            const rawValues = {{ chart_values_json | safe }};
+
+            const ctx = document.getElementById('diagnosisChart').getContext('2d');
+
+            // Handle Empty Data State
+            if (!rawLabels || rawLabels.length === 0) {
+            ctx.font = "14px 'Battambang', Arial, sans-serif";
+            ctx.fillStyle = "#6c757d";
+            ctx.textAlign = "center";
+            ctx.fillText("ពុំមានទិន្នន័យសម្រាប់បង្ហាញឡើយ (No Diagnosis Data Available)", ctx.canvas.width / 2, 160);
+            return;
+            }
+
+            // 2. Color Palette for Doughnut Slices
+            const colorPalette = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+            '#9966FF', '#FF9F40', '#E74C3C', '#2ECC71'
+            ];
+
+            // 3. Render Chart.js
+            new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: rawLabels,
+                datasets: [{
+                label: 'ចំនួនករណី (Cases)',
+                data: rawValues,
+                backgroundColor: colorPalette.slice(0, rawLabels.length),
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                    font: {
+                        size: 13,
+                        family: "'Battambang', Arial, sans-serif"
+                    },
+                    padding: 15,
+                    usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                    label: function(context) {
+                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        let value = context.raw;
+                        let percentage = ((value / total) * 100).toFixed(1);
+                        return ` ${context.label}: ${value} ករណី (${percentage}%)`;
+                    }
+                    }
+                }
+                },
+                cutout: '65%' // Doughnut inner ring size
+            }
+            });
+        });
+        </script>
+      <!-- Search & Filter Controls -->
+      <div class="card p-3 mb-4 bg-light border-0">
+        <form
+          method="GET"
+          action="{{ url_for('admin.expert_report') }}"
+          class="row g-2 align-items-center"
+        >
+          <!-- Text Search -->
+          <div class="col-md-5">
+            <div class="input-group">
+              <span class="input-group-text bg-white"
+                ><i class="bi bi-search"></i
+              ></span>
+              <input
+                type="text"
+                name="q"
+                class="form-control"
+                placeholder="ស្វែងរកតាមឈ្មោះអ្នកប្រើប្រាស់ ឬ ជំងឺ (Search user or disease)..."
+                value="{{ search_query or '' }}"
+              />
+            </div>
+          </div>
+
+          <!-- Severity Filter Dropdown -->
+
+            <div class="col-md-4">
+            <select name="severity" class="form-select" onchange="this.form.submit()">
+                <option value="">-- កម្រិតប្រឈម (All Severity Levels) --</option>
+                <option value="High(ខ្ពស់)" {% if selected_severity == 'High(ខ្ពស់)' %}selected{% endif %}>High (ខ្ពស់)</option>
+                <option value="Very high(ខ្ពស់ណាស់)" {% if selected_severity == 'Very high(ខ្ពស់ណាស់)' %}selected{% endif %}>Very High (ខ្ពស់ណាស់)</option>
+                <option value="Medium(មធ្យម)" {% if selected_severity == 'Medium(មធ្យម)' %}selected{% endif %}>Medium (មធ្យម)</option>
+                <option value="Low(ទាប)" {% if selected_severity == 'Low(ទាប)' %}selected{% endif %}>Low (ទាប)</option>
+            </select>
+            </div>
+
+          <!-- Buttons -->
+          <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-funnel-fill me-1"></i> តម្រៀប (Filter)
+            </button>
+            {% if search_query or selected_severity %}
+            <a
+              href="{{ url_for('admin.expert_report') }}"
+              class="btn btn-outline-secondary"
+              title="Reset Filters"
+            >
+              <i class="bi bi-arrow-counterclockwise"></i>
+            </a>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+
+      <!-- Expert Analytical Body -->
+      <div class="report-body">
+        <div class="report-section full-width-section">
+          <h5 class="section-title">
+            <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>
+            ករណីជំងឺប្រឈមហានិភ័យខ្ពស់ (High Severity Outbreak Queue)
+          </h5>
+          <div class="table-responsive">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>អ្នកប្រើប្រាស់ (User)</th>
+                  <th>ឈ្មោះជំងឺ (Disease Name)</th>
+                  <th>រោគសញ្ញា (Symptoms)</th>
+                  <th>កម្រិតភាពច្បាស់ (Confidence)</th>
+                  <th>ស្ថានភាពពិនិត្យ (Status)</th>
+                  <th>កាលបរិច្ឆេទ (Date)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if high_risk_cases %} {% for case, disease in high_risk_cases
+                %}
+                <tr>
+                  <td>#{{ case.id }}</td>
+                  <td><strong>{{ case.user_name }}</strong></td>
+
+                  <!-- Disease Name -->
+                  <td>
+                    <span class="status-pill pill-high-risk">
+                      {{ disease.disease_name if disease else 'N/A' }}
+                    </span>
+                  </td>
+
+                  <!-- Symptoms List/Names -->
+                  <!-- Symptoms List/Names -->
+                    <td>
+                    <div class="symptoms-text">
+                        {% set raw_symptoms = case.get_symptoms() if case.get_symptoms is defined else case.selected_symptoms %}
+                        {% if symptom_map is defined and raw_symptoms is iterable and raw_symptoms is not string %}
+                        {% set symptom_names = [] %}
+                        {% for sid in raw_symptoms %}
+                            {% if symptom_map.get(sid|int) %}
+                            <!-- Correct syntax for list append in standard Jinja2 -->
+                            {% set _ = symptom_names.append(symptom_map.get(sid|int)) %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ symptom_names|join(', ') if symptom_names else (case.selected_symptoms or 'N/A') }}
+                        {% else %}
+                        {{ case.selected_symptoms or 'N/A' }}
+                        {% endif %}
+                    </div>
+                    </td>
+
+                  <!-- Confidence Bar -->
+                  <td>
+                    {{ (case.confidence * 100)|round(1) }}%
+                    <div class="confidence-bar-container">
+                      <div
+                        class="confidence-bar-fill"
+                        style="width: {{ (case.confidence * 100)|round }}%;"
+                      ></div>
+                    </div>
+                  </td>
+
+                  <!-- Status -->
+                  <td>
+                    <span
+                      class="status-pill {% if case.status == 'Completed' %}pill-completed{% else %}pill-pending{% endif %}"
+                    >
+                      {{ case.status }}
+                    </span>
+                  </td>
+
+                  <!-- Date -->
+                  <td>{{ case.created_at.strftime('%d-%b-%Y %I:%M %p') }}</td>
+                </tr>
+                {% endfor %} {% else %}
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-4">
+                    ពុំមានករណីប្រឈមហានិភ័យខ្ពស់ឡើយ (No Critical Cases Found)
+                  </td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Metadata -->
+      <div class="report-footer">
+        <span
+          ><i class="bi bi-patch-check-fill me-1 text-primary"></i> Expert
+          Diagnostic Audit - Rice Pathology Division</span
+        >
+        <span
+          >កាលបរិច្ឆេទបង្កើត:
+          <strong class="text-dark">{{ current_time }}</strong></span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

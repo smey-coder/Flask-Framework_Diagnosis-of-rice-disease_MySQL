@@ -22,9 +22,8 @@ from app.forms.diseases_forms import (
 )
 from app.models.diseases import DiseaseTable
 from app.services.disease_service import DiseaseService
-from decorators import require_admin, active_user_required
+# from decorators import require_admin, active_user_required
 from app.decorators.access import role_required, permission_required
-
 logger = logging.getLogger("app")
 
 disease_bp = Blueprint("tbl_diseases", __name__, url_prefix="/diseases")
@@ -38,7 +37,8 @@ def allowed_file(filename):
 # ------------------ INDEX ------------------
 @disease_bp.route("/")
 @login_required
-@active_user_required()
+@role_required("Admin", "Expert")
+@permission_required("VIEW_DISEASE")
 def index():
     """List all diseases with search functionality"""
     try:
@@ -99,7 +99,8 @@ def index():
 # ------------------ DETAIL ------------------
 @disease_bp.route("/<int:disease_id>")
 @login_required
-@active_user_required()
+@role_required("Admin", "Expert")
+@permission_required("DETIAL_DISEASE")
 def detail(disease_id: int):
     """View disease details"""
     try:
@@ -122,7 +123,8 @@ def detail(disease_id: int):
 # ------------------ CREATE ------------------
 @disease_bp.route("/create", methods=["GET", "POST"])
 @login_required
-@require_admin()
+@role_required("Admin", "Expert")
+@permission_required("CREATE_DISEASE")
 def create():
     form = DiseaseCreateForm()
     
@@ -152,7 +154,8 @@ def create():
 # ------------------ EDIT ------------------
 @disease_bp.route("/<int:disease_id>/edit", methods=["GET", "POST"])
 @login_required
-@require_admin()
+@role_required("Admin", "Expert")
+@permission_required("EDIT_DISEASE")
 def edit(disease_id: int):
     disease = DiseaseService.get_disease_by_id(disease_id)
     if not disease:
@@ -185,7 +188,8 @@ def edit(disease_id: int):
 # ------------------ DELETE ------------------
 @disease_bp.route("/<int:disease_id>/delete", methods=["GET", "POST"])
 @login_required
-@require_admin()
+@role_required("Admin", "Expert")
+@permission_required("DELETE_DISEASE")
 def delete(disease_id: int):
     try:
         disease = DiseaseService.get_disease_by_id(disease_id)
@@ -232,6 +236,8 @@ def delete(disease_id: int):
 # ------------------ API ENDPOINTS ------------------
 @disease_bp.route("/api/<int:disease_id>/json")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_DISEASE")
 def get_disease_json(disease_id: int):
     try:
         disease = DiseaseService.get_disease_by_id(disease_id)
@@ -255,6 +261,8 @@ def get_disease_json(disease_id: int):
 
 @disease_bp.route("/api/search")
 @login_required
+@role_required("Admin", "Expert")
+@permission_required("SEARCH_DISEASE")
 def search_diseases_api():
     try:
         disease_name = request.args.get("name", "").strip()

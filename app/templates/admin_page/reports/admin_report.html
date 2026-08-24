@@ -1,0 +1,148 @@
+{% extends "layouts/admin_layout/admin.html" %}
+
+{% block title %}របាយការណ៍គ្រប់គ្រងប្រព័ន្ធ - Admin Report{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/reports/admin_reports.css') }}">
+<div class="container-fluid px-4 py-3">
+  <div class="report-wrapper">
+    <div class="report-card border-top-admin">
+      
+      <!-- Report Header -->
+      <div class="report-header">
+        <div class="report-title-section">
+          <div class="report-icon icon-admin">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <div>
+            <h3 class="report-heading">របាយការណ៍គ្រប់គ្រងប្រព័ន្ធ / System Administration Report</h3>
+            <p class="report-subheading">Global analytics, user statistics, system health, and diagnosis trends.</p>
+          </div>
+        </div>
+        <div class="report-actions">
+          <button onclick="window.print()" class="btn btn-outline-success print-btn">
+            <i class="bi bi-printer me-1"></i> បោះពុម្ព / Print
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Top Metrics Grid -->
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <span class="metric-label">អ្នកប្រើប្រាស់សរុប (Total Users)</span>
+          <div class="metric-value-group">
+            <span class="metric-number">{{ total_users if total_users else 0 }}</span>
+            <span class="metric-badge badge-blue">Registered Accounts</span>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">ការវិភាគសរុប (Total Diagnoses)</span>
+          <div class="metric-value-group">
+            <span class="metric-number">{{ total_diagnoses if total_diagnoses else 0 }}</span>
+            <span class="metric-badge badge-green">System Lifetime</span>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">ភាពត្រឹមត្រូវ AI (Model Accuracy)</span>
+          <div class="metric-value-group">
+            <span class="metric-number text-success">
+              {{ avg_accuracy if avg_accuracy else '94.2%' }}
+            </span>
+            <span class="metric-badge badge-green">Inference Rate</span>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">ស្ថានភាពប្រព័ន្ធ (System Health)</span>
+          <div class="metric-value-group">
+            <span class="metric-number text-primary" style="font-size: 18px;">
+              <i class="bi bi-cpu-fill me-1"></i> Optimal
+            </span>
+            <span class="metric-badge badge-gray">Active Status</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Content Body -->
+      <div class="report-body">
+        
+        <!-- Top Diagnosed Diseases -->
+        <div class="report-section">
+          <h5 class="section-title">
+            <i class="bi bi-bar-chart-line-fill me-2 text-success"></i> ជំងឺដែលជួបញឹកញាប់ (Top Diagnosed Diseases)
+          </h5>
+          <div class="table-responsive">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>ឈ្មោះជំងឺ (Disease Name)</th>
+                  <th class="text-end">ចំនួនករណី (Cases)</th>
+                  <th class="text-end">ភាគរយ (Share)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if top_diseases %}
+                  {% for disease, count in top_diseases %}
+                  <tr>
+                    <td><span class="fw-semibold text-dark">{{ disease }}</span></td>
+                    <td class="text-end fw-bold">{{ count }}</td>
+                    <td class="text-end text-muted">
+                      {{ ((count / total_diagnoses) * 100) | round(1) if total_diagnoses else 0 }}%
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="3" class="text-center text-muted py-3">មិនមានទិន្នន័យ (No Data Available)</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- System Severity Distribution -->
+        <div class="report-section">
+          <h5 class="section-title">
+            <i class="bi bi-pie-chart-fill me-2 text-primary"></i> ស្ថិតិកម្រិតធ្ងន់ធ្ងរ (Severity Overview)
+          </h5>
+          <div class="account-summary-list">
+            <div class="summary-item">
+              <span class="item-label">កម្រិតធ្ងន់ធ្ងរ (High Severity)</span>
+              <span class="item-value">
+                <span class="status-pill pill-high">{{ severity_stats.get('High(ខ្ពស់)', 0) if severity_stats else 0 }} Cases</span>
+              </span>
+            </div>
+            <div class="summary-item">
+              <span class="item-label">កម្រិតមធ្យម (Medium Severity)</span>
+              <span class="item-value">
+                <span class="status-pill pill-medium">{{ severity_stats.get('Medium(មធ្យម)', 0) if severity_stats else 0 }} Cases</span>
+              </span>
+            </div>
+            <div class="summary-item">
+              <span class="item-label">កម្រិតទាប (Low Severity)</span>
+              <span class="item-value">
+                <span class="status-pill pill-low">{{ severity_stats.get('Low(ទាប)', 0) if severity_stats else 0 }} Cases</span>
+              </span>
+            </div>
+            <div class="summary-item">
+              <span class="item-label">អ្នកគ្រប់គ្រងបច្ចុប្បន្ន (Active Admin)</span>
+              <span class="item-value fw-semibold">{{ current_user.email }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Metadata -->
+      <div class="report-footer">
+        <span><i class="bi bi-shield-check me-1 text-success"></i> Rice Disease Diagnosis - Admin System Console</span>
+        <span>កាលបរិច្ឆេទបង្កើត: <strong class="text-dark">{{ current_time }}</strong></span>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

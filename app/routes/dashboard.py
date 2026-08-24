@@ -5,6 +5,7 @@ from app.models.user import UserTable
 from app.models.diseases import DiseaseTable
 from app.models.symptoms import SymptomsTable
 from app.models.rules import RulesTable
+from app.models.role import RoleTable
 from app.forms.weather_form import CitySearchForm
 from app.services.weather_service import WeatherService
 
@@ -15,6 +16,7 @@ count_bp = Blueprint("admin", __name__, url_prefix="/admin")
 def dashboard():
     stats = {
         "users": UserTable.query.count(),
+        "roles": RoleTable.query.count(),
         "diseases": DiseaseTable.query.count(),
         "symptoms": SymptomsTable.query.count(),
         "rules": RulesTable.query.count(),

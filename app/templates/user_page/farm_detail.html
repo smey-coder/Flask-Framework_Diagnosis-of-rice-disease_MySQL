@@ -67,12 +67,53 @@ farm.farm_name }} - Farm Detail {% endblock %} {% block content %}
 
       <!-- Location -->
 
+      <div class="farm-location-info">
+
+        <div class="location-item">
+          <i class="bi bi-geo-alt-fill"></i>
+
+          <div>
+            <span class="location-label">Province</span>
+
+            <span class="location-value">
+              {{ farm.province or "Not specified" }}
+            </span>
+          </div>
+        </div>
+
+
+        <div class="location-item">
+          <i class="bi bi-building"></i>
+
+          <div>
+            <span class="location-label">District</span>
+
+            <span class="location-value">
+              {{ farm.district or "Not specified" }}
+            </span>
+          </div>
+        </div>
+
+
+        <div class="location-item">
+          <i class="bi bi-house"></i>
+
+          <div>
+            <span class="location-label">Commune</span>
+
+            <span class="location-value">
+              {{ farm.commune or "Not specified" }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+
       <div class="info-item">
         <span class="info-label"> Location </span>
 
         <span class="info-value">
           {% if farm.location %} 📍 {{ farm.location }} {% else %}
-
           <span class="empty-value"> Not provided </span>
 
           {% endif %}

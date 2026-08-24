@@ -226,37 +226,27 @@ def upload_image():
                 message,
                 "danger"
             )
-    
             return redirect(
                 url_for("admin_profile.index")
             )
-    
         # =========================================
         # Upload success
         # =========================================
-    
         flash(
             message,
             "success"
         )
-    
         return redirect(
             url_for("admin_profile.index")
         )
-    
     except Exception as e:
-    
         current_app.logger.exception(
             "User Profile Image Upload Error"
         )
-    
         flash("Unable to update profile image.","danger")
-    
         return redirect(
             url_for("admin_profile.index")
         )
-    
-
 # =========================================================
 # REMOVE PROFILE IMAGE
 # =========================================================
@@ -269,48 +259,37 @@ def upload_image():
 @role_required("Admin", "Expert")
 @permission_required("UPDATE_PROFILE")
 def remove_image():
-
     try:
-
         user = ProfileService.remove_profile_image(
             current_user.id
         )
-
         if not user:
 
             flash(
                 "User profile not found.",
                 "danger"
             )
-
             return redirect(
                 url_for("admin_profile.index")
             )
-
         flash(
             "Profile image removed successfully.",
             "success"
         )
-
         return redirect(
             url_for("admin_profile.index")
         )
-
     except Exception as e:
-
         current_app.logger.exception(
             f"Remove Profile Image Error: {e}"
         )
-
         flash(
             "Unable to remove profile image.",
             "danger"
         )
-
         return redirect(
             url_for("admin_profile.index")
         )
-
 # =========================================================
 # CHANGE PASSWORD
 # =========================================================
@@ -320,9 +299,7 @@ def remove_image():
 @role_required("Admin", "Expert")
 @permission_required("CHANGE_PASSWORD")
 def change_password():
-
     try:
-
         current_password = request.form.get(
             "current_password",
             ""
