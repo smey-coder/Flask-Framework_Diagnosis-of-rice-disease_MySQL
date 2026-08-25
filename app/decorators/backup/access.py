@@ -1,16 +1,18 @@
+# app/decorators/access.py
 from functools import wraps
-from flask import flash, has_request_context, redirect, request, url_for
+from flask import redirect, request, url_for, flash, has_request_context
 from flask_login import current_user
-
 
 def _redirect_to_dashboard():
     """Helper to safely redirect authenticated users to their respective dashboard,
 
     or back to their previous page (request.referrer).
     """
+    # 1. Try redirecting back to the previous page if available
     if request.referrer:
         return redirect(request.referrer)
 
+    # 2. Otherwise, redirect to dashboard based on role
     if getattr(current_user, "has_role", lambda r: False)("Admin"):
         return redirect(url_for("admin.dashboard"))
     elif getattr(current_user, "has_role", lambda r: False)("Expert"):
@@ -18,63 +20,55 @@ def _redirect_to_dashboard():
     elif getattr(current_user, "has_role", lambda r: False)("User"):
         return redirect(url_for("user.dashboard"))
 
+    # 3. Last fallback if role is unmapped
     return redirect(url_for("user.dashboard"))
-
 
 def role_required(*role_names):
     """Allow multiple roles for a route."""
-
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
             if not has_request_context():
-                raise RuntimeError(
-                    "role_required decorator used outside request context"
-                )
+                raise RuntimeError("role_required decorator used outside request context")
 
             if not current_user.is_authenticated:
                 flash("Please log in first.", "warning")
                 return redirect(url_for("auth.login"))
 
-            has_role_fn = getattr(current_user, "has_role", lambda r: False)
-            if not any(has_role_fn(role) for role in role_names):
+            if not any(getattr(current_user, "has_role", lambda r: False)(role) for role in role_names):
                 flash("You do not have the required role.", "danger")
-                return _redirect_to_dashboard()
+                # Redirect to the proper dashboard if role exists
+                if getattr(current_user, "has_role", lambda r: False)("Admin"):
+                    return redirect(url_for("admin.dashboard"))
+                elif getattr(current_user, "has_role", lambda r: False)("Expert"):
+                    return redirect(url_for("admin.dashboard"))
+                return redirect(url_for("auth.login"))
 
             return f(*args, **kwargs)
-
         return wrapped
-
     return decorator
-
 
 def permission_required(*permission_codes):
     """Allow multiple permissions for a route."""
-
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
             if not has_request_context():
-                raise RuntimeError(
-                    "permission_required decorator used outside request context"
-                )
+                raise RuntimeError("permission_required decorator used outside request context")
 
             if not current_user.is_authenticated:
                 flash("Please log in first.", "warning")
                 return redirect(url_for("auth.login"))
 
-            has_perm_fn = getattr(
-                current_user, "has_permission", lambda p: False
-            )
-            if not any(has_perm_fn(perm) for perm in permission_codes):
-                flash(
-                    "You do not have permission to perform this action.",
-                    "danger",
-                )
-                return _redirect_to_dashboard()
+            if not any(getattr(current_user, "has_permission", lambda p: False)(perm) for perm in permission_codes):
+                flash("You do not have permission to perform this action.", "danger")
+                # Redirect to dashboard based on role
+                if getattr(current_user, "has_role", lambda r: False)("Admin"):
+                    return redirect(url_for("admin.dashboard"))
+                elif getattr(current_user, "has_role", lambda r: False)("Expert"):
+                    return redirect(url_for("admin.dashboard"))
+                return redirect(url_for("auth.login"))
 
             return f(*args, **kwargs)
-
         return wrapped
-
     return decorator

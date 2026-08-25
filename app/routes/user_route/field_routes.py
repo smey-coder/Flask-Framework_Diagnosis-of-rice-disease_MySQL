@@ -16,7 +16,7 @@ from app.forms.field_forms import FieldForm, FieldConfirmDeleteForm
 from app.services.field_service import FieldService
 from app.services.farm_service import FarmService
 
-
+from app.decorators.access import role_required, permission_required
 # =========================================================
 # BLUEPRINT
 # =========================================================
@@ -30,6 +30,8 @@ field_bp = Blueprint("fields",__name__,url_prefix="/user/fields", template_folde
 
 @field_bp.route("/")
 @login_required
+@role_required("User")
+@permission_required("VIEW_FEILD")
 def index():
 
     try:
@@ -66,6 +68,8 @@ def index():
 
 @field_bp.route("/<int:field_id>")
 @login_required
+@role_required("User")
+@permission_required("DETAIL_FEILD")
 def detail(field_id):
 
     try:
@@ -108,6 +112,8 @@ def detail(field_id):
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("CREATE_FEILD")
 def create():
 
     form = FieldForm()
@@ -339,14 +345,13 @@ def create():
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("EDIT_FEILD")
 def edit(field_id):
-
     try:
-
         # -------------------------------------------------
         # Get field
         # -------------------------------------------------
-
         field = FieldService.get_by_id(
             field_id=field_id,
             user_id=current_user.id
@@ -584,6 +589,8 @@ def edit(field_id):
 
 @field_bp.route("/<int:field_id>/delete",methods=["GET", "POST"])
 @login_required
+@role_required("User")
+@permission_required("DELETE_FEILD")
 def delete_confirm(field_id):
     field = FieldService.get_by_id(
         field_id,

@@ -80,6 +80,7 @@ CAMBODIA_CITIES = [
 @user_bp.route("/dashboard", methods=["GET", "POST"])
 @login_required
 @role_required("User")
+@permission_required("VIEW_DASHBOARD_USER")
 def dashboard():
     form = CitySearchForm()
     search_results = []
@@ -450,6 +451,7 @@ def dashboard():
 @user_bp.route("/farm/<int:farm_id>", methods=["GET"])
 @login_required
 @role_required("User")
+@permission_required("DETAIL_FARM_USER")
 def farm_detail(farm_id):
 
     try:
@@ -789,6 +791,7 @@ def farm_detail(farm_id):
 @user_bp.route("/settings", methods=["GET", "POST"])
 @login_required
 @role_required("User")
+@permission_required("VIEW_SETTING_USER")
 def setting_index():
     form = UserProfileForm(original_user=current_user, obj=current_user)
     return render_template('user_page/settings.html', form=form, user=current_user )
@@ -796,6 +799,7 @@ def setting_index():
 @user_bp.route("/edit-profile", methods=["GET", "POST"])
 @login_required
 @role_required("User")
+@permission_required("EDIT_PROFILE")
 def edit_profile():
     form = UserProfileForm(obj=current_user)
     if request.method == "POST":
@@ -2169,6 +2173,7 @@ def diagnosis_print(disease_id):
 @user_bp.route("/diseases/show")
 @login_required
 @role_required("User")
+@permission_required("VIEW_DISEASE_USER")
 def disease_index():
     """List all diseases with search functionality"""
     try:
@@ -2208,6 +2213,7 @@ def new_information():
 @user_bp.route("/information/<int:id>")
 @login_required
 @role_required("User")
+@permission_required("DETAIL_DISEASE_USER")
 def disease_detail(id):
     disease = DiseaseTable.query.get_or_404(id)
 
@@ -2334,8 +2340,8 @@ def disease_detail(id):
 )
 @login_required
 @role_required("User")
+@permission_required("GET_NOTIFICATION_USER")
 def get_notifications():
-
     user_id = current_user.id
 
     try:
@@ -2552,6 +2558,7 @@ def get_notifications():
 )
 @login_required
 @role_required("User")
+@permission_required("VIEW_NOTIFICATION_USER")
 def read_notification(id):
 
     user_id = current_user.id
@@ -2613,6 +2620,7 @@ def read_notification(id):
 )
 @login_required
 @role_required("User")
+@permission_required("DELETE_NOTIFICATION_USER")
 def delete_notification(id):
 
     user_id = current_user.id
@@ -2674,6 +2682,7 @@ def delete_notification(id):
 )
 @login_required
 @role_required("User")
+@permission_required("DELETE_ALL_NOTIFICATION_USER")
 def delete_all_notifications():
 
     user_id = current_user.id
@@ -2725,6 +2734,7 @@ def delete_all_notifications():
 )
 @login_required
 @role_required("User")
+@permission_required("DETAIL_CROP_NOTIFICATION_USER")
 def crop_notification_detail(monitoring_id):
     try:
         monitoring = (CropMonitoringService.get_by_id(monitoring_id,current_user.id))
@@ -2792,6 +2802,7 @@ def crop_notification_detail(monitoring_id):
 @user_bp.route("/crop-monitoring/<int:monitoring_id>/detail")
 @login_required
 @role_required("User")
+@permission_required("DETAIL_CROP_MONITORING_USER")
 def crop_monitoring_detail_page(monitoring_id):
 
     return render_template(
@@ -2877,6 +2888,7 @@ def crop_monitoring_detail_page(monitoring_id):
 )
 @login_required
 @role_required("User")
+@permission_required("DETAIL_MONITORING_USER")
 def monitoring_detail(farm_id, monitoring_id):
 
     try:
@@ -3075,6 +3087,7 @@ def monitoring_detail(farm_id, monitoring_id):
 )
 @login_required
 @role_required("User")
+@permission_required("MONITORING_HISTORY_USER")
 def monitoring_history(farm_id, field_crop_id):
 
     try:
@@ -3195,6 +3208,7 @@ def monitoring_history(farm_id, field_crop_id):
 @user_bp.route("/harvest/create", methods=["GET", "POST"])
 @login_required
 @role_required("User")
+@permission_required("CREATE_HARVEST_USER")
 def add_harvest():
     farms = FarmTable.query.filter_by(user_id=current_user.id, status="Active").all()
     
@@ -3278,6 +3292,7 @@ def add_harvest():
 @user_bp.route("/api/fields/<int:farm_id>", methods=["GET"])
 @login_required
 @role_required("User")
+@permission_required("GET_FIELD_BY_FARM_USER")
 def get_fields_by_farm(farm_id: int):
     """Retrieves all fields associated with a given farm ID for dropdown population."""
     fields = FieldTable.query.filter_by(farm_id=farm_id).all()
@@ -3294,6 +3309,7 @@ def get_fields_by_farm(farm_id: int):
 @user_bp.route("/api/field-crops/<int:field_id>", methods=["GET"])
 @login_required
 @role_required("User")
+@permission_required("GET_CROP_BY_FIELD_USER")
 def get_crops_by_field(field_id: int):
     """Retrieves active crops and planting dates for a specific field ID.
 
@@ -3319,6 +3335,7 @@ def get_crops_by_field(field_id: int):
 @user_bp.route("/diagnosis-report", methods=["GET"])
 @login_required
 @role_required("User")
+@permission_required("GET_DIAGNOSIS_REPORT_USER")
 def diagnosis_report():
     """
     Renders the diagnosis & activity report for the currently logged-in user.

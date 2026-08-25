@@ -6,34 +6,17 @@ from flask import (
     url_for,
     flash
 )
+from app.models.growth_stage import GrowthStageTable
 from extensions import db
 from flask_login import login_required, current_user
+from app.services.treatment_history_service import (TreatmentHistoryService)
+from app.models.treatment_histories import (TreatmentHistoryTable)
+from app.models.diagnosis_history import (DiagnosisHistoryTable)
+from app.models.treatments import (TreatmentTable)
+from app.models.crop_monitoring import (CropMonitoringTable)
+from app.forms.treatment_history_form import (TreatmentHistoryForm)
 
-from app.services.treatment_history_service import (
-    TreatmentHistoryService
-)
-
-from app.models.treatment_histories import (
-    TreatmentHistoryTable
-)
-
-from app.models.diagnosis_history import (
-    DiagnosisHistoryTable
-)
-
-from app.models.treatments import (
-    TreatmentTable
-)
-
-from app.models.crop_monitoring import (
-    CropMonitoringTable
-)
-
-from app.forms.treatment_history_form import (
-    TreatmentHistoryForm
-)
-
-
+from app.decorators.access import role_required, permission_required
 # ============================================================
 # BLUEPRINT
 # ============================================================
@@ -47,50 +30,28 @@ treatment_history_bp = Blueprint("treatment_history",__name__,url_prefix="/user/
 
 @treatment_history_bp.route("/", methods=["GET"])
 @login_required
+@role_required("User")
+@permission_required("VIEW_TREATMENT_HISTORY")
 def index():
-
     try:
-
         # ----------------------------------------------------
         # Query Parameters
         # ----------------------------------------------------
-
-        page = request.args.get(
-            "page",
-            1,
-            type=int
-        )
-
-        monitoring_id = request.args.get(
-            "monitoring_id",
-            type=int
-        )
-
-        diagnosis_history_id = request.args.get(
-            "diagnosis_history_id",
-            type=int
-        )
-
-        status = request.args.get(
-            "status",
-            "",
-            type=str
-        ).strip()
-
-        search = request.args.get(
-            "search",
-            "",
-            type=str
-        ).strip()
-
-
+        page = request.args.get("page", 1,type=int)
+        monitoring_id = request.args.get("monitoring_id",type=int)
+        diagnosis_history_id = request.args.get("diagnosis_history_id",type=int)
+        status = request.args.get("status","",type=str).strip()
+        search = request.args.get("search","",type=str).strip()
+        # Create lookup dictionary: { 1: <GrowthStage 1>, 2: <GrowthStage 2> }
+        stages_map = {stage.id: stage for stage in GrowthStageTable.query.all()}
+    
         # ----------------------------------------------------
         # Pagination
         # ----------------------------------------------------
-
         pagination = TreatmentHistoryService.paginate(
             page=page,
             per_page=10,
+            user_id=current_user.id,
             monitoring_id=monitoring_id,
             diagnosis_history_id=diagnosis_history_id,
             status=status if status else None,
@@ -103,16 +64,8 @@ def index():
         # ----------------------------------------------------
 
         if pagination is None:
-
-            flash(
-                "Unable to load treatment histories.",
-                "danger"
-            )
-
-            return redirect(
-                url_for("user.dashboard")
-            )
-
+            flash("Unable to load treatment histories.","danger")
+            return redirect(url_for("user.dashboard"))
 
         # ----------------------------------------------------
         # History List
@@ -152,6 +105,8 @@ def index():
 
             search=search,
 
+            stages_map=stages_map,
+
             status_choices=status_choices,
 
             user=current_user
@@ -160,31 +115,18 @@ def index():
 
     except Exception as e:
 
-        print(
-            f"Treatment History Index Error: {e}"
-        )
-
-        flash(
-            "An error occurred while loading treatment histories.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("user.dashboard")
-        )
-
-
+        print(f"Treatment History Index Error: {e}")
+        flash("An error occurred while loading treatment histories.","danger")
+        return redirect(url_for("user.dashboard"))
 # ============================================================
 # CREATE
 # ============================================================
 
-@treatment_history_bp.route(
-    "/create",
-    methods=["GET", "POST"]
-)
+@treatment_history_bp.route("/create",methods=["GET", "POST"])
 @login_required
+@role_required("User")
+@permission_required("CREATE_TREATMENT_HISTORY")
 def create():
-
     try:
 
         # ----------------------------------------------------
@@ -452,11 +394,10 @@ def create():
 # DETAIL
 # ============================================================
 
-@treatment_history_bp.route(
-    "/<int:id>",
-    methods=["GET"]
-)
+@treatment_history_bp.route("/<int:id>",methods=["GET"])
 @login_required
+@role_required("User")
+@permission_required("DETAIL_TREATMENT_HISTORY")
 def detail(id):
 
     try:
@@ -519,6 +460,8 @@ def detail(id):
 
 @treatment_history_bp.route("/<int:id>/edit", methods=["GET", "POST"])
 @login_required
+@role_required("User")
+@permission_required("EDIT_TREATMENT_HISTORY")
 def edit(id):
 
     try:
@@ -645,11 +588,10 @@ def edit(id):
 # DELETE
 # ============================================================
 
-@treatment_history_bp.route(
-    "/<int:id>/delete",
-    methods=["GET", "POST"]
-)
+@treatment_history_bp.route("/<int:id>/delete",methods=["GET", "POST"])
 @login_required
+@role_required("User")
+@permission_required("DELETE_TREATMENT_HISTORY")
 def delete(id):
 
     try:

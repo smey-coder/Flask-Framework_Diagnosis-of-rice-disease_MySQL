@@ -99,9 +99,11 @@ History{% endblock %} {% block content %}
           <span>Avg. Confidence</span>
 
           <strong>
-            {% if histories %} {{ ( ( histories |map(attribute='confidence')
-            |map('float') |sum ) / histories|length ) * 100 |round(1) }}% {%
-            else %} 0% {% endif %}
+            {% if histories %}
+              {{ (((histories | map(attribute='confidence') | map('float') | sum) / histories|length) * 100) | round(1) }}%
+            {% else %}
+              0%
+            {% endif %}
           </strong>
         </div>
       </div>

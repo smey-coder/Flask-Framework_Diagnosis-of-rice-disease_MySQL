@@ -34,7 +34,7 @@ from app.services.growth_stage_service import (
     GrowthStageService
 )
 
-
+from app.decorators.access import role_required, permission_required
 crop_monitoring_bp = Blueprint("crop_monitoring",__name__,url_prefix="/user/crop-monitoring",template_folder="../../templates")
 
 
@@ -44,6 +44,8 @@ crop_monitoring_bp = Blueprint("crop_monitoring",__name__,url_prefix="/user/crop
 
 @crop_monitoring_bp.route("/crop-monitoring",methods=["GET"])
 @login_required
+@role_required("User")
+@permission_required("VIEW_CROP_MONITORING")
 def index():
 
     try:
@@ -85,6 +87,8 @@ def index():
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("CREATE_CROP_MONITORING")
 def create():
 
     form = CropMonitoringForm()
@@ -256,6 +260,8 @@ def create():
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("EDIT_CROP_MONITORING")
 def edit(
     monitoring_id
 ):
@@ -470,6 +476,7 @@ def edit(
 )
 @login_required
 @role_required("User")
+@permission_required("DELETE_CROP_MONITORING")
 def delete(monitoring_id):
 
     monitoring = CropMonitoringService.get_by_id(

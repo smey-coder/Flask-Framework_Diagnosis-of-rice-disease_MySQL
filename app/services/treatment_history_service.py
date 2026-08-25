@@ -1,6 +1,7 @@
 
 from sqlalchemy import or_
 
+from app.models.diagnosis_history import DiagnosisHistoryTable
 from extensions import db
 
 from app.models.treatments import TreatmentTable
@@ -228,6 +229,7 @@ class TreatmentHistoryService:
     def paginate(
         page=1,
         per_page=10,
+        user_id=None,
         monitoring_id=None,
         diagnosis_history_id=None,
         status=None,
@@ -249,7 +251,19 @@ class TreatmentHistoryService:
                 )
             )
 
-
+            # =================================================
+            # USER FILTER (Join DiagnosisHistoryTable if needed)
+            # =================================================
+            if user_id is not None:
+                # If TreatmentHistoryTable has direct user_id:
+                if hasattr(TreatmentHistoryTable, 'user_id'):
+                    query = query.filter(TreatmentHistoryTable.user_id == user_id)
+                # Fallback: Filter via connected DiagnosisHistoryTable relationship
+                else:
+                    query = query.join(
+                        DiagnosisHistoryTable,
+                        TreatmentHistoryTable.diagnosis_history_id == DiagnosisHistoryTable.id
+                    ).filter(DiagnosisHistoryTable.user_id == user_id)
             # =================================================
             # MONITORING FILTER
             # =================================================

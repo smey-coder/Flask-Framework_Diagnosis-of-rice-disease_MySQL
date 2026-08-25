@@ -18,6 +18,7 @@ from app.forms.farm_forms import (
     FarmEditForm,
     FarmConfirmDeleteForm
 )
+from app.decorators.access import role_required, permission_required
 
 farm_bp = Blueprint("farms",__name__,url_prefix="/user/farms",template_folder="../../templates")
 
@@ -27,17 +28,23 @@ farm_bp = Blueprint("farms",__name__,url_prefix="/user/farms",template_folder=".
 
 @farm_bp.route("/")
 @login_required
+@role_required("User")
+@permission_required("VIEW_FARM")
 def index():
-
-    farms = FarmService.get_all(
-        user_id=current_user.id
-    )
-
-    return render_template(
-        "user_page/farms/index.html",
-        farms=farms
-    )
-
+    try:
+        farms = FarmService.get_all(
+                user_id=current_user.id
+            )
+        
+        return render_template(
+            "user_page/farms/index.html",
+            farms=farms
+        )
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        flash("Don't can open farm!","danger")
+        return redirect(url_for("user.dashboard"))
 
 # =========================================================
 # FARM DETAIL
@@ -45,6 +52,8 @@ def index():
 
 @farm_bp.route("/<int:farm_id>")
 @login_required
+@role_required("User")
+@permission_required("DETAIL_FARM")
 def detail(farm_id):
 
     farm = FarmService.get_by_id(
@@ -70,6 +79,8 @@ def detail(farm_id):
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("CREATE_FARM")
 def create():
     form = FarmCreateForm()
     if form.validate_on_submit():
@@ -93,22 +104,12 @@ def create():
                 status=form.status.data
             )
 
-            flash(
-                "Farm created successfully.",
-                "success"
-            )
-
-            return redirect(
-                url_for("farms.index")
-            )
+            flash("Farm created successfully.","success")
+            return redirect(url_for("farms.index"))
 
         except (ValueError, TypeError):
-
-            flash(
-                "Invalid input data.",
-                "danger"
-            )
-
+            flash("Invalid input data.","danger")
+            return redirect(url_for("user.dashboard"))
     return render_template(
         "user_page/farms/create.html",
         form=form,
@@ -126,6 +127,8 @@ def create():
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("EDIT_FARM")
 def edit(farm_id):
     farm = FarmService.get_by_id(
         farm_id,
@@ -181,6 +184,8 @@ def edit(farm_id):
 
 @farm_bp.route("/<int:farm_id>/delete",methods=["GET", "POST"])
 @login_required
+@role_required("User")
+@permission_required("DELETE_FARM")
 def delete_confirm(farm_id):
     farm = FarmService.get_by_id(
         farm_id,

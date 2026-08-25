@@ -37,7 +37,7 @@ from app.services.rice_variety_service import (
 from app.services.growth_stage_service import (
     GrowthStageService
 )
-
+from app.decorators.access import role_required,permission_required
 
 field_crop_bp = Blueprint("field_crops",__name__,url_prefix="/user/field-crops", template_folder="../../templates")
 # =========================================================
@@ -46,6 +46,8 @@ field_crop_bp = Blueprint("field_crops",__name__,url_prefix="/user/field-crops",
 
 @field_crop_bp.route("/")
 @login_required
+@role_required("User")
+@permission_required("VIEW_FIELD_CROP")
 def index():
 
     try:
@@ -84,6 +86,8 @@ def index():
     "/<int:crop_id>"
 )
 @login_required
+@role_required("User")
+@permission_required("DETAIL_FIELD_CROP")
 def detail(crop_id):
 
     try:
@@ -129,6 +133,8 @@ def detail(crop_id):
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("CREATE_FIELD_CROP")
 def create():
 
     form = FieldCropForm()
@@ -339,6 +345,8 @@ def create():
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("EDIT_FIELD_CROP")
 def edit(crop_id):
 
     try:
@@ -517,6 +525,8 @@ def edit(crop_id):
     methods=["GET", "POST"]
 )
 @login_required
+@role_required("User")
+@permission_required("DELETE_FIELD_CROP")
 def delete_confirm(crop_id):
 
     try:
