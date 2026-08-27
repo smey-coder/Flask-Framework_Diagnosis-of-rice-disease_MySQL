@@ -2950,7 +2950,11 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle, rgba(13, 110, 253, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(13, 110, 253, 0.1) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
   border-radius: 50%;
   position: relative;
 }
@@ -2982,6 +2986,206 @@ body,
 }
 
 @keyframes spinSun {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* =====================================================
+   HERO CAROUSEL SLIDESHOW
+   ===================================================== */
+
+/* Slide Transitions & Container */
+#heroCarousel {
+  border-radius: 2rem !important; /* Matches rounded-5 */
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+#heroCarousel .carousel-item {
+  transition:
+    transform 0.8s ease-in-out,
+    opacity 0.8s ease-in-out;
+}
+
+/* Text Content Animations */
+#heroCarousel .carousel-item.active h1 {
+  animation: slideDownFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+#heroCarousel .carousel-item.active p {
+  animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+}
+
+#heroCarousel .carousel-item.active .btn {
+  animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Carousel Control Buttons (Arrows) */
+#heroCarousel .carousel-control-prev,
+#heroCarousel .carousel-control-next {
+  width: 5%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+#heroCarousel:hover .carousel-control-prev,
+#heroCarousel:hover .carousel-control-next {
+  opacity: 0.85;
+}
+
+#heroCarousel .carousel-control-prev-icon,
+#heroCarousel .carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.35);
+  background-size: 50%;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  backdrop-filter: blur(4px);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+#heroCarousel .carousel-control-prev:hover .carousel-control-prev-icon,
+#heroCarousel .carousel-control-next:hover .carousel-control-next-icon {
+  background-color: rgba(3, 171, 79, 0.85); /* Primary Theme Accent */
+  transform: scale(1.1);
+}
+
+/* Carousel Indicators (Pills) */
+#heroCarousel .carousel-indicators {
+  margin-bottom: 1.25rem;
+  z-index: 3;
+}
+
+#heroCarousel .carousel-indicators [data-bs-target] {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  opacity: 0.5;
+  border: none;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+}
+
+#heroCarousel .carousel-indicators .active {
+  width: 28px;
+  border-radius: 10px;
+  opacity: 1;
+  background-color: #20c997; /* Emerald Accent */
+}
+
+/* Call to Action Button Hover Effects */
+#heroCarousel .btn-success {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+#heroCarousel .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(25, 135, 84, 0.4) !important;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 576px) {
+  #heroCarousel .carousel-item {
+    min-height: 280px !important;
+  }
+
+  #heroCarousel h1 {
+    font-size: 1.5rem;
+  }
+
+  #heroCarousel p.lead {
+    font-size: 0.95rem;
+  }
+
+  #heroCarousel .carousel-control-prev,
+  #heroCarousel .carousel-control-next {
+    display: none; /* Hide arrows on small touch devices */
+  }
+}
+/* =====================================================
+   CALENDAR POPUP MODAL STYLES
+   ===================================================== */
+
+/* 7-Column Layout Grid */
+.grid-7 {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-weekdays div {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 5px;
+}
+
+/* Day Tiles */
+.calendar-days .day-tile {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #212529;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e9ecef;
+}
+
+.calendar-days .day-tile:hover:not(.empty-tile) {
+  background-color: #e8f5e9;
+  color: #198754;
+  border-color: #badbcc;
+  transform: scale(1.08);
+}
+
+.calendar-days .day-tile.today {
+  background-color: #198754;
+  color: #ffffff;
+  border-color: #198754;
+  box-shadow: 0 4px 10px rgba(25, 135, 84, 0.3);
+}
+
+.calendar-days .day-tile.empty-tile {
+  background-color: transparent;
+  border: none;
+  cursor: default;
 }

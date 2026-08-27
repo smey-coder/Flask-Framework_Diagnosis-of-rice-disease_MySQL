@@ -100,7 +100,7 @@ def index():
 @disease_bp.route("/<int:disease_id>")
 @login_required
 @role_required("Admin", "Expert")
-@permission_required("DETIAL_DISEASE")
+@permission_required("DETAIL_DISEASE")
 def detail(disease_id: int):
     """View disease details"""
     try:

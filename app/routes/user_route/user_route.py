@@ -1302,7 +1302,6 @@ def diagnosis_result():
         selected_ids = session.get("selected_symptoms",[])
         if not selected_ids:
             flash("No symptoms selected.","warning")
-
             return redirect(url_for("user.diagnosis_input"))
 
 

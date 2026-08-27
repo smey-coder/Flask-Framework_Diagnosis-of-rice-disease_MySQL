@@ -27,7 +27,7 @@ block styles %} {% endblock %} {% block content %}
         </p>
       </div>
     </div>
-
+    {% if current_user.has_permission('CREATE_GROWTH_STAGE') %}
     <a
       href="{{ url_for('growth_stage.create') }}"
       class="btn btn-success growth-add-btn"
@@ -35,6 +35,7 @@ block styles %} {% endblock %} {% block content %}
       <i class="bi bi-plus-circle me-1"></i>
       Add Growth Stage
     </a>
+    {% endif %}
   </div>
 
   <!-- =====================================================
@@ -194,6 +195,7 @@ block styles %} {% endblock %} {% block content %}
 
             <td class="text-end">
               <div class="growth-actions">
+                {% if current_user.has_permission('VIEW_GROWTH_STAGE') %}
                 <a
                   href="{{ url_for(
                           'growth_stage.detail',
@@ -204,7 +206,9 @@ block styles %} {% endblock %} {% block content %}
                 >
                   <i class="bi bi-eye"></i>
                 </a>
+                {% endif %}
 
+                {% if current_user.has_permission('UPDATE_GROWTH_STAGE') %}
                 <a
                   href="{{ url_for(
                           'growth_stage.edit',
@@ -215,7 +219,9 @@ block styles %} {% endblock %} {% block content %}
                 >
                   <i class="bi bi-pencil-square"></i>
                 </a>
+                {% endif %}
 
+                {% if current_user.has_permission('DELETE_GROWTH_STAGE') %}
                 <a
                   href="{{ url_for(
                           'growth_stage.delete_confirm',
@@ -226,6 +232,7 @@ block styles %} {% endblock %} {% block content %}
                 >
                   <i class="bi bi-trash"></i>
                 </a>
+                {% endif %}
               </div>
             </td>
           </tr>
@@ -252,10 +259,12 @@ block styles %} {% endblock %} {% block content %}
 
       <p>You haven't created any growth stage yet.</p>
 
+      {% if current_user.has_permission('CREATE_GROWTH_STAGE') %}
       <a href="{{ url_for('growth_stage.create') }}" class="btn btn-success">
         <i class="bi bi-plus-circle me-1"></i>
         Create First Stage
       </a>
+      {% endif %}
     </div>
   </div>
 

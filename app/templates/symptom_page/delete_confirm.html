@@ -1,28 +1,59 @@
-{% extends "layouts/admin_layout/admin.html"%}
-{% block title %} Delete User {% endblock %}
+{% extends "layouts/admin_layout/admin.html" %}
+{% block title %} Delete Symptom - {{ symptom.symptom_name }} {% endblock %}
 
 {% block content %}
-
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card bordered-danger">
-            <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">Confirm Delete</h5>
+<div class="row justify-content-center pt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white d-flex align-items-center gap-2 py-3">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                <h5 class="mb-0 fw-bold">Confirm Delete</h5>
             </div>
 
-            <p>
-                Are you sure you want to delete the following symptom?
-                <strong>{{ symptom.symptom_name }}</strong>?
-            </p>
+            <div class="card-body p-4">
+                <p class="text-muted mb-3">
+                    Are you sure you want to permanently delete this symptom? This action cannot be undone.
+                </p>
 
-            <form method="POST" action="{{ url_for('tbl_symptoms.delete', symptom_id = symptom.id)}}">
-                {{ form.hidden_tag()}}
-                <button type="submit" class="btn btn-danger">
-                   Delete
-                </button>
-                <a href="{{ url_for('tbl_symptoms.index')}}" class="btn btn-secondary">Cancel</a>
-            </form>
+                <!-- Symptom Summary Box -->
+                <div class="bg-light p-3 rounded border mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge bg-secondary">ID #{{ symptom.id }}</span>
+                        {% if symptom.symptom_group %}
+                            <span class="badge bg-info-subtle text-info border border-info-subtle">
+                                {{ symptom.symptom_group }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">{{ symptom.symptom_name }}</h5>
+                    {% if symptom.description %}
+                        <p class="text-muted small mb-0 text-truncate">{{ symptom.description }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <small>Symptoms linked to active diagnosis rules cannot be deleted until unlinked.</small>
+                </div>
+
+                <form method="POST" action="{{ url_for('tbl_symptoms.delete', symptom_id=symptom.id) }}">
+                    {% if form %}
+                        {{ form.hidden_tag() }}
+                    {% else %}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    {% endif %}
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('tbl_symptoms.detail', symptom_id=symptom.id) }}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-trash me-1"></i>Delete Symptom
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-{%endblock %}
+{% endblock %}

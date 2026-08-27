@@ -1,33 +1,310 @@
- body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; }
-        .container {
-            width: 80%;
-            margin: 40px auto;
-            background: #fff;
-            padding: 25px;
-            border-radius: 14px;
-            box-shadow: 0 5px 15px rgba(0,0,0,.15);
-        }
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-        }
-        img {
-            max-width: 260px;
-            border-radius: 12px;
-            border: 1px solid #ccc;
-        }
-        h2 { color: #c62828; }
-        .btn {
-            display: inline-block;
-            background: #2e7d32;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-        }
-        .btn:hover { background: #1b5e20; }
+body {
+  background-color: #f4f9f4;
+}
+
+/* ===== Container ===== */
+.diagnosis-container {
+  padding: 30px 15px;
+  min-height: 90vh;
+}
+
+/* ===== Disease Card ===== */
+.disease-card {
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.disease-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.disease-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.disease-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.disease-name {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #dc3545;
+}
+
+/* ===== Confidence Badge ===== */
+.score-badge {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 5px 15px;
+  border-radius: 50px;
+}
+.score-high {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+.score-med {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.score-low {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+/* ===== Card Footer Buttons ===== */
+.btn-action {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 50px;
+  transition: transform 0.2s;
+}
+.btn-action:hover {
+  transform: translateY(-2px);
+}
+/* ==========================================
+       1. Keyframe Animations & FX
+       ========================================== */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+}
+
+.animated-fade-in {
+  animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==========================================
+       2. Hero Carousel Styling
+       ========================================== */
+.hero-carousel-card {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.carousel-item-img {
+  height: 200px;
+  object-fit: cover;
+  filter: brightness(0.85);
+  transition: transform 0.5s ease;
+}
+
+.carousel-item:hover .carousel-item-img {
+  transform: scale(1.03);
+}
+
+.carousel-caption-custom {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  border-radius: 0 0 16px 16px;
+}
+
+/* ==========================================
+       3. Interactive Symptom Card Design
+       ========================================== */
+.symptom-card {
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.symptom-card:hover {
+  border-color: #0d6efd;
+  background-color: #f8faff;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(13, 110, 253, 0.12);
+}
+
+.symptom-card.selected {
+  border-color: #0d6efd;
+  background-color: #e7f1ff;
+  box-shadow: 0 4px 14px rgba(13, 110, 253, 0.2);
+}
+
+.symptom-card.selected::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: #0d6efd;
+}
+
+.symptom-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  transition: transform 0.2s ease;
+}
+
+.symptom-card:hover .symptom-img {
+  transform: scale(1.08);
+}
+
+/* Badges & Remove Button */
+.badge-remove {
+  cursor: pointer;
+  margin-left: 6px;
+  transition: transform 0.15s ease;
+}
+
+.badge-remove:hover {
+  transform: scale(1.2);
+}
+
+.pulse-btn {
+  animation: pulseGlow 2s infinite;
+}
+
+/* Search Input Clear Icon */
+.clear-search-btn {
+  cursor: pointer;
+  display: none;
+}
+.symptom-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.symptom-icon-placeholder {
+  width: 50px;
+  height: 50px;
+  background-color: #f8f9fa;
+  border: 1px dashed #dee2e6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.symptom-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  transition: transform 0.15s ease-in-out;
+}
+
+.symptom-img:hover {
+  transform: scale(1.08);
+  border-color: #0d6efd;
+}
+.symptom-icon-placeholder {
+  width: 50px;
+  height: 50px;
+  background-color: #f8f9fa;
+  border: 1px dashed #ced4da;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+/* ==========================================
+   Diagnosis Header & Guidance Alert Styling
+   ========================================== */
+
+/* Container Fade-in Animation */
+.animated-fade-in {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Selected Counter Badge */
+.badge.rounded-pill {
+  transition: all 0.2s ease-in-out;
+  letter-spacing: 0.2px;
+}
+
+.badge.rounded-pill:hover {
+  border-color: #0d6efd !important;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.12) !important;
+}
+
+#selectedCounter {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+  display: inline-block;
+}
+
+/* Animated counter pop effect when count changes */
+#selectedCounter.updated {
+  transform: scale(1.25);
+}
+
+/* Guidance Alert Customization */
+.alert-info {
+  background: linear-gradient(135deg, #e7f5ff 0%, #f0f7ff 100%);
+  border-left: 4px solid #0dcaf0 !important;
+}
+
+.bg-info-subtle {
+  background-color: rgba(13, 202, 240, 0.15) !important;
+}
+
+.alert-info ul li {
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+
+.alert-info ul li:last-child {
+  margin-bottom: 0;
+}
+
+.alert-info strong {
+  color: #055160;
+}

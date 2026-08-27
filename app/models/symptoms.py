@@ -8,6 +8,7 @@ class SymptomsTable(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     symptom_name = db.Column(db.String(200), unique=True, nullable=False)
+    image = db.Column(db.String(255), nullable=True)  # បន្ថែម Column នេះ
     symptom_group = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)

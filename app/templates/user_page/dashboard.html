@@ -29,33 +29,203 @@ RiceCare AI{% endblock %} {% block content %}
     </div>
   </div>
 
-  <div class="row mb-5">
-    <div class="col-12">
-      <div
-        class="card border-0 rounded-5 shadow-lg overflow-hidden text-white"
-        style="background: linear-gradient(rgba(10, 105, 108, 0.3), rgba(3, 171, 79, 0.3)), url('{{ url_for('static', filename='images/logo_dashboard.jpg') }}'); background-size: cover; background-position: center; min-height: 220px;"
-      >
-        <div
-          class="card-body d-flex flex-column justify-content-center p-4 p-md-5"
+    <div class="row mb-5">
+  <div class="col-12">
+    <!-- Hero Carousel Container -->
+    <div 
+      id="heroCarousel" 
+      class="carousel slide carousel-fade shadow-lg rounded-5 overflow-hidden" 
+      data-bs-ride="carousel" 
+      data-bs-interval="5000"
+    >
+      <!-- Carousel Indicators -->
+      <div class="carousel-indicators mb-3">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+      </div>
+
+      <!-- Slides Wrapper -->
+      <div class="carousel-inner" style="min-height: 260px;">
+        
+        <!-- Slide 1 -->
+        <div 
+          class="carousel-item active position-relative p-4 p-md-5 text-white" 
+          style="background: url('{{ url_for('static', filename='images/logo_dashboard.jpg') }}') center/cover no-repeat; min-height: 260px;"
         >
-          <h1 class="display-6 fw-bold">{{lang.home.careforyourricecrop}}</h1>
-          <p class="lead opacity-90">
-            {{lang.home.QuicklydiagnoseandtreatricediseaseswithAItechnology}}
-          </p>
-          <div>
-            <a
-              href="{{ url_for('user.diagnosis_input') }}"
-              class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow"
-            >
-              <i class="fas fa-qrcode me-2"></i>
-              {{lang.home.Start_diagnosing_the_disease}}
-            </a>
+          <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(10, 105, 108, 0.45), rgba(3, 171, 79, 0.45)); z-index: 1;"></div>
+          
+          <div class="position-relative d-flex flex-column justify-content-center h-100" style="z-index: 2;">
+            <h1 class="display-6 fw-bold">{{ lang.home.careforyourricecrop }}</h1>
+            <p class="lead opacity-90">
+              {{ lang.home.QuicklydiagnoseandtreatricediseaseswithAItechnology }}
+            </p>
+            <!-- Button Group -->
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <a 
+                href="{{ url_for('user.diagnosis_input') }}" 
+                class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow"
+              >
+                <i class="fas fa-qrcode me-2"></i>
+                {{ lang.home.Start_diagnosing_the_disease }}
+              </a>
+
+              <!-- Calendar Trigger Button -->
+              <button 
+                type="button" 
+                class="btn btn-light rounded-pill px-4 py-2 fw-bold shadow text-success" 
+                data-bs-toggle="modal" 
+                data-bs-target="#calendarModal"
+              >
+                <i class="fas fa-calendar-alt me-2"></i>
+                Crop Calendar
+              </button>
+            </div>
           </div>
         </div>
+
+        <!-- Slide 2 -->
+        <div 
+          class="carousel-item position-relative p-4 p-md-5 text-white" 
+          style="background: url('{{ url_for('static', filename='images/intro.png') }}') center/cover no-repeat; min-height: 260px;"
+        >
+          <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(10, 105, 108, 0.45), rgba(3, 171, 79, 0.45)); z-index: 1;"></div>
+          
+          <div class="position-relative d-flex flex-column justify-content-center h-100" style="z-index: 2;">
+            <h1 class="display-6 fw-bold">{{ lang.home.careforyourricecrop }}</h1>
+            <p class="lead opacity-90">
+              {{ lang.home.QuicklydiagnoseandtreatricediseaseswithAItechnology }}
+            </p>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <a 
+                href="{{ url_for('user.diagnosis_input') }}" 
+                class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow"
+              >
+                <i class="fas fa-qrcode me-2"></i>
+                {{ lang.home.Start_diagnosing_the_disease }}
+              </a>
+
+              <button 
+                type="button" 
+                class="btn btn-light rounded-pill px-4 py-2 fw-bold shadow text-success" 
+                data-bs-toggle="modal" 
+                data-bs-target="#calendarModal"
+              >
+                <i class="fas fa-calendar-alt me-2"></i>
+                Crop Calendar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div 
+          class="carousel-item position-relative p-4 p-md-5 text-white" 
+          style="background: url('{{ url_for('static', filename='images/Rigester_logo.jpg') }}') center/cover no-repeat; min-height: 260px;"
+        >
+          <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(10, 105, 108, 0.45), rgba(3, 171, 79, 0.45)); z-index: 1;"></div>
+          
+          <div class="position-relative d-flex flex-column justify-content-center h-100" style="z-index: 2;">
+            <h1 class="display-6 fw-bold">{{ lang.home.careforyourricecrop }}</h1>
+            <p class="lead opacity-90">
+              {{ lang.home.QuicklydiagnoseandtreatricediseaseswithAItechnology }}
+            </p>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <a 
+                href="{{ url_for('user.diagnosis_input') }}" 
+                class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow"
+              >
+                <i class="fas fa-qrcode me-2"></i>
+                {{ lang.home.Start_diagnosing_the_disease }}
+              </a>
+
+              <button 
+                type="button" 
+                class="btn btn-light rounded-pill px-4 py-2 fw-bold shadow text-success" 
+                data-bs-toggle="modal" 
+                data-bs-target="#calendarModal"
+              >
+                <i class="fas fa-calendar-alt me-2"></i>
+                Crop Calendar
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
+
+      <!-- Controls -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+
     </div>
   </div>
+</div>
+<!-- =====================================================
+     CALENDAR POPUP MODAL
+===================================================== -->
+<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      
+      <!-- Modal Header -->
+      <div class="modal-header bg-success text-white rounded-top-4 p-3 px-4">
+        <h5 class="modal-header-title m-0 fw-bold" id="calendarModalLabel">
+          <i class="fas fa-calendar-alt me-2"></i> Crop Care & Treatment Schedule
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
+      <!-- Modal Body -->
+      <div class="modal-body p-4">
+        <div class="calendar-container">
+          <!-- Calendar Controls -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <button class="btn btn-outline-secondary btn-sm rounded-circle px-3 py-2" id="prevMonthBtn">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <h4 class="fw-bold mb-0 text-dark" id="monthYearDisplay">Month Year</h4>
+            <button class="btn btn-outline-secondary btn-sm rounded-circle px-3 py-2" id="nextMonthBtn">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Weekday Headers -->
+          <div class="calendar-weekdays grid-7 text-center fw-bold text-muted mb-2">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+
+          <!-- Days Grid -->
+          <div class="calendar-days grid-7" id="calendarDaysGrid">
+            <!-- Dynamically populated via JavaScript -->
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer bg-light rounded-bottom-4 px-4 py-2">
+        <small class="text-muted me-auto">
+          <i class="fas fa-info-circle me-1"></i> Select a date to schedule or review spray dates.
+        </small>
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
   <div class="row g-4 mb-5">
     <div class="col-6 col-md-3">
       <div
@@ -1461,5 +1631,70 @@ RiceCare AI{% endblock %} {% block content %}
   updateGreeting();
   // Optional: update every 10 minutes
   setInterval(updateGreeting, 600000);
+
+  document.addEventListener("DOMContentLoaded", function () {
+  let currentDate = new Date();
+
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    document.getElementById("monthYearDisplay").textContent = `${monthNames[month]} ${year}`;
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+
+    const daysGrid = document.getElementById("calendarDaysGrid");
+    daysGrid.innerHTML = "";
+
+    // Blank slots before 1st of month
+    for (let x = 0; x < firstDayIndex; x++) {
+      const emptyTile = document.createElement("div");
+      emptyTile.classList.add("day-tile", "empty-tile");
+      daysGrid.appendChild(emptyTile);
+    }
+
+    // Populate day tiles
+    for (let i = 1; i <= totalDays; i++) {
+      const dayTile = document.createElement("div");
+      dayTile.classList.add("day-tile");
+      dayTile.textContent = i;
+
+      // Highlight current date
+      if (
+        i === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        dayTile.classList.add("today");
+      }
+
+      // Add click listener to pick a date
+      dayTile.addEventListener("click", function () {
+        alert(`Selected Date: ${monthNames[month]} ${i}, ${year}`);
+      });
+
+      daysGrid.appendChild(dayTile);
+    }
+  }
+
+  document.getElementById("prevMonthBtn").addEventListener("click", function () {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+  });
+
+  document.getElementById("nextMonthBtn").addEventListener("click", function () {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+  });
+
+  renderCalendar();
+});
 </script>
 {% endblock %}

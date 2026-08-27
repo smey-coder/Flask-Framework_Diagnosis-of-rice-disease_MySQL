@@ -1,9 +1,11 @@
-{% extends "layouts/admin_layout/admin.html"%}
-{% block title %}User Dashboard{% endblock %}
+{% extends "layouts/admin_layout/admin.html" %}
+{% block title %}Create Symptom - Rice Disease System{% endblock %}
 
 {% block content %}
-<h1 class="h3 mb-3">Created Symptom</h1>
-<form method="post" action="{{ url_for('tbl_symptoms.create') }}" novalidate>
-    {% include "symptom_page/_form.html"%}
+<h1 class="h3 mb-3">Create Symptom</h1>
+
+<!-- MUST include enctype="multipart/form-data" for file uploads -->
+<form method="POST" action="{{ url_for('tbl_symptoms.create') }}" enctype="multipart/form-data" novalidate>
+    {% include "symptom_page/_form.html" %}
 </form>
 {% endblock %}

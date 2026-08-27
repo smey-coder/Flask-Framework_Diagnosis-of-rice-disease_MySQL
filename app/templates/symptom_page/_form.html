@@ -1,56 +1,94 @@
-<form method="post">
-    {{ form.hidden_tag() }}
+{{ form.hidden_tag() }}
 
-    <div class="mb-3">
-        {{ form.symptom_name.label(class="form-label") }}
-        {{ form.symptom_name(class="form-control") }}
-        {% if form.symptom_name.errors %}
-        <div class="text-danger small">
+<!-- Symptom Name -->
+<div class="mb-3">
+    {{ form.symptom_name.label(class="form-label fw-bold") }}
+    {{ form.symptom_name(class="form-control" + (" is-invalid" if form.symptom_name.errors else "")) }}
+    {% if form.symptom_name.errors %}
+        <div class="invalid-feedback d-block">
             {% for error in form.symptom_name.errors %}
-                <div>{{ error }}</div>
+                <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
             {% endfor %}
         </div>
-        {% endif %}
-    </div>
-    <div class="mb-3">
-        {{ form.symptom_group.label(class="form-label") }}
-        {{ form.symptom_group(class="form-select") }}
-        {% if form.symptom_group.errors %}
-        <div class="text-danger small">
+    {% endif %}
+</div>
+
+<!-- Symptom Group -->
+<div class="mb-3">
+    {{ form.symptom_group.label(class="form-label fw-bold") }}
+    {{ form.symptom_group(class="form-select" + (" is-invalid" if form.symptom_group.errors else "")) }}
+    {% if form.symptom_group.errors %}
+        <div class="invalid-feedback d-block">
             {% for error in form.symptom_group.errors %}
-                <div>{{ error }}</div>
+                <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
             {% endfor %}
         </div>
-        {% endif %}
-    </div>
-    <div class="mb-3">
-        {{ form.description.label(class="form-label") }}
-        {{ form.description(class="form-control", rows="3") }}
-        {% if form.description.errors %}
-        <div class="text-danger small">
+    {% endif %}
+</div>
+
+<!-- Description -->
+<div class="mb-3">
+    {{ form.description.label(class="form-label fw-bold") }}
+    {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows="4") }}
+    {% if form.description.errors %}
+        <div class="invalid-feedback d-block">
             {% for error in form.description.errors %}
-                <div>{{ error }}</div>
+                <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
             {% endfor %}
         </div>
-        {% endif %}
-    </div>
-    <div class="mb-3">
-        <div class="form-check">
-            {{ form.is_active(class="form-check-input") }}
-            {{ form.is_active.label(class="form-check-label") }}
+    {% endif %}
+</div>
+
+<!-- Symptom Image -->
+<div class="mb-3">
+    {{ form.image.label(class="form-label fw-bold") }}
+    
+    {% if symptom and symptom.image %}
+        <div class="mb-2 d-flex align-items-center gap-3">
+            <img 
+                src="{{ url_for('static', filename='images/symptoms/' ~ symptom.image) }}" 
+                alt="{{ symptom.symptom_name }}" 
+                class="img-thumbnail shadow-sm" 
+                style="max-height: 150px; width: auto; object-fit: cover;"
+            >
+            <div>
+                <span class="badge bg-secondary mb-1">Current File</span>
+                <div class="form-text text-muted mb-0">{{ symptom.image }}</div>
+            </div>
         </div>
+    {% endif %}
+
+    {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else ""), accept="image/*") }}
+    <div class="form-text">Upload an image file (PNG, JPG, WEBP).</div>
+
+    {% if form.image.errors %}
+        <div class="invalid-feedback d-block">
+            {% for error in form.image.errors %}
+                <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<!-- Active Status -->
+<div class="mb-3">
+    <div class="form-check">
+        {{ form.is_active(class="form-check-input") }}
+        {{ form.is_active.label(class="form-check-label fw-bold") }}
     </div>
-    <div class="mb-3">
-      <button type="submit" class="btn btn-primary">
-         {% if form.submit.label.text == 'Save' %}
+</div>
+
+<!-- Form Actions -->
+<div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">
+        {% if form.submit.label.text == 'Save' %}
             <i class="bi bi-save me-1"></i>
-         {% else %}
+        {% else %}
             <i class="bi bi-check2 me-1"></i>
-         {% endif %}
-         {{ form.submit.label.text }}
-      </button>
-      <a href="{{ url_for('tbl_symptoms.index')}}" class="btn btn-outline-secondary">
-         Cancel
-      </a>
-   </div>
-</form>
+        {% endif %}
+        {{ form.submit.label.text }}
+    </button>
+    <a href="{{ url_for('tbl_symptoms.index') }}" class="btn btn-outline-secondary">
+        Cancel
+    </a>
+</div>

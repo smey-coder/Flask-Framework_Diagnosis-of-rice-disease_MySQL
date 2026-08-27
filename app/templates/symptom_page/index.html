@@ -1,23 +1,27 @@
-{% extends "layouts/admin_layout/admin.html" %} {% block title %}Symptoms - Rice
-Disease Diagnosis System{% endblock %} {% block content %}
+{% extends "layouts/admin_layout/admin.html" %} 
+
+{% block title %}Symptoms - Rice Disease Diagnosis System{% endblock %} 
+
+{% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/symptoms.css') }}"
+/>
 
 <div class="symptoms-page">
-  <!-- =====================================================
-         PAGE HEADER
-    ====================================================== -->
-  <div class="symptoms-header">
-    <div class="symptoms-title">
-      <div class="symptoms-title-icon">
+  <!-- PAGE HEADER -->
+  <div class="symptoms-header d-flex justify-content-between align-items-center mb-4">
+    <div class="symptoms-title d-flex align-items-center">
+      <div class="symptoms-title-icon me-3 fs-2 text-primary">
         <i class="bi bi-virus2"></i>
       </div>
-
       <div>
-        <h1>Symptom Management</h1>
-
-        <p>Manage symptoms used by the rice disease diagnosis system.</p>
+        <h1 class="h3 mb-0">Symptom Management</h1>
+        <p class="text-muted mb-0">Manage symptoms used by the rice disease diagnosis system.</p>
       </div>
     </div>
 
+    {% if current_user.has_permission('CREATE_SYMPTOM') %}
     <a
       href="{{ url_for('tbl_symptoms.create') }}"
       class="btn btn-primary symptoms-add-btn"
@@ -25,396 +29,362 @@ Disease Diagnosis System{% endblock %} {% block content %}
       <i class="bi bi-plus-circle-fill me-1"></i>
       New Symptom
     </a>
+    {% endif %}
   </div>
 
-  {% if symptoms %}
+  {% set symptom_list = pagination.items if pagination else symptoms %}
 
-  <!-- =====================================================
-         SUMMARY
-    ====================================================== -->
+  {% if symptom_list %}
 
-  <div class="symptom-summary-grid">
-    <!-- Total -->
+  <!-- SUMMARY CARDS -->
+   
+  <div class="symptom-summary-grid mb-4">
     <div class="symptom-summary-card total">
       <div class="summary-icon">
         <i class="bi bi-list-check"></i>
       </div>
-
       <div class="summary-content">
-        <span>Total Symptoms</span>
-
-        <strong id="totalSymptomCount"> {{ symptoms|length }} </strong>
+        <span>Total Page Items</span>
+        <strong id="totalSymptomCount">{{ symptom_list|length }}</strong>
       </div>
     </div>
 
-    <!-- Groups -->
     <div class="symptom-summary-card groups">
       <div class="summary-icon">
         <i class="bi bi-diagram-3-fill"></i>
       </div>
-
       <div class="summary-content">
         <span>Symptom Groups</span>
-
-        <strong id="groupCount"> 0 </strong>
+        <strong id="groupCount">0</strong>
       </div>
     </div>
 
-    <!-- Visible -->
     <div class="symptom-summary-card visible">
       <div class="summary-icon">
         <i class="bi bi-eye-fill"></i>
       </div>
-
       <div class="summary-content">
         <span>Showing</span>
-
-        <strong id="visibleSymptomCount"> {{ symptoms|length }} </strong>
+        <strong id="visibleSymptomCount">{{ symptom_list|length }}</strong>
       </div>
     </div>
 
-    <!-- Diagnosis -->
     <div class="symptom-summary-card diagnosis">
       <div class="summary-icon">
         <i class="bi bi-clipboard2-pulse-fill"></i>
       </div>
-
       <div class="summary-content">
         <span>Diagnosis Ready</span>
-
-        <strong> Yes </strong>
+        <strong>Yes</strong>
       </div>
     </div>
   </div>
 
-  <!-- =====================================================
-         FILTER CARD
-    ====================================================== -->
+  <!-- FILTER CARD -->
+  <div class="symptom-filter-card mb-3 p-3 bg-light rounded border">
+    <form method="GET" action="{{ url_for('tbl_symptoms.index') }}" class="row g-3" id="symptomFilterForm">
+      <div class="col-md-5">
+        <div class="filter-search input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input
+            type="text"
+            name="symptom_name"
+            id="symptomSearch"
+            class="form-control"
+            placeholder="Search symptom name or description..."
+            value="{{ request.args.get('symptom_name', '') }}"
+            autocomplete="off"
+          />
+        </div>
+      </div>
 
-  <div class="symptom-filter-card">
-    <div class="filter-search">
-      <i class="bi bi-search"></i>
+      <div class="col-md-4">
+        <div class="filter-group d-flex align-items-center">
+          <label for="groupFilter" class="form-label mb-0 me-2 text-nowrap">
+            <i class="bi bi-collection me-1"></i> Group
+          </label>
+          <select id="groupFilter" name="symptom_group" class="form-select">
+            <option value="">All Groups</option>
+            {% set groups = [] %} 
+            {% for symptom in symptom_list %} 
+              {% if symptom.symptom_group and symptom.symptom_group not in groups %} 
+                {% set _ = groups.append(symptom.symptom_group) %} 
+              {% endif %} 
+            {% endfor %} 
+            {% for group in groups|sort %}
+              <option value="{{ group }}" {% if request.args.get('symptom_group') == group %}selected{% endif %}>{{ group }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
 
-      <input
-        type="text"
-        id="symptomSearch"
-        class="form-control"
-        placeholder="Search symptom name or description..."
-        autocomplete="off"
-      />
-    </div>
-
-    <div class="filter-group">
-      <label for="groupFilter">
-        <i class="bi bi-collection me-1"></i>
-        Symptom Group
-      </label>
-
-      <select id="groupFilter" class="form-select">
-        <option value="">All Groups</option>
-
-        {% set groups = [] %} {% for symptom in symptoms %} {% if
-        symptom.symptom_group and symptom.symptom_group not in groups %} {% set
-        _ = groups.append(symptom.symptom_group) %} {% endif %} {% endfor %} {%
-        for group in groups|sort %}
-
-        <option value="{{ group|lower }}">{{ group }}</option>
-
-        {% endfor %}
-      </select>
-    </div>
-
-    <button
-      type="button"
-      class="btn btn-outline-secondary reset-symptom-filter"
-      onclick="resetSymptomFilters()"
-    >
-      <i class="bi bi-arrow-counterclockwise me-1"></i>
-
-      Reset
-    </button>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary reset-symptom-filter w-100"
+          onclick="resetSymptomFilters()"
+        >
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+        </button>
+      </div>
+    </form>
   </div>
 
-  <!-- =====================================================
-         RESULT INFO
-    ====================================================== -->
-
-  <div class="symptom-result-info">
+  <!-- RESULT INFO -->
+  <div class="symptom-result-info mb-2">
     <div>
       <i class="bi bi-info-circle me-1"></i>
-
-      <span id="resultText"> Showing all symptoms </span>
+      <span id="resultText">
+        Showing {{ symptom_list|length }} item(s) on current page
+      </span>
     </div>
   </div>
 
-  <!-- =====================================================
-         TABLE CARD
-    ====================================================== -->
-
-  <div class="symptom-table-card">
-    <div class="table-scroll-wrapper">
+  <!-- TABLE CARD -->
+  <div class="symptom-table-card card shadow-sm mb-4">
+    <div class="table-scroll-wrapper table-responsive">
       <table class="table symptom-table align-middle mb-0" id="symptomTable">
-        <thead>
+        <thead class="table-light">
           <tr>
             <th class="text-center id-column">#</th>
-
+            <th style="width: 90px;" class="text-center">Image</th>
             <th>Symptom</th>
-
             <th>Group</th>
-
             <th>Description</th>
-
+            <th class="text-center">Status</th>
             <th class="text-center action-column">Actions</th>
           </tr>
         </thead>
-
         <tbody>
-          {% for symptom in symptoms %}
-
+          {% for symptom in symptom_list %}
           <tr
             data-name="{{ symptom.symptom_name|lower }}"
             data-group="{{ symptom.symptom_group|lower if symptom.symptom_group else '' }}"
             data-description="{{ symptom.description|lower if symptom.description else '' }}"
           >
             <!-- ID -->
-
             <td class="text-center">
-              <span class="symptom-id"> {{ symptom.id }} </span>
+              <span class="symptom-id fw-bold"> {{ symptom.id }} </span>
             </td>
-
-            <!-- Symptom -->
-
+            <!-- Image Column -->
+            <td class="text-center">
+                {% if symptom.image %}
+                <img src="{{ url_for('static', filename='images/symptoms/' + symptom.image) }}" 
+                      alt="{{ symptom.symptom_name }}" 
+                      class="rounded border img-thumbnail"
+                          style="width: 48px; height: 48px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light rounded border d-flex align-items-center justify-content-center mx-auto" 
+                    style="width: 48px; height: 48px;">
+                    <i class="bi bi-image text-muted fs-5"></i>
+                </div>
+              {% endif %}
+            </td>
+            <!-- Symptom Name -->
             <td>
-              <div class="symptom-name-cell">
-                <div class="symptom-icon">
+              <div class="symptom-name-cell d-flex align-items-center">
+                <div class="symptom-icon me-2">
                   <i class="bi bi-virus"></i>
                 </div>
-
                 <div>
                   <a
-                    href="{{ url_for(
-                                            'tbl_symptoms.detail',
-                                            symptom_id=symptom.id
-                                        ) }}"
-                    class="symptom-name"
+                    href="{{ url_for('tbl_symptoms.detail', symptom_id=symptom.id) }}"
+                    class="symptom-name fw-semibold text-decoration-none"
                   >
                     {{ symptom.symptom_name }}
                   </a>
-
-                  <small> ID #{{ symptom.id }} </small>
+                  <br/>
+                  <small class="text-muted"> ID #{{ symptom.id }} </small>
                 </div>
               </div>
             </td>
 
             <!-- Group -->
-
             <td>
-              {% if symptom.symptom_group %} {% set group =
-              symptom.symptom_group|lower %} {% if 'leaf' in group or 'ស្លឹក' in
-              group %}
-
-              <span class="symptom-group leaf">
-                <i class="bi bi-leaf-fill me-1"></i>
-                {{ symptom.symptom_group }}
-              </span>
-
-              {% elif 'root' in group or 'ឬស' in group %}
-
-              <span class="symptom-group root">
-                <i class="bi bi-flower1 me-1"></i>
-                {{ symptom.symptom_group }}
-              </span>
-
-              {% elif 'stem' in group or 'ដើម' in group %}
-
-              <span class="symptom-group stem">
-                <i class="bi bi-tree-fill me-1"></i>
-                {{ symptom.symptom_group }}
-              </span>
-
-              {% elif 'grain' in group or 'គ្រាប់' in group %}
-
-              <span class="symptom-group grain">
-                <i class="bi bi-circle-fill me-1"></i>
-                {{ symptom.symptom_group }}
-              </span>
-
+              {% if symptom.symptom_group %} 
+                {% set group = symptom.symptom_group|lower %} 
+                {% if 'leaf' in group or 'ស្លឹក' in group %}
+                  <span class="badge bg-success-subtle text-success border border-success-subtle">
+                    <i class="bi bi-leaf-fill me-1"></i> {{ symptom.symptom_group }}
+                  </span>
+                {% elif 'root' in group or 'ឬស' in group %}
+                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                    <i class="bi bi-flower1 me-1"></i> {{ symptom.symptom_group }}
+                  </span>
+                {% elif 'stem' in group or 'ដើម' in group %}
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                    <i class="bi bi-tree-fill me-1"></i> {{ symptom.symptom_group }}
+                  </span>
+                {% elif 'grain' in group or 'គ្រាប់' in group %}
+                  <span class="badge bg-info-subtle text-info border border-info-subtle">
+                    <i class="bi bi-circle-fill me-1"></i> {{ symptom.symptom_group }}
+                  </span>
+                {% else %}
+                  <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+                    <i class="bi bi-collection me-1"></i> {{ symptom.symptom_group }}
+                  </span>
+                {% endif %} 
               {% else %}
-
-              <span class="symptom-group other">
-                <i class="bi bi-collection me-1"></i>
-                {{ symptom.symptom_group }}
-              </span>
-
-              {% endif %} {% else %}
-
-              <span class="text-muted"> No Group </span>
-
+                <span class="text-muted fs-7"> No Group </span>
               {% endif %}
             </td>
 
             <!-- Description -->
-
             <td>
               {% if symptom.description %}
-
-              <div class="description-cell">
-                {{ symptom.description[:100] }} {% if symptom.description|length
-                > 100 %} ... {% endif %}
+              <div class="description-cell text-muted small">
+                {{ symptom.description[:90] }}{% if symptom.description|length > 90 %}...{% endif %}
               </div>
-
               {% else %}
+              <span class="text-muted fs-7"> No description </span>
+              {% endif %}
+            </td>
 
-              <span class="text-muted"> No description </span>
-
+            <!-- Active Status -->
+            <td class="text-center">
+              {% if symptom.is_active %}
+                <span class="badge bg-success">Active</span>
+              {% else %}
+                <span class="badge bg-secondary">Inactive</span>
               {% endif %}
             </td>
 
             <!-- Actions -->
-
             <td class="text-center action-column">
-              <div class="symptom-actions">
+              <div class="btn-group btn-group-sm">
+                {% if current_user.has_permission('DETAIL_SYMPTOM') %}
                 <a
-                  href="{{ url_for(
-                                        'tbl_symptoms.detail',
-                                        symptom_id=symptom.id
-                                    ) }}"
-                  class="btn btn-sm btn-outline-info"
+                  href="{{ url_for('tbl_symptoms.detail', symptom_id=symptom.id) }}"
+                  class="btn btn-outline-info"
                   title="View"
                 >
                   <i class="bi bi-eye"></i>
                 </a>
+                {% endif %}
 
+                {% if current_user.has_permission('EDIT_SYMPTOM') %}
                 <a
-                  href="{{ url_for(
-                                        'tbl_symptoms.edit',
-                                        symptom_id=symptom.id
-                                    ) }}"
-                  class="btn btn-sm btn-outline-primary"
+                  href="{{ url_for('tbl_symptoms.edit', symptom_id=symptom.id) }}"
+                  class="btn btn-outline-primary"
                   title="Edit"
                 >
                   <i class="bi bi-pencil"></i>
                 </a>
+                {% endif %}
 
+                {% if current_user.has_permission('DELETE_SYMPTOM') %}
                 <a
-                  href="{{ url_for(
-                                        'tbl_symptoms.delete_confirm',
-                                        symptom_id=symptom.id
-                                    ) }}"
-                  class="btn btn-sm btn-outline-danger"
+                  href="{{ url_for('tbl_symptoms.delete_confirm', symptom_id=symptom.id) }}"
+                  class="btn btn-outline-danger"
                   title="Delete"
                 >
                   <i class="bi bi-trash"></i>
                 </a>
+                {% endif %}
               </div>
             </td>
           </tr>
-
           {% endfor %}
 
-          <!-- Search Empty -->
-
           <tr id="noSymptomResult" style="display: none">
-            <td colspan="5" class="text-center py-5">
-              <div class="symptom-empty">
-                <i class="bi bi-search"></i>
-
-                <h5>No Matching Symptoms</h5>
-
-                <p>Try changing your search or filter.</p>
+            <td colspan="6" class="text-center py-5">
+              <div class="symptom-empty text-muted">
+                <i class="bi bi-search fs-1"></i>
+                <h5 class="mt-2">No Matching Symptoms</h5>
+                <p class="mb-0">Try changing your search query or filter options.</p>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- PAGINATION BAR -->
+    {% if pagination and pagination.pages > 1 %}
+    <div class="card-footer d-flex justify-content-between align-items-center bg-white py-3">
+      <div class="text-muted small">
+        Page <strong>{{ pagination.page }}</strong> of <strong>{{ pagination.pages }}</strong>
+      </div>
+      <nav aria-label="Symptom Pagination">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('tbl_symptoms.index', page=pagination.prev_num, symptom_name=request.args.get('symptom_name', ''), symptom_group=request.args.get('symptom_group', '')) }}">Previous</a>
+          </li>
+          {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if p %}
+              <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('tbl_symptoms.index', page=p, symptom_name=request.args.get('symptom_name', ''), symptom_group=request.args.get('symptom_group', '')) }}">{{ p }}</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+          {% endfor %}
+          <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('tbl_symptoms.index', page=pagination.next_num, symptom_name=request.args.get('symptom_name', ''), symptom_group=request.args.get('symptom_group', '')) }}">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
   </div>
 
   {% else %}
 
-  <!-- =====================================================
-         EMPTY STATE
-    ====================================================== -->
-
-  <div class="symptom-empty-card">
-    <div class="empty-icon">
+  <!-- EMPTY STATE -->
+  <div class="symptom-empty-card text-center py-5 border rounded bg-light">
+    <div class="empty-icon text-muted mb-3 fs-1">
       <i class="bi bi-virus2"></i>
     </div>
-
     <h4>No Symptoms Found</h4>
+    <p class="text-muted">There are currently no symptoms recorded in the system.</p>
 
-    <p>There are currently no symptoms in the system.</p>
-
-    <a href="{{ url_for('tbl_symptoms.create') }}" class="btn btn-primary">
-      <i class="bi bi-plus-circle me-1"></i>
-
-      Create First Symptom
+    {% if current_user.has_permission('CREATE_SYMPTOM') %}
+    <a href="{{ url_for('tbl_symptoms.create') }}" class="btn btn-primary mt-2">
+      <i class="bi bi-plus-circle me-1"></i> Create First Symptom
     </a>
+    {% endif %}
   </div>
 
   {% endif %}
 </div>
 
-<!-- =====================================================
-     JAVASCRIPT
-====================================================== -->
-
+<!-- JAVASCRIPT -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("symptomSearch");
-
     const groupFilter = document.getElementById("groupFilter");
-
     const table = document.getElementById("symptomTable");
-
     const noResult = document.getElementById("noSymptomResult");
-
     const visibleCount = document.getElementById("visibleSymptomCount");
-
     const resultText = document.getElementById("resultText");
-
     const groupCount = document.getElementById("groupCount");
 
-    if (!table) {
-      return;
-    }
+    if (!table) return;
 
     const rows = Array.from(table.querySelectorAll("tbody tr[data-name]"));
 
-    /* =========================================
-       COUNT UNIQUE GROUPS
-    ========================================== */
-
+    // Count unique groups client-side
     const uniqueGroups = new Set();
-
     rows.forEach((row) => {
       const group = row.dataset.group;
-
-      if (group) {
-        uniqueGroups.add(group);
-      }
+      if (group) uniqueGroups.add(group);
     });
 
     if (groupCount) {
       groupCount.textContent = uniqueGroups.size;
     }
 
-    /* =========================================
-       FILTER
-    ========================================== */
-
+    // Dynamic Filter
     function filterSymptoms() {
       const search = searchInput ? searchInput.value.trim().toLowerCase() : "";
-
       const selectedGroup = groupFilter ? groupFilter.value.toLowerCase() : "";
 
       let visible = 0;
 
       rows.forEach((row) => {
         const name = row.dataset.name || "";
-
         const group = row.dataset.group || "";
-
         const description = row.dataset.description || "";
 
         const matchesSearch =
@@ -424,27 +394,15 @@ Disease Diagnosis System{% endblock %} {% block content %}
           description.includes(search);
 
         const matchesGroup = !selectedGroup || group === selectedGroup;
-
         const show = matchesSearch && matchesGroup;
 
         row.style.display = show ? "" : "none";
-
-        if (show) {
-          visible++;
-        }
+        if (show) visible++;
       });
-
-      /* =====================================
-           EMPTY RESULT
-        ====================================== */
 
       if (noResult) {
         noResult.style.display = visible === 0 ? "" : "none";
       }
-
-      /* =====================================
-           COUNTER
-        ====================================== */
 
       if (visibleCount) {
         visibleCount.textContent = visible;
@@ -452,761 +410,21 @@ Disease Diagnosis System{% endblock %} {% block content %}
 
       if (resultText) {
         if (search || selectedGroup) {
-          resultText.textContent = `Showing ${visible} of ${rows.length} symptoms`;
+          resultText.textContent = `Showing ${visible} of ${rows.length} symptoms on this page`;
         } else {
-          resultText.textContent = `Showing all ${rows.length} symptoms`;
+          resultText.textContent = `Showing ${rows.length} item(s) on current page`;
         }
       }
     }
 
-    /* =========================================
-       EVENTS
-    ========================================== */
-
-    if (searchInput) {
-      searchInput.addEventListener("input", filterSymptoms);
-    }
-
-    if (groupFilter) {
-      groupFilter.addEventListener("change", filterSymptoms);
-    }
-
-    /* Initial */
+    if (searchInput) searchInput.addEventListener("input", filterSymptoms);
+    if (groupFilter) groupFilter.addEventListener("change", filterSymptoms);
 
     filterSymptoms();
   });
 
-  /* =============================================
-   RESET
-============================================= */
-
   function resetSymptomFilters() {
-    const search = document.getElementById("symptomSearch");
-
-    const group = document.getElementById("groupFilter");
-
-    if (search) {
-      search.value = "";
-    }
-
-    if (group) {
-      group.value = "";
-    }
-
-    search?.dispatchEvent(new Event("input"));
+    window.location.href = "{{ url_for('tbl_symptoms.index') }}";
   }
 </script>
-
-<!-- =====================================================
-     PAGE STYLE
-====================================================== -->
-
-<style>
-  .symptoms-page {
-    width: 100%;
-  }
-
-  /* =========================================
-   HEADER
-========================================= */
-
-  .symptoms-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-
-    margin-bottom: 25px;
-  }
-
-  .symptoms-title {
-    display: flex;
-    align-items: center;
-
-    gap: 15px;
-  }
-
-  .symptoms-title-icon {
-    width: 55px;
-    height: 55px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 16px;
-
-    background: linear-gradient(135deg, #0d6efd, #4f8dfd);
-
-    color: white;
-
-    font-size: 25px;
-
-    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.2);
-  }
-
-  .symptoms-title h1 {
-    margin: 0;
-
-    font-size: 26px;
-
-    font-weight: 700;
-  }
-
-  .symptoms-title p {
-    margin: 4px 0 0;
-
-    color: #6c757d;
-
-    font-size: 14px;
-  }
-
-  .symptoms-add-btn {
-    border-radius: 12px;
-
-    padding: 10px 18px;
-
-    font-weight: 600;
-  }
-
-  /* =========================================
-   SUMMARY
-========================================= */
-
-  .symptom-summary-grid {
-    display: grid;
-
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-
-    gap: 16px;
-
-    margin-bottom: 22px;
-  }
-
-  .symptom-summary-card {
-    display: flex;
-
-    align-items: center;
-
-    gap: 14px;
-
-    padding: 20px;
-
-    background: white;
-
-    border-radius: 16px;
-
-    border: 1px solid #edf0f4;
-
-    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
-
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-
-  .symptom-summary-card:hover {
-    transform: translateY(-3px);
-
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  }
-
-  .summary-icon {
-    width: 48px;
-    height: 48px;
-
-    min-width: 48px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 13px;
-
-    font-size: 21px;
-  }
-
-  .symptom-summary-card.total .summary-icon {
-    background: #e8f1ff;
-
-    color: #0d6efd;
-  }
-
-  .symptom-summary-card.groups .summary-icon {
-    background: #eeeaff;
-
-    color: #6f42c1;
-  }
-
-  .symptom-summary-card.visible .summary-icon {
-    background: #e8f8f0;
-
-    color: #198754;
-  }
-
-  .symptom-summary-card.diagnosis .summary-icon {
-    background: #fff3cd;
-
-    color: #997404;
-  }
-
-  .summary-content {
-    display: flex;
-
-    flex-direction: column;
-  }
-
-  .summary-content span {
-    color: #6c757d;
-
-    font-size: 13px;
-  }
-
-  .summary-content strong {
-    font-size: 24px;
-
-    line-height: 1.2;
-
-    margin-top: 3px;
-  }
-
-  /* =========================================
-   FILTER
-========================================= */
-
-  .symptom-filter-card {
-    display: grid;
-
-    grid-template-columns:
-      minmax(250px, 1fr)
-      220px
-      auto;
-
-    align-items: end;
-
-    gap: 15px;
-
-    padding: 18px;
-
-    background: white;
-
-    border: 1px solid #edf0f4;
-
-    border-radius: 16px;
-
-    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
-
-    margin-bottom: 12px;
-  }
-
-  .filter-search {
-    position: relative;
-  }
-
-  .filter-search > i {
-    position: absolute;
-
-    left: 14px;
-
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    color: #6c757d;
-
-    z-index: 2;
-  }
-
-  .filter-search input {
-    padding-left: 40px;
-
-    min-height: 42px;
-
-    border-radius: 10px;
-  }
-
-  .filter-group label {
-    display: block;
-
-    margin-bottom: 6px;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    color: #495057;
-  }
-
-  .filter-group .form-select {
-    min-height: 42px;
-
-    border-radius: 10px;
-  }
-
-  .reset-symptom-filter {
-    min-height: 42px;
-
-    border-radius: 10px;
-
-    font-weight: 500;
-  }
-
-  /* =========================================
-   RESULT INFO
-========================================= */
-
-  .symptom-result-info {
-    display: flex;
-
-    justify-content: flex-end;
-
-    color: #6c757d;
-
-    font-size: 13px;
-
-    margin-bottom: 10px;
-  }
-
-  /* =========================================
-   TABLE CARD
-========================================= */
-
-  .symptom-table-card {
-    background: white;
-
-    border: 1px solid #edf0f4;
-
-    border-radius: 16px;
-
-    overflow: hidden;
-
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-  }
-
-  .table-scroll-wrapper {
-    width: 100%;
-
-    overflow-x: auto;
-
-    overflow-y: auto;
-
-    max-height: 600px;
-
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .symptom-table {
-    min-width: 950px;
-  }
-
-  .symptom-table thead th {
-    position: sticky;
-
-    top: 0;
-
-    z-index: 5;
-
-    background: #f8f9fa;
-
-    color: #495057;
-
-    font-size: 12px;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.3px;
-
-    padding: 15px;
-
-    white-space: nowrap;
-
-    border-bottom: 1px solid #dee2e6;
-  }
-
-  .symptom-table tbody td {
-    padding: 14px 15px;
-
-    border-bottom: 1px solid #f0f2f5;
-  }
-
-  .symptom-table tbody tr {
-    transition: background 0.15s ease;
-  }
-
-  .symptom-table tbody tr:hover {
-    background: #f8fbff;
-  }
-
-  /* =========================================
-   ID
-========================================= */
-
-  .symptom-id {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-width: 38px;
-
-    padding: 5px 9px;
-
-    border-radius: 8px;
-
-    background: #f1f3f5;
-
-    color: #495057;
-
-    font-weight: 600;
-
-    font-size: 12px;
-  }
-
-  /* =========================================
-   SYMPTOM NAME
-========================================= */
-
-  .symptom-name-cell {
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    min-width: 220px;
-  }
-
-  .symptom-icon {
-    width: 42px;
-    height: 42px;
-
-    min-width: 42px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: #e8f1ff;
-
-    color: #0d6efd;
-
-    font-size: 18px;
-  }
-
-  .symptom-name {
-    color: #212529;
-
-    font-weight: 600;
-
-    text-decoration: none;
-  }
-
-  .symptom-name:hover {
-    color: #0d6efd;
-  }
-
-  .symptom-name-cell small {
-    display: block;
-
-    color: #adb5bd;
-
-    margin-top: 3px;
-
-    font-size: 11px;
-  }
-
-  /* =========================================
-   GROUP BADGES
-========================================= */
-
-  .symptom-group {
-    display: inline-flex;
-
-    align-items: center;
-
-    padding: 6px 10px;
-
-    border-radius: 20px;
-
-    font-size: 12px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
-  }
-
-  .symptom-group.leaf {
-    background: #e8f7ee;
-
-    color: #198754;
-  }
-
-  .symptom-group.root {
-    background: #fff0e6;
-
-    color: #b45309;
-  }
-
-  .symptom-group.stem {
-    background: #eaf4ff;
-
-    color: #0d6efd;
-  }
-
-  .symptom-group.grain {
-    background: #fff8dc;
-
-    color: #8a6d00;
-  }
-
-  .symptom-group.other {
-    background: #f1f3f5;
-
-    color: #495057;
-  }
-
-  /* =========================================
-   DESCRIPTION
-========================================= */
-
-  .description-cell {
-    max-width: 350px;
-
-    color: #6c757d;
-
-    line-height: 1.5;
-
-    font-size: 13px;
-  }
-
-  /* =========================================
-   ACTIONS
-========================================= */
-
-  .action-column {
-    width: 140px;
-
-    min-width: 140px;
-  }
-
-  .symptom-actions {
-    display: flex;
-
-    justify-content: center;
-
-    gap: 5px;
-  }
-
-  .symptom-actions .btn {
-    width: 34px;
-    height: 34px;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 8px;
-  }
-
-  /* =========================================
-   EMPTY
-========================================= */
-
-  .symptom-empty {
-    padding: 25px;
-
-    color: #6c757d;
-  }
-
-  .symptom-empty > i {
-    display: inline-flex;
-
-    width: 60px;
-    height: 60px;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #f1f3f5;
-
-    font-size: 25px;
-
-    color: #adb5bd;
-  }
-
-  .symptom-empty h5 {
-    color: #495057;
-
-    margin-top: 15px;
-  }
-
-  .symptom-empty p {
-    margin-bottom: 0;
-  }
-
-  /* =========================================
-   EMPTY PAGE
-========================================= */
-
-  .symptom-empty-card {
-    background: white;
-
-    border-radius: 18px;
-
-    padding: 60px 20px;
-
-    text-align: center;
-
-    border: 1px solid #edf0f4;
-
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-  }
-
-  .empty-icon {
-    width: 75px;
-    height: 75px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    margin: 0 auto 20px;
-
-    border-radius: 20px;
-
-    background: #e8f1ff;
-
-    color: #0d6efd;
-
-    font-size: 32px;
-  }
-
-  .symptom-empty-card h4 {
-    font-weight: 700;
-  }
-
-  .symptom-empty-card p {
-    color: #6c757d;
-  }
-
-  /* =========================================
-   TABLE SCROLLBAR
-========================================= */
-
-  .table-scroll-wrapper::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .table-scroll-wrapper::-webkit-scrollbar-track {
-    background: #f1f3f5;
-  }
-
-  .table-scroll-wrapper::-webkit-scrollbar-thumb {
-    background: #adb5bd;
-
-    border-radius: 10px;
-  }
-
-  .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-    background: #868e96;
-  }
-
-  /* =========================================
-   RESPONSIVE
-========================================= */
-
-  @media (max-width: 992px) {
-    .symptom-summary-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .symptom-filter-card {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .filter-search {
-      grid-column: 1 / -1;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .symptoms-header {
-      align-items: flex-start;
-
-      flex-direction: column;
-    }
-
-    .symptoms-add-btn {
-      width: 100%;
-    }
-
-    .symptoms-title h1 {
-      font-size: 22px;
-    }
-
-    .symptom-summary-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .symptom-filter-card {
-      grid-template-columns: 1fr;
-    }
-
-    .filter-search {
-      grid-column: auto;
-    }
-
-    .reset-symptom-filter {
-      width: 100%;
-    }
-
-    .symptom-result-info {
-      justify-content: flex-start;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .symptoms-title {
-      align-items: flex-start;
-    }
-
-    .symptoms-title-icon {
-      width: 45px;
-      height: 45px;
-
-      min-width: 45px;
-
-      font-size: 20px;
-    }
-
-    .symptoms-title h1 {
-      font-size: 19px;
-    }
-
-    .symptoms-title p {
-      font-size: 12px;
-    }
-
-    .symptom-summary-card {
-      padding: 15px;
-    }
-
-    .summary-content strong {
-      font-size: 21px;
-    }
-  }
-</style>
-
 {% endblock %}
