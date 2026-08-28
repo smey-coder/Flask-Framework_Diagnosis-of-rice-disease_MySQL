@@ -58,7 +58,7 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
 
         {% else %} -->
         {% if user.image %}
-            {% if user.image.startswith('http://') or user.image.startswith('https://') %}
+            {% if 'http://' in user.image or 'https://' in user.image %}
                 <img
                   src="{{ user.image }}"
                   alt="Profile Image"
@@ -156,7 +156,7 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
 
           {% else %} -->
           {% if user.image %}
-              {% if user.image.startswith('http://') or user.image.startswith('https://') %}
+              {% if 'http://' in user.image or 'https://' in user.image %}
                   <img
                     src="{{ user.image }}"
                     alt="Profile Image"
