@@ -272,46 +272,61 @@ def upload_image():
 @permission_required("UPDATE_PROFILE")
 def remove_image():
 
+    # try:
+
+    #     user = ProfileService.remove_profile_image(
+    #         current_user.id
+    #     )
+
+    #     if not user:
+
+    #         flash(
+    #             "User profile not found.",
+    #             "danger"
+    #         )
+
+    #         return redirect(
+    #             url_for("user_profile.index")
+    #         )
+
+    #     flash(
+    #         "Profile image removed successfully.",
+    #         "success"
+    #     )
+
+    #     return redirect(
+    #         url_for("user_profile.index")
+    #     )
+
+    # except Exception as e:
+
+    #     current_app.logger.exception(
+    #         f"Remove Profile Image Error: {e}"
+    #     )
+
+    #     flash(
+    #         "Unable to remove profile image.",
+    #         "danger"
+    #     )
+
+    #     return redirect(
+    #         url_for("user_profile.index")
+    #     )
     try:
+        # Updated to unpack (success, message) returned by ProfileService
+        success, message = ProfileService.remove_profile_image(current_user.id)
 
-        user = ProfileService.remove_profile_image(
-            current_user.id
-        )
+        if not success:
+            flash(message, "danger")
+            return redirect(url_for("user_profile.index"))
 
-        if not user:
-
-            flash(
-                "User profile not found.",
-                "danger"
-            )
-
-            return redirect(
-                url_for("user_profile.index")
-            )
-
-        flash(
-            "Profile image removed successfully.",
-            "success"
-        )
-
-        return redirect(
-            url_for("user_profile.index")
-        )
+        flash(message, "success")
+        return redirect(url_for("user_profile.index"))
 
     except Exception as e:
-
-        current_app.logger.exception(
-            f"Remove Profile Image Error: {e}"
-        )
-
-        flash(
-            "Unable to remove profile image.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("user_profile.index")
-        )
+        current_app.logger.exception(f"Remove Profile Image Error: {e}")
+        flash("Unable to remove profile image.", "danger")
+        return redirect(url_for("user_profile.index"))
 
 # =========================================================
 # CHANGE PASSWORD
