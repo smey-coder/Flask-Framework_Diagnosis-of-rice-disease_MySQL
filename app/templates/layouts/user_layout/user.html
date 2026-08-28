@@ -443,7 +443,7 @@
             >
 
                 <!-- Avatar -->
-                {% if current_user.image %}
+                <!-- {% if current_user.image %}
                     <img
                         src="{{ url_for('static', filename=current_user.image) }}"
                         alt="Profile"
@@ -451,6 +451,27 @@
                     />
                 {% else %}
                     <div class="navbar-user-avatar navbar-user-avatar-default">
+                        {{ current_user.username[0]|upper }}
+                    </div>
+                {% endif %} -->
+                {% if current_user.image %}
+                    {% if current_user.image.startswith('http://') or current_user.image.startswith('https://') %}
+                        <!-- Cloudinary or Remote URL -->
+                        <img
+                            src="{{ current_user.image }}"
+                            alt="Profile"
+                            class="dropdown-user-avatar"
+                        />
+                    {% else %}
+                        <!-- Legacy Local Static File Path -->
+                        <img
+                            src="{{ url_for('static', filename=current_user.image) }}"
+                            alt="Profile"
+                            class="dropdown-user-avatar"
+                        />
+                    {% endif %}
+                {% else %}
+                    <div class="dropdown-user-avatar dropdown-user-avatar-default">
                         {{ current_user.username[0]|upper }}
                     </div>
                 {% endif %}
