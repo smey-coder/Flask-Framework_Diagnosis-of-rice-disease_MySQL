@@ -140,10 +140,6 @@ def update():
 # UPLOAD / UPDATE PROFILE IMAGE
 # =========================================================
 
-# =========================================================
-# UPLOAD / UPDATE PROFILE IMAGE
-# =========================================================
-
 @profile_user_bp.route(
     "/upload-image",
     methods=["POST"]
