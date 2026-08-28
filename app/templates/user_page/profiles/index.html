@@ -48,7 +48,7 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
       <!-- ================= PROFILE AVATAR ================= -->
 
       <div class="profile-avatar-wrapper">
-        {% if user.image %}
+        <!-- {% if user.image %}
 
         <img
           src="{{ url_for('static', filename=user.image) }}"
@@ -56,6 +56,21 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
           class="profile-avatar"
         />
 
+        {% else %} -->
+        {% if user.image %}
+            {% if user.image.startswith('http://') or user.image.startswith('https://') %}
+                <img
+                  src="{{ user.image }}"
+                  alt="Profile Image"
+                  class="profile-avatar"
+                />
+            {% else %}
+                <img
+                  src="{{ url_for('static', filename=user.image) }}"
+                  alt="Profile Image"
+                  class="profile-avatar"
+                />
+            {% endif %}
         {% else %}
 
         <div class="profile-avatar profile-avatar-default">
@@ -130,7 +145,7 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
         </div>
 
         <div class="profile-image-section">
-          {% if user.image %}
+          <!-- {% if user.image %}
 
           <img
             src="{{ url_for('static', filename=user.image) }}"
@@ -139,6 +154,21 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
             id="profilePreview"
           />
 
+          {% else %} -->
+          {% if user.image %}
+              {% if user.image.startswith('http://') or user.image.startswith('https://') %}
+                  <img
+                    src="{{ user.image }}"
+                    alt="Profile Image"
+                    class="profile-avatar"
+                  />
+              {% else %}
+                  <img
+                    src="{{ url_for('static', filename=user.image) }}"
+                    alt="Profile Image"
+                    class="profile-avatar"
+                  />
+              {% endif %}
           {% else %}
 
           <div
