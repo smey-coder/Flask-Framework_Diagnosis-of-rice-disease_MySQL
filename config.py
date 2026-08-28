@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from datetime import timedelta
 from urllib.parse import quote_plus
+import cloudinary
 
 load_dotenv()
 
@@ -51,3 +52,10 @@ class Config:
 
     # ================= UPLOAD (optional future use) =================
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB file upload limit
+    # Initialize Cloudinary Configuration
+cloudinary.config(
+    cloud_name=Config.CLOUDINARY_CLOUD_NAME,
+    api_key=Config.CLOUDINARY_API_KEY,
+    api_secret=Config.CLOUDINARY_API_SECRET,
+    secure=True
+)
