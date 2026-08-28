@@ -368,149 +368,63 @@
             </ul>
         </div>
         <!-- Notification Bell -->
-        <li class="nav-item dropdown me-3 farm-notification-dropdown">
-            <!-- Bell -->
+        <li class="nav-item dropdown me-2 me-sm-3 farm-notification-dropdown">
+            <!-- Bell Link -->
             <a
-                class="nav-link position-relative"
+                class="nav-link farm-notification-toggle"
                 href="#"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
             >
-
-                <i class="bi bi-bell fs-5"></i>
+                <i class="bi bi-bell farm-notification-bell"></i>
 
                 <!-- Notification Count -->
-                <span
-                    id="notif-count"
-                    class="
-                        position-absolute
-                        top-0
-                        start-100
-                        translate-middle
-                        badge
-                        rounded-pill
-                        bg-danger
-                    "
-                ></span>
+                <span id="notif-count" class="farm-notification-count"></span>
             </a>
 
-            <!-- =====================================================
-                DROPDOWN
-                ===================================================== -->
-            <ul
-                class="
-                    dropdown-menu
-                    dropdown-menu-end
-                    shadow-lg
-                    p-0
-                "
-                style="
-                    width: 360px;
-                    max-width: 95vw;
-                    border-radius: 14px;
-                    overflow: hidden;
-                "
-            >
-                <!-- =================================================
-                    HEADER
-                    ================================================= -->
+            <!-- Dropdown Menu -->
+            <ul class="dropdown-menu dropdown-menu-end farm-notification-menu">
+                <!-- Header -->
                 <li>
-                    <div
-                        class="
-                            d-flex
-                            justify-content-between
-                            align-items-center
-                            px-3
-                            py-3
-                            border-bottom
-                            bg-white
-                        "
-                    >
+                    <div class="farm-notification-header">
+                        <div class="farm-notification-header-content">
+                            <div>
+                                <strong class="farm-notification-title">Notifications</strong>
+                                <small class="farm-notification-subtitle">Farm alerts & updates</small>
+                            </div>
 
-                        <div>
-
-                            <strong class="d-block">
-                                Notifications
-                            </strong>
-
-                            <small
-                                class="text-muted"
+                            <!-- Clear All -->
+                            <button
+                                type="button"
+                                onclick="deleteAll()"
+                                class="farm-notification-clear"
+                                title="Clear all notifications"
                             >
-                                Farm alerts & updates
-                            </small>
-
+                                <i class="bi bi-trash3"></i>
+                            </button>
                         </div>
-
-
-                        <!-- Clear All -->
-
-                        <button
-                            type="button"
-                            onclick="deleteAll()"
-                            class="
-                                btn
-                                btn-sm
-                                btn-outline-danger
-                                rounded-pill
-                            "
-                        >
-
-                            <i
-                                class="bi bi-trash3 me-1"
-                            ></i>
-
-                            Clear all
-
-                        </button>
-
                     </div>
-
                 </li>
 
-
-                <!-- =================================================
-                    NOTIFICATION LIST
-                    ================================================= -->
-
+                <!-- Notification List -->
                 <li>
-
-                    <div
-                        id="notif-list"
-                        style="
-                            max-height: 400px;
-                            overflow-y: auto;
-                        "
-                    >
-
-                        <!-- JavaScript will load notifications here -->
-
-                        <div class="text-center p-4 text-muted">
-                            <div class="spinner-border spinner-border-sm"></div>
-                            <div class="mt-2">
-                                Loading notifications...
+                    <div class="farm-notification-body">
+                        <div id="notif-list" class="farm-notification-list">
+                            <!-- JavaScript dynamic content loads here -->
+                            <div class="farm-notification-empty">
+                                <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                                <span class="farm-notification-empty-text mt-2 d-block">Loading notifications...</span>
                             </div>
                         </div>
                     </div>
                 </li>
-                <!-- =================================================
-                    FOOTER
-                ================================================ -->
-                <li>
-                    <div class="border-top text-center bg-light">
-                        <a
-                            class="
-                                dropdown-item
-                                py-2
-                                fw-semibold
-                                text-success
-                            "
-                            href="{{ url_for('crop_monitoring.index') }}"
-                        >
-                            <i
-                                class="bi bi-grid me-1"
-                            ></i>
 
+                <!-- Footer -->
+                <li>
+                    <div class="farm-notification-footer">
+                        <a class="farm-notification-view-all" href="{{ url_for('crop_monitoring.index') }}">
+                            <i class="bi bi-grid"></i>
                             View Crop Monitoring
                         </a>
                     </div>
