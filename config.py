@@ -52,7 +52,8 @@ class Config:
 
     # ================= UPLOAD (optional future use) =================
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB file upload limit
-    # Initialize Cloudinary Configuration
+    
+# Initialize Cloudinary Configuration
 cloudinary.config(
     cloud_name=Config.CLOUDINARY_CLOUD_NAME,
     api_key=Config.CLOUDINARY_API_KEY,

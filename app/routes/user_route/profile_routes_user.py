@@ -152,9 +152,7 @@ def update():
 @role_required("User")
 @permission_required("UPDATE_PROFILE")
 def upload_image():
-
     try:
-
         # =========================================
         # Get uploaded file
         # =========================================
