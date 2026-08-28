@@ -14,6 +14,11 @@ class Config:
     DB_USERNAME = os.environ.get("DB_USERNAME")
     DB_PASSWORD = quote_plus(os.environ.get("DB_PASSWORD", ""))
 
+    # ================= CLOUDINARY =================
+    CLOUDINARY_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME")
+    CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY")
+    CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
+
     # ================= SECURITY =================
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 
