@@ -286,13 +286,13 @@ Results {% endblock %} {% block content %}
                     <i class="bi bi-info-circle me-1"></i>
                     Explanation
                   </a>
-                  {% endif %} {% if certainty >= 0.70 %}
-
+                  {% endif %} 
+                  {% if certainty >= 0.70 %}
                   <a
                     href="{{ url_for(
-            'user.disease_treatment',
-            disease_id=result.disease_id
-        ) }}"
+                        'user.disease_treatment',
+                        disease_id=result.disease_id
+                    ) }}"
                     class="btn btn-recommended-treatment rounded-pill"
                   >
                     <i class="bi bi-capsule me-1"></i>

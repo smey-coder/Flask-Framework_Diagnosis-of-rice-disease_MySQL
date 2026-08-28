@@ -87,14 +87,12 @@
                                 <span class="badge bg-success">{{ item.severity_level }}</span>
                             {% endif %}
                         </td>
-
                         <!-- Certainty Factor -->
                         <td class="text-center">
                             <span class="badge bg-success fs-6">
                                 {{ (item.confidence * 100) | round(2) }}%
                             </span>
                         </td>
-
                         <!-- Actions -->
                         <td class="text-center">
                             <a href="{{ url_for('admin.diagnosis_explain', disease_id=item.disease_id) }}"
