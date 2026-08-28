@@ -48,15 +48,6 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
       <!-- ================= PROFILE AVATAR ================= -->
 
       <div class="profile-avatar-wrapper">
-        <!-- {% if user.image %}
-
-        <img
-          src="{{ url_for('static', filename=user.image) }}"
-          alt="Profile Image"
-          class="profile-avatar"
-        />
-
-        {% else %} -->
         {% if user.image %}
             {% if 'http://' in user.image or 'https://' in user.image %}
                 <img
@@ -70,18 +61,15 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
                   alt="Profile Image"
                   class="profile-avatar"
                 />
+            {% endif %}
         {% else %}
-
-        <div class="profile-avatar profile-avatar-default">
-          <i class="bi bi-person-fill"></i>
-        </div>
-
+            <div class="profile-avatar profile-avatar-default">
+              <i class="bi bi-person-fill"></i>
+            </div>
         {% endif %}
 
         <!-- CAMERA BUTTON -->
-
         {% if current_user.has_permission('UPDATE_PROFILE') %}
-
         <button
           type="button"
           class="avatar-camera"
@@ -90,7 +78,6 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
         >
           <i class="bi bi-camera-fill"></i>
         </button>
-
         {% endif %}
       </div>
 
@@ -144,42 +131,40 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
         </div>
 
         <div class="profile-image-section">
-          <!-- {% if user.image %}
-
+          {# 
+          {% if user.image %}
           <img
             src="{{ url_for('static', filename=user.image) }}"
             alt="Profile Image"
             class="profile-large-avatar"
             id="profilePreview"
           />
+          {% else %} 
+          #}
 
-          {% else %} -->
           {% if user.image %}
               {% if 'http://' in user.image or 'https://' in user.image %}
                   <img
                     src="{{ user.image }}"
                     alt="Profile Image"
                     class="profile-avatar"
+                    id="profilePreview"
                   />
               {% else %}
                   <img
                     src="{{ url_for('static', filename=user.image) }}"
                     alt="Profile Image"
                     class="profile-avatar"
+                    id="profilePreview"
                   />
+              {% endif %}
           {% else %}
-
-          <div
-            class="profile-large-avatar profile-avatar-default"
-            id="profilePreview"
-          >
-            <i class="bi bi-person-fill"></i>
-          </div>
-
+              <div class="profile-avatar profile-avatar-default">
+                <i class="bi bi-person-fill"></i>
+              </div>
           {% endif %}
 
           <h4>{{ user.full_name or user.username }}</h4>
-
           <p>{{ user.email }}</p>
         </div>
 
