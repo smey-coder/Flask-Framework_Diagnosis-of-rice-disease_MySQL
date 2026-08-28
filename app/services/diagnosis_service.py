@@ -23,7 +23,7 @@ class DiagnosisService:
         Infer diseases based on selected symptoms.
         Returns:
             conclusions: {disease_id: {"disease": DiseaseTable, "certainty": float}}
-            rule_trace: applied rules per disease
+            rule_trace: applied rules per disease (keyed by str disease_id)
             skipped_rules: rules not satisfied
         """
         facts: Set[int] = set(selected_symptom_ids or [])
@@ -45,44 +45,57 @@ class DiagnosisService:
             condition_ids = {c.symptom_id for c in conditions}
             if not condition_ids:
                 continue
+
             matched_ids = condition_ids & facts
             matched_count = len(matched_ids)
             total_count = len(condition_ids)
 
+            str_disease_id = str(disease.id)
+
             if matched_count > 0:
-                # Partial CF based on matched symptoms
-                rule_cf = float(getattr(rule, "certainty", 0))
+                # Get certainty directly from tbl_rule / RulesTable
+                rule_cf = float(getattr(rule, "certainty", 0.0) or 0.0)
                 adjusted_cf = rule_cf * (matched_count / total_count)
 
-                # Initialize disease in conclusions if not present
+                # 1. Initialize disease entry in conclusions
                 if disease.id not in conclusions:
                     conclusions[disease.id] = {"disease": disease, "certainty": 0.0}
-                    rule_trace[str(disease.id)] = []
+                
+                # 2. Guarantee rule_trace key exists for string ID
+                if str_disease_id not in rule_trace:
+                    rule_trace[str_disease_id] = []
 
-                # Get CF before applying this rule
-                prev_cf = conclusions[disease.id]["certainty"]
+                # 3. Read current certainty BEFORE applying this rule
+                prev_cf = float(conclusions[disease.id]["certainty"])
 
-                # Combine previous CF with this rule
+                # 4. Combine previous CF with this rule's contribution
                 new_cf = cls.combine_cfs(prev_cf, adjusted_cf)
                 conclusions[disease.id]["certainty"] = new_cf
 
                 matched_names = [symptoms[sid].symptom_name for sid in matched_ids if sid in symptoms]
 
-                rule_trace[str(disease.id)].append({
+                # 5. Append step trace with accurate prev_cf
+                rule_trace[str_disease_id].append({
                     "rule_id": rule.id,
                     "matched": matched_names,
-                    "cf_before": round(prev_cf, 3),   # previous CF before applying rule
-                    "rule_cf": round(adjusted_cf, 3), # this rule's CF contribution
-                    "cf_after": round(new_cf, 3),     # cumulative CF after applying rule
-                    "explanation": getattr(rule, "explanation", "")
+                    "cf_before": float(round(prev_cf, 4)),       # CF prior to applying this rule
+                    "rule_cf": float(round(adjusted_cf, 4)),     # Adjusted CF contribution from tbl_rule
+                    "cf_after": float(round(new_cf, 4)),          # Combined CF after rule application
+                    "explanation": getattr(rule, "explanation", "") or ""
                 })
             else:
                 # Track skipped rules
                 missing_names = [symptoms[sid].symptom_name for sid in condition_ids if sid in symptoms]
+                current_disease_cf = conclusions.get(disease.id, {}).get("certainty", 0.0)
+                
                 skipped_rules.append({
                     "rule_id": rule.id,
                     "disease": disease.disease_name,
-                    "missing": missing_names
+                    "missing": missing_names,
+                    "cf_before": float(round(current_disease_cf, 4)),
+                    "rule_cf": 0.0,
+                    "cf_after": float(round(current_disease_cf, 4)),
+                    "explanation": "No symptoms matched for this rule."
                 })
 
         # Sort conclusions by certainty descending
@@ -90,17 +103,16 @@ class DiagnosisService:
             sorted(conclusions.items(), key=lambda item: item[1]['certainty'], reverse=True)
         )
 
-        # ==========================
-        # Audit Log
-        # ==========================
+        # Audit Log execution
         try:
-            diagnosis_results = []
-            for disease_id, result in sorted_conclusions.items():
-                diagnosis_results.append({
+            diagnosis_results = [
+                {
                     "disease_id": disease_id,
                     "disease_name": result["disease"].disease_name,
                     "certainty": round(result["certainty"] * 100, 2)
-                })
+                }
+                for disease_id, result in sorted_conclusions.items()
+            ]
             log_audit(
                 action="Diagnosis",
                 table_name="diagnosis_history",
@@ -114,14 +126,42 @@ class DiagnosisService:
             )
         except Exception as e:
             print(f"Audit Error: {e}")
+
         return sorted_conclusions, rule_trace, skipped_rules
     
+    # @staticmethod
+    # def explain_disease(disease_id: int, rule_trace: Dict[str, List[dict]]) -> List[dict]:
+    #     # Make sure ID is string (keys in rule_trace are strings)
+    #     disease_id = str(disease_id)
+
+    #     return rule_trace.get(disease_id, [])
     @staticmethod
     def explain_disease(disease_id: int, rule_trace: Dict[str, List[dict]]) -> List[dict]:
-        # Make sure ID is string (keys in rule_trace are strings)
-        disease_id = str(disease_id)
+        """
+        Retrieves and sanitizes rule logs for a given disease ID.
+        Ensures numerical values (cf_before, rule_cf, cf_after) are non-null floats.
+        """
+        if not rule_trace:
+            return []
 
-        return rule_trace.get(disease_id, [])
+        # Check for both string and integer key representations
+        str_id = str(disease_id)
+        int_id = int(disease_id) if str_id.isdigit() else disease_id
+        
+        logs = rule_trace.get(str_id) or rule_trace.get(int_id) or []
+
+        sanitized_logs = []
+        for log in logs:
+            sanitized_logs.append({
+                "rule_id": log.get("rule_id", "N/A"),
+                "matched": log.get("matched", []),
+                "cf_before": float(log.get("cf_before", 0.0) or 0.0),
+                "rule_cf": float(log.get("rule_cf", 0.0) or 0.0),
+                "cf_after": float(log.get("cf_after", 0.0) or 0.0),
+                "explanation": log.get("explanation", "")
+            })
+
+        return sanitized_logs
 
     # ---- Backward compatible: allow optional rule_trace argument ----
     @staticmethod

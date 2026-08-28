@@ -955,54 +955,40 @@ def about():
 def diagnosis_input():
     try:
         form = DiagnosisForm()
-        # =====================================================
-        # GET MONITORING INFORMATION
-        # =====================================================
 
-        monitoring_id = request.args.get(
-            "monitoring_id",
-            type=int
-        )
+        # Monitor & Farm params handling
+        monitoring_id = request.args.get("monitoring_id", type=int)
+        farm_id = request.args.get("farm_id", type=int)
 
-        farm_id = request.args.get(
-            "farm_id",
-            type=int
-        )
-
-        # Store monitoring information in session
         if monitoring_id:
-
             session["monitoring_id"] = monitoring_id
-
         if farm_id:
-
             session["farm_id"] = farm_id
 
-        # Get all active symptoms
-        symptoms = SymptomsTable.query.filter_by(is_active=True).all()
+        # Fetch all active symptoms
+        symptoms = SymptomsTable.query.filter_by(is_active=True).all() or []
 
-        # WTForms choices (for validation)
+        # WTForms dynamic choices
         form.symptoms.choices = [(s.id, s.symptom_name) for s in symptoms]
 
-        # Group symptoms by type
+        # Dynamic grouping (handles spacing and unexpected groups)
         grouped_symptoms = {
             "Grain(គ្រាប់)": [],
             "Leaf(ស្លឹក)": [],
             "Root(ឬស)": [],
-            "Stem(ដើម)": []
+            "Stem(ដើម)": [],
+            "Other(ផ្សេងៗ)": []
         }
 
         for s in symptoms:
-            if s.symptom_group == "Grain(គ្រាប់)":
-                grouped_symptoms["Grain(គ្រាប់)"].append(s)
-            elif s.symptom_group == "Leaf(ស្លឹក)":
-                grouped_symptoms["Leaf(ស្លឹក)"].append(s)
-            elif s.symptom_group == "Root(ឬស)":
-                grouped_symptoms["Root(ឬស)"].append(s)
-            elif s.symptom_group == "Stem(ដើម)":
-                grouped_symptoms["Stem(ដើម)"].append(s)
+            group = (s.symptom_group or "").strip()
+            if group in grouped_symptoms:
+                grouped_symptoms[group].append(s)
+            else:
+                # Fallback for minor string variations or new groups
+                grouped_symptoms.setdefault(group if group else "Other(ផ្សេងៗ)", []).append(s)
 
-        #Handle form submit
+        # Form submission handling
         if form.validate_on_submit():
             try:
                 selected_ids = [int(s) for s in form.symptoms.data or []]
@@ -1011,9 +997,8 @@ def diagnosis_input():
                     flash("Please select at least one symptom.", "warning")
                     return redirect(url_for("user.diagnosis_input"))
 
-                # Store in session
                 session["selected_symptoms"] = selected_ids
-
+                
                 selected_symptoms = SymptomsTable.query.filter(
                     SymptomsTable.id.in_(selected_ids)
                 ).all()
@@ -1032,7 +1017,8 @@ def diagnosis_input():
         return render_template(
             "user_page/index.html",
             form=form,
-            grouped_symptoms=grouped_symptoms,
+            symptoms=symptoms,                  # Added raw symptoms fallback
+            grouped_symptoms=grouped_symptoms,  # Dynamic dictionary
             user=current_user,
             monitoring_id=monitoring_id,
             farm_id=farm_id
@@ -1040,7 +1026,7 @@ def diagnosis_input():
     except Exception as e:
         flash("System error: Unable to load diagnosis page.", "danger")
         print(f"[DIAGNOSIS ERROR]: {e}")
-        return redirect(url_for("user.diagnosis_input"))
+        return redirect(url_for("user.dashboard")) # Avoid infinite redirect loop
 
 # @user_bp.route("/save_diagnosis", methods=["POST"])
 # @login_required
