@@ -9,9 +9,16 @@ from extensions import db
 from app.models.symptoms import SymptomsTable
 from app.services.audit_service import log_audit
 
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 # ================= CONFIG ================= #
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 UPLOAD_FOLDER = "static/images/symptoms"
+
+CLOUDINARY_FOLDER = "symptoms"
 
 
 # ================= HELPERS ================= #
@@ -23,27 +30,54 @@ def allowed_file(filename: str) -> bool:
 
 def save_image(image_file) -> str:
     """Save image to UPLOAD_FOLDER with unique UUID prefix and return filename."""
-    original_filename = secure_filename(image_file.filename)
-    extension = original_filename.rsplit(".", 1)[1].lower() if "." in original_filename else "jpg"
-    unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
+    # original_filename = secure_filename(image_file.filename)
+    # extension = original_filename.rsplit(".", 1)[1].lower() if "." in original_filename else "jpg"
+    # unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
 
-    save_path = os.path.join(current_app.root_path, UPLOAD_FOLDER)
-    os.makedirs(save_path, exist_ok=True)
-    image_file.save(os.path.join(save_path, unique_filename))
-    return unique_filename
+    # save_path = os.path.join(current_app.root_path, UPLOAD_FOLDER)
+    # os.makedirs(save_path, exist_ok=True)
+    # image_file.save(os.path.join(save_path, unique_filename))
+    # return unique_filename
 
-
-def delete_image(filename: str):
+    #Store cloudinary
+    try:
+        upload_result = cloudinary.uploader.upload(
+            image_file,
+            folder=CLOUDINARY_FOLDER,
+            resource_type="image"
+        )
+        return upload_result.get("secure_url")
+    except Exception as e:
+        current_app.logger.error(f"Cloudinary upload failed: {e}")
+        return None
+def delete_image(image_url_or_id: str):
     """Delete image from UPLOAD_FOLDER."""
-    if not filename:
-        return
-    file_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
-    if os.path.exists(file_path):
-        try:
-            os.remove(file_path)
-        except OSError as e:
-            current_app.logger.warning(f"Failed to delete image file {file_path}: {e}")
+    # if not filename:
+    #     return
+    # file_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
+    # if os.path.exists(file_path):
+    #     try:
+    #         os.remove(file_path)
+    #     except OSError as e:
+    #         current_app.logger.warning(f"Failed to delete image file {file_path}: {e}")
 
+    # Store Cloudinary
+    """Delete image from Cloudinary using its public ID or full URL."""
+    if not image_url_or_id:
+        return
+    try:
+        # If full URL is passed, extract public_id (e.g., 'diseases/sample_id')
+        if "cloudenary.com" in image_url_or_id:
+            parts = image_url_or_id.split("/")
+            filename_with_ext = parts[-1]
+            public_id_name = filename_with_ext.rsplit(".", 1)[0]
+            public_id = f"{CLOUDINARY_FOLDER}/{public_id_name}"
+        else:
+            public_id = image_url_or_id
+
+        cloudinary.uploader.destroy(public_id)
+    except Exception as e:
+        current_app.logger.error(f"Cloudinary deletion failed: {e}")
 
 # ================= SERVICE ================= #
 

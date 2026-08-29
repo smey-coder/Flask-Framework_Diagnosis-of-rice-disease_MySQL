@@ -169,7 +169,7 @@
             </td>
             <!-- Image Column -->
             <td class="text-center">
-                {% if symptom.image %}
+                <!-- {% if symptom.image %}
                 <img src="{{ url_for('static', filename='images/symptoms/' + symptom.image) }}" 
                       alt="{{ symptom.symptom_name }}" 
                       class="rounded border img-thumbnail"
@@ -179,6 +179,26 @@
                     style="width: 48px; height: 48px;">
                     <i class="bi bi-image text-muted fs-5"></i>
                 </div>
+              {% endif %} -->
+              {% if symptom.image %}
+                  {% if 'http://' in symptom.image or 'https://' in symptom.image %}
+                      <!-- Cloudinary URL -->
+                      <img src="{{ symptom.image }}" 
+                          alt="{{ symptom.symptom_name }}" 
+                          class="rounded border img-thumbnail"
+                          style="width: 48px; height: 48px; object-fit: cover;">
+                  {% else %}
+                      <!-- Legacy Local File Path -->
+                      <img src="{{ url_for('static', filename='images/symptoms/' + symptom.image) }}" 
+                          alt="{{ symptom.symptom_name }}" 
+                          class="rounded border img-thumbnail"
+                          style="width: 48px; height: 48px; object-fit: cover;">
+                  {% endif %}
+              {% else %}
+                  <div class="bg-light rounded border d-flex align-items-center justify-content-center mx-auto" 
+                      style="width: 48px; height: 48px;">
+                      <i class="bi bi-image text-muted fs-5"></i>
+                  </div>
               {% endif %}
             </td>
             <!-- Symptom Name -->

@@ -369,9 +369,41 @@ Management{% endblock %} {% block content %}
             </td>
 
             <!-- USER -->
-            <td>
+            <!-- <td>
               <div class="user-profile-cell">
                 <div class="user-avatar">{{ user.username[:1]|upper }}</div>
+
+                <div class="user-info">
+                  <a
+                    href="{{ url_for('tbl_users.detail', user_id=user.id) }}"
+                    class="username"
+                  >
+                    {{ user.username }}
+                  </a>
+
+                  <small> ID: {{ user.id }} </small>
+                </div>
+              </div>
+            </td> -->
+            <td>
+              <div class="user-profile-cell">
+                {% if user.image %}
+                  {% if 'http://' in user.image or 'https://' in user.image %}
+                    <img
+                      src="{{ user.image }}"
+                      alt="{{ user.username }}"
+                      class="user-avatar"
+                    />
+                  {% else %}
+                    <img
+                      src="{{ url_for('static', filename=user.image) }}"
+                      alt="{{ user.username }}"
+                      class="user-avatar"
+                    />
+                  {% endif %}
+                {% else %}
+                  <div class="user-avatar">{{ user.username[:1]|upper }}</div>
+                {% endif %}
 
                 <div class="user-info">
                   <a

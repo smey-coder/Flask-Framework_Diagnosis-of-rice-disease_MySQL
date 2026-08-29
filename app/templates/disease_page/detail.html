@@ -29,12 +29,39 @@
         <!-- IMAGE DISPLAY -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
-                <img 
+                <!-- <img 
                     src="{% if disease.image %}{{ url_for('static', filename='images/diseases/' ~ disease.image) }}{% else %}{{ url_for('static', filename='images/diseases/default.png') }}{% endif %}" 
                     class="card-img-top"
                     alt="{{ disease.disease_name }}"
                     style="object-fit: cover; height: 250px;"
-                >
+                > -->
+                {% if disease.image %}
+                    {% if 'http://' in disease.image or 'https://' in disease.image %}
+                        <!-- Cloudinary URL -->
+                        <img 
+                            src="{{ disease.image }}" 
+                            class="card-img-top"
+                            alt="{{ disease.disease_name }}"
+                            style="object-fit: cover; height: 250px;"
+                        >
+                    {% else %}
+                        <!-- Legacy Local File Path -->
+                        <img 
+                            src="{{ url_for('static', filename='images/diseases/' ~ disease.image) }}" 
+                            class="card-img-top"
+                            alt="{{ disease.disease_name }}"
+                            style="object-fit: cover; height: 250px;"
+                        >
+                    {% endif %}
+                {% else %}
+                    <!-- Default Avatar / Fallback -->
+                    <img 
+                        src="{{ url_for('static', filename='images/diseases/default.png') }}" 
+                        class="card-img-top"
+                        alt="{{ disease.disease_name }}"
+                        style="object-fit: cover; height: 250px;"
+                    >
+                {% endif %}
             </div>
         </div>
 
