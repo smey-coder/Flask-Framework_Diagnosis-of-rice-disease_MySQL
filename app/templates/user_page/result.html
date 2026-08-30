@@ -90,7 +90,7 @@ Results {% endblock %} {% block content %}
                              DISEASE IMAGE
                         ================================== -->
 
-              <td class="text-center">
+              <!-- <td class="text-center">
                 {% if result.image %}
 
                 <img
@@ -120,12 +120,39 @@ Results {% endblock %} {% block content %}
                 </div>
 
                 {% endif %}
-              </td>
+              </td> -->
+              <td class="text-center">
+                {% if result.image %}
+                  {# 1. Check if result.image is a full URL or a local file #}
+                  {% set disease_img_src = result.image if ('http://' in result.image or 'https://' in result.image) else url_for('static', filename='images/diseases/' + result.image) %}
 
+                  <img
+                    src="{{ disease_img_src }}"
+                    alt="{{ result.disease_name }}"
+                    class="img-thumbnail"
+                    style="
+                      width: 100px;
+                      height: 80px;
+                      object-fit: cover;
+                      cursor: pointer;
+                    "
+                    data-bs-toggle="modal"
+                    data-bs-target="#imageModal"
+                    onclick="showImage(this.src)"
+                  />
+
+                {% else %}
+
+                  <div class="text-muted small">
+                    <i class="bi bi-image me-1"></i>
+                    No image
+                  </div>
+
+                {% endif %}
+              </td>
               <!-- =================================
                              DISEASE
-                        ================================== -->
-
+              ================================== -->
               <td>
                 <div class="fw-bold">{{ result.disease_name }}</div>
 
@@ -137,11 +164,19 @@ Results {% endblock %} {% block content %}
               </td>
 
               <!-- =================================
-                             SEVERITY
-                        ================================== -->
+                  SEVERITY
+              ================================== -->
 
               <td class="text-center">
-                {% if result.severity_level == 'High(ខ្ពស់)' %}
+                {% if result.severity_level == 'Very high(ខ្ពស់ណាស់)' %}
+
+                <span class="badge bg-danger rounded-pill">
+                  <i class="bi bi-exclamation-octagon me-1"></i>
+
+                  {{ result.severity_level }}
+                </span>
+
+                {% elif result.severity_level == 'High(ខ្ពស់)' %}
 
                 <span class="badge bg-danger rounded-pill">
                   <i class="bi bi-exclamation-circle me-1"></i>
@@ -162,7 +197,7 @@ Results {% endblock %} {% block content %}
                 <span class="badge bg-success rounded-pill">
                   <i class="bi bi-check-circle me-1"></i>
 
-                  {{ result.severity_level }}
+                  {{ result.severity_level or 'N/A'}}
                 </span>
 
                 {% endif %}
@@ -232,7 +267,7 @@ Results {% endblock %} {% block content %}
 
                 <!-- =================================
                                  MEDIUM CONFIDENCE
-                            ================================== -->
+                ================================== -->
 
                 {% elif certainty >= 0.40 %}
 
@@ -303,9 +338,9 @@ Results {% endblock %} {% block content %}
 
                   <a
                     href="{{ url_for(
-            'user.disease_treatment',
-            disease_id=result.disease_id
-        ) }}"
+                              'user.disease_treatment',
+                              disease_id=result.disease_id
+                          ) }}"
                     class="btn btn-verification-treatment rounded-pill"
                   >
                     <i class="bi bi-capsule me-1"></i>

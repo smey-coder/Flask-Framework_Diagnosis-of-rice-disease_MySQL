@@ -515,49 +515,32 @@
 
                             <!-- Severity -->
                             <td>
-
-                                {% if disease.severity_level == 'High(ខ្ពស់)' %}
-
-                                <span class="severity-badge severity-high">
-
-                                    <i class="bi bi-exclamation-triangle-fill"></i>
-
-                                    {{ disease.severity_level }}
-
-                                </span>
-
-                                {% elif disease.severity_level == 'Medium(មធ្យម)' %}
-
-                                <span class="severity-badge severity-medium">
-
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-
-                                    {{ disease.severity_level }}
-
-                                </span>
-
-                                {% elif disease.severity_level == 'Low(ទាប)' %}
-
-                                <span class="severity-badge severity-low">
-
-                                    <i class="bi bi-check-circle-fill"></i>
-
-                                    {{ disease.severity_level }}
-
-                                </span>
-
+                                {% if disease.severity_level == 'Very high(ខ្ពស់ណាស់)' or 'Very high' in disease.severity_level %}
+                                    <span class="severity-badge severity-critical">
+                                        <i class="bi bi-exclamation-octagon-fill"></i>
+                                        {{ disease.severity_level }}
+                                    </span>
+                                {% elif disease.severity_level == 'High(ខ្ពស់)' or 'High' in disease.severity_level %}
+                                    <span class="severity-badge severity-high">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        {{ disease.severity_level }}
+                                    </span>
+                                {% elif disease.severity_level == 'Medium(មធ្យម)' or 'Medium' in disease.severity_level %}
+                                    <span class="severity-badge severity-medium">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        {{ disease.severity_level }}
+                                    </span>
+                                {% elif disease.severity_level == 'Low(ទាប)' or 'Low' in disease.severity_level %}
+                                    <span class="severity-badge severity-low">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        {{ disease.severity_level }}
+                                    </span>
                                 {% else %}
-
-                                <span class="severity-badge severity-critical">
-
-                                    <i class="bi bi-exclamation-octagon-fill"></i>
-
-                                    {{ disease.severity_level }}
-
-                                </span>
-
+                                    <span class="severity-badge severity-secondary">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                        {{ disease.severity_level or 'N/A' }}
+                                    </span>
                                 {% endif %}
-
                             </td>
 
 

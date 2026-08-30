@@ -1,5 +1,6 @@
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import joinedload
 from app.models.diseases import DiseaseTable
 from app.models.symptoms import SymptomsTable
 from extensions import db
@@ -100,6 +101,50 @@ class RuleConditionService:
             raise ValueError("Rule condition not found.")
         return rule_condition
 
+
+    # ===================== HELPER FOR FORM DATA =====================
+    @staticmethod
+    def get_symptoms_grouped_with_diseases():
+        """
+        ទាញយករោគសញ្ញាទាំងអស់ និង Eager Load យកជំងឺដែលពាក់ព័ន្ធតាមរយៈ Rules
+        """
+        # Load symptoms ជាមួយ Rule Conditions -> Rules -> Disease
+        symptoms = (
+            SymptomsTable.query
+            .options(
+                joinedload(SymptomsTable.rule_conditions)
+                .joinedload(RuleConditionsTable.rule)
+                .joinedload(RulesTable.disease)
+            )
+            .order_by(SymptomsTable.symptom_name.asc())
+            .all()
+        )
+
+        grouped_symptoms = {}
+        
+        for symptom in symptoms:
+            category = getattr(symptom, 'category', 'other') or 'other'
+            
+            # បង្កើត list ជំងឺដែលទាក់ទងនឹង symptom នេះ (Unique list)
+            diseases = []
+            seen_disease_ids = set()
+            
+            for rc in getattr(symptom, 'rule_conditions', []):
+                if rc.rule and rc.rule.disease:
+                    dis = rc.rule.disease
+                    if dis.id not in seen_disease_ids:
+                        seen_disease_ids.add(dis.id)
+                        diseases.append(dis)
+            
+            # ភ្ជាប់ list ជំងឺទៅកាន់ symptom object
+            symptom.diseases = diseases
+
+            if category not in grouped_symptoms:
+                grouped_symptoms[category] = []
+                
+            grouped_symptoms[category].append(symptom)
+
+        return grouped_symptoms
     # ===================== CREATE =====================
     @staticmethod
     def create(data: dict):

@@ -1,4 +1,4 @@
-{% extends "layouts/user_layout/user.html" %} {% block title %}Diagnosis
+{% extends "layouts/admin_layout/admin.html" %} {% block title %}Diagnosis
 History{% endblock %} {% block content %}
 <link
   rel="stylesheet"
@@ -26,7 +26,7 @@ History{% endblock %} {% block content %}
     </div>
 
     <a
-      href="{{ url_for('user.diagnosis_input') }}"
+      href="{{ url_for('admin.diagnosis_input') }}"
       class="btn btn-success new-diagnosis-btn"
     >
       <i class="bi bi-plus-lg me-1"></i>
@@ -339,7 +339,7 @@ History{% endblock %} {% block content %}
                 <p>You don't have any diagnosis records yet.</p>
 
                 <a
-                  href="{{ url_for('user.diagnosis_input') }}"
+                  href="{{ url_for('admin.diagnosis_input') }}"
                   class="btn btn-success"
                 >
                   <i class="bi bi-plus-lg me-1"></i>
@@ -392,7 +392,7 @@ History{% endblock %} {% block content %}
           <li class="page-item {% if page <= 1 %}disabled{% endif %}">
             <a
               class="page-link"
-              href="{{ url_for('user.diagnosis_history', page=page-1) }}"
+              href="{{ url_for('admin.diagnosis_history', page=page-1) }}"
             >
               <i class="bi bi-chevron-left"></i>
             </a>
@@ -404,7 +404,7 @@ History{% endblock %} {% block content %}
           <li class="page-item {% if p == page %}active{% endif %}">
             <a
               class="page-link"
-              href="{{ url_for('user.diagnosis_history', page=p) }}"
+              href="{{ url_for('admin.diagnosis_history', page=p) }}"
             >
               {{ p }}
             </a>
@@ -416,7 +416,7 @@ History{% endblock %} {% block content %}
           <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
             <a
               class="page-link"
-              href="{{ url_for('user.diagnosis_history', page=page+1) }}"
+              href="{{ url_for('admin.diagnosis_history', page=page+1) }}"
             >
               <i class="bi bi-chevron-right"></i>
             </a>

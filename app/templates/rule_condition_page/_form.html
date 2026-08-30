@@ -1,146 +1,283 @@
 {{ form.hidden_tag() }}
 
-<!-- ========================= -->
-<!-- Rule Selection -->
-<!-- ========================= -->
-<div class="mb-3">
-    {{ form.rule_id.label(class="form-label fw-semibold") }}
-
-    <div class="input-group">
-        <span class="input-group-text bg-light">
-            <i class="bi bi-diagram-3"></i>
-        </span>
-        {{ form.rule_id(class="form-select") }}
+<!-- ========================================== -->
+<!-- 1. វិធីសាស្ត្រណែនាំ និងការណែនាំរហ័ស (Quick Helper Guide) -->
+<!-- ========================================== -->
+<div class="alert alert-info border-0 shadow-sm mb-4" role="alert">
+    <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-lightbulb-fill fs-3 text-warning flex-shrink-0"></i>
+        <div>
+            <h6 class="alert-heading fw-bold mb-1">💡 វិធីសាស្ត្រប្រតិបត្តិសម្រាប់អ្នកបញ្ចូលទិន្នន័យ (Guide for Rule Creation)</h6>
+            <p class="small mb-2">សូមអនុវត្តតាម ៣ ជំហានងាយៗខាងក្រោមដើម្បីបង្កើតលក្ខខណ្ឌ Rule ឱ្យបានត្រឹមត្រូវ៖</p>
+            <ol class="small mb-0 ps-3">
+                <li><strong>ជ្រើសរើស Rule:</strong> ជ្រើសរើសវិធានដើម (Rule ID) ដែលត្រូវភ្ជាប់លក្ខខណ្ឌរោគសញ្ញា។</li>
+                <li><strong>ស្វែងរក ឬផ្ទៀងផ្ទាត់រោគសញ្ញា:</strong> ប្រើប្រាស់ប្រអប់ <i>Search</i> ដើម្បីស្វែងរករោគសញ្ញា ឬឈ្មោះជំងឺ។ លោកអ្នកអាចមើល <b>Badge ឈ្មោះជំងឺ (🦠)</b> នៅពីក្រោមរោគសញ្ញានីមួយៗ ដើម្បីដឹងថាវាជារោគសញ្ញារបស់ជំងឺណា។</li>
+                <li><strong>ធីកជ្រើសរើស (Check):</strong> ធីកលើរោគសញ្ញាទាំងឡាយណាដែលជាលក្ខខណ្ឌចាំបាច់ រួចចុច <b>"រក្សាទុក"</b>។</li>
+            </ol>
+        </div>
     </div>
-
-    {% for error in form.rule_id.errors %}
-        <div class="text-danger small mt-1">{{ error }}</div>
-    {% endfor %}
-
-    <div class="form-text">Select the rule that will be evaluated</div>
 </div>
 
-
 <!-- ========================= -->
-<!-- Symptoms Selection -->
+<!-- 2. Rule Selection -->
 <!-- ========================= -->
-<div class="mb-3">
-    <label class="form-label fw-semibold">Symptoms</label>
-
-    <!-- Buttons -->
-    <div class="mb-2 d-flex gap-2">
-        <button type="button" class="btn btn-sm btn-outline-primary" id="select-all">
-            Select All
-        </button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" id="deselect-all">
-            Deselect All
-        </button>
-    </div>
-
-    <!-- Scrollable container -->
-    <div style="max-height:260px; overflow-y:auto; border:1px solid #dee2e6; border-radius:.375rem; padding:10px;">
-
-        {% for category, symptoms in grouped_symptoms.items() %}
-
-            <!-- CATEGORY HEADER -->
-            <div class="fw-bold text-success mt-2 mb-2 border-bottom pb-1">
-
-                {% if category == 'leaf' %}
-                    🍃 ស្លឹក
-                {% elif category == 'stem' %}
-                    🌿 ដើម
-                {% elif category == 'seed' %}
-                    🌾 គ្រាប់
-                {% elif category == 'root' %}
-                    🌱 ឬស
-                {% else %}
-                    {{ category }}
-                {% endif %}
-
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="mb-0">
+            {{ form.rule_id.label(class="form-label fw-semibold") }} <span class="text-danger">*</span>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class="bi bi-diagram-3 text-primary"></i>
+                </span>
+                {{ form.rule_id(class="form-select border-start-0 ps-0") }}
             </div>
+            {% for error in form.rule_id.errors %}
+                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+            {% endfor %}
+            <div class="form-text">ជ្រើសរើសវិធាន (Rule) ដែលត្រូវអនុវត្តលក្ខខណ្ឌនេះ</div>
+        </div>
+    </div>
+</div>
 
-            <!-- SYMPTOMS LIST -->
-            <div class="d-flex flex-wrap gap-2">
+<!-- ========================= -->
+<!-- 3. Symptoms Selection -->
+<!-- ========================= -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <label class="form-label fw-semibold mb-0 fs-6">រោគសញ្ញា (Symptoms Selection) <span class="text-danger">*</span></label>
+                <div class="text-muted small">ជ្រើសរើសរោគសញ្ញាដែលត្រូវគ្នានឹង Rule នេះ</div>
+            </div>
+            <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill" id="selected-count">0 រោគសញ្ញាបានជ្រើស</span>
+        </div>
 
-                {% for s_id, s_name in symptoms %}
-                    <div class="form-check">
-                        <input class="form-check-input symptom-checkbox"
-                               type="checkbox"
-                               name="{{ form.symptom_id.name }}"
-                               value="{{ s_id }}"
-                               id="symptom-{{ s_id }}"
-                               {% if form.symptom_id.data and s_id in (form.symptom_id.data if form.symptom_id.data is iterable else [form.symptom_id.data]) %}
-                                    checked
-                               {% endif %}
-                        />
+        <!-- Search & Action Controls -->
+        <div class="row g-2 mb-3">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" id="symptom-search" class="form-control border-start-0" placeholder="ស្វែងរករោគសញ្ញា ឬឈ្មោះជំងឺ (Search symptom or disease name...)" autocomplete="off">
+                    <button type="button" class="btn btn-outline-secondary" id="clear-search" style="display:none;">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-5 d-flex gap-2 justify-content-md-end">
+                <button type="button" class="btn btn-outline-primary w-100 w-md-auto" id="select-all">
+                    <i class="bi bi-check-all me-1"></i>ជ្រើសរើសទាំងអស់
+                </button>
+                <button type="button" class="btn btn-outline-secondary w-100 w-md-auto" id="deselect-all">
+                    <i class="bi bi-dash-square me-1"></i>ដកចេញទាំងអស់
+                </button>
+            </div>
+        </div>
 
-                        <label class="form-check-label" for="symptom-{{ s_id }}">
-                            {{ s_name }}
-                        </label>
+        <!-- Scrollable Symptoms Grid Container -->
+        <div class="symptom-container p-3 border rounded-3 bg-light" style="max-height: 420px; overflow-y: auto;">
+            {% if grouped_symptoms %}
+                {% for category, symptoms in grouped_symptoms.items() %}
+                    <div class="category-group mb-4">
+                        <!-- CATEGORY HEADER -->
+                        <div class="fw-bold text-success border-bottom pb-1 mb-2 d-flex align-items-center gap-1">
+                            {% if category == 'leaf' %}
+                                <span>🍃 ផ្នែកស្លឹក (Leaf Symptoms)</span>
+                            {% elif category == 'stem' %}
+                                <span>🌿 ផ្នែកដើម (Stem Symptoms)</span>
+                            {% elif category == 'seed' %}
+                                <span>🌾 ផ្នែកគ្រាប់ (Seed Symptoms)</span>
+                            {% elif category == 'root' %}
+                                <span>🌱 ផ្នែកឬស (Root Symptoms)</span>
+                            {% else %}
+                                <span>🔍 {{ category|capitalize }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- SYMPTOMS LIST GRID -->
+                        <div class="row g-2">
+                            {% for symptom in symptoms %}
+                                {% set sym_id = symptom.id if symptom.id is defined else symptom[0] %}
+                                {% set sym_name = symptom.symptom_name if symptom.symptom_name is defined else symptom[1] %}
+                                <div class="col-sm-6 col-md-4 symptom-item">
+                                    <div class="form-check p-2.5 rounded-3 border bg-white h-100 d-flex align-items-start gap-2 shadow-sm-hover">
+                                        <input class="form-check-input symptom-checkbox ms-1 mt-1 flex-shrink-0"
+                                               type="checkbox"
+                                               name="{{ form.symptom_id.name }}"
+                                               value="{{ sym_id }}"
+                                               id="symptom-{{ sym_id }}"
+                                               {% if form.symptom_id.data and sym_id in (form.symptom_id.data if form.symptom_id.data is iterable else [form.symptom_id.data]) %}
+                                                   checked
+                                               {% endif %}
+                                        />
+                                        <div class="flex-grow-1">
+                                            <label class="form-check-label text-dark fw-medium small cursor-pointer d-block user-select-none" for="symptom-{{ sym_id }}">
+                                                {{ sym_name }}
+                                            </label>
+
+                                            <!-- 🦠 Associated Diseases Badges -->
+                                            <div class="mt-1 d-flex flex-wrap gap-1 disease-badges">
+                                                {% if symptom.diseases and symptom.diseases|length > 0 %}
+                                                    {% for disease in symptom.diseases %}
+                                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-monospace" style="font-size: 0.7rem;">
+                                                            🦠 {{ disease.disease_name }}
+                                                        </span>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="badge bg-secondary-subtle text-secondary font-monospace" style="font-size: 0.68rem;">
+                                                        មិនទាន់មានជំងឺទាក់ទង
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 {% endfor %}
+            {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-exclamation-circle fs-3 d-block mb-1"></i>
+                    <span>ពុំមានទិន្នន័យរោគសញ្ញាក្នុងប្រព័ន្ធឡើយ</span>
+                </div>
+            {% endif %}
 
+            <!-- Empty Search Result Alert -->
+            <div id="no-symptoms-found" class="text-center py-4 text-muted" style="display: none;">
+                <i class="bi bi-search fs-3 d-block mb-1"></i>
+                <span>មិនរកឃើញរោគសញ្ញា ឬជំងឺដែលត្រូវគ្នានឹងការស្វែងរកឡើយ</span>
             </div>
+        </div>
 
+        <!-- Errors -->
+        {% for error in form.symptom_id.errors %}
+            <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
         {% endfor %}
-
-    </div>
-
-    <!-- Errors -->
-    {% for error in form.symptom_id.errors %}
-        <div class="text-danger small mt-1">{{ error }}</div>
-    {% endfor %}
-
-    <div class="form-text">
-        Select one or more symptoms for this rule
     </div>
 </div>
 
-
 <!-- ========================= -->
-<!-- Active Switch -->
+<!-- 4. Active Switch -->
 <!-- ========================= -->
-<div class="form-check form-switch mb-4">
-    {{ form.is_active(class="form-check-input", role="switch") }}
-    {{ form.is_active.label(class="form-check-label fw-semibold") }}
-
-    <div class="form-text">
-        Enable or disable this rule condition
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+        <div class="form-check form-switch mb-0">
+            {{ form.is_active(class="form-check-input", role="switch", id="is_active_switch") }}
+            <label class="form-check-label fw-semibold ms-2" for="is_active_switch">
+                {{ form.is_active.label.text }}
+            </label>
+        </div>
+        <div class="form-text mt-1 ms-4">បើក ឬបិទការប្រើប្រាស់លក្ខខណ្ឌវិធាននេះក្នុងប្រព័ន្ធ Expert System</div>
     </div>
 </div>
 
-
 <!-- ========================= -->
-<!-- Actions -->
+<!-- 5. Form Actions -->
 <!-- ========================= -->
-<div class="d-flex justify-content-end gap-2">
-    <a href="{{ url_for('rule_condition.index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Cancel
+<div class="d-flex justify-content-end gap-2 mb-4">
+    <a href="{{ url_for('rule_condition.index') }}" class="btn btn-outline-secondary px-4">
+        <i class="bi bi-x-circle me-1"></i> បោះបង់ (Cancel)
     </a>
 
-    {{ form.submit(class="btn btn-primary px-4") }}
+    <button type="submit" class="btn btn-primary px-4">
+        <i class="bi bi-save me-1"></i> រក្សាទុក (Save Condition)
+    </button>
 </div>
 
-
 <!-- ========================= -->
-<!-- JavaScript -->
+<!-- 6. JavaScript Logic -->
 <!-- ========================= -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById('symptom-search');
+    const clearBtn = document.getElementById('clear-search');
+    const selectAllBtn = document.getElementById('select-all');
+    const deselectAllBtn = document.getElementById('deselect-all');
+    const checkboxes = document.querySelectorAll('.symptom-checkbox');
+    const categoryGroups = document.querySelectorAll('.category-group');
+    const noResultsMsg = document.getElementById('no-symptoms-found');
+    const selectedCountBadge = document.getElementById('selected-count');
 
-        const selectAllBtn = document.getElementById('select-all');
-        const deselectAllBtn = document.getElementById('deselect-all');
-        const checkboxes = document.querySelectorAll('.symptom-checkbox');
+    // Update Selected Count Badge
+    function updateSelectedCount() {
+        const checkedCount = document.querySelectorAll('.symptom-checkbox:checked').length;
+        selectedCountBadge.textContent = `${checkedCount} រោគសញ្ញាបានជ្រើស`;
+    }
 
-        // Select all
+    // Filter Symptoms by Name or Disease
+    function filterSymptoms() {
+        const query = searchInput.value.toLowerCase().trim();
+        let totalVisible = 0;
+
+        clearBtn.style.display = query ? 'block' : 'none';
+
+        categoryGroups.forEach(group => {
+            let visibleInGroup = 0;
+            const items = group.querySelectorAll('.symptom-item');
+
+            items.forEach(item => {
+                const symptomName = item.querySelector('.form-check-label').textContent.toLowerCase();
+                const diseaseBadges = item.querySelector('.disease-badges').textContent.toLowerCase();
+
+                if (symptomName.includes(query) || diseaseBadges.includes(query)) {
+                    item.style.display = '';
+                    visibleInGroup++;
+                    totalVisible++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            group.style.display = visibleInGroup > 0 ? '' : 'none';
+        });
+
+        if (noResultsMsg) {
+            noResultsMsg.style.display = (totalVisible === 0 && categoryGroups.length > 0) ? 'block' : 'none';
+        }
+    }
+
+    // Event Listeners
+    if (searchInput) {
+        searchInput.addEventListener('input', filterSymptoms);
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            filterSymptoms();
+            searchInput.focus();
+        });
+    }
+
+    if (selectAllBtn) {
         selectAllBtn.addEventListener('click', () => {
-            checkboxes.forEach(cb => cb.checked = true);
+            checkboxes.forEach(cb => {
+                const item = cb.closest('.symptom-item');
+                if (item && item.style.display !== 'none') {
+                    cb.checked = true;
+                }
+            });
+            updateSelectedCount();
         });
+    }
 
-        // Deselect all
+    if (deselectAllBtn) {
         deselectAllBtn.addEventListener('click', () => {
-            checkboxes.forEach(cb => cb.checked = false);
+            checkboxes.forEach(cb => {
+                const item = cb.closest('.symptom-item');
+                if (item && item.style.display !== 'none') {
+                    cb.checked = false;
+                }
+            });
+            updateSelectedCount();
         });
+    }
 
-    });
+    checkboxes.forEach(cb => cb.addEventListener('change', updateSelectedCount));
+
+    // Initial Execution
+    updateSelectedCount();
+});
 </script>

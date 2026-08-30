@@ -92,10 +92,13 @@ def create():
         except Exception as e:
             flash(str(e), "danger")
 
+
+    # ទាញយក Symptom Data ជាមួយ Disease Information
+    grouped_symptoms = RuleConditionService.get_symptoms_grouped_with_diseases()
     return render_template(
         "rule_condition_page/create.html",
         form=form,
-        grouped_symptoms=get_grouped_symptoms()
+        grouped_symptoms=grouped_symptoms
     )
 
 # ===================== DETAIL =====================

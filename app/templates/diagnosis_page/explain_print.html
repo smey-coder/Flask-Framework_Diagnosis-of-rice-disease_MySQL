@@ -1,0 +1,754 @@
+{% extends "layouts/admin_layout/admin.html" %} 
+{% block title %} ការពន្យល់លទ្ធផលវិនិច្ឆ័យ {% endblock %} 
+{% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/explain_print.css') }}"
+/>
+<!-- =========================================================
+     PAGE CONTAINER
+========================================================= -->
+
+<div class="diagnosis-report-wrapper">
+  <!-- =====================================================
+         TOP ACTION BAR
+    ====================================================== -->
+
+  <div class="report-actions no-print">
+    <a
+      href="{{ url_for('admin.diagnosis_result') }}"
+      class="btn btn-outline-secondary rounded-pill px-4"
+    >
+      <i class="bi bi-arrow-left me-1"></i>
+      ត្រឡប់ទៅលទ្ធផល
+    </a>
+
+    <button
+      type="button"
+      onclick="window.print()"
+      class="btn btn-primary rounded-pill px-4"
+    >
+      <i class="bi bi-printer me-1"></i>
+      Print Report
+    </button>
+  </div>
+
+  <!-- =====================================================
+         A4 REPORT
+    ====================================================== -->
+
+  <div class="diagnosis-report" id="print-area">
+    <!-- =================================================
+             REPORT HEADER
+        ================================================== -->
+
+    <div class="report-header">
+      <div class="report-header-left">
+        <div class="report-logo">
+          <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+
+        <div>
+          <h1>របាយការណ៍វិនិច្ឆ័យជំងឺ</h1>
+
+          <div class="report-subtitle">Rice Disease Diagnosis Report</div>
+
+          <div class="report-system">AI Expert System</div>
+        </div>
+      </div>
+
+      <div class="report-header-right">
+        {% if disease.image %}
+
+        <img
+          src="{{ url_for(
+                        'static',
+                        filename='images/diseases/' + disease.image
+                    ) }}"
+          alt="{{ disease.disease_name }}"
+          class="disease-report-image"
+        />
+
+        {% else %}
+
+        <div class="disease-image-placeholder">
+          <i class="bi bi-image"></i>
+        </div>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- =================================================
+             REPORT META
+        ================================================== -->
+
+    <div class="report-meta">
+      <div class="meta-item">
+        <span class="meta-label">
+          <i class="bi bi-calendar3"></i>
+          Date
+        </span>
+
+        <strong> {{ now.strftime('%d-%m-%Y') if now else '' }} </strong>
+      </div>
+
+      <div class="meta-item">
+        <span class="meta-label">
+          <i class="bi bi-clock"></i>
+          Time
+        </span>
+
+        <strong> {{ now.strftime('%H:%M:%S') if now else '' }} </strong>
+      </div>
+
+      <div class="meta-item">
+        <span class="meta-label">
+          <i class="bi bi-cpu"></i>
+          System
+        </span>
+
+        <strong> AI Expert System </strong>
+      </div>
+    </div>
+
+    <!-- =================================================
+             DIAGNOSIS RESULT
+        ================================================== -->
+
+    <section class="report-section">
+      <div class="section-title">
+        <span class="section-icon">
+          <i class="bi bi-clipboard2-pulse"></i>
+        </span>
+
+        <div>
+          <h2>លទ្ធផលវិនិច្ឆ័យ</h2>
+
+          <small> Diagnosis Result </small>
+        </div>
+      </div>
+
+      <div class="diagnosis-result-card">
+        <div class="diagnosis-main">
+          <span class="result-label"> ជំងឺដែលអាចកើតមាន </span>
+
+          <h2>{{ disease.disease_name }}</h2>
+
+          <span class="result-en">
+            {{ disease.disease_type or 'Rice Disease' }}
+          </span>
+        </div>
+
+        <div class="diagnosis-severity">
+          <span class="result-label"> កម្រិតជំងឺ </span>
+
+          {% if disease.severity_level %} {% if 'High' in disease.severity_level
+          or 'ខ្ពស់' in disease.severity_level %}
+
+          <span class="severity-badge severity-high">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ disease.severity_level }}
+          </span>
+
+          {% elif 'Medium' in disease.severity_level or 'មធ្យម' in
+          disease.severity_level %}
+
+          <span class="severity-badge severity-medium">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            {{ disease.severity_level }}
+          </span>
+
+          {% else %}
+
+          <span class="severity-badge severity-low">
+            <i class="bi bi-check-circle-fill"></i>
+            {{ disease.severity_level }}
+          </span>
+
+          {% endif %} {% else %}
+
+          <span class="severity-badge severity-low"> មិនមានទិន្នន័យ </span>
+
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================
+             CONFIDENCE
+        ================================================== -->
+
+    <section class="report-section">
+      <div class="section-title">
+        <span class="section-icon">
+          <i class="bi bi-speedometer2"></i>
+        </span>
+
+        <div>
+          <h2>កម្រិតភាពទំនុកចិត្ត</h2>
+
+          <small> Diagnosis Confidence </small>
+        </div>
+      </div>
+
+      {% set confidence_percent = (certainty * 100) | round(2) %}
+
+      <div class="confidence-card">
+        <div class="confidence-top">
+          <div>
+            <span class="confidence-label"> Certainty Factor </span>
+
+            <div class="confidence-value">{{ confidence_percent }}%</div>
+          </div>
+
+          <div>
+            {% if certainty >= 0.70 %}
+
+            <span class="confidence-status confidence-high">
+              <i class="bi bi-check-circle-fill"></i>
+              High Confidence
+            </span>
+
+            {% elif certainty >= 0.40 %}
+
+            <span class="confidence-status confidence-medium">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              Medium Confidence
+            </span>
+
+            {% else %}
+
+            <span class="confidence-status confidence-low">
+              <i class="bi bi-question-circle-fill"></i>
+              Low Confidence
+            </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="confidence-progress">
+          <div
+            class="confidence-progress-bar {% if certainty >= 0.70 %} confidence-progress-high {% elif certainty >= 0.40 %} confidence-progress-medium {% else %} confidence-progress-low {% endif %}"
+            style="width: {{ confidence_percent }}%;"
+          >
+            {{ confidence_percent }}%
+          </div>
+        </div>
+
+        <div class="confidence-description">
+          {% if certainty >= 0.70 %}
+
+          <i class="bi bi-check-circle-fill"></i>
+
+          <span>
+            ប្រព័ន្ធមានភាពទំនុកចិត្តខ្ពស់លើលទ្ធផល។ អាចពិចារណាវិធីព្យាបាលដែលមាន
+            <strong>Priority 1</strong>
+            ជាជម្រើសណែនាំ។
+          </span>
+
+          {% elif certainty >= 0.40 %}
+
+          <i class="bi bi-exclamation-triangle-fill"></i>
+
+          <span>
+            ប្រព័ន្ធមានភាពទំនុកចិត្តកម្រិតមធ្យម។ សូមពិនិត្យរោគសញ្ញាបន្ថែម
+            មុនពេលអនុវត្តការព្យាបាល។
+          </span>
+
+          {% else %}
+
+          <i class="bi bi-info-circle-fill"></i>
+
+          <span>
+            ភាពទំនុកចិត្តមានកម្រិតទាប។ សូមបញ្ចូលរោគសញ្ញាបន្ថែម
+            ឬពិគ្រោះជាមួយអ្នកជំនាញ។
+          </span>
+
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================
+             SELECTED SYMPTOMS
+        ================================================== -->
+
+    <section class="report-section">
+      <div class="section-title">
+        <span class="section-icon">
+          <i class="bi bi-list-check"></i>
+        </span>
+
+        <div>
+          <h2>រោគសញ្ញាដែលបានជ្រើសរើស</h2>
+
+          <small> Selected Symptoms </small>
+        </div>
+      </div>
+
+      {% if selected_symptoms %}
+
+      <div class="symptoms-grid">
+        {% for symptom in selected_symptoms %}
+
+        <div class="symptom-item">
+          <i class="bi bi-check-circle-fill"></i>
+
+          <span> {{ symptom }} </span>
+        </div>
+
+        {% endfor %}
+      </div>
+
+      {% else %}
+
+      <div class="empty-state">
+        <i class="bi bi-info-circle"></i>
+        មិនមានរោគសញ្ញាត្រូវបានរក្សាទុក។
+      </div>
+
+      {% endif %}
+    </section>
+
+    <!-- =================================================
+             DISEASE DESCRIPTION
+        ================================================== -->
+
+    {% if disease.description %}
+
+    <section class="report-section">
+      <div class="section-title">
+        <span class="section-icon">
+          <i class="bi bi-file-text"></i>
+        </span>
+
+        <div>
+          <h2>ព័ត៌មានអំពីជំងឺ</h2>
+
+          <small> Disease Description </small>
+        </div>
+      </div>
+
+      <div class="description-box">{{ disease.description }}</div>
+    </section>
+
+    {% endif %}
+
+    <!-- =================================================
+             EXPERT SYSTEM EXPLANATION
+        ================================================== -->
+
+    <section class="report-section">
+      <div class="section-title">
+        <span class="section-icon">
+          <i class="bi bi-diagram-3"></i>
+        </span>
+
+        <div>
+          <h2>ការពន្យល់ពីប្រព័ន្ធ Expert System</h2>
+
+          <small> Inference Explanation </small>
+        </div>
+      </div>
+
+      {% if logs %}
+
+      <div class="rule-list">
+        {% for log in logs %}
+
+        <div class="rule-card">
+          <div class="rule-header">
+            <div class="rule-number">Rule {{ loop.index }}</div>
+
+            <div class="rule-cf">CF {{ (log.cf_after * 100) | round(2) }}%</div>
+          </div>
+
+          {% if log.matched %}
+
+          <div class="rule-row">
+            <span class="rule-label">
+              <i class="bi bi-check-circle-fill"></i>
+              Matched Symptoms
+            </span>
+
+            <div class="matched-symptoms">
+              {% for symptom in log.matched %}
+
+              <span class="matched-badge"> {{ symptom }} </span>
+
+              {% endfor %}
+            </div>
+          </div>
+
+          {% endif %}
+
+          <div class="rule-cf-grid">
+            <div>
+              <span> CF Before </span>
+
+              <strong> {{ (log.cf_before * 100) | round(2) }}% </strong>
+            </div>
+
+            <div>
+              <span> Rule CF </span>
+
+              <strong> {{ (log.rule_cf * 100) | round(2) }}% </strong>
+            </div>
+
+            <div>
+              <span> CF After </span>
+
+              <strong> {{ (log.cf_after * 100) | round(2) }}% </strong>
+            </div>
+          </div>
+
+          {% if log.explanation %}
+
+          <div class="rule-explanation">
+            <i class="bi bi-lightbulb-fill"></i>
+
+            <div>
+              <strong> Explanation </strong>
+
+              <p>{{ log.explanation }}</p>
+            </div>
+          </div>
+
+          {% endif %}
+        </div>
+
+        {% endfor %}
+      </div>
+
+      {% else %}
+
+      <div class="empty-state">
+        <i class="bi bi-info-circle"></i>
+        មិនមានព័ត៌មានពន្យល់សម្រាប់ជំងឺនេះទេ។
+      </div>
+
+      {% endif %}
+    </section>
+
+    <!-- =================================================
+             TREATMENT RECOMMENDATION
+        ================================================== -->
+
+    <section class="report-section">
+      <div class="section-title">
+        <span class="section-icon treatment-icon">
+          <i class="bi bi-capsule"></i>
+        </span>
+
+        <div>
+          <h2>វិធីព្យាបាល</h2>
+
+          <small> Treatment Recommendation </small>
+        </div>
+      </div>
+
+      {% if certainty >= 0.70 %}
+
+      <div class="recommendation-banner recommendation-success">
+        <i class="bi bi-check-circle-fill"></i>
+
+        <div>
+          <strong> Recommended Treatment </strong>
+
+          <p>
+            លទ្ធផលមានភាពទំនុកចិត្តខ្ពស់។ Priority 1 Treatment
+            អាចត្រូវបានណែនាំជាជម្រើសដំបូង។
+          </p>
+        </div>
+      </div>
+
+      {% elif certainty >= 0.40 %}
+
+      <div class="recommendation-banner recommendation-warning">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+
+        <div>
+          <strong> Treatment With Verification </strong>
+
+          <p>សូមពិនិត្យរោគសញ្ញាបន្ថែម មុនពេលអនុវត្តការព្យាបាល។</p>
+        </div>
+      </div>
+
+      {% else %}
+
+      <div class="recommendation-banner recommendation-secondary">
+        <i class="bi bi-question-circle-fill"></i>
+
+        <div>
+          <strong> More Symptoms Recommended </strong>
+
+          <p>សូមបញ្ចូលរោគសញ្ញាបន្ថែម មុនពេលធ្វើការណែនាំការព្យាបាល។</p>
+        </div>
+      </div>
+
+      {% endif %} {% if treatments %}
+
+      <div class="treatment-list">
+        {% for treatment in treatments %}
+
+        <div
+          class="treatment-card {% if treatment.priority == 1 %} treatment-recommended {% endif %}"
+        >
+          {% if treatment.image %}
+
+          <img
+            src="{{ url_for(
+                            'static',
+                            filename='images/treatments/' + treatment.image
+                        ) }}"
+            alt="{{ treatment.method }}"
+            class="treatment-image"
+          />
+
+          {% else %}
+
+          <div class="treatment-placeholder">
+            <i class="bi bi-capsule"></i>
+          </div>
+
+          {% endif %}
+
+          <div class="treatment-content">
+            <div class="treatment-top">
+              <div>
+                {% if treatment.priority == 1 %}
+
+                <span class="priority-badge priority-one">
+                  <i class="bi bi-star-fill"></i>
+                  Priority 1
+                </span>
+
+                {% elif treatment.priority == 2 %}
+
+                <span class="priority-badge priority-two"> Priority 2 </span>
+
+                {% else %}
+
+                <span class="priority-badge priority-other">
+                  Priority {{ treatment.priority }}
+                </span>
+
+                {% endif %}
+              </div>
+
+              <span class="treatment-type">
+                {{ treatment.treatment_type }}
+              </span>
+            </div>
+
+            <h4>{{ treatment.method }}</h4>
+
+            {% if treatment.description %}
+
+            <p>{{ treatment.description }}</p>
+
+            {% endif %} {% if treatment.priority == 1 and certainty >= 0.70 %}
+
+            <div class="recommended-label">
+              <i class="bi bi-check-circle-fill"></i>
+
+              Recommended First Choice
+            </div>
+
+            {% endif %}
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+
+      {% else %}
+
+      <div class="empty-state">
+        <i class="bi bi-capsule"></i>
+        មិនមានព័ត៌មានអំពីការព្យាបាល។
+      </div>
+
+      {% endif %}
+    </section>
+
+    <!-- =================================================
+             PREVENTION
+        ================================================== -->
+
+    <section class="report-section">
+      <div class="section-title">
+        <span class="section-icon prevention-icon">
+          <i class="bi bi-shield-check"></i>
+        </span>
+
+        <div>
+          <h2>វិធានការការពារ</h2>
+
+          <small> Prevention Measures </small>
+        </div>
+      </div>
+
+      {% if preventions %}
+
+      <div class="prevention-grid">
+        {% for prevention in preventions %}
+
+        <div class="prevention-card">
+          <div class="prevention-icon-box">
+            <i class="bi bi-shield-check"></i>
+          </div>
+
+          <div>
+            <div class="prevention-top">
+              {% if prevention.priority %}
+
+              <span class="prevention-priority">
+                Priority {{ prevention.priority }}
+              </span>
+
+              {% endif %} {% if prevention.prevention_type %}
+
+              <span class="prevention-type">
+                {{ prevention.prevention_type }}
+              </span>
+
+              {% endif %}
+            </div>
+
+            {% if prevention.method %}
+
+            <h4>{{ prevention.method }}</h4>
+
+            {% endif %} {% if prevention.description %}
+
+            <p>{{ prevention.description }}</p>
+
+            {% endif %}
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+
+      {% else %}
+
+      <div class="empty-state">
+        <i class="bi bi-shield-x"></i>
+
+        មិនមានព័ត៌មានអំពីវិធានការការពារ សម្រាប់ជំងឺនេះទេ។
+      </div>
+
+      {% endif %}
+    </section>
+
+    <!-- =================================================
+             FINAL ADVICE
+        ================================================== -->
+
+    <section class="report-section">
+      <div
+        class="final-advice {% if certainty >= 0.70 %} final-advice-success {% elif certainty >= 0.40 %} final-advice-warning {% else %} final-advice-secondary {% endif %}"
+      >
+        <div class="final-advice-icon">
+          {% if certainty >= 0.70 %}
+
+          <i class="bi bi-check-circle-fill"></i>
+
+          {% elif certainty >= 0.40 %}
+
+          <i class="bi bi-exclamation-triangle-fill"></i>
+
+          {% else %}
+
+          <i class="bi bi-info-circle-fill"></i>
+
+          {% endif %}
+        </div>
+
+        <div>
+          <h3>អនុសាសន៍ពីប្រព័ន្ធ</h3>
+
+          {% if certainty >= 0.70 %}
+
+          <p>
+            ប្រព័ន្ធវិនិច្ឆ័យមានភាពទំនុកចិត្តខ្ពស់ ({{ confidence_percent }}%)។
+            អ្នកអាចពិចារណា
+            <strong>Priority 1 Treatment</strong>
+            ជាជម្រើសដំបូង ហើយបន្តអនុវត្តវិធានការការពារ។
+          </p>
+
+          {% elif certainty >= 0.40 %}
+
+          <p>
+            ប្រព័ន្ធមានភាពទំនុកចិត្តមធ្យម ({{ confidence_percent }}%)។
+            សូមពិនិត្យរោគសញ្ញា និងស្ថានភាពដំណាំបន្ថែម មុនពេលអនុវត្តការព្យាបាល។
+          </p>
+
+          {% else %}
+
+          <p>
+            ប្រព័ន្ធមានភាពទំនុកចិត្តទាប ({{ confidence_percent }}%)។
+            មិនគួរអនុវត្តការព្យាបាលដោយផ្អែកលើលទ្ធផលនេះតែមួយទេ។
+            សូមបញ្ចូលរោគសញ្ញាបន្ថែម ឬពិគ្រោះអ្នកជំនាញ។
+          </p>
+
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================
+             DISCLAIMER
+        ================================================== -->
+
+    <section class="report-disclaimer">
+      <div class="disclaimer-title">
+        <i class="bi bi-exclamation-circle-fill"></i>
+
+        ចំណាំសំខាន់ / Important Notice
+      </div>
+
+      <ul>
+        <li>
+          របាយការណ៍នេះបង្កើតដោយ AI Expert System ដោយផ្អែកលើរោគសញ្ញាដែលបានបញ្ចូល។
+        </li>
+
+        <li>
+          លទ្ធផល Certainty Factor គឺជាកម្រិតទំនុកចិត្តរបស់ប្រព័ន្ធ
+          មិនមែនជាការធានាថាជំងឺត្រូវបានបញ្ជាក់ 100% ទេ។
+        </li>
+
+        <li>
+          សូមពិនិត្យស្ថានភាពដំណាំជាក់ស្តែង និងពិគ្រោះអ្នកជំនាញកសិកម្ម
+          ប្រសិនបើមានភាពមិនប្រាកដប្រជា។
+        </li>
+
+        <li>
+          សម្រាប់ការប្រើប្រាស់សារធាតុគីមី ត្រូវអនុវត្តតាមស្លាកផលិតផល
+          និងសេចក្តីណែនាំសុវត្ថិភាព។
+        </li>
+      </ul>
+    </section>
+
+    <!-- =================================================
+             REPORT FOOTER
+        ================================================== -->
+
+    <footer class="report-footer">
+      <div>
+        <strong> ប្រព័ន្ធវិនិច្ឆ័យជំងឺដំណាំស្រូវ </strong>
+
+        <span> Rice Disease Diagnosis System </span>
+      </div>
+
+      <div class="footer-right">
+        Generated: {{ now.strftime('%d-%m-%Y %H:%M:%S') if now else '' }}
+      </div>
+    </footer>
+  </div>
+</div>
+
+{% endblock %}

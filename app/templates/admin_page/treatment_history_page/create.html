@@ -1,0 +1,209 @@
+{% extends "layouts/admin_layout/admin.html" %}
+
+{% block title %}
+អនុវត្តវិធីព្យាបាល
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h3 class="fw-bold text-success">
+
+                <i class="bi bi-capsule me-2"></i>
+
+                អនុវត្តវិធីព្យាបាល
+
+            </h3>
+
+            <p class="text-muted mb-0">
+                កត់ត្រាការអនុវត្តវិធីព្យាបាលសម្រាប់ជំងឺ
+            </p>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('admin.diagnosis_result') }}"
+            class="btn btn-outline-secondary"
+        >
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            ត្រឡប់
+
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         INFORMATION
+    ====================================================== -->
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+        <div class="card-header bg-success text-white rounded-top-4">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-info-circle me-2"></i>
+
+                Diagnosis Information
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <!-- Monitoring -->
+
+                <div class="col-md-4">
+
+                    <label class="form-label text-muted">
+                        Monitoring ID
+                    </label>
+
+                    <div class="fw-bold">
+                        #{{ monitoring_id }}
+                    </div>
+
+                </div>
+
+
+                <!-- Diagnosis History -->
+
+                <div class="col-md-4">
+
+                    <label class="form-label text-muted">
+                        Diagnosis History ID
+                    </label>
+
+                    <div class="fw-bold">
+                        #{{ diagnosis_history_id }}
+                    </div>
+
+                </div>
+
+
+                <!-- Treatment -->
+
+                <div class="col-md-4">
+
+                    <label class="form-label text-muted">
+                        Treatment ID
+                    </label>
+
+                    <div class="fw-bold">
+                        #{{ treatment_id }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TREATMENT HISTORY FORM
+    ====================================================== -->
+
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <div class="card-header bg-light">
+
+            <h5 class="fw-bold mb-0">
+
+                <i class="bi bi-clipboard2-pulse me-2"></i>
+
+                Treatment History
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'treatment_history.create',
+                    monitoring_id=monitoring_id,
+                    diagnosis_history_id=diagnosis_history_id,
+                    treatment_id=treatment_id
+                ) }}"
+            >
+
+                <!-- =================================================
+                     CSRF TOKEN
+                ================================================== -->
+
+                {{ form.hidden_tag() }}
+
+
+                <!-- =================================================
+                     FORM FIELDS
+                ================================================== -->
+
+                {% include
+                    "admin_page/treatment_history_page/_form.html"
+                %}
+
+
+                <!-- =================================================
+                     BUTTONS
+                ================================================== -->
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+
+                    <a
+                        href="{{ url_for('admin.diagnosis_result') }}"
+                        class="btn btn-outline-secondary"
+                    >
+
+                        <i class="bi bi-x-circle me-1"></i>
+
+                        Cancel
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+
+                        <i class="bi bi-check-circle me-1"></i>
+
+                        Save Treatment History
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

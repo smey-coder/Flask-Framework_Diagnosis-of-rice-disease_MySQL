@@ -7,16 +7,25 @@
       <i class="bi bi-info-circle me-2"></i> ពន្យល់សម្រាប់ {{
       disease.disease_name }}
     </h2>
-    {% if disease.image %}
+    <!-- {% if disease.image %}
     <img
       src="{{ url_for('static', filename='images/diseases/' + disease.image) }}"
       alt="{{ disease.disease_name }}"
       class="img-thumbnail"
       style="max-width: 150px"
     />
+    {% endif %} -->
+    {% if disease.image %}
+      {# Check if disease.image is a Cloudinary/HTTP URL or a local file #}
+      {% set disease_img_src = disease.image if ('http://' in disease.image or 'https://' in disease.image) else url_for('static', filename='images/diseases/' + disease.image) %}
+      <img
+        src="{{ disease_img_src }}"
+        alt="{{ disease.disease_name }}"
+        class="img-thumbnail"
+        style="max-width: 150px"
+      />
     {% endif %}
   </div>
-
   <!-- Disease Info & Overall Confidence -->
   <div class="mb-4">
     <span
@@ -24,7 +33,6 @@
     >
       កម្រិតការប្រកាស៖ {{ disease.severity_level }}
     </span>
-
     <div class="mt-2">
       <strong>ភាពទំនុកចិត្តសរុប:</strong>
       <div class="progress" style="height: 20px">
@@ -38,7 +46,6 @@
       </div>
     </div>
   </div>
-
   <!-- Selected Symptoms -->
   <div class="mb-4">
     <h5 class="fw-semibold">រោគសញ្ញា​ដែលបានជ្រើសរើស:</h5>
@@ -48,7 +55,6 @@
       {% endfor %}
     </ul>
   </div>
-
   <!-- Rule Application Table -->
   <div class="mb-4">
     <h5 class="fw-semibold">ការដាក់អនុវត្តច្បាប់ (Rule Application)</h5>
@@ -69,7 +75,6 @@
             <tr {% if (log.cf_after | default(0.0, true)) > 0.7 %}class="table-danger"{% endif %}>
               <!-- Rule ID -->
               <td class="text-center font-monospace">{{ log.rule_id | default('N/A') }}</td>
-
               <!-- Matched Symptoms -->
               <td>
                 {% if log.matched %}

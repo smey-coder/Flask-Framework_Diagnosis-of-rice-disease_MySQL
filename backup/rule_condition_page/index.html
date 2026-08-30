@@ -1,0 +1,441 @@
+{% extends 'layouts/admin_layout/admin.html' %} {% block title %} Rule
+Conditions {% endblock %} {% block content %}
+
+<div class="container-fluid mt-4">
+  <!-- =====================================================
+     HEADER
+====================================================== -->
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">
+        <i class="bi bi-diagram-3 text-success me-2"></i>
+
+        Rule Conditions
+      </h3>
+
+      <p class="text-muted mb-0">Manage disease diagnosis rule conditions</p>
+    </div>
+    {% if current_user.has_permission('CREATE_RULE_CONDITION') %}
+    <a
+      href="{{ url_for('rule_condition.create') }}"
+      class="btn btn-success rounded-pill px-4"
+    >
+      <i class="bi bi-plus-lg me-1"></i>
+
+      Add Rule Condition
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- =====================================================
+     SEARCH & FILTER
+====================================================== -->
+
+  <div class="card border-0 bg-light rounded-4 mb-3">
+    <div class="card-body">
+      <form
+        method="GET"
+        action="{{ url_for('rule_condition.index') }}"
+        class="row g-3 align-items-end"
+      >
+        <!-- SEARCH -->
+
+        <div class="col-md-7">
+          <label class="form-label fw-semibold"> Search </label>
+
+          <div class="input-group">
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search text-success"></i>
+            </span>
+
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              value="{{ search or '' }}"
+              placeholder="Search condition, disease or symptom..."
+            />
+          </div>
+        </div>
+
+        <!-- STATUS -->
+        <div class="col-md-3">
+          <label for="activeFilter" class="form-label fw-semibold">
+              <i class="bi bi-toggle-on me-1"></i>
+              Status
+          </label>
+
+          <select
+              id="activeFilter"
+              name="active"
+              class="form-select"
+          >
+
+              <!-- All -->
+              <option
+                  value=""
+                  {% if active_only is none %}selected{% endif %}
+              >
+                  All Status
+              </option>
+
+              <!-- Active -->
+              <option
+                  value="1"
+                  {% if active_only is true %}selected{% endif %}
+              >
+                  Active
+              </option>
+
+              <!-- Inactive -->
+              <option
+                  value="0"
+                  {% if active_only is false %}selected{% endif %}
+              >
+                  Inactive
+              </option>
+
+          </select>
+      </div>
+
+        <!-- BUTTONS -->
+
+        <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-success flex-grow-1">
+            <i class="bi bi-search me-1"></i>
+
+            Search
+          </button>
+
+          <a
+            href="{{ url_for('rule_condition.index') }}"
+            class="btn btn-outline-secondary"
+            title="Reset"
+          >
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================
+     TABLE CARD
+====================================================== -->
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <!-- HEADER -->
+
+    <div class="card-header bg-white border-0 py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="fw-bold mb-1">Rule Condition List</h5>
+
+          <small class="text-muted">
+            {% if pagination %} Showing {{ pagination.items|length }} of {{
+            pagination.total }} records {% endif %}
+          </small>
+        </div>
+
+        {% if search or active_only is not none %}
+
+        <span class="badge bg-success-subtle text-success px-3 py-2">
+          <i class="bi bi-funnel me-1"></i>
+
+          Filter Applied
+        </span>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">#</th>
+
+              <th>Rule</th>
+
+              <th>Disease</th>
+
+              <th>Symptom</th>
+
+              <th>Status</th>
+
+              <th class="text-end pe-4">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for rc in rule_conditions %}
+
+            <tr>
+              <!-- ID -->
+
+              <td class="ps-4">
+                <span class="text-muted fw-semibold"> {{ rc.id }} </span>
+              </td>
+
+              <!-- RULE -->
+
+              <td>
+                <span class="badge bg-primary-subtle text-primary">
+                  Rule #{{ rc.rule_id }}
+                </span>
+              </td>
+
+              <!-- DISEASE -->
+
+              <td>
+                {% if rc.rule and rc.rule.disease %}
+
+                <div class="d-flex align-items-center gap-2">
+                  <div
+                    class="rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center"
+                    style="width: 36px; height: 36px"
+                  >
+                    <i class="bi bi-virus"></i>
+                  </div>
+
+                  <strong> {{ rc.rule.disease.disease_name }} </strong>
+                </div>
+
+                {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </td>
+
+              <!-- SYMPTOM -->
+
+              <td>
+                {% if rc.symptom %}
+
+                <span class="badge bg-success-subtle text-success">
+                  <i class="bi bi-leaf me-1"></i>
+
+                  {{ rc.symptom.symptom_name }}
+                </span>
+
+                {% else %}
+
+                <span class="text-muted"> N/A </span>
+
+                {% endif %}
+              </td>
+
+              <!-- STATUS -->
+
+              <td>
+                <form
+                  method="POST"
+                  action="{{ url_for(
+                                    'rule_condition.toggle',
+                                    id=rc.id
+                                ) }}"
+                  class="d-inline"
+                >
+                  <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                  />
+
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      onchange="this.form.submit()"
+                      {%
+                      if
+                      rc.is_active
+                      %}
+                      checked
+                      {%
+                      endif
+                      %}
+                    />
+
+                    <label class="form-check-label">
+                      {% if rc.is_active %}
+
+                      <span class="text-success fw-semibold"> Active </span>
+
+                      {% else %}
+
+                      <span class="text-muted"> Inactive </span>
+
+                      {% endif %}
+                    </label>
+                  </div>
+                </form>
+              </td>
+
+              <!-- ACTIONS -->
+
+              <td class="text-end pe-4">
+                <div class="btn-group" role="group">
+                  {% if current_user.has_permission('VIEW_RULE_CONDITION') %}
+                  <a
+                    href="{{ url_for('rule_condition.detail', id=rc.id) }}"
+                    class="btn btn-sm btn-outline-info"
+                    title="View Rule Condition"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  {% endif %} 
+                  {% if current_user.has_permission('EDIT_RULE_CONDITION') %}
+                  <a
+                    href="{{ url_for('rule_condition.edit', id=rc.id) }}"
+                    class="btn btn-sm btn-outline-warning"
+                    title="Edit Rule Condition"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  {% endif %}
+                  {% if current_user.has_permission('DELETE_RULE_CONDITION') %}
+                  <a
+                    href="{{ url_for('rule_condition.delete', id=rc.id) }}"
+                    class="btn btn-sm btn-outline-danger"
+                    title="Delete Rule Condition"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+
+            {% else %}
+
+            <!-- EMPTY -->
+
+            <tr>
+              <td colspan="6" class="text-center py-5">
+                <div class="mb-3">
+                  <i
+                    class="bi bi-search text-muted"
+                    style="font-size: 45px"
+                  ></i>
+                </div>
+
+                <h6 class="fw-bold">No Rule Conditions Found</h6>
+
+                <p class="text-muted mb-3">
+                  {% if search %} No results found for "<strong
+                    >{{ search }}</strong
+                  >". {% else %} No rule conditions have been created yet. {%
+                  endif %}
+                </p>
+
+                {% if search or active_only is not none %}
+
+                <a
+                  href="{{ url_for(
+                                        'rule_condition.index'
+                                    ) }}"
+                  class="btn btn-outline-success rounded-pill px-4"
+                >
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>
+
+                  Clear Filter
+                </a>
+
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         PAGINATION
+    ====================================================== -->
+
+    {% if pagination and pagination.pages > 1 %}
+
+    <div class="card-footer bg-white border-0 py-3">
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-end mb-0">
+          <!-- PREVIOUS -->
+
+          <li
+            class="page-item {% if not pagination.has_prev %} disabled {% endif %}"
+          >
+            <a
+              class="page-link"
+              href="{{ url_for(
+                            'rule_condition.index',
+                            page=pagination.prev_num,
+                            search=search,
+                            active=active_only
+                        ) }}"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+
+          <!-- PAGE NUMBERS -->
+
+          {% for p in pagination.iter_pages( left_edge=1, right_edge=1,
+          left_current=2, right_current=2 ) %} {% if p %}
+
+          <li
+            class="page-item {% if p == pagination.page %} active {% endif %}"
+          >
+            <a
+              class="page-link"
+              href="{{ url_for(
+                                    'rule_condition.index',
+                                    page=p,
+                                    search=search,
+                                    active=active_only
+                                ) }}"
+            >
+              {{ p }}
+            </a>
+          </li>
+
+          {% else %}
+
+          <li class="page-item disabled">
+            <span class="page-link"> … </span>
+          </li>
+
+          {% endif %} {% endfor %}
+
+          <!-- NEXT -->
+
+          <li
+            class="page-item {% if not pagination.has_next %} disabled {% endif %}"
+          >
+            <a
+              class="page-link"
+              href="{{ url_for(
+                            'rule_condition.index',
+                            page=pagination.next_num,
+                            search=search,
+                            active=active_only
+                        ) }}"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

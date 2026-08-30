@@ -262,13 +262,15 @@ endblock %} {% block content %}
                   class="symptom-card p-3 d-flex align-items-center h-100 {% if s.id in (form.symptoms.data or []) %}selected{% endif %}"
                   onclick="toggleCardSelect(this)"
                 >
-                 {% if s.image %}
-                    <img src="{{ url_for('static', filename='images/symptoms/' + s.image) }}" 
+                {% if s.image %}
+                {# 1. Check if the image is a Cloudinary/External URL or a local static file #}
+                {% set img_src = s.image if ('http://' in s.image or 'https://' in s.image) else url_for('static', filename='images/symptoms/' + s.image) %}
+                    <img src="{{ img_src }}" 
                         alt="{{ s.symptom_name }}" 
                         class="symptom-img me-3 cursor-pointer"
                         data-bs-toggle="modal"
                         data-bs-target="#imageModal"
-                        data-img-src="{{ url_for('static', filename='images/symptoms/' + s.image) }}"
+                        data-img-src="{{ img_src }}"
                         data-img-title="{{ s.symptom_name }}"
                         onclick="openImageModal(this)">
                 {% else %}
@@ -277,7 +279,8 @@ endblock %} {% block content %}
                     <i class="bi bi-bug-fill text-danger fs-4"></i>
                 </div>
                 {% endif %}
-
+                
+                
                   <div class="form-check m-0 w-100">
                     <input
                       class="form-check-input symptom-checkbox me-2"

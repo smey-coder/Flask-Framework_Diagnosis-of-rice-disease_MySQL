@@ -1452,12 +1452,6 @@ def diagnosis_result():
         flash("Unable to process diagnosis result.","danger")
 
         return redirect(url_for("user.diagnosis_input"))
-
-
-
-
-
-
 @user_bp.route("/history")
 @login_required
 @role_required("User")

@@ -3,153 +3,599 @@
 {% block title %}Diagnosis{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col">
-            <h3 class="fw-bold text-primary">
-                <i class="bi bi-heart-pulse me-2"></i> Disease Diagnosis
-            </h3>
-            <p class="text-muted">
-                Select patient symptoms to perform expert system diagnosis.
-            </p>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/diagonsis_page.css') }}"
+/>
+<!-- Image Zoom Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="imageModalLabel">Symptom Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-3 bg-light">
+                <img id="modalPreviewImage" src="" alt="Symptom Preview" class="img-fluid rounded border shadow-sm" style="max-height: 75vh; object-fit: contain;">
+            </div>
         </div>
     </div>
-
-    <!-- Diagnosis Form -->
-    <form method="POST">
-        {{ form.hidden_tag() }}
-
-        <div class="card shadow-sm">
-
-            <div class="card-header bg-light fw-semibold d-flex justify-content-between align-items-center">
-                <span>
-                    <i class="bi bi-list-check me-2"></i> Symptoms List
-                </span>
-                <!-- 🔍 Search box -->
-                <div class="w-50">
-                    <input type="text" id="symptomSearch" class="form-control form-control-sm"
-                           placeholder="🔍 Search symptom...">
-                </div>
+</div>
+</div>
+  {% if current_user.has_permission('VIEW_SLIDE_SHOW_DIAGNOSIS') %} 
+  <!-- 1. Slideshow / Carousel Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card hero-carousel-card shadow-sm">
+        <div
+          id="diseaseCarousel"
+          class="carousel slide carousel-fade"
+          data-bs-ride="carousel"
+          data-bs-interval="4000"
+        >
+          <div class="carousel-indicators">
+            <button
+              type="button"
+              data-bs-target="#diseaseCarousel"
+              data-bs-slide-to="0"
+              class="active"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#diseaseCarousel"
+              data-bs-slide-to="1"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#diseaseCarousel"
+              data-bs-slide-to="2"
+            ></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img
+                src="https://www.oknha.news/wp-content/uploads/2023/05/image-287.png"
+                class="d-block w-100 carousel-item-img"
+                alt="Rice Field 1"
+              />
+              <div
+                class="carousel-caption carousel-caption-custom d-none d-md-block text-start px-4 pb-3"
+              >
+                <h5 class="fw-bold text-white mb-1">
+                  <i class="bi bi-shield-check me-2"></i> Rice Health Monitoring
+                </h5>
+                <p class="small text-white-50 mb-0">
+                  Select symptoms accurately to identify diseases early and
+                  preserve crop yield.
+                </p>
+              </div>
             </div>
-            <!-- Selected Symptoms Panel -->
-            <div class="px-3 pt-3">
-                <div class="alert alert-info d-none" id="selectedBox">
-                    <strong>Selected Symptoms:</strong>
-                    <div id="selectedList" class="mt-2"></div>
-                </div>
+            <div class="carousel-item">
+              <img
+                src="{{ url_for('static', filename='images/intro.png') }}"
+                class="d-block w-100 carousel-item-img"
+                alt="Rice Field 2"
+              />
+              <div
+                class="carousel-caption carousel-caption-custom d-none d-md-block text-start px-4 pb-3"
+              >
+                <h5 class="fw-bold text-white mb-1">
+                  <i class="bi bi-search me-2"></i> Expert Diagnosis System
+                </h5>
+                <p class="small text-white-50 mb-0">
+                  Powered by automated symptom matching to give quick control
+                  treatments.
+                </p>
+              </div>
             </div>
-
-            <div class="card-body">
-                <div class="row" id="symptomContainer">
-
-                    {% for group, symptoms in grouped_symptoms.items() %}
-                        {% if symptoms %}
-                        <div class="mb-3 symptom-group">
-
-                            <!-- Group Title -->
-                            <h6 class="fw-bold text-primary border-start border-3 ps-2">
-                                {{ group }}
-                            </h6>
-
-                            <div class="row">
-                                {% for s in symptoms %}
-                                <div class="col-md-6 col-lg-4 mb-2 symptom-item">
-                                    <div class="form-check">
-                                        <input
-                                            class="form-check-input symptom-checkbox"
-                                            type="checkbox"
-                                            name="{{ form.symptoms.name }}"
-                                            value="{{ s.id }}"
-                                            id="symptom_{{ s.id }}"
-                                            {% if s.id in (form.symptoms.data or []) %}checked{% endif %}
-                                        >
-                                        <label class="form-check-label symptom-label" for="symptom_{{ s.id }}">
-                                            {{ s.symptom_name }}
-                                        </label>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-
-                        </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
+            <div class="carousel-item">
+              <img
+                src="{{ url_for('static', filename='images/early_symptom_detect.png') }}"
+                class="d-block w-100 carousel-item-img"
+                alt="Rice Field 3"
+              />
+              <div
+                class="carousel-caption carousel-caption-custom d-none d-md-block text-start px-4 pb-3"
+              >
+                <h5 class="fw-bold text-white mb-1">
+                  <i class="bi bi-bug me-2"></i> Early Symptom Detection
+                </h5>
+                <p class="small text-white-50 mb-0">
+                  Identify leaf spots, discoloration, and stem lesions in just a
+                  few clicks.
+                </p>
+              </div>
             </div>
-
-            <!-- Footer Buttons -->
-            <div class="card-footer d-flex justify-content-between">
-                <button type="reset" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-                </button>
-
-                <button type="submit" class="btn btn-primary" id="diagnosisBtn">
-                    <i class="bi bi-check2-circle me-1"></i> Diagnosis
-                </button>
-            </div>
+          </div>
         </div>
-    </form>
+      </div>
+    </div>
+</div>
+{% endif %}
+<div class="container-fluid py-3 animated-fade-in">
+  <!-- Header & Live Counter Section -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-8">
+      <h3 class="fw-bold text-primary mb-1">
+        <i class="bi bi-heart-pulse-fill me-2"></i>{{ lang.diagnosis.disease_diagnosis }}
+      </h3>
+      <p class="text-muted mb-0">
+        {{ lang.diagnosis.Please_select_symptoms_to_diagnose_rice_disease }}
+      </p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+      <span class="badge bg-white text-dark fs-6 border px-3 py-2 shadow-sm rounded-pill">
+        <i class="bi bi-check2-circle text-primary me-1"></i> Selected:
+        <strong id="selectedCounter" class="text-primary">0</strong>
+      </span>
+    </div>
+  </div>
 
+  <!-- Khmer Farmer Guidance Note -->
+  <div class="alert alert-info border-0 shadow-sm rounded-3 mb-4 p-3" role="alert">
+    <div class="d-flex align-items-start gap-3">
+      <div class="bg-info-subtle p-2 rounded-circle text-info d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
+        <i class="bi bi-lightbulb-fill fs-5"></i>
+      </div>
+      <div>
+        <h6 class="fw-bold mb-1 text-dark">ចំណាំសម្រាប់ការពិនិត្យ និងវិភាគជំងឺស្រូវ (Note for Farmers)</h6>
+        <ul class="mb-0 text-muted small ps-3">
+          <li>សូមជ្រើសរើស <strong>រោគសញ្ញា</strong> ទាំងអស់ដែលលោកអ្នកបានសង្កេតឃើញនៅលើដើម ស្លឹក ឬកញ្ចុំស្រូវផ្ទាល់នៅក្នុងស្រែ។</li>
+          <li>លោកអ្នកអាច <strong>ចុចលើរូបភាព</strong> ដើម្បីពង្រីកមើលរូបរោគសញ្ញាឱ្យកាន់តែច្បាស់ មុននឹងធ្វើការគ្រីស (Select)។</li>
+          <li>ការជ្រើសរើសរោគសញ្ញាកាន់តែលម្អិត និងត្រឹមត្រូវ នឹងជួយឱ្យប្រព័ន្ធវិភាគរកឃើញប្រភេទជំងឺស្រូវបានកាន់តែច្បាស់លាស់។</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Main Form Card -->
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <!-- Dynamic Search & Filter Toolbar -->
+      <div class="card-header bg-white p-3 border-bottom">
+        <div class="row g-3 align-items-center">
+          <!-- Search Input Field -->
+          <div class="col-md-5">
+            <div class="input-group">
+              <span
+                class="input-group-text bg-light border-end-0 rounded-start-pill"
+              >
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input
+                type="text"
+                id="symptomSearch"
+                class="form-control bg-light border-start-0 border-end-0"
+                placeholder="🔍 ស្វែងរករោគសញ្ញា... / Search symptom..."
+              />
+              <span
+                class="input-group-text bg-light border-start-0 rounded-end-pill clear-search-btn"
+                id="clearSearch"
+              >
+                <i class="bi bi-x-circle-fill text-secondary"></i>
+              </span>
+            </div>
+          </div>
+
+          <!-- Category Filter Dropdown -->
+          <div class="col-md-4">
+            <div class="input-group">
+              <label
+                class="input-group-text bg-light rounded-start-pill"
+                for="groupFilter"
+              >
+                <i class="bi bi-funnel-fill text-primary"></i>
+              </label>
+              <select
+                class="form-select bg-light rounded-end-pill"
+                id="groupFilter"
+              >
+                <option value="all" selected>
+                  គ្រប់ប្រភេទផ្នែក (All Groups)
+                </option>
+                {% for group in grouped_symptoms.keys() %}
+                <option value="{{ group }}">{{ group }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Quick View Tabs (All / Selected) -->
+          <div class="col-md-3 text-md-end">
+            <div class="btn-group w-100" role="group">
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-sm active filter-btn rounded-start-pill px-3"
+                data-filter="all"
+              >
+                ទាំងអស់ (All)
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-sm filter-btn rounded-end-pill px-3"
+                data-filter="selected"
+              >
+                ជ្រើសរើស (Selected)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Symptoms Summary Panel -->
+      <div class="px-4 pt-3">
+        <div
+          class="alert alert-primary bg-primary-subtle border-0 d-none mb-0 rounded-3 animated-fade-in"
+          id="selectedBox"
+        >
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <strong class="text-primary fs-7">
+              <i class="bi bi-tags-fill me-1"></i> រោគសញ្ញាដែលបានជ្រើសរើស
+              (Selected Symptoms):
+            </strong>
+            <button
+              type="button"
+              class="btn btn-link btn-sm text-danger p-0 text-decoration-none"
+              id="clearAllBtn"
+            >
+              <i class="bi bi-trash me-1"></i> Clear All
+            </button>
+          </div>
+          <div id="selectedList" class="d-flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <!-- Symptoms Container Body -->
+      <div class="card-body p-4">
+        <div id="symptomContainer">
+          {% for group, symptoms in grouped_symptoms.items() %} {% if symptoms
+          %}
+          <div class="mb-4 symptom-group" data-group-name="{{ group }}">
+            <!-- Group Title -->
+            <h6
+              class="fw-bold text-dark border-start border-4 border-primary ps-2 mb-3"
+            >
+              {{ group }}
+            </h6>
+
+            <div class="row g-3">
+              {% for s in symptoms %}
+              <div class="col-md-6 col-lg-4 symptom-item">
+                <div
+                  class="symptom-card p-3 d-flex align-items-center h-100 {% if s.id in (form.symptoms.data or []) %}selected{% endif %}"
+                  onclick="toggleCardSelect(this)"
+                >
+                {% if s.image %}
+                {# 1. Check if the image is a Cloudinary/External URL or a local static file #}
+                {% set img_src = s.image if ('http://' in s.image or 'https://' in s.image) else url_for('static', filename='images/symptoms/' + s.image) %}
+                    <img src="{{ img_src }}" 
+                        alt="{{ s.symptom_name }}" 
+                        class="symptom-img me-3 cursor-pointer"
+                        data-bs-toggle="modal"
+                        data-bs-target="#imageModal"
+                        data-img-src="{{ img_src }}"
+                        data-img-title="{{ s.symptom_name }}"
+                        onclick="openImageModal(this)">
+                {% else %}
+                    <!-- Placeholder Icon ពេលគ្មានរូបភាព -->
+                <div class="symptom-icon-placeholder me-3" title="គ្មានរូបភាពរោគសញ្ញា">
+                    <i class="bi bi-bug-fill text-danger fs-4"></i>
+                </div>
+                {% endif %}
+                
+                
+                  <div class="form-check m-0 w-100">
+                    <input
+                      class="form-check-input symptom-checkbox me-2"
+                      type="checkbox"
+                      name="{{ form.symptoms.name }}"
+                      value="{{ s.id }}"
+                      id="symptom_{{ s.id }}"
+                      {%
+                      if
+                      s.id
+                      in
+                      (form.symptoms.data
+                      or
+                      [])
+                      %}checked{%
+                      endif
+                      %}
+                      onclick="
+                        event.stopPropagation();
+                        toggleSubmit();
+                      "
+                    />
+                    <label
+                      class="form-check-label symptom-label fw-semibold text-dark"
+                      for="symptom_{{ s.id }}"
+                    >
+                      {{ s.symptom_name }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %} {% endfor %}
+
+          <!-- No Results Found Placeholder -->
+          <div id="noResults" class="text-center py-5 d-none animated-fade-in">
+            <i class="bi bi-search text-muted display-4"></i>
+            <h6 class="fw-bold text-secondary mt-3">
+              មិនមានទិន្នន័យរោគសញ្ញាដែលអ្នកស្វែងរកទេ!
+            </h6>
+            <p class="text-muted small">
+              សូមព្យាយាមស្វែងរកពាក្យគន្លឹះផ្សេង ឬដូរ Filter Category។
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Footer -->
+      <div
+          class="card-footer bg-light p-3 d-flex justify-content-between align-items-center"
+        >
+          <button
+            type="reset"
+            class="btn btn-outline-secondary px-4 rounded-pill"
+          >
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary px-4 rounded-pill shadow-sm"
+            id="diagnosisBtn"
+            disabled
+          >
+            <i class="bi bi-check2-circle me-1"></i> Diagnose Disease
+          </button>
+      </div>
+    </div>
+  </form>
 </div>
 
-<!-- ✅ JS: Search + Disable button -->
+<!-- Dynamic Search & Filter Script -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkboxes = document.querySelectorAll(".symptom-checkbox");
+    const submitBtn = document.getElementById("diagnosisBtn");
+    const searchInput = document.getElementById("symptomSearch");
+    const clearSearchBtn = document.getElementById("clearSearch");
+    const groupFilterSelect = document.getElementById("groupFilter");
+    const groups = document.querySelectorAll(".symptom-group");
+    const selectedBox = document.getElementById("selectedBox");
+    const selectedList = document.getElementById("selectedList");
+    const selectedCounter = document.getElementById("selectedCounter");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    const noResults = document.getElementById("noResults");
 
-    const checkboxes = document.querySelectorAll('.symptom-checkbox');
-    const submitBtn = document.getElementById('diagnosisBtn');
-    const searchInput = document.getElementById('symptomSearch');
-    const items = document.querySelectorAll('.symptom-item');
+    let currentTabFilter = "all";
 
-    const selectedBox = document.getElementById('selectedBox');
-    const selectedList = document.getElementById('selectedList');
-    // Enable / Disable diagnosis button
-     //Enable / Disable button + Selected panel
-    function toggleSubmit() {
-        const checked = document.querySelectorAll('.symptom-checkbox:checked');
+    // Click Card to check box
+    window.toggleCardSelect = function (cardElement) {
+      const checkbox = cardElement.querySelector(".symptom-checkbox");
+      checkbox.checked = !checkbox.checked;
+      toggleSubmit();
+    };
 
-        submitBtn.disabled = checked.length === 0;
+    // Update UI counters and badges
+    window.toggleSubmit = function () {
+      const checked = document.querySelectorAll(".symptom-checkbox:checked");
+      const count = checked.length;
 
-        if (checked.length > 0) {
-            selectedBox.classList.remove('d-none');
-            selectedList.innerHTML = "";
+      submitBtn.disabled = count === 0;
 
-            checked.forEach(cb => {
-                const label = document.querySelector(`label[for="${cb.id}"]`).innerText;
+      if (count > 0) {
+        submitBtn.classList.add("pulse-btn");
+      } else {
+        submitBtn.classList.remove("pulse-btn");
+      }
 
-                const badge = document.createElement("span");
-                badge.className = "badge bg-primary me-1 mb-1";
-                badge.innerText = label;
+      selectedCounter.innerText = count;
 
-                selectedList.appendChild(badge);
-            });
-
+      checkboxes.forEach((cb) => {
+        const card = cb.closest(".symptom-card");
+        if (cb.checked) {
+          card.classList.add("selected");
         } else {
-            selectedBox.classList.add('d-none');
+          card.classList.remove("selected");
         }
-    }
-    // function toggleSubmit() {
-    //     const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-    //     submitBtn.disabled = !anyChecked;
-    // }
+      });
 
-    checkboxes.forEach(cb => cb.addEventListener('change', toggleSubmit));
-    toggleSubmit();
+      // Badges Render
+      if (count > 0) {
+        selectedBox.classList.remove("d-none");
+        selectedList.innerHTML = "";
 
-    // 🔍 Search filter
-    searchInput.addEventListener('keyup', function() {
-        const keyword = this.value.toLowerCase();
-
-        items.forEach(item => {
-            const label = item.querySelector('.symptom-label').innerText.toLowerCase();
-            item.style.display = label.includes(keyword) ? '' : 'none';
+        checked.forEach((cb) => {
+          const label = document.querySelector(
+            `label[for="${cb.id}"]`,
+          ).innerText;
+          const badge = document.createElement("span");
+          badge.className =
+            "badge bg-primary px-3 py-2 rounded-pill d-inline-flex align-items-center animated-fade-in";
+          badge.innerHTML = `
+                    ${label}
+                    <i class="bi bi-x-circle-fill badge-remove" onclick="uncheckSymptom('${cb.id}')"></i>
+                `;
+          selectedList.appendChild(badge);
         });
+      } else {
+        selectedBox.classList.add("d-none");
+      }
+
+      applyFilters();
+    };
+
+    // Remove single badge
+    window.uncheckSymptom = function (id) {
+      const cb = document.getElementById(id);
+      if (cb) {
+        cb.checked = false;
+        toggleSubmit();
+      }
+    };
+
+    // Clear All
+    clearAllBtn.addEventListener("click", function () {
+      checkboxes.forEach((cb) => (cb.checked = false));
+      toggleSubmit();
     });
 
+    // Quick Tabs (All / Selected)
+    filterBtns.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        filterBtns.forEach((b) => b.classList.remove("active"));
+        this.classList.add("active");
+        currentTabFilter = this.getAttribute("data-filter");
+        applyFilters();
+      });
+    });
+
+    // Integrated Search and Group Filtering Logic
+    function applyFilters() {
+      const keyword = searchInput.value.toLowerCase().trim();
+      const selectedGroup = groupFilterSelect.value;
+      let totalVisible = 0;
+
+      // Toggle Clear Search Button visibility
+      if (keyword.length > 0) {
+        clearSearchBtn.style.display = "block";
+      } else {
+        clearSearchBtn.style.display = "none";
+      }
+
+      groups.forEach((group) => {
+        const groupName = group.getAttribute("data-group-name");
+        let hasVisibleInGroup = false;
+
+        // Check if Group matches dropdown filter
+        const matchesGroupFilter =
+          selectedGroup === "all" || selectedGroup === groupName;
+
+        group.querySelectorAll(".symptom-item").forEach((item) => {
+          const cb = item.querySelector(".symptom-checkbox");
+          const label = item
+            .querySelector(".symptom-label")
+            .innerText.toLowerCase();
+
+          const matchesSearch = label.includes(keyword);
+          const matchesTab =
+            currentTabFilter === "all" ||
+            (currentTabFilter === "selected" && cb.checked);
+
+          if (matchesSearch && matchesTab && matchesGroupFilter) {
+            item.style.display = "";
+            hasVisibleInGroup = true;
+            totalVisible++;
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        group.style.display = hasVisibleInGroup ? "" : "none";
+      });
+
+      // Toggle Empty state view
+      if (totalVisible === 0) {
+        noResults.classList.remove("d-none");
+      } else {
+        noResults.classList.add("d-none");
+      }
+    }
+
+    // Input events for real-time filtering
+    searchInput.addEventListener("input", applyFilters);
+    groupFilterSelect.addEventListener("change", applyFilters);
+
+    // Clear Search Input Click Action
+    clearSearchBtn.addEventListener("click", function () {
+      searchInput.value = "";
+      applyFilters();
+    });
+
+    // Form Reset
+    document
+      .querySelector('button[type="reset"]')
+      .addEventListener("click", function () {
+        setTimeout(() => {
+          checkboxes.forEach((cb) => (cb.checked = false));
+          searchInput.value = "";
+          groupFilterSelect.value = "all";
+          currentTabFilter = "all";
+          filterBtns.forEach((b) => b.classList.remove("active"));
+          filterBtns[0].classList.add("active");
+          toggleSubmit();
+        }, 50);
+      });
+
+    toggleSubmit();
+  });
+
+  function openImageModal(element) {
+        const imgSrc = element.getAttribute('data-img-src');
+        const imgTitle = element.getAttribute('data-img-title');
+        
+        document.getElementById('modalPreviewImage').src = imgSrc;
+        document.getElementById('imageModalLabel').textContent = imgTitle;
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+    const checkboxes = document.querySelectorAll('input[name="symptom_ids"]');
+    const counter = document.getElementById("selectedCounter");
+
+    function updateCount() {
+        if (!counter) return;
+        const checkedCount = document.querySelectorAll('input[name="symptom_ids"]:checked').length;
+        counter.textContent = checkedCount;
+
+        // Pop animation
+        counter.classList.add("updated");
+        setTimeout(() => counter.classList.remove("updated"), 200);
+    }
+
+    checkboxes.forEach((cb) => cb.addEventListener("change", updateCount));
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('diagnosisForm');
+  const diagnosisBtn = document.getElementById('diagnosisBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const checkboxes = document.querySelectorAll('.symptom-checkbox');
+
+  // 1. UI Checkbox Detector: Enable/Disable submit button
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      const isChecked = Array.from(checkboxes).some(c => c.checked);
+      diagnosisBtn.disabled = !isChecked;
+    });
+  });
+
+  // 2. UI Reset Button Handler
+  resetBtn.addEventListener('click', () => {
+    diagnosisBtn.disabled = true;
+  });
+
+  // 3. UI Form Submit Handler: Trigger Loading Visuals
+  form.addEventListener('submit', () => {
+    // Disable button to prevent double clicks
+    diagnosisBtn.disabled = true;
+    
+    // Change button inner HTML to spinner state
+    diagnosisBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      Diagnosing...
+    `;
+
+    // Show full-screen loading backdrop animation
+    loadingOverlay.classList.remove('d-none');
+  });
 });
 </script>
-
 {% endblock %}

@@ -1,0 +1,174 @@
+{% extends "layouts/admin_layout/admin.html" %} {% block title %} Edit Treatment
+History {% endblock %} {% block content %}
+
+<div class="container-fluid mt-4">
+  <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">
+        <i class="bi bi-pencil-square text-warning me-2"></i>
+
+        Edit Treatment History
+      </h3>
+
+      <p class="text-muted mb-0">Update treatment result, status and notes</p>
+    </div>
+
+    <a
+      href="{{ url_for(
+                'treatment_history.detail',
+                id=history.id
+            ) }}"
+      class="btn btn-outline-secondary rounded-pill px-4"
+    >
+      <i class="bi bi-arrow-left me-1"></i>
+
+      Back
+    </a>
+  </div>
+
+  <!-- =====================================================
+         EXISTING INFORMATION
+    ====================================================== -->
+
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-light border-0">
+      <h5 class="fw-bold mb-0">
+        <i class="bi bi-info-circle me-2"></i>
+
+        Treatment Information
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <div class="row g-4">
+        <!-- Disease -->
+
+        <div class="col-md-3">
+          <small class="text-muted"> Disease </small>
+
+          <div class="fw-bold text-danger">
+            {% if history.treatment and history.treatment.disease %}
+
+            <i class="bi bi-virus me-1"></i>
+
+            {{ history.treatment.disease.disease_name }} {% else %}
+
+            <span class="text-muted"> Unknown Disease </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Treatment -->
+
+        <div class="col-md-3">
+          <small class="text-muted"> Treatment </small>
+
+          <div class="fw-semibold">
+            {% if history.treatment %} {{ history.treatment.method }} {% else %}
+
+            <span class="text-muted"> N/A </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Treatment Type -->
+
+        <div class="col-md-3">
+          <small class="text-muted"> Treatment Type </small>
+
+          <div>
+            {% if history.treatment %}
+
+            <span class="badge bg-success-subtle text-success">
+              {{ history.treatment.treatment_type }}
+            </span>
+
+            {% else %}
+
+            <span class="text-muted"> N/A </span>
+
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Monitoring -->
+
+        <div class="col-md-3">
+          <small class="text-muted"> Monitoring </small>
+
+          <div class="fw-semibold">
+            {% if history.monitoring %} #{{ history.monitoring.id }} {% else %}
+
+            <span class="text-muted"> N/A </span>
+
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         EDIT FORM
+    ====================================================== -->
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-warning-subtle border-0">
+      <h5 class="fw-bold mb-0">
+        <i class="bi bi-clipboard2-pulse me-2"></i>
+
+        Update Treatment History
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <form
+        method="POST"
+        action="{{ url_for(
+                    'treatment_history.edit',
+                    id=history.id
+                ) }}"
+      >
+        <!-- CSRF -->
+
+        {{ form.hidden_tag() }}
+
+        <!-- Form fields -->
+
+        {% include 'admin_page/treatment_history_page/_form.html' %}
+
+        <!-- =================================================
+                     BUTTONS
+                ================================================== -->
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <a
+            href="{{ url_for(
+                            'treatment_history.detail',
+                            id=history.id
+                        ) }}"
+            class="btn btn-outline-secondary rounded-pill px-4"
+          >
+            <i class="bi bi-x-circle me-1"></i>
+
+            Cancel
+          </a>
+
+          <button type="submit" class="btn btn-warning rounded-pill px-4">
+            <i class="bi bi-check-circle me-1"></i>
+
+            Update Treatment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
