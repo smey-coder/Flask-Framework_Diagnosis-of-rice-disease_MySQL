@@ -1270,7 +1270,7 @@ def diagnosis_print(disease_id):
         # 3. GET EXPLANATION LOGS
         # =====================================================
 
-        logs = diagnosis_service.explain_disease(
+        logs = DiagnosisService.explain_disease(
             disease_id,
             rule_trace
         )
@@ -1377,7 +1377,7 @@ def diagnosis_print(disease_id):
         # =====================================================
 
         treatments = (
-            diagnosis_service
+            DiagnosisService
             .treatment_disease(
                 disease_id
             )
@@ -1393,7 +1393,7 @@ def diagnosis_print(disease_id):
         if overall_cf >= 0.70:
 
             recommended_treatment = (
-                diagnosis_service
+                DiagnosisService
                 .recommend_treatment(
                     disease_id
                 )
@@ -1405,7 +1405,7 @@ def diagnosis_print(disease_id):
         # =====================================================
 
         preventions = (
-            diagnosis_service
+            DiagnosisService
             .prevention_disease(
                 disease_id
             )
