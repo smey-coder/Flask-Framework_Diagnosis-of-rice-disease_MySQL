@@ -1,6 +1,7 @@
 from collections import Counter
 import csv
 from datetime import datetime
+import zoneinfo
 import json
 import os
 from venv import logger
@@ -1242,6 +1243,10 @@ def disease_prevention(disease_id):
 @role_required("Admin", "Expert")
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_print(disease_id):
+
+    # យកម៉ោងបច្ចុប្បន្នតាម Timezone កម្ពុជា (Asia/Phnom_Penh)
+    cambodia_tz = zoneinfo.ZoneInfo("Asia/Phnom_Penh")
+    now = datetime.now(cambodia_tz)
     try:
         # =====================================================
         # 1. GET RULE TRACE
@@ -1478,7 +1483,7 @@ def diagnosis_print(disease_id):
 
             user=current_user,
 
-            now=datetime.now()
+            now=now
 
         )
 
