@@ -287,10 +287,7 @@ endblock %} {% block content %}
                 {% if t.image %}
 
                 <img
-                  src="{{ url_for(
-                                        'static',
-                                        filename='images/treatments/' ~ t.image
-                                    ) }}"
+                  src="{{ t.image if (t.image.startswith('http://') or t.image.startswith('https://')) else url_for('static', filename='images/treatments/' ~ t.image) }}"
                   alt="{{ t.method or 'Treatment Image' }}"
                   class="treatment-image shadow-sm"
                   data-bs-toggle="modal"

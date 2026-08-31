@@ -177,10 +177,7 @@ Prevention {% endblock %} {% block content %}
             {% if t.image %}
 
             <img
-              src="{{ url_for(
-                                            'static',
-                                            filename='images/treatments/' + t.image
-                                        ) }}"
+              src="{{ t.image if (t.image.startswith('http://') or t.image.startswith('https://')) else url_for('static', filename='images/treatments/' ~ t.image) }}"
               class="card-img-top"
               alt="{{ t.method }}"
               style="height: 180px; object-fit: cover"

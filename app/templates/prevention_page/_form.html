@@ -90,10 +90,7 @@
 
                 <div>
                     <img
-                        src="{{ url_for(
-                            'static',
-                            filename='images/preventions/' ~ prevention.image
-                        ) }}"
+                        src="{{ prevention.image if (prevention.image.startswith('http://') or prevention.image.startswith('https://')) else url_for('static', filename='images/preventions/' ~ prevention.image) }}"
                         alt="Current Prevention Image"
                         class="img-thumbnail rounded-3 shadow-sm"
                         style="

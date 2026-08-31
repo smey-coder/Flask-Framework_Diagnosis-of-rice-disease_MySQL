@@ -1,4 +1,7 @@
+import re
 from typing import List, Optional
+
+import cloudinary
 from extensions import db
 from app.models.preventions import PreventionTable
 from app.models.diseases import DiseaseTable
@@ -14,7 +17,7 @@ from app.services.audit_service import log_audit
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 UPLOAD_FOLDER = "static/images/preventions"
 
-
+CLOUDINARY_FOLDER = "preventions"
 # ================= HELPERS ================= #
 
 def allowed_file(filename: str) -> bool:
@@ -22,21 +25,79 @@ def allowed_file(filename: str) -> bool:
 
 
 def save_image(image_file) -> str:
-    """Save image and return filename"""
-    filename = secure_filename(image_file.filename)
-    save_path = os.path.join(current_app.root_path, UPLOAD_FOLDER)
-    os.makedirs(save_path, exist_ok=True)
-    image_file.save(os.path.join(save_path, filename))
-    return filename
+    # """Save image and return filename"""
+    # filename = secure_filename(image_file.filename)
+    # save_path = os.path.join(current_app.root_path, UPLOAD_FOLDER)
+    # os.makedirs(save_path, exist_ok=True)
+    # image_file.save(os.path.join(save_path, filename))
+    # return filename
+    """
+    Upload image to Cloudinary (if configured/enabled), 
+    otherwise fallback to saving in local static UPLOAD_FOLDER.
+    """
+    if not image_file or not allowed_file(image_file.filename):
+        return None
+
+    # 1. ព្យាយាម Upload ទៅ Cloudinary
+    use_cloudinary = current_app.config.get("USE_CLOUDINARY", True)
+    
+    if use_cloudinary:
+        try:
+            upload_result = cloudinary.uploader.upload(
+                image_file,
+                folder=CLOUDINARY_FOLDER,
+                resource_type="image"
+            )
+            # ត្រឡប់មកវិញនូវ Full HTTPS URL សម្រាប់រក្សាទុកក្នុង Database
+            return upload_result.get("secure_url")
+        except Exception as e:
+            current_app.logger.warning(f"Cloudinary upload failed, falling back to local storage: {e}")
+            image_file.seek(0)  # Reset pointer មុនពេល save ទៅ Local
+
+    # 2. បើមិនប្រើ Cloudinary ឬ Cloudinary បរាជ័យ វានឹង save ចូល Local Storage
+    try:
+        filename = secure_filename(image_file.filename)
+        save_path = os.path.join(current_app.root_path, UPLOAD_FOLDER)
+        os.makedirs(save_path, exist_ok=True)
+        image_file.save(os.path.join(save_path, filename))
+        return filename
+    except Exception as e:
+        current_app.logger.error(f"Local image save failed: {e}")
+        return None
 
 
-def delete_image(filename: str):
-    """Delete old image from folder"""
-    if not filename:
+def delete_image(image_identifier: str):
+    # """Delete old image from folder"""
+    # if not filename:
+    #     return
+    # file_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
+    # if os.path.exists(file_path):
+    #     os.remove(file_path)
+    """
+    Delete image automatically from Cloudinary (if URL) or Local static folder (if filename).
+    """
+    if not image_identifier:
         return
-    file_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
+
+    # ករណី ១: រូបភាពនៅលើ Cloudinary (មាន http:// ឬ https://)
+    if image_identifier.startswith("http://") or image_identifier.startswith("https://"):
+        try:
+            # ស្រង់យក Public ID ចេញពី Cloudinary URL (ឧទាហរណ៍: treatments/sample_id)
+            match = re.search(rf"({CLOUDINARY_FOLDER}/[^./]+)", image_identifier)
+            if match:
+                public_id = match.group(1)
+                cloudinary.uploader.destroy(public_id)
+        except Exception as e:
+            current_app.logger.error(f"Failed to delete Cloudinary image ({image_identifier}): {e}")
+
+    # ករណី ២: រូបភាពនៅ Local Storage (ជា File Name ធម្មតា)
+    else:
+        try:
+            file_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, image_identifier)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            current_app.logger.error(f"Failed to delete local image ({image_identifier}): {e}")
 
 
 # ================= SERVICE ================= #

@@ -26,7 +26,7 @@
                 <dt class="col-sm-3">Image</dt>
                 <dd class="col-sm-9">
                     {% if treatment.image %}
-                        <img src="{{ url_for('static', filename='images/treatments/' ~ treatment.image) }}" 
+                        <img src="{{ treatment.image if (treatment.image.startswith('http://') or treatment.image.startswith('https://')) else url_for('static', filename='images/treatments/' ~ treatment.image) }}" 
                              alt="Image" class="img-thumbnail" style="max-width:200px;">
                     {% else %}
                         -

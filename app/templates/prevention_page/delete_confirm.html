@@ -70,10 +70,7 @@
                 {% if prevention.image %}
 
                 <img
-                  src="{{ url_for(
-                                    'static',
-                                    filename='images/preventions/' ~ prevention.image
-                                ) }}"
+                  src="{{ prevention.image if (prevention.image.startswith('http://') or prevention.image.startswith('https://')) else url_for('static', filename='images/preventions/' ~ prevention.image) }}"
                   alt="{{ prevention.prevention_type }}"
                   class="prevention-image"
                 />

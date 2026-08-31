@@ -63,7 +63,7 @@
         {{ form.image(class="form-control") }}
 
         {% if treatments and treatments.image %}
-            <img src="{{ url_for('static', filename='images/treatments/' ~ treatment.image) }}" 
+            <img src="{{ treatment.image if (treatment.image.startswith('http://') or treatment.image.startswith('https://')) else url_for('static', filename='images/treatments/' ~ treatment.image) }}" 
                  alt="Treatments Image" 
                  class="img-thumbnail mt-2" 
                  style="max-width:150px;">

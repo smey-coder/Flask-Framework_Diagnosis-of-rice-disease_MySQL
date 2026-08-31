@@ -83,10 +83,7 @@ Details{% endblock %} {% block content %}
                 data-bs-target="#preventionImageModal"
               >
                 <img
-                  src="{{ url_for(
-                                            'static',
-                                            filename='images/preventions/' ~ prevention.image
-                                        ) }}?v={{ prevention.updated_at.timestamp() if prevention.updated_at else prevention.id }}"
+                  src="{% if prevention.image.startswith('http://') or prevention.image.startswith('https://') %}{{ prevention.image }}{% else %}{{ url_for('static', filename='images/preventions/' ~ prevention.image) }}?v={{ prevention.updated_at.timestamp() if prevention.updated_at else prevention.id }}{% endif %}"
                   alt="{{ prevention.prevention_type }}"
                   class="img-fluid rounded-4 shadow-sm prevention-detail-image"
                 />
