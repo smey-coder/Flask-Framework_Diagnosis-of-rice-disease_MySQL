@@ -61,10 +61,7 @@
         {% if disease.image %}
 
         <img
-          src="{{ url_for(
-                        'static',
-                        filename='images/diseases/' + disease.image
-                    ) }}"
+          src="{{ disease.image if (disease.image.startswith('http://') or disease.image.startswith('https://')) else url_for('static', filename='images/diseases/' ~ disease.image) }}"
           alt="{{ disease.disease_name }}"
           class="disease-report-image"
         />
