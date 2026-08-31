@@ -496,10 +496,7 @@
           {% if treatment.image %}
 
           <img
-            src="{{ url_for(
-                            'static',
-                            filename='images/treatments/' + treatment.image
-                        ) }}"
+            src="{{ treatment.image if (treatment.image.startswith('http://') or treatment.image.startswith('https://')) else url_for('static', filename='images/treatments/' ~ treatment.image) }}"
             alt="{{ treatment.method }}"
             class="treatment-image"
           />
@@ -572,8 +569,8 @@
     </section>
 
     <!-- =================================================
-             PREVENTION
-        ================================================== -->
+    PREVENTION
+    ================================================== -->
 
     <section class="report-section">
       <div class="section-title">
