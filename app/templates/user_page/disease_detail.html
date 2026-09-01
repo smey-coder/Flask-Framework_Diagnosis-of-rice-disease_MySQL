@@ -1,78 +1,220 @@
-{% extends "layouts/user_layout/user.html" %}
-
-{% block title %}{{ disease.name }} - Disease Detail{% endblock %}
-
-{% block content %}
+{% extends "layouts/user_layout/user.html" %} {% block title %}{{
+disease.disease_name }} - Disease Detail{% endblock %} {% block content %}
 <div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol
+      class="breadcrumb bg-light-subtle rounded-4 p-3 border border-light-subtle shadow-sm mb-0"
+    >
+      <li class="breadcrumb-item">
+        <a
+          href="{{ url_for('user.dashboard') }}"
+          class="text-decoration-none text-success fw-medium"
+          ><i class="fas fa-home me-1"></i>Home</a
+        >
+      </li>
+      <li class="breadcrumb-item">
+        <a
+          href="{{ url_for('user.disease_index') }}"
+          class="text-decoration-none text-success fw-medium"
+          >Diseases</a
+        >
+      </li>
+      <li
+        class="breadcrumb-item active text-dark fw-semibold"
+        aria-current="page"
+      >
+        {{ disease.disease_name }}
+      </li>
+    </ol>
+  </nav>
 
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb bg-light rounded-4 p-2">
-            <li class="breadcrumb-item"><a href="{{ url_for('user.dashboard') }}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{{ url_for('user.disease_index') }}">Diseases</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ disease.name }}</li>
-        </ol>
-    </nav>
-
-    <div class="row g-4">
-        <!-- Disease Image -->
-        <div class="col-lg-4 col-md-12">
-            <div class="card shadow-sm border-0 rounded-4 h-100">
-                {% if disease.image %}
-                    <img src="{{ url_for('static', filename='images/diseases/' + disease.image) }}" class="card-img-top rounded-4" alt="{{ disease.name }}">
-                {% else %}
-                    <img src="{{ url_for('static', filename='images/diseases/default.png') }}" class="card-img-top rounded-4" alt="No Image">
-                {% endif %}
-                <div class="card-body text-center">
-                    <h5 class="fw-bold">{{ disease.name }}</h5>
-                    <span class="badge bg-primary">{{ disease.disease_type }}</span>
-                </div>
-            </div>
+  <div class="row g-4">
+    <!-- Disease Image Card -->
+    <div class="col-lg-4 col-md-12">
+      <div class="card shadow-sm border-0 rounded-4 h-100 overflow-hidden">
+        {% if disease.image %} {% set main_img = disease.image %}
+        <img
+          src="{{ main_img if (main_img.startswith('http://') or main_img.startswith('https://')) else url_for('static', filename='images/diseases/' ~ main_img) }}"
+          class="card-img-top object-fit-cover"
+          alt="{{ disease.disease_name }}"
+          style="height: 280px"
+        />
+        {% else %}
+        <div
+          class="bg-success-subtle text-success d-flex flex-column align-items-center justify-content-center"
+          style="height: 280px"
+        >
+          <i class="fas fa-leaf fa-3x mb-2"></i>
+          <span class="small fw-semibold">No Image Available</span>
         </div>
-
-        <!-- Disease Details -->
-        <div class="col-lg-8 col-md-12">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
-                <h4 class="fw-bold mb-3">{{ disease.disease_name }}</h4>
-                <p><strong>Description:</strong> {{ disease.description }}</p>
-                <p><strong>Severity Level:</strong>  {{ disease.severity_level}}</p>
-                <p><strong>Created at:</strong>  {{ disease.created_at}}</p>
-
-                <div class="mt-4">
-                    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Back to home
-                    </a>
-                </div>
-            </div>
+        {% endif %}
+        <div class="card-body text-center p-4">
+          <h5 class="fw-bold text-dark mb-2">{{ disease.disease_name }}</h5>
+          <span
+            class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-medium"
+          >
+            {{ disease.disease_type }}
+          </span>
         </div>
+      </div>
     </div>
-    <!-- Recent Activities / Suggestions -->
-    {% if recent_activities %}
-    <div class="row mt-5">
-        <div class="col-12">
-            <h5 class="fw-bold mb-3">Recent Diseases</h5>
-            <div class="row g-3">
-                {% for recent in recent_activities %}
-                    <div class="col-md-4 col-sm-6">
-                        <a href="{{ url_for('user.disease_detail', disease_id=recent.id) }}" class="text-decoration-none">
-                            <div class="card h-100 shadow-sm border-0 rounded-4">
-                                {% if recent.image %}
-                                    <img src="{{ url_for('static', filename='images/diseases/' + recent.image) }}" class="card-img-top rounded-4" alt="{{ recent.name }}">
-                                {% else %}
-                                    <img src="{{ url_for('static', filename='images/diseases/default.png') }}" class="card-img-top rounded-4" alt="No Image">
-                                {% endif %}
-                                <div class="card-body text-center">
-                                    <h6 class="fw-bold text-dark mb-0">{{ recent.name }}</h6>
-                                    <small class="text-muted">{{ recent.disease_type }}</small>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
 
+    <!-- Disease Details Card -->
+    <div class="col-lg-8 col-md-12">
+      <div class="card shadow-sm border-0 rounded-4 h-100 p-4">
+        <div
+          class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom"
+        >
+          <h3 class="fw-bold text-dark mb-0">{{ disease.disease_name }}</h3>
+          <!-- Dynamic Severity Badge -->
+          {% set sev = (disease.severity_level | string | lower) if
+          disease.severity_level else '' %} {% if 'very high' in sev or
+          'critical' in sev %}
+          <span
+            class="badge bg-danger text-white px-3 py-2 rounded-pill fw-medium"
+            >Very High Severity</span
+          >
+          {% elif 'high' in sev %}
+          <span
+            class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-medium"
+            >High Severity</span
+          >
+          {% elif 'medium' in sev or 'moderate' in sev %}
+          <span
+            class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 rounded-pill fw-medium"
+            >Medium Severity</span
+          >
+          {% else %}
+          <span
+            class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-medium"
+            >Low Severity</span
+          >
+          {% endif %}
+        </div>
+
+        <div class="mb-4">
+          <h6
+            class="text-muted text-uppercase fs-7 fw-bold tracking-wider mb-2"
+          >
+            Description
+          </h6>
+          <p class="text-secondary leading-relaxed fs-6 mb-0">
+            {{ disease.description or 'No description provided.' }}
+          </p>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded-3 border border-light-subtle">
+              <span class="text-muted small d-block mb-1">Severity Level</span>
+              <span class="fw-semibold text-dark"
+                >{{ disease.severity_level or 'N/A' }}</span
+              >
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded-3 border border-light-subtle">
+              <span class="text-muted small d-block mb-1">Created At</span>
+              <span class="fw-semibold text-dark">
+                {{ disease.created_at.strftime('%Y-%m-%d %H:%M') if
+                disease.created_at and disease.created_at.strftime else
+                disease.created_at }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-auto pt-3 border-top">
+          <a
+            href="{{ url_for('user.dashboard') }}"
+            class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-medium"
+          >
+            <i class="fas fa-arrow-left me-2"></i>Back to home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activities / Suggestions -->
+  {% if recent_activities %}
+  <div class="row mt-5">
+    <div class="col-12">
+      <h5 class="fw-bold mb-3 text-dark">Recent Diseases</h5>
+      <div class="row g-3">
+        {% for recent in recent_activities %}
+        <div class="col-md-4 col-sm-6">
+          <a
+            href="{{ url_for('user.disease_detail', disease_id=recent.id) }}"
+            class="text-decoration-none"
+          >
+            <div
+              class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden card-hover-effect"
+            >
+              {% if recent.image or recent.disease_image %} {% set rec_img =
+              recent.image or recent.disease_image %}
+              <img
+                src="{{ rec_img if (rec_img.startswith('http://') or rec_img.startswith('https://')) else url_for('static', filename='images/diseases/' ~ rec_img) }}"
+                class="card-img-top object-fit-cover"
+                alt="{{ recent.name or recent.disease_name }}"
+                style="height: 160px"
+              />
+              {% else %}
+              <div
+                class="bg-success-subtle text-success d-flex align-items-center justify-content-center"
+                style="height: 160px"
+              >
+                <i class="fas fa-leaf fa-2x"></i>
+              </div>
+              {% endif %}
+              <div class="card-body text-center p-3">
+                <h6 class="fw-bold text-dark mb-1">
+                  {{ recent.name or recent.disease_name }}
+                </h6>
+                <small class="text-muted">{{ recent.disease_type }}</small>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
+
+<style>
+  /* Modern Utility & Card Enhancements */
+  .fs-7 {
+    font-size: 0.75rem;
+  }
+
+  .tracking-wider {
+    letter-spacing: 0.5px;
+  }
+
+  .leading-relaxed {
+    line-height: 1.6;
+  }
+
+  .card-hover-effect {
+    transition:
+      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.25s ease;
+  }
+
+  .card-hover-effect:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .card-hover-effect img {
+    transition: transform 0.3s ease;
+  }
+
+  .card-hover-effect:hover img {
+    transform: scale(1.04);
+  }
+</style>
 {% endblock %}

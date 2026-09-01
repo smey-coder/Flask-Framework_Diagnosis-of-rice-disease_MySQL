@@ -198,7 +198,7 @@
                 aria-expanded="false"
             >
                 <i class="bi bi-tree me-1"></i>
-                Farm Management
+                {{ lang.sidebar.farm_management }}
             </a>
 
 
@@ -220,7 +220,7 @@
                         href="{{ url_for('farms.index') }}"
                     >
                         <i class="bi bi-house-heart me-2"></i>
-                        Farms
+                        {{ lang.sidebar.Farms }}
                     </a>
                 </li>
                 <!-- Fields -->
@@ -230,7 +230,7 @@
                         href="{{ url_for('fields.index') }}"
                     >
                         <i class="bi bi-grid-3x3-gap me-2"></i>
-                        Fields
+                        {{ lang.sidebar.Fields }}
                     </a>
                 </li>
                 <li>
@@ -239,7 +239,7 @@
                         href="{{ url_for('field_crops.index') }}"
                     >
                         <i class="bi bi-flower1 me-2"></i>
-                        Field Crops
+                        {{ lang.sidebar.Field_Crops }}
                     </a>
                 </li>
                 <li>
@@ -248,7 +248,7 @@
                         href="{{ url_for('crop_monitoring.index') }}"
                     >
                         <i class="i bi-clipboard2-pulse me-2"></i>
-                        Crop Monitorings
+                        {{ lang.sidebar.Crop_Monitorings }}
                     </a>
                 </li>
 
@@ -292,7 +292,7 @@
                         href="{{ url_for('user.diagnosis_history') }}"
                     >
                         <i class="bi bi-heart-pulse text-danger me-2"></i>
-                        Diagnosis History
+                        {{ lang.sidebar.diagnosis_history }}
                     </a>
                 </li>
                 <!-- Treatment History -->
@@ -306,7 +306,7 @@
                     >
                         <i class="bi bi-capsule text-success me-2"></i>
 
-                        Treatment History
+                        {{ lang.sidebar.treatment_history }}
                     </a>
                 </li>
 
@@ -321,7 +321,7 @@
                     >
                         <i class="bi bi-bar-chart-line-fill me-2"></i>
 
-                        Report
+                        {{ lang.sidebar.reports }}
                     </a>
                 </li>
             </ul>

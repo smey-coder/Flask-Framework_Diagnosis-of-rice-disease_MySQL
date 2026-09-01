@@ -3,7 +3,22 @@
 {% block title %}Diseases - Rice Disease Diagnosis System{% endblock %}
 
 {% block content %}
+<!-- Bootstrap Modal for Large Image Preview -->
+<div class="modal fade" id="diseaseImageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4 overflow-hidden bg-transparent shadow-none">
+      <div class="modal-body p-0 position-relative text-center">
+        
+        <!-- Updated Bulletproof Close Button -->
+        <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
 
+        <img id="modalDiseaseImg" src="" class="img-fluid rounded-4 shadow-lg w-100 object-fit-contain" style="max-height: 80vh;" alt="Disease Detail Image">
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container-fluid disease-page mt-4">
 
     <!-- =====================================================
@@ -379,10 +394,25 @@
                             <td>
 
                                 <div class="disease-name-cell">
-
-                                    <div class="disease-icon">
+                                    <!-- <div class="disease-icon">
                                         <i class="bi bi-virus2"></i>
-                                    </div>
+                                    </div> -->
+                                    {% if disease.image or disease.disease_image %}
+                                        {% set img_url = disease.image or disease.disease_image %}
+                                        <img
+                                            src="{{ img_url if (img_url.startswith('http://') or img_url.startswith('https://')) else url_for('static', filename='images/diseases/' ~ img_url) }}"
+                                            alt="{{ disease.disease_name }}"
+                                            class="disease-report-image rounded-3 shadow-sm border object-fit-cover cursor-pointer"
+                                            style="width: 48px; height: 48px; cursor: pointer;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#diseaseImageModal"
+                                            onclick="document.getElementById('modalDiseaseImg').src=this.src;"
+                                        />
+                                        {% else %}
+                                        <div class="bg-success-subtle text-success rounded-3 p-2 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-leaf fs-5"></i>
+                                        </div>
+                                        {% endif %}
 
                                     <div>
 
@@ -644,9 +674,58 @@
         </ul>
 
     </nav>
-
     {% endif %}
-
 </div>
+<style>
+    /* Styling for click indication & modal background */
+.disease-report-image {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
 
+.disease-report-image:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+#diseaseImageModal .modal-content {
+  box-shadow: none;
+}
+/* ==========================================================================
+   Updated Modal Close Button (Bulletproof Icon)
+   ========================================================================== */
+
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1055;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.65); /* ធ្វើឱ្យរាងងងឹតបន្តិចងាយមើល */
+  color: #ffffff !important; /* បង្ខំឱ្យ Icon ចេញពណ៌សជានិច្ច */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem; /* ពង្រីកទំហំសញ្ញាខ្វែង (X) */
+  line-height: 1;
+  padding-bottom: 4px; /* តម្រឹមសញ្ញាខ្វែងឱ្យចំកណ្តាលល្អ */
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.2s ease-in-out;
+}
+
+.modal-close-btn:hover {
+  background-color: #dc3545; /* ប្តូរទៅពណ៌ក្រហម (Danger) ពេល Hover */
+  color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 0.25rem 0.75rem rgba(220, 53, 69, 0.4);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.95);
+}
+</style>
 {% endblock %}

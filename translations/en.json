@@ -30,7 +30,14 @@
     "ricediseasediagnosticsystem": "Rice disease diagnostic system",
     "fact_management_system": "Fact Management System",
     "rice_varieties": "Rice Varieties",
-    "growth_stages": "Growth Stages"
+    "growth_stages": "Growth Stages",
+    "farm_management": "Farm Management",
+    "Farms" : "Farms",
+    "Fields": "Fields",
+    "Field_Crops": "Field Crops",
+    "Crop_Monitorings": "Crop Monitorings",
+    "diagnosis_history": "Diagnosis History",
+    "treatment_history": "Treatment History"
   },
   "dashboard": {
     "welcome": "Welcome to Rice Expert Dashboard",
@@ -39,14 +46,23 @@
     "total_diseases": "Total Diseases",
     "total_rules": "Total Rules",
     "total_symptoms": "Total Symptoms",
-    "goodevening": "Good Evening",
-    "goodafternoon": "Good Afternoon",
-    "goodmorning": "Good Morning",
-    "good_morning": "Good Morning",
-    "good_afternoon": "Good Afternoon",
-    "good_evening": "Good Evening",
-    "good_night": "Good Night"
+    "good_morning": "អរុណសួស្តី",
+    "good_afternoon": "ទិវាសួស្តី",
+    "good_evening": "សាយណ្ហសួស្តី",
+    "good_night": "រាត្រីសួស្តី",
+    "goodmorning": "អរុណសួស្តី",
+    "goodafternoon": "ទិវាសួស្តី",
+    "goodevening": "សាយណ្ហសួស្តី",
+    "goodnight": "រាត្រីសួស្តី",
+    "recent_harvest_logs": "Recent Harvest Logs",
+    "No_harvest_records_found": "No harvest records found. Start logging your harvest to see profit metrics.",
+    "crop_overview": "Crop Overview",
+    "current_crop_production_status": "Current Crop Production Status"
   },
+  "button": {
+    "new_log": "New Log"
+  },
+
   "chart":{
     "user": "Users",
     "disease": "Diseases",

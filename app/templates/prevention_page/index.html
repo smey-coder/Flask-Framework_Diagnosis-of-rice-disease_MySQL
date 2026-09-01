@@ -1,4 +1,3 @@
-```html
 {% extends 'layouts/admin_layout/admin.html' %}
 
 {% block title %}Preventions{% endblock %}
@@ -897,8 +896,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 });
-
-
 /* =====================================================
    IMAGE MODAL
 ====================================================== */
@@ -908,25 +905,15 @@ function showPreventionImage(src) {
     document.getElementById(
         "preventionModalImage"
     ).src = src;
-
-
     const modalElement =
         document.getElementById(
             "preventionImageModal"
         );
-
-
     const modal =
         bootstrap.Modal.getOrCreateInstance(
             modalElement
         );
-
-
     modal.show();
-
 }
-
 </script>
-
 {% endblock %}
-```

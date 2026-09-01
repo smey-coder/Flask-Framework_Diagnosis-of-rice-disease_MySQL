@@ -378,8 +378,6 @@ RiceCare AI{% endblock %} {% block content %}
         </div>
       </div>
     </div>
-
-    <!-- Net Profit & ROI -->
     <!-- Net Profit & ROI -->
     <div class="col-xl-3 col-md-6">
       <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
@@ -431,13 +429,14 @@ RiceCare AI{% endblock %} {% block content %}
       class="card-header bg-white py-3 d-flex align-items-center justify-content-between"
     >
       <h6 class="fw-bold mb-0 text-dark">
-        <i class="fas fa-list-check me-2 text-success"></i>Recent Harvest Logs
+        <i class="fas fa-list-check me-2 text-success"></i>
+        {{ lang.dashboard.recent_harvest_logs }}
       </h6>
       <a
         href="{{ url_for('user.add_harvest') }}"
         class="btn btn-sm btn-success rounded-pill px-3"
       >
-        + New Log
+      + {{ lang.button.new_log }}
       </a>
     </div>
     <div class="table-responsive">
@@ -512,8 +511,7 @@ RiceCare AI{% endblock %} {% block content %}
           {% endfor %} {% else %}
           <tr>
             <td colspan="6" class="text-center py-4 text-muted">
-              No harvest records found. Start logging your harvest to see profit
-              metrics.
+              {{ lang.dashboard.No_harvest_records_found }}
             </td>
           </tr>
           {% endif %}
@@ -563,8 +561,8 @@ RiceCare AI{% endblock %} {% block content %}
   <!-- ===================================================== CROP STATISTICS ====================================================== -->
   <div class="section-title">
     <div>
-      <h3><i class="bi bi-flower1"></i> Crop Overview</h3>
-      <p>Current crop production status</p>
+      <h3><i class="bi bi-flower1"></i> {{ lang.dashboard.crop_overview }}</h3>
+      <p>{{ lang.dashboard.current_crop_production_status }}</p>
     </div>
   </div>
   <div class="crop-statistics-grid">
@@ -1473,8 +1471,7 @@ RiceCare AI{% endblock %} {% block content %}
   <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="card-header bg-white py-3">
       <h5 class="fw-bold mb-0 text-dark">
-        <i class="fas fa-clipboard-list me-2 text-success"></i
-        >{{lang.home.New_action}}
+        <i class="fas fa-clipboard-list me-2 text-success"></i>{{lang.home.New_action}}
       </h5>
     </div>
     <div class="card-body p-0">
@@ -1490,12 +1487,23 @@ RiceCare AI{% endblock %} {% block content %}
           <tbody>
             {% if recent_activities %} {% for activity in recent_activities %}
             <tr>
-              <td class="ps-4">
+              <td class="ps-4 py-3">
                 <div class="d-flex align-items-center">
-                  <div class="bg-soft-success rounded-circle p-2 me-3">
-                    <i class="fas fa-leaf text-success"></i>
-                  </div>
-                  <span class="fw-bold">{{ activity.disease_name }}</span>
+                  {% if activity.image or activity.disease_image %}
+                    {% set img_url = activity.image or activity.disease_image %}
+                    <img
+                      src="{{ img_url if (img_url.startswith('http://') or img_url.startswith('https://')) else url_for('static', filename='images/diseases/' ~ img_url) }}"
+                      alt="{{ activity.disease_name }}"
+                      class="rounded-3 me-3 border shadow-sm object-fit-cover"
+                      style="width: 40px; height: 40px;"
+                    />
+                  {% else %}
+                    <div class="bg-success-subtle text-success rounded-3 me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                      <i class="fas fa-leaf fs-6"></i>
+                    </div>
+                  {% endif %}
+                  
+                  <span class="fw-semibold text-dark">{{ activity.disease_name }}</span>
                 </div>
               </td>
               <td class="text-muted small">
@@ -1544,6 +1552,124 @@ RiceCare AI{% endblock %} {% block content %}
   .rounded-5 {
     border-radius: 2rem !important;
   }
+  /* ==========================================================================
+   Clean & Modern Recent Activities Dashboard Table (With Animations)
+   ========================================================================== */
+
+/* Keyframe Animations */
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtlePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(25, 135, 84, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+  }
+}
+
+/* Main Card Container Smooth Entrance */
+.card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive Table & Entrance Stagger */
+.table {
+  --bs-table-hover-bg: rgba(25, 135, 84, 0.03);
+}
+
+.table thead th {
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Smooth Table Row Animations */
+.table tbody tr {
+  animation: fadeInRow 0.4s ease-out forwards;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover Effect for Table Rows */
+.table tbody tr:hover {
+  transform: scale(1.002);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Image Thumbnail & Fallback Icon Animations */
+.table img.object-fit-cover {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.25s ease;
+}
+
+.table tr:hover img.object-fit-cover {
+  transform: scale(1.1) rotate(1deg);
+  box-shadow: 0 0.35rem 0.75rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+  color: #198754 !important;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              background-color 0.25s ease;
+}
+
+.table tr:hover .bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.2) !important;
+  transform: scale(1.1) rotate(-3deg);
+}
+
+.table tr:hover .bg-success-subtle i {
+  animation: subtlePulse 1.2s infinite;
+  border-radius: 50%;
+}
+
+/* Status Badges */
+.bg-success-light {
+  background-color: rgba(25, 135, 84, 0.12);
+  color: #146c43 !important;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.badge.rounded-pill {
+  padding: 0.4em 0.85em;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.table tr:hover .badge.rounded-pill {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
 </style>
 
 <script>

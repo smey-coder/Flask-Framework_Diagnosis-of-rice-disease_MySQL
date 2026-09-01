@@ -30,7 +30,14 @@
     "ricediseasediagnosticsystem" : "ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ",
     "fact_management_system": "ប្រព័ន្ធគ្រប់គ្រងការពិត",
     "rice_varieties": "ពូជស្រូវ",
-    "growth_stages": "ដំណាក់កាលលូតលាស់"
+    "growth_stages": "ដំណាក់កាលលូតលាស់",
+    "farm_management": "ការគ្រប់គ្រងកសិដ្ឋាន",
+    "Farms" : "កសិដ្ឋាន",
+    "Fields": "វាលស្រែ",
+    "Field_Crops": "ដំណាំវាលស្រែ",
+    "Crop_Monitorings": "ការត្រួតពិនិត្យដំណាំ",
+    "diagnosis_history": "ប្រវត្តិវិនិច្ឆ័យ",
+    "treatment_history": "ប្រវត្តិការព្យាបាល"
     
   },
   "navbar": {
@@ -45,13 +52,21 @@
     "total_diseases": "ចំនួនជំងឺសរុប",
     "total_rules": "ចំនួនច្បាប់សរុប",
     "total_symptoms": "ចំនួនរោគសញ្ញាសរុប",
-    "goodevening": "ល្ងាចសួស្តី",
-    "goodafternoon": "ពេលរសៀលសួស្តី",
-    "goodmorning": "អរុណសួស្ដី",
-    "good_morning": "អរុណសួស្ដី",
-    "good_afternoon": "ពេលរសៀលសួស្តី",
-    "good_evening": "ល្ងាចសួស្តី",
-    "good_night": "រាត្រីសួស្ដី"
+    "good_morning": "អរុណសួស្តី",
+    "good_afternoon": "ទិវាសួស្តី",
+    "good_evening": "សាយណ្ហសួស្តី",
+    "good_night": "រាត្រីសួស្តី",
+    "goodmorning": "អរុណសួស្តី",
+    "goodafternoon": "ទិវាសួស្តី",
+    "goodevening": "សាយណ្ហសួស្តី",
+    "goodnight": "រាត្រីសួស្តី",
+    "recent_harvest_logs": "កំណត់ហេតុប្រមូលផលថ្មីៗ",
+    "No_harvest_records_found": "រកមិនឃើញកំណត់ត្រាប្រមូលផលទេ។ ចាប់ផ្តើមកត់ត្រាការប្រមូលផលរបស់អ្នក ដើម្បីមើលរង្វាស់ប្រាក់ចំណេញ។",
+    "crop_overview": "ទិដ្ឋភាពទូទៅនៃដំណាំ",
+    "current_crop_production_status": "ស្ថានភាពបច្ចុប្បន្ននៃការផលិតដំណាំ"
+  },
+  "button": {
+    "new_log": "កំណត់ត្រាថ្មី"
   },
     "chart":{
         "user": "អ្នកប្រើប្រាស់",
