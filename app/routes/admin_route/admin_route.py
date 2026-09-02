@@ -10,6 +10,7 @@ from flask import Blueprint, abort, current_app, render_template, redirect, requ
 from flask_login import login_required, current_user
 from functools import wraps
 
+import pytz
 import requests
 from sqlalchemy import func, or_, text
 from sqlalchemy.orm import joinedload
@@ -1245,8 +1246,8 @@ def disease_prevention(disease_id):
 def diagnosis_print(disease_id):
 
     # យកម៉ោងបច្ចុប្បន្នតាម Timezone កម្ពុជា (Asia/Phnom_Penh)
-    cambodia_tz = zoneinfo.ZoneInfo("Asia/Phnom_Penh")
-    now = datetime.now(cambodia_tz)
+    cambodia_tz = pytz.timezone("Asia/Phnom_Penh")
+    current_time = datetime.now(cambodia_tz)
     try:
         # =====================================================
         # 1. GET RULE TRACE
@@ -1483,7 +1484,7 @@ def diagnosis_print(disease_id):
 
             user=current_user,
 
-            now=now
+            now=current_time
 
         )
 

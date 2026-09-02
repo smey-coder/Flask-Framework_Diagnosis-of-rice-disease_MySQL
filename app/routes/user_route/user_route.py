@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
 import json
 from venv import logger
+import zoneinfo
 from flask import Blueprint, abort, jsonify, render_template, redirect, request, session, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from functools import wraps
+from pytz import timezone
+import pytz
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import text
 
@@ -1884,6 +1887,8 @@ def disease_prevention(disease_id):
 @role_required("User")
 @permission_required("RUN_DIAGNOSIS")
 def diagnosis_print(disease_id):
+    cambodia_tz = pytz.timezone("Asia/Phnom_Penh")
+    current_time = datetime.now(cambodia_tz)
     try:
         # =====================================================
         # 1. GET RULE TRACE
@@ -2122,7 +2127,7 @@ def diagnosis_print(disease_id):
 
             user=current_user,
 
-            now=datetime.now()
+            now=current_time
 
         )
 

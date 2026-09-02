@@ -742,7 +742,7 @@
       </div>
 
       <div class="footer-right">
-        Generated: {{ now.strftime('%d-%m-%Y %H:%M:%S') if now else '' }}
+        Generated: {% if now and now.strftime %}{{ now.strftime('%d-%m-%Y %H:%M:%S') }}{% else %}{{ now if now else '' }}{% endif %}
       </div>
     </footer>
   </div>
