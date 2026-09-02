@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app as app
+from flask import Blueprint, jsonify, render_template, redirect, url_for, flash, request, current_app as app
 from flask_login import login_required
 from werkzeug.utils import secure_filename
 import os
@@ -108,3 +108,37 @@ def delete(id):
             flash(str(e), "danger")
 
     return render_template("prevention_page/delete_confirm.html", form=form, prevention=prevention)
+
+@prevention_bp.route('/api/preventions/all', methods=['GET'])
+@login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_PREVENTION")
+def get_all_preventions():
+    try:
+        # Fetch all records via your service layer
+        preventions = PreventionService.get_all()
+        
+        data = []
+        for p in preventions:
+            # Safely extract disease name from the relationship (DiseaseTable)
+            disease_name = "N/A"
+            if hasattr(p, 'disease') and p.disease:
+                disease_name = getattr(p.disease, 'disease_name', 'N/A')
+            elif hasattr(p, 'disease_name'):
+                disease_name = p.disease_name or "N/A"
+
+            data.append({
+                "id": p.id,
+                "disease": disease_name,
+                "type": getattr(p, 'prevention_type', ''),
+                "method": getattr(p, 'method', '') or "",
+                "description": getattr(p, 'description', '') or "",
+                "priority": f"Priority {getattr(p, 'priority', 1)}",
+                "status": "Active" if getattr(p, 'is_active', True) else "Inactive"
+            })
+            
+        return jsonify(data), 200
+
+    except Exception as e:
+        print(f"Error fetching preventions for PDF export: {str(e)}")
+        return jsonify({"error": "Failed to fetch database records", "details": str(e)}), 500

@@ -757,31 +757,108 @@ body {
 }
 
 /* ================= DARK MODE ================= */
-.dark-mode {
-  background-color: #121212;
-  color: #e0e0e0;
+/* Smooth theme transition */
+body {
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-.dark-mode .bg-white {
-  background-color: #1f1f1f !important;
+/* Base Dark Mode Styling */
+body.dark-mode {
+  background-color: #121212 !important;
+  color: #e0e0e0 !important;
 }
 
-.dark-mode .card,
-.dark-mode .dropdown-menu {
-  background-color: #1f1f1f;
-  color: #e0e0e0;
+/* Bootstrap Component Overrides for Dark Mode */
+body.dark-mode .card,
+body.dark-mode .modal-content,
+body.dark-mode .navbar,
+body.dark-mode .dropdown-menu,
+body.dark-mode .list-group-item {
+  background-color: #1e1e1e !important;
+  border-color: #2d2d2d !important;
+  color: #ffffff !important;
 }
 
-.dark-mode .sidebar {
-  background-color: #1a1a1a !important;
+/* Headings and muted text */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5, 
+body.dark-mode h6 {
+  color: #f0f0f0 !important;
 }
 
-.dark-mode .nav-link {
-  color: #e0e0e0;
+body.dark-mode .text-muted {
+  color: #a0a0a0 !important;
 }
 
-.dark-mode .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+/* Dashboard Tables in Dark Mode */
+body.dark-mode .table {
+  color: #e0e0e0 !important;
+  border-color: #2d2d2d !important;
+}
+
+body.dark-mode .table th,
+body.dark-mode .table td {
+  background-color: #1e1e1e !important;
+  border-color: #2d2d2d !important;
+}
+
+body.dark-mode .table-hover tbody tr:hover td {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+/* Dark Mode Form Inputs */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: #252525 !important;
+  border-color: #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background-color: #2b2b2b !important;
+  color: #ffffff !important;
+  border-color: #0d6efd !important;
+}
+
+/* Dark Mode Toggle Button Styling */
+#darkModeToggle {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#darkModeToggle:hover {
+  transform: scale(1.08);
+}
+
+/* CRITICAL: Force Light Mode on Paper / PDF Print Export */
+@media print {
+  body, 
+  body.dark-mode, 
+  .card, 
+  .modal-content, 
+  .table, 
+  .table td, 
+  .table th {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #dee2e6 !important;
+    box-shadow: none !important;
+  }
+
+  #darkModeToggle,
+  .no-print {
+    display: none !important;
+  }
 }
 
 /* ================= MOBILE ================= */

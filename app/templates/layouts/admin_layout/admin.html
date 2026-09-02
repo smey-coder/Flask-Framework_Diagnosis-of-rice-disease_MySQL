@@ -52,6 +52,9 @@
 
     <!-- Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF & AutoTable Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     {% block extra_css %}{% endblock %}
   </head>
   <!-- form message confirm logout -->
@@ -720,7 +723,9 @@
             <button
               id="darkModeToggle"
               class="btn btn-outline-secondary"
+              type="button"
               title="Toggle Dark Mode"
+              aria-label="Toggle dark mode theme"
             >
               <i class="bi bi-moon-stars"></i>
             </button>
@@ -826,127 +831,25 @@
         </main>
       </div>
     </div>
-
     <!-- ================= SCRIPTS ================= -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Global Dark Mode Script -->
+    <script src="{{ url_for('static', filename='js/darkMode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin_layout.js') }}"></script>
 
     <script>
-      /* ================= DARK MODE ================= */
-      const body = document.body;
-      const toggle = document.getElementById("darkModeToggle");
-      const sidebar = document.getElementById("sidebar");
-      const toggleBtn = document.getElementById("toggleBtn");
-      const overlay = document.getElementById("overlay");
-      const main = document.getElementById("mainContent");
-      const topbar = document.getElementById("topbar");
-
-      if (localStorage.getItem("dark") === "on") {
-        body.classList.add("dark-mode");
-      }
-
-      toggle.onclick = () => {
-        body.classList.toggle("dark-mode");
-        localStorage.setItem(
-          "dark",
-          body.classList.contains("dark-mode") ? "on" : "off",
-        );
-      };
-      /* ================= DATE & TIME ================= */
-      const days = [
-        "អាទិត្យ",
-        "ចន្ទ",
-        "អង្គារ",
-        "ពុធ",
-        "ព្រហស្បតិ៍",
-        "សុក្រ",
-        "សៅរ៍",
-      ];
-      const months = [
-        "មករា",
-        "កុម្ភៈ",
-        "មីនា",
-        "មេសា",
-        "ឧសភា",
-        "មិថុនា",
-        "កក្កដា",
-        "សីហា",
-        "កញ្ញា",
-        "តុលា",
-        "វិច្ឆិកា",
-        "ធ្នូ",
-      ];
-
-      function updateTime() {
-        const d = new Date();
-        document.getElementById("khmer-date").innerText =
-          `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-        document.getElementById("current-time").innerText =
-          d.toLocaleTimeString();
-      }
-      updateTime();
-      setInterval(updateTime, 1000);
-
-      /* ================= GREETING ================= */
-      const hour = new Date().getHours();
-      document.getElementById("greeting-text").innerText =
-        hour < 12
-          ? "🌅 {{ lang.dashboard.good_morning }}"
-          : hour < 17
-            ? "☀️ {{ lang.dashboard.good_afternoon }}"
-            : "🌙 {{ lang.dashboard.good_evening }}";
-
-      /* ================= PAGE TRANSITION ================= */
-      document.querySelectorAll("a").forEach((link) => {
-        link.addEventListener("click", function (e) {
-          if (this.target === "_blank" || this.href.includes("#")) return;
-          e.preventDefault();
-          document.getElementById("page-content").classList.add("fade-out");
-          setTimeout(() => (window.location = this.href), 200);
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        const greetingEl = document.getElementById("greeting-text");
+        if (greetingEl) {
+          const hour = new Date().getHours();
+          greetingEl.innerText =
+            hour < 12
+              ? "🌅 {{ lang.dashboard.good_morning }}"
+              : hour < 17
+                ? "☀️ {{ lang.dashboard.good_afternoon }}"
+                : "🌙 {{ lang.dashboard.good_evening }}";
+        }
       });
-
-      toggleBtn.onclick = () => {
-        if (window.innerWidth < 992) {
-          sidebar.classList.toggle("show");
-          overlay.classList.toggle("show");
-        } else {
-          sidebar.classList.toggle("collapsed");
-          main.classList.toggle("full");
-          topbar.classList.toggle("full");
-        }
-      };
-
-      overlay.onclick = () => {
-        sidebar.classList.remove("show");
-        overlay.classList.remove("show");
-      };
-      function confirmLogout(event) {
-        event.preventDefault();
-
-        if (confirm("Are you sure you want to logout?")) {
-          window.location.href = event.currentTarget.href;
-        }
-
-        return false;
-      }
-
-      function toggleRiceMenu(event) {
-        event.preventDefault();
-
-        const menu = document.getElementById("riceManagementMenu");
-        const toggle = event.currentTarget;
-
-        if (!menu) {
-          return;
-        }
-
-        menu.classList.toggle("show");
-        toggle.classList.toggle("open");
-
-        const isOpen = menu.classList.contains("show");
-
-        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-      }
     </script>
     {% block extra_js %}{% endblock %}
   </body>

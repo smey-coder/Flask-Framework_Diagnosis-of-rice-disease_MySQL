@@ -1,593 +1,793 @@
+/* =====================================================
+   PREVENTION PAGE - VARIABLES & BASE SETTINGS
+====================================================== */
 .prevention-page {
+  width: 100%;
   max-width: 100%;
+  margin: 0 auto;
+  padding: 0.75rem;
 }
 
-/* ============================
-   HEADER
-============================ */
+@media (min-width: 576px) {
+  .prevention-page {
+    padding: 1rem;
+  }
+}
 
+@media (min-width: 768px) {
+  .prevention-page {
+    padding: 1.5rem;
+  }
+}
+
+/* =====================================================
+   HEADER SECTION
+====================================================== */
 .page-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 15px;
+  margin-bottom: 1.5rem;
 }
 
-/* ============================
-   SUMMARY
-============================ */
+.header-title {
+  min-width: 200px;
+}
 
+.header-action {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* =====================================================
+   SUMMARY CARDS
+====================================================== */
 .summary-card {
   height: 100%;
-
   display: flex;
   align-items: center;
-
   gap: 15px;
-
   padding: 20px;
-
-  background: #fff;
-
+  background: #ffffff;
   border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
 
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-
-  border: 1px solid rgba(0, 0, 0, 0.04);
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .summary-icon {
   width: 52px;
   height: 52px;
-
   min-width: 52px;
-
   border-radius: 14px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 23px;
 }
 
 .summary-label {
   color: #6c757d;
-
   font-size: 13px;
-
   margin-bottom: 3px;
+  font-weight: 500;
 }
 
 .summary-value {
-  font-size: 25px;
-
+  font-size: 24px;
   font-weight: 700;
+  color: #212529;
 }
 
-/* ============================
-   SEARCH
-============================ */
-
+/* =====================================================
+   SEARCH & FILTERS
+====================================================== */
 .search-box {
   position: relative;
+  width: 100%;
 }
 
 .search-box i {
   position: absolute;
-
   left: 13px;
-
   top: 50%;
-
   transform: translateY(-50%);
-
   color: #6c757d;
-
   z-index: 2;
 }
 
 .search-box input {
   padding-left: 38px;
-
   height: 43px;
+  border-radius: 10px;
 }
 
 .filter-result {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
   font-size: 14px;
-
-  padding-top: 10px;
-
-  border-top: 1px solid #eee;
+  padding-top: 12px;
+  border-top: 1px solid #e9ecef;
 }
 
-/* ============================
-   TABLE
-============================ */
-
+/* =====================================================
+   TABLE & CONTAINERS
+====================================================== */
 .prevention-table-wrapper {
   width: 100%;
-
   max-height: 650px;
-
   overflow-x: auto;
-
   overflow-y: auto;
-
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  background: #ffffff;
   -webkit-overflow-scrolling: touch;
-
   scrollbar-width: thin;
 }
 
-/* Important for responsive */
-
 .prevention-table {
-  min-width: 1250px;
-
+  min-width: 800px;
   width: 100%;
-
-  white-space: nowrap;
+  margin-bottom: 0;
+  vertical-align: middle;
 }
 
 /* Sticky Header */
-
 .prevention-table thead th {
   position: sticky;
-
   top: 0;
-
   z-index: 10;
-
   background: #f8f9fa;
-
   border-bottom: 2px solid #dee2e6;
-
   padding: 14px 12px;
-
   font-size: 13px;
-
   font-weight: 700;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-
-/* Table rows */
 
 .prevention-table tbody td {
   padding: 14px 12px;
+  border-bottom: 1px solid #f1f3f5;
+  white-space: nowrap;
 }
 
-/* ============================
-   ID
-============================ */
-
+/* =====================================================
+   BADGES & CELL COMPONENTS
+====================================================== */
 .id-badge {
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   min-width: 35px;
-
   height: 28px;
-
   padding: 0 8px;
-
   border-radius: 8px;
-
   background: #f1f3f5;
-
+  color: #495057;
   font-size: 13px;
-
   font-weight: 600;
 }
 
-/* ============================
-   DISEASE
-============================ */
-
 .disease-cell {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
 }
 
 .disease-icon {
   width: 38px;
   height: 38px;
-
   min-width: 38px;
-
   border-radius: 10px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: #e8f5e9;
-
   color: #198754;
+  font-size: 18px;
 }
 
 .disease-name {
-  max-width: 230px;
-
+  max-width: 220px;
   overflow: hidden;
-
   text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
 }
 
-/* ============================
-   TYPE
-============================ */
-
+/* Category / Type Badges */
 .type-badge {
   display: inline-flex;
-
   align-items: center;
-
-  padding: 7px 10px;
-
+  padding: 6px 10px;
   border-radius: 8px;
-
   font-size: 12px;
-
   font-weight: 600;
-
   background: #f1f3f5;
 }
 
 .type-badge.cultural {
   background: #e8f5e9;
-
   color: #198754;
 }
-
 .type-badge.chemical {
   background: #fff3cd;
-
   color: #997404;
 }
-
 .type-badge.biological {
   background: #cff4fc;
-
   color: #087990;
 }
-
 .type-badge.physical {
   background: #e2e3e5;
-
   color: #41464b;
 }
-
 .type-badge.integrated {
   background: #e0cffc;
-
   color: #59359a;
 }
 
-/* ============================
-   METHOD
-============================ */
-
-.method-cell {
-  max-width: 300px;
-}
-
+/* Method & Text Truncation */
+.method-cell,
 .description-text {
-  max-width: 300px;
-
+  max-width: 280px;
   overflow: hidden;
-
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* ============================
-   PRIORITY
-============================ */
-
+/* Priority Badges */
 .priority-badge {
   display: inline-flex;
-
   align-items: center;
-
-  padding: 6px 9px;
-
+  padding: 5px 10px;
   border-radius: 8px;
-
   font-size: 12px;
-
   font-weight: 600;
 }
-
 .priority-1 {
   background: #fff3cd;
-
   color: #997404;
 }
-
 .priority-2 {
   background: #e2e3e5;
-
   color: #41464b;
 }
-
 .priority-3 {
   background: #f8d7da;
-
   color: #842029;
 }
 
-/* ============================
-   IMAGE
-============================ */
-
+/* Image Styling */
 .prevention-image {
-  width: 65px;
-
-  height: 50px;
-
+  width: 60px;
+  height: 48px;
   object-fit: cover;
-
-  border-radius: 9px;
-
+  border-radius: 8px;
   cursor: pointer;
-
   border: 1px solid #dee2e6;
-
-  transition: 0.2s;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .prevention-image:hover {
   transform: scale(1.08);
-
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .no-image {
-  width: 65px;
-
-  height: 50px;
-
+  width: 60px;
+  height: 48px;
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
-  margin: auto;
-
-  border-radius: 9px;
-
+  border-radius: 8px;
   background: #f8f9fa;
-
   color: #adb5bd;
-
-  font-size: 20px;
+  font-size: 18px;
+  border: 1px dashed #dee2e6;
 }
 
-/* ============================
-   STATUS
-============================ */
-
+/* Status Indicators */
 .status-badge {
   display: inline-flex;
-
   align-items: center;
-
   gap: 6px;
-
-  padding: 6px 10px;
-
+  padding: 5px 10px;
   border-radius: 20px;
-
   font-size: 12px;
-
   font-weight: 600;
 }
-
 .status-badge.active {
   background: #d1e7dd;
-
   color: #0f5132;
 }
-
 .status-badge.inactive {
   background: #e2e3e5;
-
   color: #41464b;
 }
 
 .status-dot {
-  width: 7px;
-
-  height: 7px;
-
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-
   background: currentColor;
 }
 
-/* ============================
-   ACTIONS
-============================ */
-
+/* Action Buttons */
 .action-buttons {
   display: flex;
-
   justify-content: center;
-
-  gap: 5px;
+  gap: 6px;
 }
 
 .action-buttons .btn {
-  width: 34px;
-
-  height: 34px;
-
+  width: 32px;
+  height: 32px;
+  padding: 0;
   display: flex;
-
   align-items: center;
-
   justify-content: center;
+  border-radius: 8px;
+  transition: transform 0.15s ease;
 }
 
-/* ============================
-   EMPTY
-============================ */
-
-.empty-state {
-  padding: 20px;
+.action-buttons .btn:hover {
+  transform: translateY(-1px);
 }
 
-.empty-state > i {
-  font-size: 50px;
-
-  color: #adb5bd;
-}
-
-/* ============================
-   TABLE HINT
-============================ */
-
-.table-hint {
-  font-size: 12px;
-
-  color: #6c757d;
-}
-
-/* ============================
-   SCROLLBAR
-============================ */
-
+/* Scrollbar Customization */
 .prevention-table-wrapper::-webkit-scrollbar {
-  width: 9px;
-
-  height: 9px;
+  width: 7px;
+  height: 7px;
 }
-
 .prevention-table-wrapper::-webkit-scrollbar-track {
   background: #f1f3f5;
 }
-
 .prevention-table-wrapper::-webkit-scrollbar-thumb {
-  background: #adb5bd;
-
-  border-radius: 20px;
+  background: #ced4da;
+  border-radius: 10px;
 }
-
 .prevention-table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #6c757d;
+  background: #adb5bd;
 }
 
 /* =====================================================
-   TABLET
+   DARK MODE COMPATIBILITY
+====================================================== */
+body.dark-mode .summary-card,
+body.dark-mode .prevention-table-wrapper {
+  background-color: #2b3035;
+  border-color: #373b3e;
+  color: #f8f9fa;
+}
+
+body.dark-mode .summary-value {
+  color: #ffffff;
+}
+body.dark-mode .summary-label {
+  color: #adb5bd;
+}
+
+body.dark-mode .prevention-table thead th {
+  background-color: #212529;
+  border-bottom-color: #495057;
+  color: #dee2e6;
+}
+
+body.dark-mode .prevention-table tbody td {
+  border-bottom-color: #373b3e;
+  color: #e9ecef;
+}
+
+body.dark-mode .id-badge {
+  background: #343a40;
+  color: #e9ecef;
+}
+
+body.dark-mode .no-image {
+  background: #343a40;
+  border-color: #495057;
+}
+
+/* =====================================================
+   RESPONSIVE BREAKPOINTS
 ====================================================== */
 
+/* LARGE DESKTOP (min-width: 1200px) */
+@media (min-width: 1200px) {
+  .prevention-table {
+    min-width: 1100px;
+  }
+}
+
+/* TABLET (max-width: 992px) */
 @media (max-width: 992px) {
   .page-header {
-    align-items: flex-start;
-  }
-
-  .summary-card {
-    padding: 16px;
+    flex-wrap: wrap;
   }
 
   .prevention-table-wrapper {
-    max-height: 550px;
+    max-height: 520px;
+  }
+
+  .prevention-table {
+    min-width: 900px;
+  }
+
+  .method-cell,
+  .description-text {
+    max-width: 200px;
+  }
+
+  .disease-name {
+    max-width: 160px;
   }
 }
 
-/* =====================================================
-   MOBILE
-====================================================== */
-
-@media (max-width: 576px) {
-  .prevention-page {
-    padding-left: 8px !important;
-
-    padding-right: 8px !important;
-  }
-
+/* MOBILE DEVICES (max-width: 768px) */
+@media (max-width: 768px) {
   .page-header {
     flex-direction: column;
-
     align-items: stretch;
+    gap: 12px;
   }
 
-  .page-header h3 {
-    font-size: 21px;
-  }
-
-  .page-header .btn {
+  .header-title {
     width: 100%;
   }
 
-  .summary-card {
-    padding: 15px;
+  .header-action {
+    width: 100%;
+    justify-content: flex-start;
   }
 
-  .summary-icon {
-    width: 45px;
-
-    height: 45px;
-
-    min-width: 45px;
-
-    font-size: 19px;
-  }
-
-  .summary-value {
-    font-size: 21px;
+  .header-action .btn {
+    width: 100%;
   }
 
   .filter-result {
     flex-direction: column;
-
     align-items: flex-start;
+    gap: 8px;
+  }
 
-    gap: 5px;
+  .summary-card {
+    padding: 14px;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .summary-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    font-size: 20px;
+    margin: 0 auto;
+  }
+
+  .summary-value {
+    font-size: 20px;
+  }
+
+  .summary-label {
+    font-size: 12px;
   }
 
   .prevention-table-wrapper {
-    max-height: 450px;
-
-    overflow-x: auto;
-
-    overflow-y: auto;
+    max-height: 460px;
   }
 
+  /* Table styling fallback for mobile overflow */
   .prevention-table {
-    min-width: 1200px;
+    min-width: 700px;
+    font-size: 13px;
+  }
+
+  .prevention-table tbody td {
+    padding: 12px 8px;
+  }
+
+  .prevention-table thead th {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
+  .prevention-image {
+    width: 50px;
+    height: 40px;
+  }
+
+  .no-image {
+    width: 50px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .method-cell,
+  .description-text {
+    max-width: 150px;
+    font-size: 12px;
+  }
+
+  .disease-name {
+    max-width: 120px;
+    font-size: 13px;
+  }
+
+  .id-badge {
+    min-width: 30px;
+    height: 26px;
+    font-size: 12px;
+    padding: 0 6px;
+  }
+
+  .disease-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 16px;
+  }
+
+  .action-buttons .btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .type-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .priority-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .status-badge {
+    font-size: 11px;
+    padding: 4px 8px;
   }
 
   .table-hint {
     display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .form-label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 13px;
+    min-height: 38px;
   }
 }
 
-/* =====================================================
-   VERY SMALL SCREEN
-====================================================== */
+/* SMALL MOBILE (max-width: 576px) */
+@media (max-width: 576px) {
+  .prevention-page {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
 
-@media (max-width: 400px) {
+  .page-header {
+    gap: 8px;
+  }
+
+  .header-title h3 {
+    font-size: 18px;
+  }
+
+  .method-cell,
+  .description-text {
+    max-width: 100px;
+    font-size: 11px;
+  }
+
+  .disease-name {
+    max-width: 90px;
+    font-size: 12px;
+  }
+
+  .prevention-table {
+    min-width: 600px;
+    font-size: 12px;
+  }
+
+  .prevention-table tbody td {
+    padding: 10px 6px;
+  }
+
+  .prevention-table thead th {
+    padding: 10px 6px;
+    font-size: 11px;
+  }
+
   .summary-card {
     padding: 12px;
   }
 
+  .summary-value {
+    font-size: 18px;
+  }
+
+  .summary-label {
+    font-size: 11px;
+  }
+
   .summary-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  .disease-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .id-badge {
+    min-width: 28px;
+    height: 24px;
+    font-size: 11px;
+    padding: 0 5px;
+  }
+
+  .action-buttons .btn {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .prevention-image {
     width: 40px;
+    height: 32px;
+  }
 
-    height: 40px;
+  .no-image {
+    width: 40px;
+    height: 32px;
+    font-size: 14px;
+  }
 
-    min-width: 40px;
+  .type-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .priority-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .status-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .card-header {
+    padding: 0.75rem !important;
+  }
+
+  .card-body {
+    padding: 0.75rem !important;
+  }
+
+  .table-hint {
+    font-size: 11px;
+    margin-top: 6px;
+  }
+
+  .form-label {
+    font-size: 12px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 12px;
+    min-height: 36px;
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+/* EXTRA SMALL (max-width: 480px) */
+@media (max-width: 480px) {
+  .prevention-table {
+    min-width: 550px;
+  }
+
+  .method-cell,
+  .description-text {
+    max-width: 80px;
+    font-size: 10px;
+  }
+
+  .disease-name {
+    max-width: 70px;
+    font-size: 11px;
+  }
+
+  .header-title h3 {
+    font-size: 16px;
+  }
+
+  .header-title p {
+    font-size: 12px;
+    margin-bottom: 8px !important;
+  }
+
+  .summary-card {
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .summary-value {
+    font-size: 16px;
+  }
+
+  .summary-label {
+    font-size: 10px;
+  }
+
+  .summary-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .prevention-table {
+    font-size: 11px;
+  }
+
+  .prevention-table tbody td {
+    padding: 8px 4px;
+  }
+
+  .prevention-table thead th {
+    padding: 8px 4px;
+    font-size: 10px;
+  }
+
+  .form-label {
+    font-size: 11px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 11px;
+    min-height: 34px;
+  }
+
+  .card {
+    margin-left: -4px;
+    margin-right: -4px;
+    border-radius: 0.5rem !important;
   }
 }

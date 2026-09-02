@@ -1,10 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app as app
+from flask import Blueprint, jsonify, render_template, redirect, url_for, flash, request, current_app as app
 from flask_login import login_required
 from werkzeug.utils import secure_filename
 import os
 from werkzeug.datastructures import FileStorage
 
 from app.forms.treatment_forms import TreatmentCreateForm, TreatmentEditForm, TreatmentConfirmDeleteForm, disease_choices
+from app.models.treatments import TreatmentTable
 from app.services.treatment_service import TreatmentService
 from app.models.diseases import DiseaseTable
 
@@ -109,3 +110,32 @@ def delete(id):
             flash(str(e), "danger")
 
     return render_template("treatment_page/delete_confirm.html", form=form, treatments=treatments)
+
+@treatment_bp.route('/api/treatments/all', methods=['GET'])
+@login_required
+@role_required("Admin", "Expert")
+@permission_required("VIEW_TREATMENT")
+def get_all_treatments():
+    try:
+        # Fetch active treatment records
+        treatments = TreatmentTable.query.order_by(TreatmentTable.id.desc()).all()
+        
+        data = []
+        for t in treatments:
+            disease_name = t.disease.disease_name if t.disease else "N/A"
+
+            data.append({
+                "id": t.id,
+                "disease": disease_name,
+                "type": t.treatment_type or "",
+                "method": t.method or "",
+                "description": t.description or "",
+                "priority": f"Priority {t.priority}",
+                "status": "Active" if t.is_active else "Inactive"
+            })
+            
+        return jsonify(data), 200
+
+    except Exception as e:
+        print(f"Error fetching treatments for PDF export: {str(e)}")
+        return jsonify({"error": "Failed to fetch treatment records", "details": str(e)}), 500
