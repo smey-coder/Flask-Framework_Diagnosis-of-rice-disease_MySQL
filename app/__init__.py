@@ -73,7 +73,6 @@ def create_app(config_class: type[Config] = Config):
             else:
                 return redirect(url_for("user.dashboard"))
         return redirect(url_for("auth.login"))
-
     # ================= REGISTER BLUEPRINTS =================
     from app.routes.user_routes import user_bp
     from app.routes.role_routes import role_bp

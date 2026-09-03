@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>{% block title %}User Management{% endblock %}</title>
+    <title>{% block title %}Welcome to Rice Disease Diagnosis System{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap -->
@@ -44,7 +44,7 @@
                  width="36"
                  height="36"
                  class="rounded-circle me-2 shadow-sm">
-            Rice Disease Diagnostic System
+            Rice Disease Diagnosis System
         </a>
 
         <!-- Toggle -->
@@ -59,45 +59,33 @@
 
         <!-- Navbar content -->
         <div class="collapse navbar-collapse" id="navbarMain">
-
             <!-- Left side -->
             <ul class="navbar-nav me-auto"></ul>
-
             <!-- Right side -->
             <ul class="navbar-nav">
-
                 {% if current_user.is_authenticated %}
-
                     <li class="nav-item">
-                        <span class="navbar-text me-3">
+                        <span class="navbar-text me-3 px-3 py-1 bg-success bg-opacity-10 text-success rounded-pill fw-semibold border border-success border-opacity-25">
                             👤 {{ current_user.username }}
                         </span>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                        <a class="nav-link text-danger fw-semibold px-3 py-1 rounded-pill transition-all hover-bg-danger-light" href="{{ url_for('auth.logout') }}">Logout</a>
                     </li>
-
                 {% else %}
-
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                        <a class="nav-link btn btn-success text-white fw-bold px-4 py-1-5 rounded-pill shadow-sm text-start" href="{{ url_for('auth.login') }}">Login</a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+                        <a class="nav-link btn btn-success text-white fw-bold px-4 py-1-5 rounded-pill shadow-sm text-start" href="{{ url_for('auth.register') }}">Register</a>
                     </li>
-
                 {% endif %}
-
             </ul>
         </div>
     </div>
 </nav>
-
 <!-- ================= MAIN CONTENT ================= -->
 <main class="container">
-
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -109,10 +97,14 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-
     {% block content %}{% endblock %}
 </main>
-
+<!-- ================= FOOTER ================= -->
+<footer class="py-3 mt-auto">
+    <div class="container text-center text-muted small">
+        <p class="mb-0">&copy; {{ now.year if now else '2026' }} Rice Disease Diagnosis System. All rights reserved.</p>
+    </div>
+</footer>
 <!-- ================= SCRIPTS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
