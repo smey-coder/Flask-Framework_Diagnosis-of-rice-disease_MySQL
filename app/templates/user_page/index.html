@@ -144,7 +144,7 @@ endblock %} {% block content %}
   </div>
 
   <!-- 2. Main Form Card -->
-  <form method="POST">
+  <form method="POST" id="diagnosisForm">
     {{ form.hidden_tag() }}
 
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
@@ -337,17 +337,21 @@ endblock %} {% block content %}
           <button
             type="reset"
             class="btn btn-outline-secondary px-4 rounded-pill"
+            id="resetBtn"
           >
             <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
           </button>
 
           <button
             type="submit"
-            class="btn btn-primary px-4 rounded-pill shadow-sm"
+            class="btn btn-success px-4 rounded-pill shadow-sm fw-semibold position-relative overflow-hidden"
             id="diagnosisBtn"
             disabled
           >
-            <i class="bi bi-check2-circle me-1"></i> Diagnose Disease
+            <span class="scanner-bar" id="scannerBar"></span>
+            <span class="spinner-border spinner-border-sm me-2 d-none" id="btnSpinner" role="status" aria-hidden="true"></span>
+            <i class="bi bi-search me-1" id="btnIcon"></i>
+            <span id="btnText">វិនិច្ឆ័យជំងឺ (Diagnose Disease)</span>
           </button>
       </div>
     </div>
@@ -356,241 +360,249 @@ endblock %} {% block content %}
 
 <!-- Dynamic Search & Filter Script -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const checkboxes = document.querySelectorAll(".symptom-checkbox");
-    const submitBtn = document.getElementById("diagnosisBtn");
-    const searchInput = document.getElementById("symptomSearch");
-    const clearSearchBtn = document.getElementById("clearSearch");
-    const groupFilterSelect = document.getElementById("groupFilter");
-    const groups = document.querySelectorAll(".symptom-group");
-    const selectedBox = document.getElementById("selectedBox");
-    const selectedList = document.getElementById("selectedList");
-    const selectedCounter = document.getElementById("selectedCounter");
-    const clearAllBtn = document.getElementById("clearAllBtn");
-    const filterBtns = document.querySelectorAll(".filter-btn");
-    const noResults = document.getElementById("noResults");
+ document.addEventListener("DOMContentLoaded", function () {
+  // DOM Element Queries
+  const form = document.getElementById("diagnosisForm") || document.querySelector('form[method="POST"]');
+  const diagnosisBtn = document.getElementById("diagnosisBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const loadingOverlay = document.getElementById("loadingOverlay");
+  
+  // Dynamic Selectors
+  const checkboxes = document.querySelectorAll('.symptom-checkbox, input[name="symptom_ids"]');
+  const searchInput = document.getElementById("symptomSearch");
+  const clearSearchBtn = document.getElementById("clearSearch");
+  const groupFilterSelect = document.getElementById("groupFilter");
+  const groups = document.querySelectorAll(".symptom-group");
+  const selectedBox = document.getElementById("selectedBox");
+  const selectedList = document.getElementById("selectedList");
+  const selectedCounter = document.getElementById("selectedCounter");
+  const clearAllBtn = document.getElementById("clearAllBtn");
+  const filterBtns = document.querySelectorAll(".filter-btn");
+  const noResults = document.getElementById("noResults");
 
-    let currentTabFilter = "all";
+  // Spinner/Text elements
+  const spinner = document.getElementById("btnSpinner");
+  const icon = document.getElementById("btnIcon");
+  const text = document.getElementById("btnText");
 
-    // Click Card to check box
-    window.toggleCardSelect = function (cardElement) {
-      const checkbox = cardElement.querySelector(".symptom-checkbox");
+  let currentTabFilter = "all";
+
+  // --- 1. Global Card Selection Handler ---
+  window.toggleCardSelect = function (cardElement) {
+    const checkbox = cardElement.querySelector('.symptom-checkbox, input[name="symptom_ids"]');
+    if (checkbox) {
       checkbox.checked = !checkbox.checked;
       toggleSubmit();
-    };
+    }
+  };
 
-    // Update UI counters and badges
-    window.toggleSubmit = function () {
-      const checked = document.querySelectorAll(".symptom-checkbox:checked");
-      const count = checked.length;
+  // --- 2. Remove Single Badge Handler ---
+  window.uncheckSymptom = function (id) {
+    const cb = document.getElementById(id);
+    if (cb) {
+      cb.checked = false;
+      toggleSubmit();
+    }
+  };
 
-      submitBtn.disabled = count === 0;
+  // --- 3. Image Modal Global Function ---
+  window.openImageModal = function (element) {
+    const imgSrc = element.getAttribute("data-img-src");
+    const imgTitle = element.getAttribute("data-img-title");
 
+    const modalImg = document.getElementById("modalPreviewImage");
+    const modalLabel = document.getElementById("imageModalLabel");
+
+    if (modalImg) modalImg.src = imgSrc;
+    if (modalLabel) modalLabel.textContent = imgTitle;
+  };
+
+  // --- 4. Main State Manager ---
+  window.toggleSubmit = function () {
+    const checked = document.querySelectorAll('.symptom-checkbox:checked, input[name="symptom_ids"]:checked');
+    const count = checked.length;
+
+    // Toggle Submit Button State
+    if (diagnosisBtn) {
+      diagnosisBtn.disabled = count === 0;
       if (count > 0) {
-        submitBtn.classList.add("pulse-btn");
+        diagnosisBtn.classList.add("pulse-btn");
       } else {
-        submitBtn.classList.remove("pulse-btn");
+        diagnosisBtn.classList.remove("pulse-btn");
       }
+    }
 
+    // Update Counter
+    if (selectedCounter) {
       selectedCounter.innerText = count;
+      selectedCounter.classList.add("updated");
+      setTimeout(() => selectedCounter.classList.remove("updated"), 200);
+    }
 
-      checkboxes.forEach((cb) => {
-        const card = cb.closest(".symptom-card");
+    // Update Symptom Card Active States
+    checkboxes.forEach((cb) => {
+      const card = cb.closest(".symptom-card");
+      if (card) {
         if (cb.checked) {
           card.classList.add("selected");
         } else {
           card.classList.remove("selected");
         }
-      });
+      }
+    });
 
-      // Badges Render
+    // Render Badges safely
+    if (selectedBox && selectedList) {
       if (count > 0) {
         selectedBox.classList.remove("d-none");
         selectedList.innerHTML = "";
 
         checked.forEach((cb) => {
-          const label = document.querySelector(
-            `label[for="${cb.id}"]`,
-          ).innerText;
+          // ស្វែងរក Label តាមវិធីសុវត្ថិភាព (តាម ID ឬ Parent Element)
+          let labelText = "Symptom";
+          if (cb.id) {
+            const labelEl = document.querySelector(`label[for="${cb.id}"]`);
+            if (labelEl) labelText = labelEl.innerText;
+          } else {
+            const parentLabel = cb.closest("label") || cb.closest(".symptom-item");
+            if (parentLabel) labelText = parentLabel.innerText;
+          }
+
           const badge = document.createElement("span");
-          badge.className =
-            "badge bg-primary px-3 py-2 rounded-pill d-inline-flex align-items-center animated-fade-in";
+          badge.className = "badge bg-primary px-3 py-2 rounded-pill d-inline-flex align-items-center animated-fade-in gap-2";
           badge.innerHTML = `
-                    ${label}
-                    <i class="bi bi-x-circle-fill badge-remove" onclick="uncheckSymptom('${cb.id}')"></i>
-                `;
+            ${labelText}
+            <i class="bi bi-x-circle-fill badge-remove cursor-pointer" onclick="uncheckSymptom('${cb.id}')"></i>
+          `;
           selectedList.appendChild(badge);
         });
       } else {
         selectedBox.classList.add("d-none");
       }
+    }
 
-      applyFilters();
-    };
+    applyFilters();
+  };
 
-    // Remove single badge
-    window.uncheckSymptom = function (id) {
-      const cb = document.getElementById(id);
-      if (cb) {
-        cb.checked = false;
-        toggleSubmit();
-      }
-    };
+  // --- 5. Integrated Search and Group Filtering Logic ---
+  function applyFilters() {
+    const keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
+    const selectedGroup = groupFilterSelect ? groupFilterSelect.value : "all";
+    let totalVisible = 0;
 
-    // Clear All
-    clearAllBtn.addEventListener("click", function () {
-      checkboxes.forEach((cb) => (cb.checked = false));
-      toggleSubmit();
-    });
+    if (clearSearchBtn) {
+      clearSearchBtn.style.display = keyword.length > 0 ? "block" : "none";
+    }
 
-    // Quick Tabs (All / Selected)
-    filterBtns.forEach((btn) => {
-      btn.addEventListener("click", function () {
-        filterBtns.forEach((b) => b.classList.remove("active"));
-        this.classList.add("active");
-        currentTabFilter = this.getAttribute("data-filter");
-        applyFilters();
-      });
-    });
+    groups.forEach((group) => {
+      const groupName = group.getAttribute("data-group-name");
+      let hasVisibleInGroup = false;
 
-    // Integrated Search and Group Filtering Logic
-    function applyFilters() {
-      const keyword = searchInput.value.toLowerCase().trim();
-      const selectedGroup = groupFilterSelect.value;
-      let totalVisible = 0;
+      const matchesGroupFilter = selectedGroup === "all" || selectedGroup === groupName;
 
-      // Toggle Clear Search Button visibility
-      if (keyword.length > 0) {
-        clearSearchBtn.style.display = "block";
-      } else {
-        clearSearchBtn.style.display = "none";
-      }
+      group.querySelectorAll(".symptom-item").forEach((item) => {
+        const cb = item.querySelector('.symptom-checkbox, input[name="symptom_ids"]');
+        const labelEl = item.querySelector(".symptom-label, .form-check-label") || item;
+        const label = labelEl ? labelEl.innerText.toLowerCase() : "";
 
-      groups.forEach((group) => {
-        const groupName = group.getAttribute("data-group-name");
-        let hasVisibleInGroup = false;
+        const matchesSearch = label.includes(keyword);
+        const matchesTab =
+          currentTabFilter === "all" ||
+          (currentTabFilter === "selected" && cb && cb.checked);
 
-        // Check if Group matches dropdown filter
-        const matchesGroupFilter =
-          selectedGroup === "all" || selectedGroup === groupName;
-
-        group.querySelectorAll(".symptom-item").forEach((item) => {
-          const cb = item.querySelector(".symptom-checkbox");
-          const label = item
-            .querySelector(".symptom-label")
-            .innerText.toLowerCase();
-
-          const matchesSearch = label.includes(keyword);
-          const matchesTab =
-            currentTabFilter === "all" ||
-            (currentTabFilter === "selected" && cb.checked);
-
-          if (matchesSearch && matchesTab && matchesGroupFilter) {
-            item.style.display = "";
-            hasVisibleInGroup = true;
-            totalVisible++;
-          } else {
-            item.style.display = "none";
-          }
-        });
-
-        group.style.display = hasVisibleInGroup ? "" : "none";
+        if (matchesSearch && matchesTab && matchesGroupFilter) {
+          item.style.display = "";
+          hasVisibleInGroup = true;
+          totalVisible++;
+        } else {
+          item.style.display = "none";
+        }
       });
 
-      // Toggle Empty state view
+      group.style.display = hasVisibleInGroup ? "" : "none";
+    });
+
+    if (noResults) {
       if (totalVisible === 0) {
         noResults.classList.remove("d-none");
       } else {
         noResults.classList.add("d-none");
       }
     }
+  }
 
-    // Input events for real-time filtering
-    searchInput.addEventListener("input", applyFilters);
-    groupFilterSelect.addEventListener("change", applyFilters);
+  // --- 6. Event Listeners Initialization ---
+  checkboxes.forEach((cb) => {
+    cb.addEventListener("change", toggleSubmit);
+  });
 
-    // Clear Search Input Click Action
-    clearSearchBtn.addEventListener("click", function () {
-      searchInput.value = "";
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener("click", function () {
+      checkboxes.forEach((cb) => (cb.checked = false));
+      toggleSubmit();
+    });
+  }
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      filterBtns.forEach((b) => b.classList.remove("active"));
+      this.classList.add("active");
+      currentTabFilter = this.getAttribute("data-filter");
       applyFilters();
     });
-
-    // Form Reset
-    document
-      .querySelector('button[type="reset"]')
-      .addEventListener("click", function () {
-        setTimeout(() => {
-          checkboxes.forEach((cb) => (cb.checked = false));
-          searchInput.value = "";
-          groupFilterSelect.value = "all";
-          currentTabFilter = "all";
-          filterBtns.forEach((b) => b.classList.remove("active"));
-          filterBtns[0].classList.add("active");
-          toggleSubmit();
-        }, 50);
-      });
-
-    toggleSubmit();
   });
 
-  function openImageModal(element) {
-        const imgSrc = element.getAttribute('data-img-src');
-        const imgTitle = element.getAttribute('data-img-title');
-        
-        document.getElementById('modalPreviewImage').src = imgSrc;
-        document.getElementById('imageModalLabel').textContent = imgTitle;
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-    const checkboxes = document.querySelectorAll('input[name="symptom_ids"]');
-    const counter = document.getElementById("selectedCounter");
+  if (searchInput) searchInput.addEventListener("input", applyFilters);
+  if (groupFilterSelect) groupFilterSelect.addEventListener("change", applyFilters);
 
-    function updateCount() {
-        if (!counter) return;
-        const checkedCount = document.querySelectorAll('input[name="symptom_ids"]:checked').length;
-        counter.textContent = checkedCount;
-
-        // Pop animation
-        counter.classList.add("updated");
-        setTimeout(() => counter.classList.remove("updated"), 200);
-    }
-
-    checkboxes.forEach((cb) => cb.addEventListener("change", updateCount));
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", function () {
+      if (searchInput) searchInput.value = "";
+      applyFilters();
     });
+  }
 
-    document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('diagnosisForm');
-  const diagnosisBtn = document.getElementById('diagnosisBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const loadingOverlay = document.getElementById('loadingOverlay');
-  const checkboxes = document.querySelectorAll('.symptom-checkbox');
-
-  // 1. UI Checkbox Detector: Enable/Disable submit button
-  checkboxes.forEach(cb => {
-    cb.addEventListener('change', () => {
-      const isChecked = Array.from(checkboxes).some(c => c.checked);
-      diagnosisBtn.disabled = !isChecked;
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      setTimeout(() => {
+        checkboxes.forEach((cb) => (cb.checked = false));
+        if (searchInput) searchInput.value = "";
+        if (groupFilterSelect) groupFilterSelect.value = "all";
+        currentTabFilter = "all";
+        filterBtns.forEach((b) => b.classList.remove("active"));
+        if (filterBtns[0]) filterBtns[0].classList.add("active");
+        toggleSubmit();
+      }, 50);
     });
-  });
+  }
 
-  // 2. UI Reset Button Handler
-  resetBtn.addEventListener('click', () => {
-    diagnosisBtn.disabled = true;
-  });
+  // --- 7. Form Submit Handler ---
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      const checked = document.querySelectorAll('.symptom-checkbox:checked, input[name="symptom_ids"]:checked');
+      if (checked.length === 0) {
+        e.preventDefault();
+        return;
+      }
 
-  // 3. UI Form Submit Handler: Trigger Loading Visuals
-  form.addEventListener('submit', () => {
-    // Disable button to prevent double clicks
-    diagnosisBtn.disabled = true;
-    
-    // Change button inner HTML to spinner state
-    diagnosisBtn.innerHTML = `
-      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-      Diagnosing...
-    `;
+      // ដាក់ Trigger Visuals
+      if (diagnosisBtn) {
+        diagnosisBtn.disabled = true;
+        diagnosisBtn.classList.add("is-scanning");
+      }
 
-    // Show full-screen loading backdrop animation
-    loadingOverlay.classList.remove('d-none');
-  });
+      if (spinner) spinner.classList.remove("d-none");
+      if (icon) icon.classList.add("d-none");
+      if (text) text.textContent = "កំពុងស្កេន... (Diagnosing & Scanning...)";
+
+      if (loadingOverlay) {
+        loadingOverlay.classList.remove("d-none");
+      }
+    });
+  }
+
+  // Initialize UI state
+  toggleSubmit();
 });
 </script>
 {% endblock %}

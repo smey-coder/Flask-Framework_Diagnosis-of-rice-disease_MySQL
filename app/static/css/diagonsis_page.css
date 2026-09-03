@@ -401,3 +401,47 @@ body {
     max-height: 420px;
   }
 }
+/* Button Positioning */
+#diagnosisBtn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Scanner Beam Effect */
+#diagnosisBtn .scanner-bar {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  transform: skewX(-20deg);
+}
+
+/* Pulse Glow & Laser Sweep Triggered by JS */
+#diagnosisBtn.is-scanning {
+  opacity: 0.95;
+  animation: pulseGlow 1.2s infinite alternate ease-in-out;
+}
+
+#diagnosisBtn.is-scanning .scanner-bar {
+  display: block;
+  animation: laserScan 1.2s infinite linear;
+}
+
+@keyframes laserScan {
+  0% { left: -60%; }
+  100% { left: 140%; }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.6); }
+  100% { box-shadow: 0 0 0 12px rgba(25, 135, 84, 0); }
+}
