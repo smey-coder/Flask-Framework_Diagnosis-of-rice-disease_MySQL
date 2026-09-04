@@ -218,27 +218,36 @@ endblock %} {% block content %}
           </div>
         </div>
       </div>
-
       <!-- Selected Symptoms Summary Panel -->
-      <div class="px-4 pt-3">
+      <div class="px-3 px-sm-4 pt-3">
         <div
-          class="alert alert-primary bg-primary-subtle border-0 d-none mb-0 rounded-3 animated-fade-in"
+          class="card border-0 bg-primary-subtle rounded-4 shadow-sm mb-0 d-none animated-fade-in"
           id="selectedBox"
         >
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong class="text-primary fs-7">
-              <i class="bi bi-tags-fill me-1"></i> រោគសញ្ញាដែលបានជ្រើសរើស
-              (Selected Symptoms):
-            </strong>
-            <button
-              type="button"
-              class="btn btn-link btn-sm text-danger p-0 text-decoration-none"
-              id="clearAllBtn"
-            >
-              <i class="bi bi-trash me-1"></i> Clear All
-            </button>
+          <div class="card-body p-3 p-sm-4">
+            <!-- Header Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-primary-subtle">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-tags-fill text-primary fs-5"></i>
+                <span class="fw-bold text-primary fs-6 mb-0">
+                  រោគសញ្ញាដែលបានជ្រើសរើស (Selected Symptoms)
+                </span>
+              </div>
+              
+              <!-- Clear All Button -->
+              <button
+                type="button"
+                class="btn btn-link btn-sm text-danger text-decoration-none p-0 d-flex align-items-center gap-1 opacity-75 opacity-100-hover"
+                id="clearAllBtn"
+              >
+                <i class="bi bi-trash3"></i>
+                <span class="fw-semibold small">Clear All</span>
+              </button>
+            </div>
+
+            <!-- Badge Container -->
+            <div id="selectedList" class="d-flex flex-wrap gap-2 w-100"></div>
           </div>
-          <div id="selectedList" class="d-flex flex-wrap gap-2"></div>
         </div>
       </div>
 
@@ -331,28 +340,29 @@ endblock %} {% block content %}
       </div>
 
       <!-- Form Footer -->
-      <div
-          class="card-footer bg-light p-3 d-flex justify-content-between align-items-center"
+      <div class="card-footer bg-light p-3 d-flex align-items-stretch justify-content-between gap-2">
+        <!-- Reset Button -->
+        <button
+          type="reset"
+          class="btn btn-outline-secondary px-3 py-2 rounded-3 d-inline-flex align-items-center justify-content-center gap-1 fs-6"
+          id="resetBtn"
         >
-          <button
-            type="reset"
-            class="btn btn-outline-secondary px-4 rounded-pill"
-            id="resetBtn"
-          >
-            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-          </button>
+          <i class="bi bi-arrow-counterclockwise"></i>
+          <span>Reset</span>
+        </button>
 
-          <button
-            type="submit"
-            class="btn btn-success px-4 rounded-pill shadow-sm fw-semibold position-relative overflow-hidden"
-            id="diagnosisBtn"
-            disabled
-          >
-            <span class="scanner-bar" id="scannerBar"></span>
-            <span class="spinner-border spinner-border-sm me-2 d-none" id="btnSpinner" role="status" aria-hidden="true"></span>
-            <i class="bi bi-search me-1" id="btnIcon"></i>
-            <span id="btnText">វិនិច្ឆ័យជំងឺ (Diagnose Disease)</span>
-          </button>
+        <!-- Diagnosis Button -->
+        <button
+          type="submit"
+          class="btn btn-success px-4 py-2 rounded-3 shadow-sm fw-semibold d-inline-flex align-items-center justify-content-center gap-2 position-relative overflow-hidden fs-6 flex-grow-1"
+          id="diagnosisBtn"
+          disabled
+        >
+          <span class="scanner-bar" id="scannerBar"></span>
+          <span class="spinner-border spinner-border-sm d-none" id="btnSpinner" role="status" aria-hidden="true"></span>
+          <i class="bi bi-search" id="btnIcon"></i>
+          <span id="btnText">វិនិច្ឆ័យជំងឺ (Diagnose)</span>
+        </button>
       </div>
     </div>
   </form>
@@ -386,6 +396,7 @@ endblock %} {% block content %}
   const text = document.getElementById("btnText");
 
   let currentTabFilter = "all";
+  let isScanning = false;
 
   // --- 1. Global Card Selection Handler ---
   window.toggleCardSelect = function (cardElement) {
@@ -424,8 +435,8 @@ endblock %} {% block content %}
 
     // Toggle Submit Button State
     if (diagnosisBtn) {
-      diagnosisBtn.disabled = count === 0;
-      if (count > 0) {
+      diagnosisBtn.disabled = isScanning || count === 0;
+      if (count > 0 && !isScanning) {
         diagnosisBtn.classList.add("pulse-btn");
       } else {
         diagnosisBtn.classList.remove("pulse-btn");
@@ -452,34 +463,41 @@ endblock %} {% block content %}
     });
 
     // Render Badges safely
-    if (selectedBox && selectedList) {
-      if (count > 0) {
-        selectedBox.classList.remove("d-none");
-        selectedList.innerHTML = "";
+    // Render Badges safely
+  if (selectedBox && selectedList) {
+    if (count > 0) {
+      selectedBox.classList.remove("d-none");
+      selectedList.innerHTML = "";
 
-        checked.forEach((cb) => {
-          // ស្វែងរក Label តាមវិធីសុវត្ថិភាព (តាម ID ឬ Parent Element)
-          let labelText = "Symptom";
-          if (cb.id) {
-            const labelEl = document.querySelector(`label[for="${cb.id}"]`);
-            if (labelEl) labelText = labelEl.innerText;
-          } else {
-            const parentLabel = cb.closest("label") || cb.closest(".symptom-item");
-            if (parentLabel) labelText = parentLabel.innerText;
-          }
+      checked.forEach((cb) => {
+        // ស្វែងរក Label តាមវិធីសុវត្ថិភាព (តាម ID ឬ Parent Element)
+        let labelText = "Symptom";
+        if (cb.id) {
+          const labelEl = document.querySelector(`label[for="${cb.id}"]`);
+          if (labelEl) labelText = labelEl.innerText.trim();
+        } else {
+          const parentLabel = cb.closest("label") || cb.closest(".symptom-item");
+          if (parentLabel) labelText = parentLabel.innerText.trim();
+        }
 
-          const badge = document.createElement("span");
-          badge.className = "badge bg-primary px-3 py-2 rounded-pill d-inline-flex align-items-center animated-fade-in gap-2";
-          badge.innerHTML = `
-            ${labelText}
-            <i class="bi bi-x-circle-fill badge-remove cursor-pointer" onclick="uncheckSymptom('${cb.id}')"></i>
-          `;
-          selectedList.appendChild(badge);
-        });
-      } else {
-        selectedBox.classList.add("d-none");
-      }
+        // Changed <span> to <div> and added responsiveness classes
+        const badge = document.createElement("div");
+        badge.className = "badge bg-primary px-3 py-2 rounded-pill d-inline-flex align-items-center justify-content-between gap-2 mw-100 text-wrap text-break text-start lh-sm animated-fade-in shadow-xs";
+        
+        badge.innerHTML = `
+          <span class="flex-grow-1 text-wrap text-break">${labelText}</span>
+          <i class="bi bi-x-circle-fill badge-remove cursor-pointer flex-shrink-0 opacity-75 opacity-100-hover" 
+            style="font-size: 0.95rem;" 
+            onclick="uncheckSymptom('${cb.id}')"
+            role="button"></i>
+        `;
+        
+        selectedList.appendChild(badge);
+      });
+    } else {
+      selectedBox.classList.add("d-none");
     }
+  }
 
     applyFilters();
   };
@@ -563,37 +581,73 @@ endblock %} {% block content %}
   }
 
   if (resetBtn) {
-    resetBtn.addEventListener("click", function () {
-      setTimeout(() => {
-        checkboxes.forEach((cb) => (cb.checked = false));
-        if (searchInput) searchInput.value = "";
-        if (groupFilterSelect) groupFilterSelect.value = "all";
-        currentTabFilter = "all";
-        filterBtns.forEach((b) => b.classList.remove("active"));
-        if (filterBtns[0]) filterBtns[0].classList.add("active");
-        toggleSubmit();
-      }, 50);
+    resetBtn.addEventListener("click", function (event) {
+      event.preventDefault();
+      isScanning = false;
+
+      if (form) {
+        form.reset();
+      }
+
+      checkboxes.forEach((cb) => (cb.checked = false));
+      if (searchInput) searchInput.value = "";
+      if (groupFilterSelect) groupFilterSelect.value = "all";
+      currentTabFilter = "all";
+      filterBtns.forEach((b) => b.classList.remove("active"));
+      if (filterBtns[0]) filterBtns[0].classList.add("active");
+
+      if (diagnosisBtn) {
+        diagnosisBtn.classList.remove("is-scanning");
+      }
+      if (spinner) spinner.classList.add("d-none");
+      if (icon) icon.classList.remove("d-none");
+      if (text) text.textContent = "វិនិច្ឆ័យជំងឺ (Diagnose)";
+
+      if (loadingOverlay) {
+        loadingOverlay.classList.add("d-none");
+      }
+      toggleSubmit();
     });
   }
-
   // --- 7. Form Submit Handler ---
   if (form) {
     form.addEventListener("submit", (e) => {
-      const checked = document.querySelectorAll('.symptom-checkbox:checked, input[name="symptom_ids"]:checked');
+      const checked = document.querySelectorAll(
+        '.symptom-checkbox:checked, input[name="symptom_ids"]:checked'
+      );
       if (checked.length === 0) {
         e.preventDefault();
         return;
       }
 
-      // ដាក់ Trigger Visuals
+      if (isScanning) {
+        e.preventDefault();
+        return;
+      }
+
+      isScanning = true;
+
+      // Disable Reset button to prevent interaction during scanning
+      const resetBtn = document.getElementById("resetBtn");
+      if (resetBtn) resetBtn.disabled = true;
+
+      // Trigger Visuals
       if (diagnosisBtn) {
         diagnosisBtn.disabled = true;
         diagnosisBtn.classList.add("is-scanning");
       }
 
-      if (spinner) spinner.classList.remove("d-none");
+      if (spinner) {
+        spinner.classList.remove("d-none");
+        spinner.classList.add("flex-shrink-0"); // Prevents oval deformation on small screens
+      }
+      
       if (icon) icon.classList.add("d-none");
-      if (text) text.textContent = "កំពុងស្កេន... (Diagnosing & Scanning...)";
+      
+      // Stack Khmer & English text nicely using HTML break formatting
+      if (text) {
+        text.innerHTML = `កំពុងស្កេន...<br><span class="fw-normal small" style="font-size: 0.75rem;">(Diagnosing & Scanning...)</span>`;
+      }
 
       if (loadingOverlay) {
         loadingOverlay.classList.remove("d-none");
