@@ -49,7 +49,7 @@
         {{ form.image.label(class="form-label") }}
         {{ form.image(class="form-control") }}
         {% if disease and disease.image %}
-            <img src="{{ url_for('static', filename='images/diseases/' ~ disease.image) }}" 
+            <img src="{{ disease.image if (disease.image.startswith('http://') or disease.image.startswith('https://')) else url_for('static', filename='images/diseases/' ~ disease.image) }}" 
                  alt="Disease Image" class="img-thumbnail mt-2" style="max-width:150px;">
         {% endif %}
         {% for error in form.image.errors %}

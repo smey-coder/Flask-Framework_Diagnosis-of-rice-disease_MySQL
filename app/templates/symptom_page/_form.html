@@ -46,7 +46,7 @@
     {% if symptom and symptom.image %}
         <div class="mb-2 d-flex align-items-center gap-3">
             <img 
-                src="{{ url_for('static', filename='images/symptoms/' ~ symptom.image) }}" 
+                src="{{ symptom.image if (symptom.image.startswith('http://') or symptom.image.startswith('https://')) else url_for('static', filename='images/symptoms/' ~ symptom.image) }}" 
                 alt="{{ symptom.symptom_name }}" 
                 class="img-thumbnail shadow-sm" 
                 style="max-height: 150px; width: auto; object-fit: cover;"
