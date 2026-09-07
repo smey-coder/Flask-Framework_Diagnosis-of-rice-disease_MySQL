@@ -364,11 +364,10 @@ def settings():
         form=form,
         user=current_user
     )
-
 # ---------- ABOUT PAGE ----------
 @admin_bp.route("/about")
 @login_required
-@role_required("Admin")
+@role_required("Admin","Expert")
 @permission_required("PERMISSION_MANAGER_SYSTEM")
 def about():
     about_info = {
