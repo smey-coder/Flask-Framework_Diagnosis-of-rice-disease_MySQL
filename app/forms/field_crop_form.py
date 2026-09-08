@@ -1,5 +1,4 @@
 from flask_wtf import FlaskForm
-
 from wtforms import (
     SelectField,
     DateField,
@@ -8,7 +7,6 @@ from wtforms import (
     SubmitField,
     IntegerField
 )
-
 from wtforms.validators import (
     DataRequired,
     Optional,
@@ -17,29 +15,28 @@ from wtforms.validators import (
 
 
 class FieldCropForm(FlaskForm):
-
     field_id = SelectField(
-        "Field",
+        "វាលស្រែ / Field",
         coerce=int,
         validators=[
             DataRequired(
-                message="Please select a field."
+                message="សូមជ្រើសរើសវាលស្រែ (Please select a field)."
             )
         ]
     )
 
     rice_variety_id = SelectField(
-        "Rice Variety",
+        "ពូជស្រូវ / Rice Variety",
         coerce=int,
         validators=[
             DataRequired(
-                message="Please select a rice variety."
+                message="សូមជ្រើសរើសពូជស្រូវ (Please select a rice variety)."
             )
         ]
     )
 
     growth_stage_id = SelectField(
-        "Growth Stage",
+        "វគ្គនៃការលូតលាស់ / Growth Stage",
         coerce=int,
         validators=[
             Optional()
@@ -47,17 +44,17 @@ class FieldCropForm(FlaskForm):
     )
 
     planting_date = DateField(
-        "Planting Date",
+        "ថ្ងៃដាំដុះ / Planting Date",
         format="%Y-%m-%d",
         validators=[
             DataRequired(
-                message="Planting date is required."
+                message="សូមបញ្ចូលថ្ងៃដាំដុះ (Planting date is required)."
             )
         ]
     )
 
     expected_harvest_date = DateField(
-        "Expected Harvest Date",
+        "ថ្ងៃប្រមូលផលរំពឹងទុក / Expected Harvest Date",
         format="%Y-%m-%d",
         validators=[
             Optional()
@@ -65,7 +62,7 @@ class FieldCropForm(FlaskForm):
     )
 
     actual_harvest_date = DateField(
-        "Actual Harvest Date",
+        "ថ្ងៃប្រមូលផលជាក់ស្តែង / Actual Harvest Date",
         format="%Y-%m-%d",
         validators=[
             Optional()
@@ -73,22 +70,23 @@ class FieldCropForm(FlaskForm):
     )
 
     area = DecimalField(
-        "Area",
+        "ផ្ទៃដីដាំដុះ (ហិកតា) / Area (Ha)",
         places=2,
         rounding=None,
         validators=[
             Optional(),
             NumberRange(
                 min=0,
-                message="Area cannot be negative."
+                message="ផ្ទៃដីមិនអាចតូចជាង ០ បានទេ (Area cannot be negative)."
             )
         ]
     )
+
     season = SelectField(
-        "Season / រដូវដាំដុះ",
+        "រដូវដាំដុះ / Season",
         choices=[
-            ("Wet Season", "Wet Season / រដូវវស្សា"),
-            ("Dry Season", "Dry Season / រដូវប្រាំង")
+            ("Wet Season", "រដូវវស្សា / Wet Season"),
+            ("Dry Season", "រដូវប្រាំង / Dry Season")
         ],
         validators=[
             Optional()
@@ -96,46 +94,47 @@ class FieldCropForm(FlaskForm):
     )
 
     year = IntegerField(
-        "Year",
+        "ឆ្នាំ / Year",
         validators=[
             Optional(),
             NumberRange(
                 min=2000,
                 max=2100,
-                message="Invalid year."
+                message="ឆ្នាំមិនត្រឹមត្រូវ (Invalid year)."
             )
         ]
     )
 
     status = SelectField(
-        "Status",
+        "ស្ថានភាព / Status",
         choices=[
-            ("Active", "Active"),
-            ("Growing", "Growing"),
-            ("Completed", "Completed"),
-            ("Harvested", "Harvested"),
-            ("Cancelled", "Cancelled")
+            ("Active", "សកម្ម / Active"),
+            ("Growing", "កំពុងលូតលាស់ / Growing"),
+            ("Completed", "បានបញ្ចប់ / Completed"),
+            ("Harvested", "បានប្រមូលផល / Harvested"),
+            ("Cancelled", "បានលុបចោល / Cancelled")
         ],
         default="Active",
         validators=[
-            DataRequired()
+            DataRequired(
+                message="សូមជ្រើសរើសស្ថានភាព (Please select a status)."
+            )
         ]
     )
 
     description = TextAreaField(
-        "Description",
+        "ការពិពណ៌នាបន្ថែម / Description",
         validators=[
             Optional()
         ]
     )
 
     submit = SubmitField(
-        "Save Field Crop"
+        "រក្សាទុក / Save Field Crop"
     )
 
 
 class FieldCropDeleteForm(FlaskForm):
-
     submit = SubmitField(
-        "Delete Field Crop"
+        "លុបចេញ / Delete Field Crop"
     )

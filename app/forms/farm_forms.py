@@ -1,27 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import (
-    StringField,
-    TextAreaField,
-    DecimalField,
-    SelectField,
-    SubmitField
-)
-from wtforms.validators import (
-    DataRequired,
-    Length,
-    Optional,
-    NumberRange,
-    ValidationError
-)
-
+from wtforms import (StringField,TextAreaField,DecimalField,SelectField,SubmitField)
+from wtforms.validators import (DataRequired,Length,Optional,NumberRange,ValidationError)
 from extensions import db
 from app.models.farm import FarmTable
-
-
 # =========================================================
 # FARM STATUS
 # =========================================================
-
 FARM_STATUS_CHOICES = [
     ("Active", "Active"),
     ("Inactive", "Inactive"),

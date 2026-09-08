@@ -32,7 +32,6 @@ class FarmTable(db.Model):
         db.String(100),
         nullable=True
     )
-
     # Example:
     # "Kokor"
     commune = db.Column(

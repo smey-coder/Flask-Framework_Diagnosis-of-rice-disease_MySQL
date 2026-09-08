@@ -1,28 +1,31 @@
-{% extends "layouts/user_layout/user.html" %} {% block title %} Create Farm 
-{%endblock %} {% block page_title %} Create Farm {% endblock %} {% block styles %}
+{% extends "layouts/user_layout/user.html" %} 
 
-{% endblock %} {% block content %}
-<linkn rel="stylesheet" href="{{ url_for('static',filename='css/farm.css') }}"/>
-<div class="row justify-content-center">
+{% block title %}បង្កើតកសិដ្ឋានថ្មី | Create Farm{% endblock %} 
+
+{% block page_title %}បង្កើតកសិដ្ឋានថ្មី (Create Farm){% endblock %} 
+
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/farm.css') }}"/>
+{% endblock %} 
+
+{% block content %}
+<div class="row justify-content-center my-4">
   <div class="col-xl-8 col-lg-10">
-    <div class="card shadow-sm farm-form-card">
-      <!-- =================================================
-        HEADER
-        ================================================= -->
-      <div class="farm-form-header">
-        <i class="bi bi-tree-fill"></i>
-
-        <h5>Create New Farm</h5>
+    <!-- Main Card Wrapper -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden farm-form-card">
+      
+      <!-- Card Header -->
+      <div class="card-header bg-success text-white py-3 px-4 d-flex align-items-center gap-2 farm-form-header">
+        <i class="bi bi-tree-fill fs-4"></i>
+        <h5 class="mb-0 fw-bold">បង្កើតកសិដ្ឋានថ្មី (Create New Farm)</h5>
       </div>
-      <!-- =================================================
-                 BODY
-                 ================================================= -->
 
-      <div class="farm-form-body">
+      <!-- Card Body -->
+      <div class="card-body p-4 farm-form-body">
         {% include "user_page/farms/_form.html" %}
       </div>
+
     </div>
   </div>
 </div>
-
 {% endblock %}

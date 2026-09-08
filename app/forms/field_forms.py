@@ -1,5 +1,4 @@
 from flask_wtf import FlaskForm
-
 from wtforms import (
     StringField,
     DecimalField,
@@ -7,7 +6,6 @@ from wtforms import (
     SelectField,
     SubmitField
 )
-
 from wtforms.validators import (
     DataRequired,
     Length,
@@ -18,73 +16,84 @@ from wtforms.validators import (
 
 class FieldForm(FlaskForm):
     field_name = StringField(
-        "Field Name",
+        "ឈ្មោះវាលស្រែ / Field Name",
         validators=[
             DataRequired(
-                message="Field name is required."
+                message="សូមបញ្ចូលឈ្មោះវាលស្រែ (Field name is required)."
             ),
             Length(
                 min=2,
-                max=150
+                max=150,
+                message="ឈ្មោះវាលស្រែត្រូវមានពី ២ ទៅ ១៥០ តួអក្សរ (Field name must be between 2 and 150 characters)."
             )
         ]
     )
 
     area = DecimalField(
-        "Area (hectares)",
+        "ផ្ទៃដី (ហិកតា) / Area (Hectares)",
+        places=2,
         validators=[
             Optional(),
             NumberRange(
                 min=0,
-                message="Area cannot be negative."
+                message="ផ្ទៃដីមិនអាចតូចជាង ០ បានទេ (Area cannot be negative)."
             )
-        ],
-        places=2
+        ]
     )
 
     soil_type = StringField(
-        "Soil Type/ប្រភេទដី",
+        "ប្រភេទដី / Soil Type",
         validators=[
             Optional(),
-            Length(max=100)
+            Length(
+                max=100,
+                message="ប្រភេទដីមិនអាចលើសពី ១០០ តួអក្សរបានទេ (Soil type cannot exceed 100 characters)."
+            )
         ]
     )
 
     location = StringField(
-        "Location",
+        "ទីតាំង / Location",
         validators=[
             Optional(),
-            Length(max=255)
+            Length(
+                max=255,
+                message="ទីតាំងមិនអាចលើសពី ២៥៥ តួអក្សរបានទេ (Location cannot exceed 255 characters)."
+            )
         ]
     )
 
     description = TextAreaField(
-        "Description",
+        "ការពិពណ៌នាបន្ថែម / Description",
         validators=[
             Optional(),
-            Length(max=1000)
+            Length(
+                max=1000,
+                message="ការពិពណ៌នាមិនអាចលើសពី ១០០០ តួអក្សរបានទេ (Description cannot exceed 1000 characters)."
+            )
         ]
     )
 
     status = SelectField(
-        "Status",
+        "ស្ថានភាព / Status",
         choices=[
-            ("Active", "Active"),
-            ("Inactive", "Inactive")
+            ("Active", "សកម្ម / Active"),
+            ("Inactive", "អសកម្ម / Inactive")
         ],
         default="Active",
         validators=[
-            DataRequired()
+            DataRequired(
+                message="សូមជ្រើសរើសស្ថានភាព (Please select a status)."
+            )
         ]
     )
 
     submit = SubmitField(
-        "Save Field"
+        "រក្សាទុក / Save Field"
     )
 
 
 class FieldConfirmDeleteForm(FlaskForm):
-
     submit = SubmitField(
-        "Delete Field"
+        "លុបចេញ / Delete Field"
     )

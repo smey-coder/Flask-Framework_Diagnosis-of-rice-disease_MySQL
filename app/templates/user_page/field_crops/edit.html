@@ -1,58 +1,32 @@
-{% extends "layouts/user_layout/user.html" %}
-
-{% block title %}
-Edit Field Crop
-{% endblock %}
-
-{% block page_title %}
-Edit Field Crop
-{% endblock %}
-
-{% block styles %}
-
+{% extends "layouts/user_layout/user.html" %} {% block title %} កែប្រែដំណាំស្រូវ
+| Edit Field Crop {% endblock %} {% block page_title %} កែប្រែដំណាំស្រូវ (Edit
+Field Crop) {% endblock %} {% block styles %}
 <link
-    rel="stylesheet"
-    href="{{ url_for(
-        'static',
-        filename='css/field_crop.css'
-    ) }}"
->
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/field_crop.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="row justify-content-center my-4">
+  <div class="col-xl-8 col-lg-10">
+    <!-- Main Card Wrapper -->
+    <div
+      class="card border-0 shadow-sm rounded-4 overflow-hidden field-crop-card"
+    >
+      <!-- Card Header -->
+      <div
+        class="card-header bg-success text-white py-3 px-4 d-flex align-items-center gap-2"
+      >
+        <i class="bi bi-pencil-square fs-4"></i>
+        <h5 class="mb-0 fw-bold">
+          កែប្រែព័ត៌មានដំណាំស្រូវ (Edit Field Crop Details)
+        </h5>
+      </div>
 
-{% endblock %}
-
-
-{% block content %}
-
-<div class="row justify-content-center">
-
-    <div class="col-xl-8 col-lg-10">
-
-        <div class="card shadow-sm border-0">
-
-            <div class="card-header bg-primary text-white">
-
-                <h5 class="mb-0 fw-bold">
-
-                    <i class="bi bi-pencil-square me-2"></i>
-
-                    Edit Field Crop
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                {% include
-                "user_page/field_crops/_form.html"
-                %}
-
-            </div>
-
-        </div>
-
+      <!-- Card Body -->
+      <div class="card-body p-4">
+        {% include "user_page/field_crops/_form.html" with context %}
+      </div>
     </div>
-
+  </div>
 </div>
-
 {% endblock %}

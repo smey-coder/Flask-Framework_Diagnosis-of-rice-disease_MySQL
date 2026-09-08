@@ -1,113 +1,267 @@
-<form method="POST" action="{{ form_action }}" novalidate>
+<form method="POST" action="{{ form_action }}" novalidate class="card border-0 shadow-sm rounded-4 overflow-hidden">
   {{ form.hidden_tag() }}
 
-  <!-- Farm Name -->
-  <div class="mb-3">
-    {{ form.farm_name.label( class="form-label fw-semibold" ) }}
+  <!-- Form Header -->
+  <!-- <div class="card-header bg-success text-white py-3 px-4">
+    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+      <i class="bi bi-tree-fill fs-5"></i>
+      <span>ព័ត៌មានកសិដ្ឋាន (Farm Information)</span>
+    </h5>
+  </div> -->
 
-    <span class="text-danger">*</span>
-
-    {{ form.farm_name( class="form-control" ~ (" is-invalid" if
-    form.farm_name.errors else ""), placeholder="Enter farm name" ) }} {% for
-    error in form.farm_name.errors %}
-
-    <div class="invalid-feedback">{{ error }}</div>
-
-    {% endfor %}
-  </div>
-
-  <!-- =====================================================
-       PROVINCE
-  ====================================================== -->
-  <div class="mb-3">
-    {{ form.province.label(class="form-label fw-semibold") }}
-    <span class="text-danger">*</span>
-
-    {{ form.province(
-        class="form-select" ~ (" is-invalid" if form.province.errors else "")
-    ) }}
-
-    {% for error in form.province.errors %}
-      <div class="invalid-feedback">{{ error }}</div>
-    {% endfor %}
-  </div>
-
-
-  <!-- =====================================================
-       DISTRICT
-  ====================================================== -->
-  <div class="mb-3">
-    {{ form.district.label(class="form-label fw-semibold") }}
-    <span class="text-danger">*</span>
-
-    {{ form.district(
-        class="form-control" ~ (" is-invalid" if form.district.errors else ""),
-        placeholder="Enter district"
-    ) }}
-
-    {% for error in form.district.errors %}
-      <div class="invalid-feedback">{{ error }}</div>
-    {% endfor %}
-  </div>
-
-
-  <!-- =====================================================
-       COMMUNE
-  ====================================================== -->
-  <div class="mb-3">
-    {{ form.commune.label(class="form-label fw-semibold") }}
-    <span class="text-danger">*</span>
-
-    {{ form.commune(
-        class="form-control" ~ (" is-invalid" if form.commune.errors else ""),
-        placeholder="Enter commune"
-    ) }}
-
-    {% for error in form.commune.errors %}
-      <div class="invalid-feedback">{{ error }}</div>
-    {% endfor %}
-  </div>
-
-  <!-- Location -->
-  <div class="mb-3">
-    {{ form.location.label( class="form-label fw-semibold" ) }}
-
-    <div class="input-group">
-      <span class="input-group-text">
-        <i class="bi bi-geo-alt-fill text-danger"></i>
-      </span>
-
-      {{ form.location( class="form-control", placeholder="Enter farm location"
-      ) }}
+  <div class="card-body p-4">
+    <!-- Farm Name -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">
+        {{ form.farm_name.label.text }} <span class="text-danger">*</span>
+      </label>
+      <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+          <i class="bi bi-house-door text-success"></i>
+        </span>
+        {{ form.farm_name(
+            class="form-control border-start-0" ~ (" is-invalid" if form.farm_name.errors else ""),
+            placeholder="បញ្ចូលឈ្មោះកសិដ្ឋាន / Enter farm name"
+        ) }}
+        {% for error in form.farm_name.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
     </div>
 
+    <!-- Location Fields (Grid Row for Province, District, Commune) -->
+    <div class="row g-3 mb-3">
+      <!-- Province -->
+      <div class="col-md-4">
+        <label class="form-label fw-semibold text-dark">
+          {{ form.province.label.text }} <span class="text-danger">*</span>
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-map text-success"></i>
+          </span>
+          {{ form.province(
+              class="form-select border-start-0" ~ (" is-invalid" if form.province.errors else "")
+          ) }}
+          {% for error in form.province.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- District -->
+      <div class="col-md-4">
+        <label class="form-label fw-semibold text-dark">
+          {{ form.district.label.text }} <span class="text-danger">*</span>
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-building text-success"></i>
+          </span>
+          {{ form.district(
+              class="form-control border-start-0" ~ (" is-invalid" if form.district.errors else ""),
+              placeholder="ស្រុក/ខណ្ឌ (District)"
+          ) }}
+          {% for error in form.district.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Commune -->
+      <div class="col-md-4">
+        <label class="form-label fw-semibold text-dark">
+          {{ form.commune.label.text }} <span class="text-danger">*</span>
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-signpost-split text-success"></i>
+          </span>
+          {{ form.commune(
+              class="form-control border-start-0" ~ (" is-invalid" if form.commune.errors else ""),
+              placeholder="ឃុំ/សង្កាត់ (Commune)"
+          ) }}
+          {% for error in form.commune.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+       LOCATION (MAP SELECTION)
+  ====================================================== -->
+  <div class="mb-3">
+    {{ form.location.label(class="form-label fw-semibold text-dark") }}
+    
+    <!-- Location Text Input and GPS Button -->
+    <div class="input-group mb-2">
+      <span class="input-group-text bg-light border-end-0">
+        <i class="bi bi-geo-alt-fill text-danger"></i>
+      </span>
+      {{ form.location(
+          class="form-control border-start-0" ~ (" is-invalid" if form.location.errors else ""),
+          id="locationInput",
+          placeholder="ជ្រើសរើសទីតាំងលើផែនទី ឬវាយបញ្ចូល / Click map or type location"
+      ) }}
+      <button class="btn btn-outline-secondary" type="button" id="getCurrentLocBtn" onclick="getCurrentLocation()">
+        <i class="bi bi-crosshair me-1"></i> ទីតាំងបច្ចុប្បន្ន (My Location)
+      </button>
+    </div>
+    
     {% for error in form.location.errors %}
+      <div class="invalid-feedback d-block mb-2">
+        <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+      </div>
+    {% endfor %}
 
-    <div class="text-danger small mt-1">{{ error }}</div>
-    {% endfor %}
+    <!-- Leaflet Map Container -->
+    <div id="map" class="rounded-3 border shadow-xs" style="height: 320px; width: 100%; z-index: 1;"></div>
+    <div class="form-text small text-muted mt-1">
+      <i class="bi bi-info-circle me-1"></i> ចុចលើផែនទីដើម្បីជ្រើសរើសទីតាំង (Click anywhere on the map to set location pin).
+    </div>
   </div>
-  <!-- Status -->
-  <div class="mb-3">
-    {{ form.status.label( class="form-label fw-semibold" ) }} {{ form.status(
-    class="form-select" ) }} {% for error in form.status.errors %}
-    <div class="text-danger small mt-1">{{ error }}</div>
-    {% endfor %}
+
+    <!-- Status -->
+    <div class="mb-3">
+      {{ form.status.label(class="form-label fw-semibold text-dark") }}
+      <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+          <i class="bi bi-activity text-success"></i>
+        </span>
+        {{ form.status(
+            class="form-select border-start-0" ~ (" is-invalid" if form.status.errors else "")
+        ) }}
+        {% for error in form.status.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      {{ form.description.label(class="form-label fw-semibold text-dark") }}
+      {{ form.description(
+          class="form-control rounded-3" ~ (" is-invalid" if form.description.errors else ""),
+          rows="4",
+          placeholder="ពិពណ៌នាបន្ថែមអំពីកសិដ្ឋាន... / Enter farm description..."
+      ) }}
+      {% for error in form.description.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
   </div>
-  <!-- Description -->
-  <div class="mb-3">
-    {{ form.description.label( class="form-label fw-semibold" ) }} {{
-    form.description( class="form-control", rows="5", placeholder="Enter farm description..." ) }} {% for error in form.description.errors %}
-    <div class="text-danger small mt-1">{{ error }}</div>
-    {% endfor %}
-  </div>
-  <!-- Actions -->
-  <div class="farm-form-actions">
-    <a href="{{ cancel_url }}" class="btn btn-secondary">
+
+  <!-- Form Actions Footer -->
+  <div class="card-footer bg-light p-3 px-4 d-flex justify-content-end align-items-center gap-2">
+    <a href="{{ cancel_url }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
       <i class="bi bi-x-circle me-1"></i>
-
-      Cancel
+      បោះបង់ (Cancel)
     </a>
 
-    {{ form.submit( class="btn btn-success" ) }}
+    <button type="submit" class="btn btn-success rounded-pill px-4 py-2 shadow-sm fw-semibold d-inline-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill"></i>
+      រក្សាទុក (Save Farm)
+    </button>
   </div>
 </form>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<!-- CSS to hide flag icons in map attribution -->
+<style>
+  .leaflet-control-attribution img,
+  .leaflet-attribution-flag {
+    display: none !important;
+  }
+</style>
+
+<!-- Map & Interaction Handling Logic -->
+<!-- Leaflet JavaScript API Script -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // 1. Initial coordinates set to Norton University / Chroy Changvar
+  const defaultLat = 11.5760686;
+  const defaultLng = 104.9563933;
+
+  const mapContainer = document.getElementById('map');
+  if (!mapContainer) return;
+
+  // 2. Initialize Leaflet Map
+  const map = L.map('map').setView([defaultLat, defaultLng], 16);
+
+  // 3. Remove standard attribution prefix
+  map.attributionControl.setPrefix('');
+
+  // 4. Render Google Maps Hybrid Layer (Satellite + Labels & Place Names)
+  L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    attribution: '&copy; Google Maps'
+  }).addTo(map);
+
+  // 5. Add Draggable Pin Marker
+  const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+  // Recalculate container dimensions
+  setTimeout(function() {
+    map.invalidateSize();
+  }, 300);
+
+  // Function to update input field and reverse geocode location
+  function updateLocation(lat, lng) {
+    marker.setLatLng([lat, lng]);
+    map.panTo([lat, lng]);
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+      .then(response => response.json())
+      .then(data => {
+        const locationInput = document.getElementById('locationInput');
+        if (locationInput) {
+          if (data && data.display_name) {
+            locationInput.value = data.display_name;
+          } else {
+            locationInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+          }
+        }
+      })
+      .catch(() => {
+        const locationInput = document.getElementById('locationInput');
+        if (locationInput) {
+          locationInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        }
+      });
+  }
+
+  // Map Click Listener
+  map.on('click', function (e) {
+    updateLocation(e.latlng.lat, e.latlng.lng);
+  });
+
+  // Marker Drag Listener
+  marker.on('dragend', function (e) {
+    const position = marker.getLatLng();
+    updateLocation(position.lat, position.lng);
+  });
+
+  // Geolocation trigger function
+  window.getCurrentLocation = function () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          updateLocation(lat, lng);
+          map.setView([lat, lng], 17);
+        },
+        () => {
+          alert("មិនអាចទាញយកទីតាំងបច្ចុប្បន្នបានទេ (Unable to retrieve location).");
+        }
+      );
+    } else {
+      alert("កម្មវិធីរុករករបស់អ្នកមិនគាំទ្រ Geolocation ទេ (Browser does not support Geolocation).");
+    }
+  };
+});
+</script>
