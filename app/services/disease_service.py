@@ -324,42 +324,34 @@ class DiseaseService:
         image_filename = disease.image  # store before delete
 
         try:
-            # ✅ Delete from DB
+            #Delete from DB
             db.session.delete(disease)
             db.session.commit()
-
         except SQLAlchemyError as e:
             db.session.rollback()
-
-            # ✅ Handle foreign key error (IMPORTANT)
+            #Handle foreign key error (IMPORTANT)
             if "foreign key constraint" in str(e).lower():
                 raise ValueError(
                     "Cannot delete this disease because it is linked to other records (symptoms, treatments, etc)."
                 )
-
             raise ValueError(f"Database error: {str(e)}")
-
-        # ✅ Delete image AFTER DB success
+        #Delete image AFTER DB success
         if image_filename:
             try:
                 delete_image(image_filename)
             except Exception as img_err:
                 # don't break system if image delete fails
                 print(f"Image delete warning: {img_err}")
-
-        # ✅ Audit log
+        # Audit log
         log_audit("DELETE", "diseases", disease_id, before_data, after_data=None)
-
         return True
     # ---------- FILTERS ---------- #
     @staticmethod
     def get_active_diseases() -> List[DiseaseTable]:
         return DiseaseTable.query.filter_by(is_active=True).all()
-
     @staticmethod
     def get_diseases_by_type(disease_type: str) -> List[DiseaseTable]:
         return DiseaseTable.query.filter_by(disease_type=disease_type).all()
-
     @staticmethod
     def get_diseases_by_severity(severity_level: str) -> List[DiseaseTable]:
         return DiseaseTable.query.filter_by(severity_level=severity_level).all()

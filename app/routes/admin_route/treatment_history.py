@@ -608,18 +608,13 @@ def delete(id):
             return redirect(
                 url_for("treatment_history.index")
             )
-
         if request.method == "POST":
-
             success = TreatmentHistoryService.delete(history)
-
             if success:
-
                 flash(
                     "Treatment history deleted successfully.",
                     "success"
                 )
-
                 return redirect(
                     url_for("treatment_history.index")
                 )
@@ -628,13 +623,11 @@ def delete(id):
                 "Unable to delete treatment history.",
                 "danger"
             )
-
         return render_template(
             "admin_page/treatment_history_page/delete.html",
             history=history,
             user=current_user
         )
-
     except Exception as e:
         print(f"Treatment History Delete Error: {e}")
         db.session.rollback()

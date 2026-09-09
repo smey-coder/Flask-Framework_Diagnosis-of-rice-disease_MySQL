@@ -3,6 +3,7 @@ from extensions import db
 from app.models.field_crop import FieldCropTable
 from app.models.field import FieldTable
 from app.models.farm import FarmTable
+from app.services.audit_service import log_audit
 
 
 class FieldCropService:
@@ -144,6 +145,25 @@ class FieldCropService:
 
             db.session.refresh(crop)
 
+            log_audit(
+                action="CREATE",
+                table_name="field_crops",
+                record_id=crop.id,
+                after_data={
+                    "field_id": field_id,
+                    "rice_variety_id": rice_variety_id,
+                    "growth_stage_id": growth_stage_id,
+                    "planting_date": planting_date,
+                    "expected_harvest_date": expected_harvest_date,
+                    "actual_harvest_date": actual_harvest_date,
+                    "area": area,
+                    "season": season,
+                    "year": year,
+                    "status": status,
+                    "description": description
+                }
+            )
+
             return crop
 
         except Exception as e:
@@ -191,6 +211,23 @@ class FieldCropService:
 
             db.session.refresh(crop)
 
+            log_audit(
+                action="UPDATE",
+                table_name="field_crops",
+                record_id=crop.id,
+                after_data={
+                    "rice_variety_id": rice_variety_id,
+                    "growth_stage_id": growth_stage_id,
+                    "planting_date": planting_date,
+                    "expected_harvest_date": expected_harvest_date,
+                    "actual_harvest_date": actual_harvest_date,
+                    "area": area,
+                    "season": season,
+                    "year": year,
+                    "status": status,
+                    "description": description
+                }
+            )
             return crop
 
         except Exception as e:
@@ -209,8 +246,25 @@ class FieldCropService:
 
     @staticmethod
     def delete(crop):
-
         try:
+            log_audit(
+                action="DELETE",
+                table_name="field_crops",
+                record_id=crop.id,
+                before_data={
+                    "field_id": crop.field_id,
+                    "rice_variety_id": crop.rice_variety_id,
+                    "growth_stage_id": crop.growth_stage_id,
+                    "planting_date": crop.planting_date,
+                    "expected_harvest_date": crop.expected_harvest_date,
+                    "actual_harvest_date": crop.actual_harvest_date,
+                    "area": crop.area,
+                    "season": crop.season,
+                    "year": crop.year,
+                    "status": crop.status,
+                    "description": crop.description
+                }
+            )
 
             db.session.delete(crop)
 

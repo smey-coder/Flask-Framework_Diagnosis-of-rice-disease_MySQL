@@ -1,7 +1,6 @@
 from extensions import db
 from app.models.field import FieldTable
-
-
+from app.services.audit_service import log_audit
 class FieldService:
 
     # =========================================================
@@ -115,6 +114,21 @@ class FieldService:
 
             db.session.refresh(field)
 
+            log_audit(
+                action="CREATE",
+                table_name="fields",
+                record_id=field.id,
+                after_data={
+                    "farm_id": farm_id,
+                    "field_name": field_name,
+                    "area": area,
+                    "soil_type": soil_type,
+                    "location": location,
+                    "description": description,
+                    "status": status
+                }
+            )
+
             return field
 
         except Exception as e:
@@ -161,6 +175,18 @@ class FieldService:
 
             db.session.refresh(field)
 
+            log_audit(
+                action="UPDATE",
+                table_name="fields",
+                record_id=field.id,
+                after_data={
+                    "field_name": field_name,
+                    "soil_type": soil_type,
+                    "location": location,
+                    "description": description,
+                    "status": status
+                }
+            )
             return field
 
         except Exception as e:
@@ -182,6 +208,20 @@ class FieldService:
         try:
             db.session.delete(field)
             db.session.commit()
+            log_audit(
+                action="DELETE",
+                table_name="fields",
+                record_id=field.id,
+                before_data={
+                    "farm_id": field.farm_id,
+                    "field_name": field.field_name,
+                    "area": field.area,
+                    "soil_type": field.soil_type,
+                    "location": field.location,
+                    "description": field.description,
+                    "status": field.status
+                }
+            )
             return True
         except Exception as e:
             db.session.rollback()

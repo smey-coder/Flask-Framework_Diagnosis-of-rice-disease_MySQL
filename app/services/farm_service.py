@@ -1,5 +1,6 @@
 from extensions import db
 from app.models.farm import FarmTable
+from app.services.audit_service import log_audit
 class FarmService:
 
     @staticmethod
@@ -48,6 +49,21 @@ class FarmService:
         )
         db.session.add(farm)
         db.session.commit()
+        log_audit(
+            action="CREATE",
+            table_name="farms",
+            record_id=farm.id,
+            after_data={
+                "user_id": user_id,
+                "farm_name": farm_name,
+                "province": province,
+                "district": district,
+                "commune": commune,
+                "description": description,
+                "location": location,
+                "status": status
+            }
+        )
         return farm
     @staticmethod
     def update(
@@ -70,6 +86,21 @@ class FarmService:
         if status is not None:
             farm.status = status
         db.session.commit()
+
+        log_audit(
+            action="UPDATE",
+            table_name="farms",
+            record_id=farm.id,
+            after_data={
+                "farm_name": farm_name,
+                "province": province,
+                "district": district,
+                "commune": commune,
+                "description": description,
+                "location": location,
+                "status": status
+            }
+        )
         return farm
     
     @staticmethod
@@ -77,4 +108,19 @@ class FarmService:
         db.session.delete(farm)
         db.session.commit()
 
+        log_audit(
+            action="DELETE",
+            table_name="farms",
+            record_id=farm.id,
+            before_data={
+                "user_id": farm.user_id,
+                "farm_name": farm.farm_name,
+                "province": farm.province,
+                "district": farm.district,
+                "commune": farm.commune,
+                "description": farm.description,
+                "location": farm.location,
+                "status": farm.status
+            }
+        )
         return True

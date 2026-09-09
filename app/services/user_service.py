@@ -81,11 +81,8 @@ class UserService:
                 "roles": [role.name for role in user.roles] if user.roles else []
             }
         )
-
         return user
-
     # ---------- UPDATE ---------- #
-
     @staticmethod
     def update_user(
         user: UserTable,

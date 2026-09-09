@@ -2,26 +2,20 @@
 Permission-Role Service Module
 Handles the complete workflow of managing permissions and their relationships with roles.
 """
-
 from typing import List, Optional
 from app.models.permission import PermissionTable
 from app.models.role import RoleTable
 from extensions import db
-
-
 class PermissionRoleService:
     """Service for managing Permission-Role relationships and workflows."""
-
     # ===================== PERMISSION ASSIGNMENT =====================
-    
     @staticmethod
     def assign_permission_to_role(
         permission: PermissionTable, 
         role: RoleTable
     ) -> bool:
         """
-        Assign a single permission to a role.
-        
+        Assign a single permission to a role. 
         Args:
             permission: PermissionTable instance
             role: RoleTable instance

@@ -6,6 +6,7 @@ from extensions import db
 
 from app.models.crop_monitoring import CropMonitoringTable
 from app.models.field_crop import FieldCropTable
+from app.services.audit_service import log_audit
 
 
 class CropMonitoringService:
@@ -150,17 +151,12 @@ class CropMonitoringService:
 
             notification = UserNotification(
                 user_id=current_user.id,
-
                 # Crop monitoring notification
                 disease_id=None,
-
-                # ✅ Now monitoring.id exists
+                # Now monitoring.id exists
                 monitoring_id=monitoring.id,
-
                 category="crop_monitoring",
-
                 is_read=False,
-
                 is_deleted=False
             )
 
@@ -185,6 +181,22 @@ class CropMonitoringService:
                 notification.monitoring_id
             )
 
+            log_audit(
+                action="CREATE",
+                table_name="crop_monitoring",
+                record_id=monitoring.id,
+                after_data={
+                    "field_crop_id": monitoring.field_crop_id,
+                    "monitoring_date": str(monitoring.monitoring_date),
+                    "growth_stage_id": monitoring.growth_stage_id,
+                    "plant_height": monitoring.plant_height,
+                    "water_status": monitoring.water_status,
+                    "plant_condition": monitoring.plant_condition,
+                    "pest_status": monitoring.pest_status,
+                    "disease_status": monitoring.disease_status,
+                    "description": monitoring.description
+                }
+            )
             return monitoring
 
         except Exception as e:
@@ -254,6 +266,22 @@ class CropMonitoringService:
                 monitoring
             )
 
+            log_audit(
+                action="UPDATE",
+                table_name="crop_monitoring",
+                record_id=monitoring.id,
+                after_data={
+                    "field_crop_id": monitoring.field_crop_id,
+                    "monitoring_date": str(monitoring.monitoring_date),
+                    "growth_stage_id": monitoring.growth_stage_id,
+                    "plant_height": monitoring.plant_height,
+                    "water_status": monitoring.water_status,
+                    "plant_condition": monitoring.plant_condition,
+                    "pest_status": monitoring.pest_status,
+                    "disease_status": monitoring.disease_status,
+                    "description": monitoring.description
+                }
+            )
             return monitoring
 
         except Exception as e:
@@ -281,6 +309,22 @@ class CropMonitoringService:
 
             db.session.commit()
 
+            log_audit(
+                action="DELETE",
+                table_name="crop_monitoring",
+                record_id=monitoring.id,
+                before_data={
+                    "field_crop_id": monitoring.field_crop_id,
+                    "monitoring_date": str(monitoring.monitoring_date),
+                    "growth_stage_id": monitoring.growth_stage_id,
+                    "plant_height": monitoring.plant_height,
+                    "water_status": monitoring.water_status,
+                    "plant_condition": monitoring.plant_condition,
+                    "pest_status": monitoring.pest_status,
+                    "disease_status": monitoring.disease_status,
+                    "description": monitoring.description
+                }
+            )
             return True
 
         except Exception as e:

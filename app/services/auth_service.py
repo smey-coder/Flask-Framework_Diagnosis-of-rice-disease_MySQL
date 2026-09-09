@@ -75,7 +75,7 @@ class AuthService:
             "reset_code_expire": None
         }
 
-        # ✅ Audit log for password reset
+        #Audit log for password reset
         log_audit(
             action="RESET_PASSWORD",
             table_name="users",
