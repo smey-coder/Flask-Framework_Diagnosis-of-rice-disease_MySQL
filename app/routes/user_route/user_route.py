@@ -3220,7 +3220,7 @@ def add_harvest():
         if selected_field:
             crops = (
                 FieldCropTable.query.options(db.joinedload(FieldCropTable.rice_variety))
-                .filter_by(field_id=selected_field, status="Harvested")
+                .filter_by(field_id=selected_field, status="Active")
                 .all()
             )
             form.field_crop_id.choices = [
