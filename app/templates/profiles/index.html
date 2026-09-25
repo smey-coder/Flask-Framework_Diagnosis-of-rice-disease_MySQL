@@ -33,8 +33,7 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
   </form>
 
   {% endif %}
-
-  <!-- =====================================================
+<!-- =====================================================
        PROFILE HERO
   ====================================================== -->
 
@@ -49,25 +48,27 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
 
       <div class="profile-avatar-wrapper">
         {% if user.image %}
-
-        <img
-          src="{{ url_for('static', filename=user.image) }}"
-          alt="Profile Image"
-          class="profile-avatar"
-        />
-
+            {% if 'http://' in user.image or 'https://' in user.image %}
+                <img
+                  src="{{ user.image }}"
+                  alt="Profile Image"
+                  class="profile-avatar"
+                />
+            {% else %}
+                <img
+                  src="{{ url_for('static', filename=user.image) }}"
+                  alt="Profile Image"
+                  class="profile-avatar"
+                />
+            {% endif %}
         {% else %}
-
-        <div class="profile-avatar profile-avatar-default">
-          <i class="bi bi-person-fill"></i>
-        </div>
-
+            <div class="profile-avatar profile-avatar-default">
+              <i class="bi bi-person-fill"></i>
+            </div>
         {% endif %}
 
         <!-- CAMERA BUTTON -->
-
         {% if current_user.has_permission('UPDATE_PROFILE') %}
-
         <button
           type="button"
           class="avatar-camera"
@@ -76,7 +77,6 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
         >
           <i class="bi bi-camera-fill"></i>
         </button>
-
         {% endif %}
       </div>
 
@@ -105,18 +105,14 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
   <!-- =====================================================
        MAIN CONTENT
   ====================================================== -->
-
   <div class="row g-4 mt-1">
-   
     <!-- =================================================
      LEFT COLUMN
-================================================== -->
-
+    ================================================== -->
     <div class="col-xl-4 col-lg-5">
       <!-- =================================================
        PROFILE IMAGE CARD
-  ================================================== -->
-
+      ================================================== -->
       <div class="profile-card image-card">
         <div class="card-heading">
           <div class="heading-icon green">
@@ -130,28 +126,39 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
         </div>
 
         <div class="profile-image-section">
+          {# 
           {% if user.image %}
-
           <img
             src="{{ url_for('static', filename=user.image) }}"
             alt="Profile Image"
             class="profile-large-avatar"
             id="profilePreview"
           />
-
+          {% else %} 
+          #}
+          {% if user.image %}
+              {% if 'http://' in user.image or 'https://' in user.image %}
+                  <img
+                    src="{{ user.image }}"
+                    alt="Profile Image"
+                    class="profile-avatar"
+                    id="profilePreview"
+                  />
+              {% else %}
+                  <img
+                    src="{{ url_for('static', filename=user.image) }}"
+                    alt="Profile Image"
+                    class="profile-avatar"
+                    id="profilePreview"
+                  />
+              {% endif %}
           {% else %}
-
-          <div
-            class="profile-large-avatar profile-avatar-default"
-            id="profilePreview"
-          >
-            <i class="bi bi-person-fill"></i>
-          </div>
-
+              <div class="profile-avatar profile-avatar-default">
+                <i class="bi bi-person-fill"></i>
+              </div>
           {% endif %}
 
           <h4>{{ user.full_name or user.username }}</h4>
-
           <p>{{ user.email }}</p>
         </div>
 

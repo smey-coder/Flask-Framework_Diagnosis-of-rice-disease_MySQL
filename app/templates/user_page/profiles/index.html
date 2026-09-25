@@ -106,18 +106,14 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
   <!-- =====================================================
        MAIN CONTENT
   ====================================================== -->
-
   <div class="row g-4 mt-1">
-   
     <!-- =================================================
      LEFT COLUMN
-================================================== -->
-
+    ================================================== -->
     <div class="col-xl-4 col-lg-5">
       <!-- =================================================
        PROFILE IMAGE CARD
-  ================================================== -->
-
+      ================================================== -->
       <div class="profile-card image-card">
         <div class="card-heading">
           <div class="heading-icon green">
@@ -141,7 +137,6 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
           />
           {% else %} 
           #}
-
           {% if user.image %}
               {% if 'http://' in user.image or 'https://' in user.image %}
                   <img
@@ -167,14 +162,10 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
           <h4>{{ user.full_name or user.username }}</h4>
           <p>{{ user.email }}</p>
         </div>
-
         <!-- IMAGE ACTIONS -->
-
         {% if current_user.has_permission('UPDATE_PROFILE') %}
-
         <div class="image-actions">
           <!-- CHANGE PHOTO -->
-
           <button
             type="button"
             class="btn btn-success profile-action-btn"
@@ -218,7 +209,7 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
 
       <!-- =================================================
        ACCOUNT INFORMATION
-  ================================================== -->
+      ================================================== -->
 
       <div class="profile-card">
         <div class="card-heading">
@@ -291,15 +282,13 @@ endblock %} {% block page_title %}My Profile{% endblock %} {% block content %}
         </div>
       </div>
     </div>
-
     <!-- =================================================
      RIGHT COLUMN
-================================================== -->
-
+    ================================================== -->
     <div class="col-xl-8 col-lg-7">
       <!-- =================================================
        EDIT PROFILE
-  ================================================== -->
+      ================================================== -->
 
       {% if current_user.has_permission('UPDATE_PROFILE') %}
 
