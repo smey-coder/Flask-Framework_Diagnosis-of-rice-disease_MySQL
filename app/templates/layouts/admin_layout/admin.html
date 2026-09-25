@@ -766,7 +766,7 @@
                 <!-- User Name + Role -->
                 <div class="user-profile-info text-start d-none d-md-block">
                   <div class="fw-semibold user-name">
-                    {{ current_user.username[0]|upper }}
+                    {{ current_user.full_name or current_user.username }}
                   </div>
                   <small class="user-role">
                     {% if current_user.has_role('Admin') %}
