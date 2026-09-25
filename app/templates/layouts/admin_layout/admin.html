@@ -741,11 +741,21 @@
                 <!-- Avatar -->
                 <div class="user-avatar">
                   {% if current_user.image %}
-                  <img
-                    src="{{ url_for('static', filename=current_user.image) }}"
-                    alt="{{ current_user.username }}"
-                    class="user-avatar-image"
-                  />
+                    {% if current_user.image.startswith('http://') or current_user.image.startswith('https://') %}
+                      <!-- Cloudinary or Remote URL -->
+                      <img
+                        src="{{ current_user.image }}"
+                        alt="Profile"
+                        class="dropdown-user-avatar"
+                      />
+                    {% else %}
+                    <!-- Legacy Local Static File Path -->
+                      <img
+                        src="{{ url_for('static', filename=current_user.image) }}"
+                        alt="Profile"
+                        class="dropdown-user-avatar"
+                      />
+                    {% endif %}
                   {% else %}
                   <span> {{ current_user.username[0]|upper }} </span>
                   {% endif %}
@@ -754,18 +764,14 @@
                 <!-- User Name + Role -->
                 <div class="user-profile-info text-start d-none d-md-block">
                   <div class="fw-semibold user-name">
-                    {{ current_user.username }}
+                    {{ current_user.username[0]|upper }}
                   </div>
-
                   <small class="user-role">
                     {% if current_user.has_role('Admin') %}
-
                     <i class="bi bi-shield-check me-1"></i>
                     Administrator {% elif current_user.has_role('Expert') %}
-
                     <i class="bi bi-mortarboard me-1"></i>
                     Expert {% else %}
-
                     <i class="bi bi-person me-1"></i>
                     User {% endif %}
                   </small>
