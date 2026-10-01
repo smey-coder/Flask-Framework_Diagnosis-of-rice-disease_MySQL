@@ -10,7 +10,7 @@
 
 <div class="about-page">
   <!-- =========================================
-       HERO BANNER
+        HERO BANNER
   ========================================== -->
   <div class="about-hero">
     <div class="hero-icon">
@@ -22,18 +22,18 @@
         <i class="bi bi-info-circle-fill me-1"></i>
         SYSTEM INFORMATION (ព័ត៌មានប្រព័ន្ធ)
       </span>
-      <h1>{{ about.app_name | default('Rice Disease Diagnostic System') }}</h1>
+      <h1>{{ about.app_name | default('Rice Disease Diagnosis System') }}</h1>
       <p>{{ about.type_app | default('Expert System (AI)') }}</p>
     </div>
 
     <div class="version-badge">
       <i class="bi bi-tag-fill me-1"></i>
-      v{{ about.version | default('1.0.0') }}
+      v{{ about.version | default('1.0.1') }}
     </div>
   </div>
 
   <!-- =========================================
-       INFORMATION SUMMARY CARDS
+        INFORMATION SUMMARY CARDS
   ========================================== -->
   <div class="about-summary">
     <!-- Application -->
@@ -43,7 +43,7 @@
       </div>
       <div class="summary-content">
         <span>Application (កម្មវិធី)</span>
-        <strong>{{ about.app_name | default('Rice Disease Diagnostic System') }}</strong>
+        <strong>{{ about.app_name | default('Rice Disease Diagnosis System') }}</strong>
       </div>
     </div>
 
@@ -65,26 +65,127 @@
       </div>
       <div class="summary-content">
         <span>Version (កំណែ)</span>
-        <strong>{{ about.version | default('1.0.0') }}</strong>
+        <strong>{{ about.version | default('1.0.1') }}</strong>
       </div>
     </div>
 
-    <!-- Developer -->
+    <!-- Email Contact -->
     <div class="summary-card" style="animation-delay: 0.4s;">
       <div class="summary-icon developer-icon">
-        <i class="bi bi-person-fill"></i>
+        <i class="bi bi-envelope-fill"></i>
       </div>
       <div class="summary-content">
-        <span>Developer (អ្នកអភិវឌ្ឍន៍)</span>
-        <strong>{{ about.developer | default('Development Team') }}</strong>
+        <span>Contact Email (អ៊ីមែល)</span>
+        <strong>{{ about.email | default('sanreaksmey01@gmail.com') }}</strong>
       </div>
     </div>
   </div>
 
   <!-- =========================================
-       MAIN GRID DETAILS
+        PROFESSORS & ADVISORS SECTION
   ========================================== -->
-  <div class="about-grid">
+  <div class="about-card mb-4">
+    <div class="about-card-header">
+      <div class="header-icon" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+        <i class="bi bi-person-workspace"></i>
+      </div>
+      <div>
+        <h4>Advisor Professors</h4>
+        <span>សាស្ត្រាចារ្យណែនាំ</span>
+      </div>
+    </div>
+
+    <div class="row g-4 p-4">
+      {% if about.professors_list %}
+        {% for prof in about.professors_list %}
+        <div class="col-md-6 col-lg-3 text-center">
+          <div class="p-3 border rounded-4 bg-light shadow-sm h-100">
+            <img 
+              src="{{ url_for('static', filename=prof.image) }}" 
+              alt="{{ prof.name }}"
+              class="rounded-circle mb-3 border border-2 border-primary shadow-sm"
+              style="width: 100px; height: 100px; object-fit: cover;"
+              onerror="this.src='https://ui-avatars.com/api/?name={{ prof.name }}&background=0d6efd&color=fff';"
+            />
+            <h6 class="fw-bold mb-1 text-dark">{{ prof.name }}</h6>
+            <small class="text-primary fw-medium d-block mb-1">{{ prof.title | default('Advisor Professor') }}</small>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small px-2 py-1">
+              {{ prof.department | default('Faculty of Computer Science') }}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Default Fallback if list not passed from Flask -->
+        <div class="col-md-6 col-lg-3 text-center">
+          <div class="p-3 border rounded-4 bg-light shadow-sm">
+            <img 
+              src="https://ui-avatars.com/api/?name=Advisor+Professor&background=0d6efd&color=fff" 
+              alt="Professor"
+              class="rounded-circle mb-3 border border-2 border-primary shadow-sm"
+              style="width: 100px; height: 100px; object-fit: cover;"
+            />
+            <h6 class="fw-bold mb-1 text-dark">{{ about.professors | default('Prof. Advisor') }}</h6>
+            <small class="text-primary fw-medium d-block mb-1">Project Advisor</small>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small px-2 py-1">
+              Norton University
+            </span>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- =========================================
+        DEVELOPERS TEAM SECTION
+  ========================================== -->
+  <div class="about-card mb-4">
+    <div class="about-card-header">
+      <div class="header-icon developer-header-icon">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div>
+        <h4>Development Team</h4>
+        <span>ក្រុមអ្នកអភិវឌ្ឍន៍ប្រព័ន្ធ</span>
+      </div>
+    </div>
+
+    <div class="row g-4 p-4">
+      {% if about.developers_list %}
+        {% for dev in about.developers_list %}
+        <div class="col-md-6 col-lg-3 text-center">
+          <div class="p-3 border rounded-4 bg-light shadow-sm h-100">
+            <img 
+              src="{{ url_for('static', filename=dev.image) }}" 
+              alt="{{ dev.name }}"
+              class="rounded-circle mb-3 border border-2 border-success shadow-sm"
+              style="width: 100px; height: 100px; object-fit: cover;"
+              onerror="this.src='https://ui-avatars.com/api/?name={{ dev.name }}&background=198754&color=fff';"
+            />
+            <h6 class="fw-bold mb-1 text-dark">{{ dev.name }}</h6>
+            <small class="text-success fw-medium d-block mb-2">{{ dev.role | default('Developer') }}</small>
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small px-2 py-1">
+              Norton University
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Default Fallback using standard Developer String -->
+        <div class="col-12">
+          <div class="p-3 border rounded-4 bg-light text-center">
+            <i class="bi bi-code-slash fs-2 text-success me-2"></i>
+            <strong class="fs-5 text-dark">{{ about.developer | default('San Reaksmey, Try Reaksmey, Pen Panhna, Tath Kongea') }}</strong>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- =========================================
+        MAIN GRID DETAILS
+  ========================================== -->
+  <div class="about-grid mb-4">
     <!-- SYSTEM DESCRIPTION -->
     <div class="about-card description-card">
       <div class="about-card-header">
@@ -96,7 +197,6 @@
           <span>អំពីប្រព័ន្ធព្យាករណ៍ជំងឺស្រូវ</span>
         </div>
       </div>
-
       <div class="description-content">
         {% if about.description %}
           <p>{{ about.description }}</p>
@@ -109,64 +209,46 @@
       </div>
     </div>
 
-    <!-- DEVELOPER INFORMATION -->
+    <!-- QUICK SYSTEM INFO -->
     <div class="about-card developer-card">
       <div class="about-card-header">
         <div class="header-icon developer-header-icon">
-          <i class="bi bi-person-badge-fill"></i>
+          <i class="bi bi-gear-wide-connected"></i>
         </div>
         <div>
-          <h4>Developer Information</h4>
-          <span>ព័ត៌មានទំនាក់ទំនង</span>
+          <h4>System Details</h4>
+          <span>ព័ត៌មានបច្ចេកទេស</span>
         </div>
       </div>
 
       <div class="developer-info">
-        <!-- Developer -->
         <div class="info-item">
           <div class="info-icon">
-            <i class="bi bi-person-fill"></i>
+            <i class="bi bi-window-stack"></i>
           </div>
           <div class="info-content">
-            <span>Developer</span>
-            <strong>{{ about.developer | default('Development Team') }}</strong>
+            <span>Application Name</span>
+            <strong>{{ about.app_name }}</strong>
           </div>
         </div>
 
-        <!-- Email -->
         <div class="info-item">
           <div class="info-icon email-icon">
             <i class="bi bi-envelope-fill"></i>
           </div>
           <div class="info-content">
-            <span>Email</span>
-            {% if about.email %}
-              <a href="mailto:{{ about.email }}">{{ about.email }}</a>
-            {% else %}
-              <strong class="text-muted">Not available</strong>
-            {% endif %}
+            <span>Contact Email</span>
+            <a href="mailto:{{ about.email }}">{{ about.email }}</a>
           </div>
         </div>
 
-        <!-- Application Name -->
-        <div class="info-item">
-          <div class="info-icon app-info-icon">
-            <i class="bi bi-window-stack"></i>
-          </div>
-          <div class="info-content">
-            <span>Application</span>
-            <strong>{{ about.app_name | default('Rice Disease Diagnostic System') }}</strong>
-          </div>
-        </div>
-
-        <!-- Version -->
         <div class="info-item">
           <div class="info-icon version-info-icon">
             <i class="bi bi-tag-fill"></i>
           </div>
           <div class="info-content">
             <span>Current Version</span>
-            <strong>v{{ about.version | default('1.0.0') }}</strong>
+            <strong>v{{ about.version }}</strong>
           </div>
         </div>
       </div>
@@ -174,7 +256,7 @@
   </div>
 
   <!-- =========================================
-       SYSTEM PURPOSE BANNER
+        SYSTEM PURPOSE BANNER
   ========================================== -->
   <div class="purpose-card">
     <div class="purpose-icon">
@@ -196,7 +278,7 @@
   </div>
 
   <!-- =========================================
-       FOOTER
+        FOOTER
   ========================================== -->
   <div class="about-footer">
     <div>
@@ -206,10 +288,10 @@
 
     <div>
       <i class="bi bi-code-slash me-1"></i>
-      {{ about.app_name | default('Rice Disease Diagnostic System') }}
+      {{ about.app_name | default('Rice Disease Diagnosis System') }}
     </div>
 
-    <div>Version {{ about.version | default('1.0.0') }}</div>
+    <div>Version {{ about.version | default('1.0.1') }}</div>
   </div>
 </div>
 {% endblock %}

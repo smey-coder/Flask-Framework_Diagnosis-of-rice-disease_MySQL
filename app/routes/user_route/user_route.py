@@ -927,13 +927,41 @@ def delete_account():
 @role_required("User")
 @permission_required("USER_ABOUT")
 def about():
+    # about_info = {
+    #     "app_name": "Rice disease diagnosis system",
+    #     "version": "1.0.1",
+    #     "type_app": "Expert System(AI)",
+    #     "developer": "San Reaksmey, Try Reaksmey, Pen Panhna, Tath Kongea",
+    #     "professors": "Prof. [Sek Socheat]",
+    #     "email": "sanreaksmey01@gmail.com",
+    #     "description": "Helps farmers diagnose rice diseases and manage treatments efficiently.",
+    # }
+    # return render_template("user_page/about.html", about=about_info)
     about_info = {
-        "app_name": "Rice disease diagnostic system",
-        "version": "1.0.0",
-        "type_app": "Expert System(AI)",
-        "developer": "San Reaksmey, Try Reaksmey, Pen Panhna, Tath Kongea",
+        "app_name": "Rice Disease Diagnosis System",
+        "version": "1.0.1",
+        "type_app": "Expert System (AI)",
         "email": "sanreaksmey01@gmail.com",
+        "developer": "San Reaksmey, Try Reaksmey, Pen Panhna, Tath Kongea",
+        "professors": "Prof. Advisor Name",
         "description": "Helps farmers diagnose rice diseases and manage treatments efficiently.",
+        
+        # Structured Professor List
+        "professors_list": [
+            {
+                "name": "Prof. Sek Socheat",
+                "title": "Project Advisor / Supervisor",
+                "department": "Norton University",
+                "image": "images/about/teacher.jpg"
+            }
+        ],
+        # Structured Developer Team List
+        "developers_list": [
+            {"name": "San Reaksmey", "role": "Project Manager", "image": "images/about/san-reaksmey.jpg"},
+            {"name": "Try Reaksmey", "role": "Backend Developer", "image": "images/about/try-reaksmey.jpg"},
+            {"name": "Pen Panhna", "role": "Frontend Developer", "image": "images/about/pen-panhna.jpg"},
+            {"name": "Tath Kongea", "role": "UI/UX Designer", "image": "images/about/tath-kongkea.jpg"},
+        ]
     }
     return render_template("user_page/about.html", about=about_info)
 # @user_bp.route("/change-password", methods=["POST"])
