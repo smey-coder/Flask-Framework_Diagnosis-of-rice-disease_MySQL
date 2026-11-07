@@ -2,6 +2,7 @@ from flask import (
     Blueprint,
     render_template,
     redirect,
+    request,
     url_for,
     flash,
     abort,
@@ -19,10 +20,23 @@ user_bp = Blueprint("tbl_users", __name__, url_prefix="/users")
 @role_required("Admin")
 @permission_required("VIEW_USER")
 def index():
-    
-    users = UserService.get_user_all()
-    return render_template("users/index.html", users=users)
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+    q = request.args.get("q", "").strip()
+    role = request.args.get("role", "")
+    status = request.args.get("status", "")
 
+    users = UserService.get_user_all(page, per_page, q, role, status)
+
+    return render_template(
+        "users/index.html",
+        users=users,
+        stats=UserService.get_stats(),
+        roles=UserService.get_role_names(),
+        q=q,
+        role=role,
+        status=status,
+    )
 @user_bp.route("/<int:user_id>")
 @login_required
 @role_required("Admin")

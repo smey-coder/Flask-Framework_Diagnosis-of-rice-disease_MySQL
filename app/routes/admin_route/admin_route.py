@@ -353,7 +353,6 @@ def settings():
 
             flash("Profile updated successfully!", "success")
             return redirect(url_for("admin.settings"))
-
         except Exception as e:
             db.session.rollback()
             flash("Something went wrong while updating profile.", "danger")

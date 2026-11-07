@@ -1,4 +1,5 @@
-<form method="post">
+<!-- version: 1.0.0 -->
+<!-- <form method="post">
    {{ form.hidden_tag() }}
 
    <div class="mb-3">
@@ -48,4 +49,253 @@
          Cancel
       </a>
    </div>
-</form>
+</form> -->
+<!-- version: 1.0.1 -->
+<style>
+  /* ---------- Card + entrance animation ---------- */
+  .perm-form-card {
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    animation: permCardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes permCardIn {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .perm-form-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 28px;
+    color: #fff;
+    background: linear-gradient(135deg, #0891b2, #4f46e5);
+  }
+
+  .perm-form-header .icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    display: grid;
+    place-items: center;
+    font-size: 1.4rem;
+    animation: permIconPop 0.6s 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes permIconPop {
+    from { opacity: 0; transform: scale(0.4) rotate(-20deg); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .perm-form-header h2 { font-size: 1.25rem; margin: 0; font-weight: 700; }
+  .perm-form-header p  { margin: 2px 0 0; opacity: 0.85; font-size: 0.875rem; }
+
+  .perm-form-body { padding: 28px; }
+
+  /* Staggered reveal */
+  .reveal {
+    opacity: 0;
+    animation: permRevealUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 80ms + 150ms);
+  }
+
+  @keyframes permRevealUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Inputs ---------- */
+  .perm-form-body .form-label { font-weight: 600; font-size: 0.875rem; }
+
+  .perm-form-body .form-control,
+  .perm-form-body .form-select,
+  .perm-form-body .input-group-text {
+    border-radius: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .perm-form-body .input-group > .form-control,
+  .perm-form-body .input-group > .form-select {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .perm-form-body .input-group > .input-group-text {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .perm-form-body .form-control:focus,
+  .perm-form-body .form-select:focus {
+    border-color: #0891b2;
+    box-shadow: 0 0 0 0.25rem rgba(8, 145, 178, 0.18);
+  }
+
+  .code-input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  .field-hint { font-size: 0.78rem; color: var(--bs-secondary-color); margin-top: 4px; }
+
+  .field-error { animation: permShake 0.4s; }
+
+  @keyframes permShake {
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
+  /* ---------- Footer / buttons ---------- */
+  .perm-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    margin-top: 24px;
+    border-top: 1px solid var(--bs-border-color);
+  }
+
+  .perm-form-footer .btn {
+    border-radius: 10px;
+    padding: 9px 22px;
+    font-weight: 600;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .perm-form-footer .btn:hover { transform: translateY(-2px); }
+
+  .perm-form-footer .btn-primary {
+    background: linear-gradient(135deg, #0891b2, #4f46e5);
+    border: 0;
+    box-shadow: 0 6px 16px rgba(8, 145, 178, 0.3);
+  }
+
+  .perm-form-footer .btn-primary.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+    position: relative;
+    color: transparent;
+  }
+
+  .perm-form-footer .btn-primary.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: permSpin 0.7s linear infinite;
+  }
+
+  @keyframes permSpin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .perm-form-card, .reveal, .perm-form-header .icon, .field-error {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+  }
+</style>
+
+<div class="perm-form-card">
+
+  <div class="perm-form-header">
+    <div class="icon"><i class="bi bi-key-fill"></i></div>
+    <div>
+      <h2>Create Permission</h2>
+      <p>Add a permission and assign it to a module.</p>
+    </div>
+  </div>
+
+  <form method="post" class="perm-form-body" id="permissionForm" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="row g-3">
+      <!-- Code -->
+      <div class="col-md-6 reveal" style="--i: 0">
+        {{ form.code.label(class="form-label") }}
+        <div class="input-group {{ 'field-error' if form.code.errors }}">
+          <span class="input-group-text"><i class="bi bi-code-slash"></i></span>
+          {% set code_cls = "form-control code-input" ~ (" is-invalid" if form.code.errors else "") %}
+          {{ form.code(class=code_cls, placeholder="e.g. user.create") }}
+        </div>
+        {% for error in form.code.errors %}
+        <div class="invalid-feedback d-block">
+          <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Name -->
+      <div class="col-md-6 reveal" style="--i: 1">
+        {{ form.name.label(class="form-label") }}
+        <div class="input-group {{ 'field-error' if form.name.errors }}">
+          <span class="input-group-text"><i class="bi bi-tag"></i></span>
+          {% set name_cls = "form-control" ~ (" is-invalid" if form.name.errors else "") %}
+          {{ form.name(class=name_cls, placeholder="e.g. Create user") }}
+        </div>
+        {% for error in form.name.errors %}
+        <div class="invalid-feedback d-block">
+          <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Module -->
+      <div class="col-12 reveal" style="--i: 2">
+        {{ form.module.label(class="form-label") }}
+        <div class="input-group {{ 'field-error' if form.module.errors }}">
+          <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+          {% set module_cls = "form-select" ~ (" is-invalid" if form.module.errors else "") %}
+          {{ form.module(class=module_cls) }}
+        </div>
+        {% for error in form.module.errors %}
+        <div class="invalid-feedback d-block">
+          <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Description -->
+      <div class="col-12 reveal" style="--i: 3">
+        {{ form.description.label(class="form-label") }}
+        {% set desc_cls = "form-control" ~ (" is-invalid" if form.description.errors else "") %}
+        <div class="{{ 'field-error' if form.description.errors }}">
+          {{ form.description(class=desc_cls, rows="3", placeholder="What does this permission allow?") }}
+        </div>
+        {% for error in form.description.errors %}
+        <div class="invalid-feedback d-block">
+          <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="perm-form-footer reveal" style="--i: 4">
+      <a href="{{ url_for('tbl_permissions.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Cancel
+      </a>
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("permissionForm");
+
+    // Loading state on submit (button stays enabled so its value is still posted)
+    form.addEventListener("submit", function () {
+      const btn = form.querySelector('input[type="submit"], button[type="submit"]');
+      if (btn) btn.classList.add("is-loading");
+    });
+  });
+</script>

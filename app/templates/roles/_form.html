@@ -1,84 +1,475 @@
-<form method="post">
-   {{ form.hidden_tag() }}
+<style>
+  /* ---------- Card + entrance animation ---------- */
+  .role-form-card {
+    max-width: 880px;
+    margin: 0 auto;
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    animation: roleCardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 
-   <div class="mb-3">
-      {{ form.name.label(class="form-label")}}
-      {{ form.name(class="form-control")}}
-      {% if form.name.errors %}
-      <div class="text-danger small">
-         {% for error in form.name.errors %}
-            <div>{{ error }}</div>
-         {% endfor %}
-      </div>
-      {% endif %}
-   </div>
+  @keyframes roleCardIn {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); }
+    to   { opacity: 1; transform: none; }
+  }
 
-   <div class="mb-3">
-      {{ form.description.label(class="form-label")}}
-      {{ form.description(class="form-control")}}
-      {% if form.description.errors %}
-         {% for error in form.description.errors %}
-            <div class="text-danger small">{{ error }}</div>
-         {% endfor %}
-   </div>
-   {% endif %}
-   <!-- Status -->
-   <div class="col-md-6">
-        <label for="{{ form.status.id }}" class="form-label">
-            Status
-            <span class="text-danger">*</span>
-        </label>
+  .role-form-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 28px;
+    color: #fff;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  }
 
-        {{ form.status(
-            class="form-select"
-        ) }}
+  .role-form-header .icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    display: grid;
+    place-items: center;
+    font-size: 1.4rem;
+    animation: iconPop 0.6s 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
 
-        {% for error in form.status.errors %}
-            <div class="invalid-feedback d-block">
-                <i class="bi bi-exclamation-circle me-1"></i>
-                {{ error }}
-            </div>
+  @keyframes iconPop {
+    from { opacity: 0; transform: scale(0.4) rotate(-20deg); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .role-form-header h2 { font-size: 1.25rem; margin: 0; font-weight: 700; }
+  .role-form-header p  { margin: 2px 0 0; opacity: 0.85; font-size: 0.875rem; }
+
+  .role-form-body { padding: 28px; }
+
+  /* Staggered reveal for each section */
+  .reveal {
+    opacity: 0;
+    animation: revealUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 80ms + 150ms);
+  }
+
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Inputs ---------- */
+  .role-form-body .form-label { font-weight: 600; font-size: 0.875rem; }
+
+  .role-form-body .form-control,
+  .role-form-body .form-select,
+  .role-form-body .input-group-text {
+    border-radius: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+
+  .role-form-body .input-group > .form-control { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .role-form-body .input-group > .input-group-text { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+  .role-form-body .form-control:focus,
+  .role-form-body .form-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.18);
+  }
+
+  .field-error { animation: shake 0.4s; }
+
+  @keyframes shake {
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
+  /* ---------- Permissions ---------- */
+  .perm-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .perm-toolbar .perm-search { flex: 1 1 220px; }
+
+  .perm-counter {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.12);
+    color: #4f46e5;
+  }
+
+  .perm-counter.bump { animation: bump 0.3s; }
+
+  @keyframes bump { 50% { transform: scale(1.15); } }
+
+  .perm-module {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    opacity: 0;
+    animation: revealUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--m, 0) * 70ms + 450ms);
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .perm-module:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.08);
+  }
+
+  .perm-module-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bs-tertiary-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  .perm-module-header .module-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex: 1;
+  }
+
+  .perm-module-header .module-count {
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+  }
+
+  .perm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .perm-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, transform 0.18s;
+  }
+
+  .perm-item:hover { transform: translateY(-1px); border-color: #818cf8; }
+
+  .perm-item:has(input:checked) {
+    background: rgba(99, 102, 241, 0.09);
+    border-color: #6366f1;
+  }
+
+  .perm-item .form-check-input { margin-top: 3px; flex-shrink: 0; cursor: pointer; }
+  .perm-item .form-check-input:checked { background-color: #4f46e5; border-color: #4f46e5; }
+
+  .perm-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+  .perm-text strong { font-size: 0.82rem; word-break: break-word; }
+  .perm-text small  { color: var(--bs-secondary-color); font-size: 0.78rem; }
+
+  .perm-item.is-hidden,
+  .perm-module.is-hidden { display: none; }
+
+  .perm-empty { text-align: center; padding: 20px; color: var(--bs-secondary-color); display: none; }
+
+  /* ---------- Footer / buttons ---------- */
+  .role-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    margin-top: 8px;
+    border-top: 1px solid var(--bs-border-color);
+  }
+
+  .role-form-footer .btn {
+    border-radius: 10px;
+    padding: 9px 22px;
+    font-weight: 600;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .role-form-footer .btn:hover { transform: translateY(-2px); }
+
+  .role-form-footer .btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border: 0;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+  }
+
+  .role-form-footer .btn-primary.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+    position: relative;
+    color: transparent;
+  }
+
+  .role-form-footer .btn-primary.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .role-form-card, .reveal, .perm-module, .role-form-header .icon,
+    .field-error, .perm-counter.bump {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+  }
+</style>
+
+<div class="role-form-card">
+
+  <div class="role-form-header">
+    <div class="icon"><i class="bi bi-shield-lock-fill"></i></div>
+    <div>
+      <h2>Create Role</h2>
+      <p>Define a role and choose the permissions it grants.</p>
+    </div>
+  </div>
+
+  <form method="post" class="role-form-body" id="roleForm" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="row g-3">
+
+      <!-- Name -->
+      <div class="col-md-6 reveal" style="--i: 0">
+        {{ form.name.label(class="form-label") }}
+        <div class="input-group {{ 'field-error' if form.name.errors }}">
+          <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+          {% set name_cls = "form-control" ~ (" is-invalid" if form.name.errors else "") %}
+          {{ form.name(class=name_cls, placeholder="e.g. Administrator") }}
+        </div>
+        {% for error in form.name.errors %}
+        <div class="invalid-feedback d-block">
+          <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+        </div>
         {% endfor %}
+      </div>
+
+      <!-- Status -->
+      <div class="col-md-6 reveal" style="--i: 1">
+        <label for="{{ form.status.id }}" class="form-label">
+          Status <span class="text-danger">*</span>
+        </label>
+        <div class="input-group {{ 'field-error' if form.status.errors }}">
+          <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
+          {{ form.status(class="form-select") }}
+        </div>
+        {% for error in form.status.errors %}
+        <div class="invalid-feedback d-block">
+          <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Description -->
+      <div class="col-12 reveal" style="--i: 2">
+        {{ form.description.label(class="form-label") }}
+        {% set desc_cls = "form-control" ~ (" is-invalid" if form.description.errors else "") %}
+        <div class="{{ 'field-error' if form.description.errors }}">
+          {{ form.description(class=desc_cls, rows=3, placeholder="What is this role for?") }}
+        </div>
+        {% for error in form.description.errors %}
+        <div class="invalid-feedback d-block">
+          <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Permissions -->
+      <div class="col-12 reveal" style="--i: 3">
+        <label class="form-label mb-2">{{ form.permission_ids.label.text }}</label>
+
+        {% if form.permissions_by_module %}
+
+        <div class="perm-toolbar">
+          <div class="input-group perm-search">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="permSearch" class="form-control"
+                   placeholder="Search permissions..." autocomplete="off" />
+          </div>
+
+          <button type="button" class="btn btn-sm btn-outline-primary" id="permSelectAll">
+            <i class="bi bi-check2-all me-1"></i>Select all
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="permClearAll">
+            <i class="bi bi-x-lg me-1"></i>Clear
+          </button>
+
+          <span class="perm-counter" id="permCounter">0 selected</span>
+        </div>
+
+        {% for module_name, perms in form.permissions_by_module.items() %}
+        <div class="perm-module" style="--m: {{ loop.index0 }}">
+
+          <div class="perm-module-header">
+            <input class="form-check-input module-toggle" type="checkbox"
+                   title="Select all in {{ module_name }}" />
+            <span class="module-name">{{ module_name }}</span>
+            <span class="module-count"></span>
+          </div>
+
+          <div class="perm-grid">
+            {% for perm in perms %}
+            <label class="perm-item" for="perm_{{ perm.id }}"
+                   data-search="{{ (perm.code ~ ' ' ~ perm.name)|lower }}">
+              <input class="form-check-input perm-checkbox" type="checkbox"
+                     id="perm_{{ perm.id }}"
+                     name="{{ form.permission_ids.name }}"
+                     value="{{ perm.id }}"
+                     {% if form.permission_ids.data and perm.id in form.permission_ids.data %}checked{% endif %}>
+              <span class="perm-text">
+                <strong>{{ perm.code }}</strong>
+                <small>{{ perm.name }}</small>
+              </span>
+            </label>
+            {% endfor %}
+          </div>
+
+        </div>
+        {% endfor %}
+
+        <div class="perm-empty" id="permEmpty">
+          <i class="bi bi-search me-1"></i>No permissions match your search.
+        </div>
+
+        {% else %}
+        <p class="text-muted small mb-0">No permissions defined yet.</p>
+        {% endif %}
+
+        {% for error in form.permission_ids.errors %}
+        <div class="text-danger small mt-2">{{ error }}</div>
+        {% endfor %}
+      </div>
+
     </div>
 
-   <div class="mb-3">
-      <label class="form-label">{{ form.permission_ids.label.text }}</label>
+    <!-- Footer -->
+    <div class="role-form-footer reveal" style="--i: 4">
+      <a href="{{ url_for('tbl_roles.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Cancel
+      </a>
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
 
-      {% if form.permissions_by_module %}
-         <div class="form-check">
-            {% for module_name, perms in form.permissions_by_module.items() %}
-               <div class="border rounded p-2 md-2">
-               <div class="fw-bold small text-mutted mb-1">
-                     {{ module_name}}
-               </div>
-               {% for perm in perms%}
-               <div class="form-check">
-                     <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="perm_{{ perm.id}}"
-                        name ="{{ form.permission_ids.name }}"
-                        value="{{ perm.id }}"
-                        {% if form.permission_ids.data and perm.id in form.permission_ids.data%} checked {% endif %}
-                     >
-                     <label class="form-check-label" for="perm_{{ perm.id}}">
-                        <strong>{{ perm.code }}</strong> - {{ perm.name }}
-                     </label>
-               </div>
-               {% endfor %}
-               </div>
-            {% endfor %}
-         {% else %}
-         <p class="text-muted small">No permissions defined yet.</p>
-         {% endif %}
-         {% for error in form.permission_ids.errors%}
-         <div class="text-danger small">{{ error}}</div>
-         {% endfor%}
-      </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("roleForm");
+    const modules = document.querySelectorAll(".perm-module");
+    const counter = document.getElementById("permCounter");
+    const search = document.getElementById("permSearch");
+    const emptyMsg = document.getElementById("permEmpty");
 
-      <div class="d-flex justify-content-between mt-3">
-         {{ form.submit(class="btn btn-primary")}}
-         <a href="{{ url_for('tbl_roles.index')}}" class="btn btn-secondary">Cancel</a>
-      </div>
-   </div>
-</form>
+    function updateCounts() {
+      let total = 0;
+
+      modules.forEach(function (mod) {
+        const boxes = mod.querySelectorAll(".perm-checkbox");
+        const checked = mod.querySelectorAll(".perm-checkbox:checked");
+        const toggle = mod.querySelector(".module-toggle");
+
+        total += checked.length;
+        mod.querySelector(".module-count").textContent =
+          checked.length + " / " + boxes.length;
+
+        toggle.checked = boxes.length > 0 && checked.length === boxes.length;
+        toggle.indeterminate = checked.length > 0 && checked.length < boxes.length;
+      });
+
+      if (counter) {
+        const text = total + " selected";
+        if (counter.textContent !== text) {
+          counter.textContent = text;
+          counter.classList.remove("bump");
+          void counter.offsetWidth; // restart animation
+          counter.classList.add("bump");
+        }
+      }
+    }
+
+    // Single checkbox changes
+    form.addEventListener("change", function (e) {
+      if (e.target.classList.contains("perm-checkbox")) updateCounts();
+    });
+
+    // Module "select all"
+    document.querySelectorAll(".module-toggle").forEach(function (toggle) {
+      toggle.addEventListener("change", function () {
+        const mod = toggle.closest(".perm-module");
+        mod.querySelectorAll(".perm-item:not(.is-hidden) .perm-checkbox").forEach(function (box) {
+          box.checked = toggle.checked;
+        });
+        updateCounts();
+      });
+    });
+
+    // Global select all / clear (visible items only)
+    function setAll(value) {
+      document.querySelectorAll(".perm-item:not(.is-hidden) .perm-checkbox").forEach(function (box) {
+        box.checked = value;
+      });
+      updateCounts();
+    }
+
+    const selectAll = document.getElementById("permSelectAll");
+    const clearAll = document.getElementById("permClearAll");
+    if (selectAll) selectAll.addEventListener("click", function () { setAll(true); });
+    if (clearAll) clearAll.addEventListener("click", function () { setAll(false); });
+
+    // Search filter
+    if (search) {
+      search.addEventListener("input", function () {
+        const term = search.value.toLowerCase().trim();
+        let anyVisible = false;
+
+        modules.forEach(function (mod) {
+          let moduleVisible = false;
+
+          mod.querySelectorAll(".perm-item").forEach(function (item) {
+            const match = !term || item.dataset.search.includes(term);
+            item.classList.toggle("is-hidden", !match);
+            if (match) moduleVisible = true;
+          });
+
+          mod.classList.toggle("is-hidden", !moduleVisible);
+          if (moduleVisible) anyVisible = true;
+        });
+
+        emptyMsg.style.display = anyVisible ? "none" : "block";
+      });
+    }
+
+    // Loading state on submit (button stays enabled so its value is still posted)
+    form.addEventListener("submit", function () {
+      const btn = form.querySelector('input[type="submit"], button[type="submit"]');
+      if (btn) btn.classList.add("is-loading");
+    });
+
+    updateCounts();
+  });
+</script>

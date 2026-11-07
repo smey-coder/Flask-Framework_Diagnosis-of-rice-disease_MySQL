@@ -1,8 +1,17 @@
-{% extends "layouts/admin_layout/admin.html"%}
+{% extends "layouts/admin_layout/admin.html" %}
 {% block title %}Edit Permission{% endblock %}
 
-
 {% block content %}
-   <h1 class="h3 mb-3">Edit Permission {{ permission.code }}</h1>
-   {% include "permissions/_form.html"%}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a href="{{ url_for('tbl_permissions.index') }}">Permissions</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit {{ permission.code }}</li>
+        </ol>
+    </nav>
+</div>
+
+{% with form_title="Edit Permission: " ~ permission.code, form_subtitle="Update this permission's details." %}
+    {% include "permissions/_form.html" %}
+{% endwith %}
 {% endblock %}

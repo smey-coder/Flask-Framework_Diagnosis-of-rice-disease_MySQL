@@ -1,8 +1,17 @@
-{% extends "layouts/admin_layout/admin.html"%}
+{% extends "layouts/admin_layout/admin.html" %}
 {% block title %}Create Permission{% endblock %}
 
-
 {% block content %}
-<h1 class="h3 mb-3">Create Permission</h1>
-{% include "permissions/_form.html" %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a href="{{ url_for('tbl_permissions.index') }}">Permissions</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create</li>
+        </ol>
+    </nav>
+</div>
+
+{% with form_title="Create Permission", form_subtitle="Add a permission and assign it to a module." %}
+    {% include "permissions/_form.html" %}
+{% endwith %}
 {% endblock %}

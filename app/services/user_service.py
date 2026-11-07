@@ -1,8 +1,11 @@
 from typing import List, Optional
+
+# from attr.validators import or_
 from app.models.user import UserTable
-from app.models.role import RoleTable
+from app.models.role import Role, RoleTable
 from app.models.associations import tbl_user_roles
 from extensions import db
+from sqlalchemy import or_
 from app.services.audit_service import log_audit 
 
 class UserService:
@@ -35,8 +38,43 @@ class UserService:
         db.session.commit()
 
     @staticmethod
-    def get_user_all() -> List[UserTable]:
-        return UserTable.query.order_by(UserTable.id.desc()).all()
+    def get_stats():
+        total = UserTable.query.count()
+        active = UserTable.query.filter(UserTable.is_active.is_(True)).count()
+        return {
+            "total": total,
+            "active": active,
+            "inactive": total - active,
+            "roles": db.session.query(tbl_user_roles).count(),  # your user-role association table
+        }
+
+    @staticmethod
+    def get_role_names():
+        return [r.name for r in RoleTable.query.order_by(RoleTable.name)]
+    
+    @staticmethod
+    def get_user_all(page=1, per_page=10, q="", role="", status=""):
+        query = UserTable.query
+
+        if q:
+            like = f"%{q}%"
+            query = query.filter(or_(
+                UserTable.username.ilike(like),
+                UserTable.full_name.ilike(like),
+                UserTable.email.ilike(like),
+            ))
+
+        if role:
+            query = query.filter(UserTable.roles.any(RoleTable.name == role))
+
+        if status == "active":
+            query = query.filter(UserTable.is_active.is_(True))
+        elif status == "inactive":
+            query = query.filter(UserTable.is_active.is_(False))
+
+        return query.order_by(UserTable.id.desc()).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
     
     @staticmethod
     def get_user_by_id(user_id: int) -> Optional[UserTable]:
