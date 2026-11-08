@@ -2,7 +2,7 @@
 
 {% from "macros/disease.html" import image_url as disease_image_url %}
 
-{% block title %}Common Rice Diseases{% endblock %}
+{% block title %}{{ lang.public.diseases.title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
@@ -241,10 +241,9 @@
 
 <section class="page-hero">
     <div class="container">
-        <span class="section-label text-white-50">RICE PLANT HEALTH</span>
-        <h1>Common Rice Diseases</h1>
-        <p class="khmer-text">ជំងឺដែលកើតមានលើដំណាំស្រូវ</p>
-        <p>Understand symptoms, causes, and disease prevention.</p>
+        <span class="section-label text-white-50">{{ lang.public.diseases.label }}</span>
+        <h1>{{ lang.public.diseases.title }}</h1>
+        <p>{{ lang.public.diseases.subtitle }}</p>
     </div>
 </section>
 
@@ -252,11 +251,10 @@
     <div class="container">
 
         <div class="section-heading text-center mb-4" data-animate="fade-up">
-            <span class="section-label">DISEASE INFORMATION</span>
-            <h2 class="section-title">Rice Disease Catalog</h2>
+            <span class="section-label">{{ lang.public.diseases.information }}</span>
+            <h2 class="section-title">{{ lang.public.diseases.catalog }}</h2>
             <p>
-                Search and learn to recognize common rice diseases and
-                understand their effects on rice plants.
+                {{ lang.public.diseases.catalog_description }}
             </p>
         </div>
 
@@ -265,13 +263,13 @@
 
             <div class="ds-search">
                 <label for="dsSearch" class="filter-label">
-                    <i class="bi bi-search me-1"></i>Search
+                    <i class="bi bi-search me-1"></i>{{ lang.public.diseases.search }}
                 </label>
                 <div class="input-group position-relative">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                     <input type="text" id="dsSearch" name="q" value="{{ q }}"
                            class="form-control" autocomplete="off"
-                           placeholder="Search disease name or symptoms...">
+                           placeholder="{{ lang.public.diseases.search_placeholder }}">
                     <button type="button" class="ds-clear" id="dsClear" title="Clear">
                         <i class="bi bi-x-circle-fill"></i>
                     </button>
@@ -280,10 +278,10 @@
 
             <div>
                 <label for="dsType" class="filter-label">
-                    <i class="bi bi-bug me-1"></i>Type
+                    <i class="bi bi-bug me-1"></i>{{ lang.public.diseases.type }}
                 </label>
                 <select id="dsType" name="type" class="form-select">
-                    <option value="">All Types</option>
+                    <option value="">{{ lang.public.diseases.all_types }}</option>
                     {% for t in types %}
                     <option value="{{ t }}" {{ 'selected' if t == disease_type }}>{{ t }}</option>
                     {% endfor %}
@@ -292,10 +290,10 @@
 
             <div>
                 <label for="dsSeverity" class="filter-label">
-                    <i class="bi bi-activity me-1"></i>Severity
+                    <i class="bi bi-activity me-1"></i>{{ lang.public.diseases.severity }}
                 </label>
                 <select id="dsSeverity" name="severity" class="form-select">
-                    <option value="">All Levels</option>
+                    <option value="">{{ lang.public.diseases.all_levels }}</option>
                     {% for s in severities %}
                     <option value="{{ s }}" {{ 'selected' if s == severity }}>{{ s }}</option>
                     {% endfor %}
@@ -304,7 +302,7 @@
 
             <div>
                 <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-secondary rounded-pill" id="dsReset">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ lang.public.diseases.reset }}
                 </a>
             </div>
         </form>
@@ -316,16 +314,16 @@
                 <span>
                     <i class="bi bi-funnel-fill me-1 text-success"></i>
                     {% if diseases.total %}
-                    Showing <strong>{{ diseases.first }}–{{ diseases.last }}</strong>
-                    of <strong>{{ diseases.total }}</strong> diseases
+                    {{ lang.public.diseases.showing }} <strong>{{ diseases.first }}–{{ diseases.last }}</strong>
+                    {{ lang.public.diseases.of }} <strong>{{ diseases.total }}</strong> {{ lang.public.diseases.diseases }}
                     {% else %}
-                    Showing <strong>0</strong> diseases
+                    {{ lang.public.diseases.showing }} <strong>0</strong> {{ lang.public.diseases.diseases }}
                     {% endif %}
                 </span>
 
                 {% if q or disease_type or severity %}
                 <span class="badge bg-success-subtle text-success">
-                    <i class="bi bi-filter me-1"></i>Filters applied
+                    <i class="bi bi-filter me-1"></i>{{ lang.public.diseases.filters_applied }}
                 </span>
                 {% endif %}
             </div>
@@ -365,11 +363,11 @@
                             <h5 class="khmer-text">{{ name_km }}</h5>
                             {% if name_en %}<div class="ds-en">{{ name_en }}</div>{% endif %}
 
-                            <p class="ds-desc khmer-text">{{ d.description or 'No description available yet.' }}</p>
+                            <p class="ds-desc khmer-text">{{ d.description or lang.public.detail.no_description }}</p>
 
                             <a href="{{ url_for('public.disease_detail', disease_id=d.id) }}"
                                class="btn btn-outline-success rounded-pill w-100">
-                                View Disease Details
+                                {{ lang.public.diseases.view_details }}
                                 <i class="bi bi-arrow-right ms-2"></i>
                             </a>
                         </div>
@@ -411,10 +409,10 @@
             {% else %}
             <div class="ds-empty">
                 <i class="bi bi-search"></i>
-                <h5 class="mt-3">No Diseases Found</h5>
-                <p>No diseases match your search or filters.</p>
+                <h5 class="mt-3">{{ lang.public.diseases.no_diseases }}</h5>
+                <p>{{ lang.public.diseases.no_disease_filters }}</p>
                 {% if q or disease_type or severity %}
-                <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-success rounded-pill">Reset Filters</a>
+                <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-success rounded-pill">{{ lang.public.diseases.reset_filters }}</a>
                 {% endif %}
             </div>
             {% endif %}
@@ -426,7 +424,7 @@
 <section class="section-padding bg-light">
     <div class="container text-center" data-animate="fade-up">
 
-        <h2 class="section-title">Need Help Identifying Rice Diseases?</h2>
+        <h2 class="section-title">{{ lang.public.diseases.need_help }}</h2>
 
         <p>
             Use our Expert System to analyze rice symptoms

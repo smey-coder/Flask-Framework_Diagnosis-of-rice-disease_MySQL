@@ -1,7 +1,7 @@
 
 {% extends "layouts/base.html" %}
 
-{% block title %}Rice Cultivation Process{% endblock %}
+{% block title %}{{ lang.public.cultivation.title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
@@ -11,10 +11,9 @@
 
 <section class="page-hero">
     <div class="container">
-        <span class="section-label text-white-50">RICE FARMING</span>
-        <h1>Rice Cultivation Process</h1>
-        <p>ដំណើរការដាំដុះស្រូវ</p>
-        <p>Learn the important stages of rice growth and development.</p>
+        <span class="section-label text-white-50">{{ lang.public.cultivation.label }}</span>
+        <h1>{{ lang.public.cultivation.title }}</h1>
+        <p>{{ lang.public.cultivation.subtitle }}</p>
     </div>
 </section>
 
@@ -22,11 +21,10 @@
     <div class="container">
 
         <div class="section-heading text-center">
-            <span class="section-label">GROWTH AND DEVELOPMENT</span>
-            <h2 class="section-title">Six Main Stages of Rice Cultivation</h2>
+            <span class="section-label">{{ lang.public.cultivation.growth }}</span>
+            <h2 class="section-title">{{ lang.public.cultivation.six_stages }}</h2>
             <p>
-                Understanding rice growth stages helps farmers monitor
-                crop health and manage agricultural activities.
+                {{ lang.public.cultivation.description }}
             </p>
         </div>
 
@@ -105,7 +103,7 @@
 
                     <p>{{ stage.description }}</p>
 
-                    <h6>Important Activities</h6>
+                    <h6>{{ lang.public.cultivation.activities }}</h6>
 
                     <ul class="stage-task-list">
                         {% for task in stage.tasks %}
@@ -129,17 +127,16 @@
 <section class="section-padding bg-light">
     <div class="container text-center">
 
-        <h2 class="section-title">Monitor Your Rice Crops</h2>
+        <h2 class="section-title">{{ lang.public.cultivation.monitor_title }}</h2>
 
         <p>
-            Regular monitoring helps farmers identify changes in crop
-            conditions and detect possible disease symptoms early.
+            {{ lang.public.cultivation.monitor_description }}
         </p>
 
         <a href="{{ url_for('auth.login') }}"
            class="btn btn-success rounded-pill px-4">
             <i class="bi bi-activity me-2"></i>
-            Access Crop Monitoring
+            {{ lang.public.cultivation.monitor_access }}
         </a>
 
     </div>

@@ -1267,3 +1267,181 @@ body {
         transition: none !important;
     }
 }
+
+
+/* =====================================================
+   AGENCY LOGO MARQUEE (right to left)
+   .logo-marquee > .logo-marquee-track > .logo-group x2
+   - Works with CSS alone (animation below).
+   - When the page script runs it adds .is-scripted, takes over the movement
+     (drag / swipe / pause button) and the CSS animation is switched off.
+===================================================== */
+
+.logo-marquee {
+    --gap: 24px;
+    --speed: 40s;
+
+    overflow: hidden;
+    padding: 14px 0;
+
+    /* soft fade on both edges */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* The track holds two identical groups side by side and slides left by exactly one group */
+
+.logo-marquee-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+}
+
+.logo-group {
+    flex-shrink: 0;
+
+    /* each group is at least as wide as the screen, so there is never a gap */
+    min-width: 100vw;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: var(--gap);
+
+    padding-right: var(--gap);
+}
+
+/* JavaScript is in control */
+
+.logo-marquee.is-scripted .logo-marquee-track {
+    animation: none;
+}
+
+/* Items */
+
+.logo-item {
+    flex-shrink: 0;
+
+    width: 220px;
+    padding: 18px 16px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-radius: 18px;
+
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+
+.logo-item img {
+    height: 60px;
+    max-width: 100%;
+
+    object-fit: contain;
+    margin-bottom: 4px;
+
+    transition: transform .3s ease;
+}
+
+/* filled by the onerror handler when a logo file is missing */
+
+.logo-image-slot {
+    display: grid;
+    place-items: center;
+    height: 60px;
+    margin-bottom: 4px;
+}
+
+.logo-image-slot:empty {
+    display: none;
+}
+
+.logo-fallback {
+    font-size: 2.4rem;
+    color: var(--rice-green);
+}
+
+.logo-short {
+    color: var(--rice-dark);
+    font-size: .95rem;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+.logo-name {
+    color: var(--rice-gray);
+    font-size: .75rem;
+    line-height: 1.5;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.logo-item:hover {
+    transform: translateY(-6px);
+    border-color: var(--rice-green);
+    box-shadow: 0 14px 28px rgba(20, 83, 45, .14);
+}
+
+.logo-item:hover img {
+    transform: scale(1.08);
+}
+
+/* Pause / play button */
+
+.logo-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 16px;
+
+    color: var(--rice-green);
+    font-size: .8rem;
+    font-weight: 700;
+
+    background: #fff;
+    border: 1px solid #cfe3d4;
+    border-radius: 50px;
+
+    transition: background .2s ease, color .2s ease;
+}
+
+.logo-toggle:hover {
+    color: #fff;
+    background: var(--rice-green);
+}
+
+@media (max-width: 575.98px) {
+    .logo-marquee {
+        --gap: 14px;
+        --speed: 30s;
+    }
+
+    .logo-item {
+        width: 170px;
+        padding: 14px 12px;
+    }
+
+    .logo-item img,
+    .logo-image-slot {
+        height: 48px;
+    }
+}
+
+/* If the system asks for less motion, the strip keeps moving but much slower,
+   and the visitor can stop it with the pause button. */
+
+@media (prefers-reduced-motion: reduce) {
+    .logo-marquee {
+        --speed: 90s;
+    }
+}

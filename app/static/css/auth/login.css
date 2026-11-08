@@ -1,6 +1,13 @@
 /* =====================================================
    LOGIN PAGE
 ===================================================== */
+body {
+  background-image: url("../../images/auth/image01.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 .login-page {
   min-height: 100vh;
 

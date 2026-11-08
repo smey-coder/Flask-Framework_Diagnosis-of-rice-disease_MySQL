@@ -167,7 +167,7 @@
     <div class="container">
 
         <div class="dd-breadcrumb">
-            <a href="{{ url_for('public.diseases') }}">Rice Diseases</a>
+            <a href="{{ url_for('public.diseases') }}">{{ lang.public.detail.rice_diseases }}</a>
             <i class="bi bi-chevron-right mx-1"></i>
             <span>{{ name_en or name_km }}</span>
         </div>
@@ -177,7 +177,7 @@
 
         <div class="dd-badges">
             {% if disease.is_new %}
-            <span class="dd-badge new"><i class="bi bi-stars"></i> New</span>
+            <span class="dd-badge new"><i class="bi bi-stars"></i> {{ lang.public.detail.new }}</span>
             {% endif %}
             {% if disease.disease_type %}
             <span class="dd-badge"><i class="bi bi-bug"></i> {{ disease.disease_type }}</span>
@@ -209,14 +209,13 @@
                 <div class="detail-content-card" data-animate="fade-up" style="--d: 1">
                     <h5 class="mb-3">
                         <i class="bi bi-card-text me-2 text-success"></i>
-                        Description
-                        <span class="khmer-text">/ ការពិពណ៌នា</span>
+                        {{ lang.public.detail.description }}
                     </h5>
 
                     {% if disease.description %}
                     <p class="dd-description khmer-text">{{ disease.description }}</p>
                     {% else %}
-                    <p class="text-muted mb-0">No description available yet.</p>
+                    <p class="text-muted mb-0">{{ lang.public.detail.no_description }}</p>
                     {% endif %}
                 </div>
 
@@ -226,15 +225,15 @@
             <div class="col-lg-4">
 
                 <div class="dd-side-card" data-animate="fade-left" style="--d: 1">
-                    <h5><i class="bi bi-info-circle me-2 text-success"></i>Quick Facts</h5>
+                    <h5><i class="bi bi-info-circle me-2 text-success"></i>{{ lang.public.detail.quick_facts }}</h5>
 
                     <div class="dd-fact">
-                        <span>Type</span>
+                        <span>{{ lang.public.detail.type }}</span>
                         <span>{{ disease.disease_type or '-' }}</span>
                     </div>
 
                     <div class="dd-fact">
-                        <span>Severity</span>
+                        <span>{{ lang.public.detail.severity }}</span>
                         <span>
                             {% if disease.severity_level %}
                             <span class="sev-pill {{ sev_class }}">

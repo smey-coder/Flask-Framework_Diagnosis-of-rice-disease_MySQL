@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Treatment | Rice Disease Diagnosis System{% endblock %}
+{% block title %}{{ lang.public.treatment.title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
@@ -189,17 +189,15 @@
   }
 </style>
 {% endblock %}
-
 {% block content %}
 <script>document.documentElement.classList.add("reveal-ready");</script>
 
 <!-- PAGE HERO -->
 <section class="page-hero">
     <div class="container">
-        <span class="section-label text-white-50">DISEASE MANAGEMENT</span>
-        <h1>Rice Disease Treatment</h1>
-        <p class="khmer-text">វិធីព្យាបាល និងការគ្រប់គ្រងជំងឺស្រូវ</p>
-        <p>Practical steps to protect your rice crop and recover from disease.</p>
+        <span class="section-label text-white-50">{{ lang.public.treatment.label }}</span>
+        <h1>{{ lang.public.treatment.title }}</h1>
+        <p>{{ lang.public.treatment.subtitle }}</p>
     </div>
 </section>
 
@@ -209,11 +207,10 @@
     <div class="container">
 
         <div class="section-heading text-center" data-animate="fade-up">
-            <span class="section-label">THE RIGHT APPROACH</span>
-            <h2 class="section-title">Four Steps to Manage Rice Disease</h2>
+            <span class="section-label">{{ lang.public.treatment.right_approach }}</span>
+            <h2 class="section-title">{{ lang.public.treatment.four_steps }}</h2>
             <p>
-                Effective treatment starts with a correct diagnosis and
-                combines several methods instead of relying on one.
+                {{ lang.public.treatment.approach_description }}
             </p>
         </div>
 

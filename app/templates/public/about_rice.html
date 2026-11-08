@@ -1,7 +1,7 @@
 
 {% extends "layouts/base.html" %}
 
-{% block title %}About Cambodian Rice{% endblock %}
+{% block title %}{{ lang.public.about.title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
@@ -11,10 +11,9 @@
 
 <section class="page-hero">
     <div class="container">
-        <span class="section-label text-white-50">AGRICULTURAL KNOWLEDGE</span>
-        <h1>About Rice in Cambodia</h1>
-        <p>អំពីស្រូវនៅក្នុងប្រទេសកម្ពុជា</p>
-        <p>Discover the importance of rice in Cambodian agriculture and society.</p>
+        <span class="section-label text-white-50">{{ lang.public.about.label }}</span>
+        <h1>{{ lang.public.about.title }}</h1>
+        <p>{{ lang.public.about.description }}</p>
     </div>
 </section>
 
@@ -24,8 +23,8 @@
         <div class="row align-items-center g-5">
 
             <div class="col-lg-6">
-                <span class="section-label">INTRODUCTION</span>
-                <h2 class="section-title">What Is Rice?</h2>
+                <span class="section-label">{{ lang.public.about.introduction }}</span>
+                <h2 class="section-title">{{ lang.public.about.what_is_rice }}</h2>
 
                 <p>
                     Rice is a cereal grain and one of the most important
@@ -49,8 +48,8 @@
             <div class="col-lg-6">
                 <div class="rice-intro-card">
                     <i class="bi bi-flower2"></i>
-                    <h3>Rice Agriculture</h3>
-                    <p>Growing • Harvesting • Processing</p>
+                    <h3>{{ lang.public.about.rice_agriculture }}</h3>
+                    <p>{{ lang.public.about.growing }} • {{ lang.public.about.harvesting }} • {{ lang.public.about.processing }}</p>
                 </div>
             </div>
 
@@ -63,8 +62,8 @@
     <div class="container">
 
         <div class="section-heading text-center">
-            <span class="section-label">IMPORTANCE</span>
-            <h2 class="section-title">Why Is Rice Important to Cambodia?</h2>
+            <span class="section-label">{{ lang.public.about.importance }}</span>
+            <h2 class="section-title">{{ lang.public.about.why_important }}</h2>
         </div>
 
         <div class="row g-4 mt-3">
@@ -98,9 +97,9 @@
     <div class="container">
 
         <div class="section-heading text-center">
-            <span class="section-label">RICE FARMING ENVIRONMENTS</span>
-            <h2 class="section-title">Rice Cultivation in Cambodia</h2>
-            <p>Different environments require different cultivation methods.</p>
+            <span class="section-label">{{ lang.public.about.environments }}</span>
+            <h2 class="section-title">{{ lang.public.about.cultivation_in_cambodia }}</h2>
+            <p>{{ lang.public.about.different_environments }}</p>
         </div>
 
         <div class="row g-4 mt-3">
@@ -129,17 +128,16 @@
 
 <section class="section-padding bg-light">
     <div class="container text-center">
-        <h2 class="section-title">Explore More About Cambodian Rice</h2>
-        <p>Discover rice varieties and cultivation techniques.</p>
+        <h2 class="section-title">{{ lang.public.about.explore_more }}</h2>
 
         <a href="{{ url_for('public.rice_varieties') }}"
            class="btn btn-success rounded-pill px-4">
-            Explore Rice Varieties
+            {{ lang.public.about.explore_varieties }}
         </a>
 
         <a href="{{ url_for('public.cultivation') }}"
            class="btn btn-outline-success rounded-pill px-4 ms-2">
-            Rice Cultivation
+            {{ lang.public.about.rice_cultivation }}
         </a>
     </div>
 </section>

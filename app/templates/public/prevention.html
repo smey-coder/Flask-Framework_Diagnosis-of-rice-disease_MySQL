@@ -1,7 +1,7 @@
 
 {% extends "layouts/base.html" %}
 
-{% block title %}Rice Disease Prevention{% endblock %}
+{% block title %}{{ lang.public.prevention.title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
@@ -11,10 +11,9 @@
 
 <section class="page-hero">
     <div class="container">
-        <span class="section-label text-white-50">PROTECT RICE CROPS</span>
-        <h1>Rice Disease Prevention</h1>
-        <p>ការការពារ និងគ្រប់គ្រងជំងឺស្រូវ</p>
-        <p>Learn practical methods to maintain healthy rice crops.</p>
+        <span class="section-label text-white-50">{{ lang.public.prevention.label }}</span>
+        <h1>{{ lang.public.prevention.title }}</h1>
+        <p>{{ lang.public.prevention.subtitle }}</p>
     </div>
 </section>
 
@@ -22,11 +21,10 @@
     <div class="container">
 
         <div class="section-heading text-center">
-            <span class="section-label">PREVENTION METHODS</span>
-            <h2 class="section-title">How to Prevent Rice Diseases</h2>
+            <span class="section-label">{{ lang.public.prevention.methods }}</span>
+            <h2 class="section-title">{{ lang.public.prevention.how }}</h2>
             <p>
-                Prevention and regular monitoring are important
-                parts of successful rice farm management.
+                {{ lang.public.prevention.description }}
             </p>
         </div>
 
@@ -83,16 +81,14 @@
 
             <div class="col-lg-6">
 
-                <span class="section-label">EARLY DETECTION</span>
+                <span class="section-label">{{ lang.public.prevention.early_detection }}</span>
 
                 <h2 class="section-title">
-                    Monitor Rice Crops Regularly
+                    {{ lang.public.prevention.monitor_title }}
                 </h2>
 
                 <p>
-                    Regular crop monitoring allows farmers to identify
-                    abnormal changes in rice plants and respond
-                    before problems become more serious.
+                    {{ lang.public.prevention.monitor_description }}
                 </p>
 
                 <ul class="stage-task-list">
@@ -108,7 +104,7 @@
 
                 <div class="rice-intro-card">
                     <i class="bi bi-activity"></i>
-                    <h3>Crop Monitoring</h3>
+                    <h3>{{ lang.public.prevention.crop_monitoring }}</h3>
                     <p>Observe • Record • Analyze • Manage</p>
                 </div>
 
@@ -128,17 +124,16 @@
 
             <i class="bi bi-cpu system-banner-icon"></i>
 
-            <h2>Use Our Rice Disease Diagnosis System</h2>
+            <h2>{{ lang.public.prevention.system_cta }}</h2>
 
             <p>
-                Identify possible rice diseases based on symptoms
-                and receive recommendations from our Expert System.
+                {{ lang.public.prevention.system_description }}
             </p>
 
             <a href="{{ url_for('auth.login') }}"
                class="btn btn-light text-success rounded-pill px-4">
                 <i class="bi bi-search me-2"></i>
-                Start Diagnosis
+                {{ lang.public.prevention.start_diagnosis }}
             </a>
 
         </div>

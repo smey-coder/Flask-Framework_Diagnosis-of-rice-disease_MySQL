@@ -1,7 +1,13 @@
 /* =========================================================
    VERIFY EMAIL PAGE
 ========================================================= */
-
+body {
+  background-image: url("../../images/auth/image01.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 .verify-page {
   min-height: 100vh;
   display: flex;

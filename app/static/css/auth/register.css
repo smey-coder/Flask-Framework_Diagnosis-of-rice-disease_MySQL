@@ -1,7 +1,13 @@
 /* =========================================================
    REGISTER PAGE
 ========================================================= */
-
+body {
+  background-image: url("../../images/auth/image01.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 .register-page {
   min-height: 90vh;
   display: flex;

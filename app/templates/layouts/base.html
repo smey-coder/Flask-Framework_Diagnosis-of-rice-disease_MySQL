@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en">
+<html lang="{{ session.get('lang', 'en') }}">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,11 +31,11 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
 
-    <link rel="stylesheet"
+    <!-- <link rel="stylesheet"
           href="{{ url_for('static', filename='css/register.css') }}">
 
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/login.css') }}">
+          href="{{ url_for('static', filename='css/login.css') }}"> -->
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/base.css') }}">
@@ -179,6 +179,26 @@
             border-color: #dc3545;
         }
 
+        .language-switch {
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.4);
+            background: rgba(255,255,255,.08);
+            border-radius: 50px;
+            padding: 7px 12px;
+        }
+
+        .language-switch:hover,
+        .language-switch:focus,
+        .language-switch.show {
+            color: #fff;
+            background: rgba(255,255,255,.18);
+            border-color: rgba(255,255,255,.65);
+        }
+
+        .language-switch img {
+            object-fit: cover;
+        }
+
         /* ================= MAIN CONTENT ================= */
 
         main {
@@ -236,7 +256,6 @@
                 padding: 12px 0;
                 gap: 12px !important;
             }
-
             .user-badge {
                 display: inline-block;
             }
@@ -248,7 +267,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 
-<body>
+<body{% if session.get('lang') == 'km' %} class="khmer"{% endif %}>
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-light rice-navbar sticky-top">
     <div class="container">
@@ -292,7 +311,7 @@
                     <a class="nav-link {% if request.endpoint == 'public.home' %}active{% endif %}"
                        href="{{ url_for('public.home') }}">
                         <i class="bi bi-house-door me-1"></i>
-                        Home
+                        {{ lang.public.nav.home }}
                     </a>
                 </li>
 
@@ -300,7 +319,7 @@
                     <a class="nav-link {% if request.endpoint == 'public.about_rice' %}active{% endif %}"
                        href="{{ url_for('public.about_rice') }}">
                         <i class="bi bi-info-circle me-1"></i>
-                        About Rice
+                        {{ lang.public.nav.about_rice }}
                     </a>
                 </li>
 
@@ -308,7 +327,7 @@
                     <a class="nav-link {% if request.endpoint == 'public.rice_varieties' %}active{% endif %}"
                        href="{{ url_for('public.rice_varieties') }}">
                         <i class="bi bi-flower1 me-1"></i>
-                        Rice Varieties
+                        {{ lang.public.nav.rice_varieties }}
                     </a>
                 </li>
 
@@ -316,15 +335,15 @@
                     <a class="nav-link {% if request.endpoint == 'public.cultivation' %}active{% endif %}"
                        href="{{ url_for('public.cultivation') }}">
                         <i class="bi bi-tree me-1"></i>
-                        Cultivation
+                        {{ lang.public.nav.cultivation }}
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link {% if request.endpoint in ['public.diseases', 'public.disease_detail'] %}active{% endif %}"
                        href="{{ url_for('public.diseases') }}">
                         <i class="bi bi-virus me-1"></i>
-                        Rice Diseases
+                        {{ lang.public.nav.diseases }}
                     </a>
                 </li>
 
@@ -332,20 +351,93 @@
                     <a class="nav-link {% if request.endpoint == 'public.prevention' %}active{% endif %}"
                        href="{{ url_for('public.prevention') }}">
                         <i class="bi bi-shield-check me-1"></i>
-                        Prevention
+                        {{ lang.public.nav.prevention }}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ 'active' if request.endpoint == 'public.treatment' }}"
+                    <a class="nav-link {{ 'active' if request.endpoint == 'public.                    {{ lang.public.nav.treatment }}' }}"
                     href="{{ url_for('public.treatment') }}">
                         <i class="bi bi-bandaid me-1"></i>Treatment
                     </a>
+                </li> -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ 'active' if request.endpoint in ['public.diseases', 'public.disease_detail', 'public.prevention', 'public.treatment'] }}"
+                    href="#"
+                    id="riceHealthDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                        <i class="bi bi-heart-pulse me-1"></i>
+                        Rice Health
+                    </a>
+
+                    <ul class="dropdown-menu shadow border-0 rounded-3" aria-labelledby="riceHealthDropdown">
+                        <li>
+                            <a class="dropdown-item {{ 'active' if request.endpoint in ['public.diseases', 'public.disease_detail'] }}"
+                            href="{{ url_for('public.diseases') }}">
+                                <i class="bi bi-virus me-2"></i>Rice Diseases
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ 'active' if request.endpoint == 'public.prevention' }}"
+                            href="{{ url_for('public.prevention') }}">
+                                <i class="bi bi-shield-check me-2"></i>Prevention
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ 'active' if request.endpoint == 'public.treatment' }}"
+                            href="{{ url_for('public.treatment') }}">
+                                <i class="bi bi-bandaid me-2"></i>Treatment
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
             </ul>
 
             <!-- Authentication -->
             <div class="navbar-nav navbar-actions d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn language-switch dropdown-toggle d-flex align-items-center gap-2"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="Select language">
+                        {% if session.get('lang') == 'km' %}
+                            <img src="{{ url_for('static', filename='images/flags/kh.png') }}"
+                                 alt="" width="20" height="14">
+                            <span>ខ្មែរ</span>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/flags/us.png') }}"
+                                 alt="" width="20" height="14">
+                            <span>English</span>
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form method="post" action="{{ url_for('set_language') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="lang" value="en">
+                                <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                                    <img src="{{ url_for('static', filename='images/flags/us.png') }}"
+                                         alt="" width="20" height="14">
+                                    English
+                                </button>
+                            </form>
+                        </li>
+                        <li>
+                            <form method="post" action="{{ url_for('set_language') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="lang" value="km">
+                                <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                                    <img src="{{ url_for('static', filename='images/flags/kh.png') }}"
+                                         alt="" width="20" height="14">
+                                    Khmer
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
 
                 {% if current_user.is_authenticated %}
 
@@ -361,7 +453,7 @@
                         <a class="btn-nav-dashboard"
                            href="{{ url_for('admin.dashboard') }}">
                             <i class="bi bi-speedometer2 me-1"></i>
-                            Dashboard
+                            {{ lang.public.nav.dashboard }}
                         </a>
 
                     {% else %}
@@ -378,7 +470,7 @@
                     <a class="btn-nav-logout text-decoration-none"
                        href="{{ url_for('auth.logout') }}">
                         <i class="bi bi-box-arrow-right me-1"></i>
-                        Logout
+                        {{ lang.public.nav.logout }}
                     </a>
 
                 {% else %}
@@ -387,14 +479,14 @@
                     <a class="btn-nav-login text-decoration-none"
                        href="{{ url_for('auth.login') }}">
                         <i class="bi bi-box-arrow-in-right me-1"></i>
-                        Login
+                        {{ lang.public.nav.login }}
                     </a>
 
                     <!-- Register -->
                     <a class="btn-nav-register text-decoration-none"
                        href="{{ url_for('auth.register') }}">
                         <i class="bi bi-person-plus me-1"></i>
-                        Register
+                        {{ lang.public.nav.register }}
                     </a>
 
                 {% endif %}
@@ -526,6 +618,10 @@
                     </li>
 
                     <li class="mb-2">
+                        <a href="/treatment">Disease Treatment</a>
+                    </li>
+
+                    <li class="mb-2">
                         <a href="{{ url_for('auth.login') }}">
                             Disease Diagnosis
                         </a>
@@ -583,8 +679,11 @@
 
                     <small>
                         Developed for Cambodian Agriculture
-                        <i class="bi bi-heart-fill text-danger mx-1"></i>
+                        <!-- <i class="bi bi-heart-fill text-danger mx-1"></i> -->
+                         <img src="{{ url_for('static', filename='images/home/world.png') }}"
+                         alt="Cambodia" height="16" class="rounded-1 shadow-sm">
                     </small>
+                    
 
                 </div>
 

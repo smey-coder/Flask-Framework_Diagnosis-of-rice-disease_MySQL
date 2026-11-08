@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Home | Rice Disease Diagnosis System{% endblock %}
+{% block title %}{{ lang.public.nav.home }} | Rice Disease Diagnosis System{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
@@ -18,22 +18,19 @@
 
                 <span class="hero-label">
                     <i class="bi bi-flower1"></i>
-                    Cambodian Agriculture
+                    {{ lang.public.home.label }}
                 </span>
 
                 <h1>
-                    Discover the World of
-                    <span>Cambodian Rice</span>
+                    {{ lang.public.home.title }}
                 </h1>
 
                 <h2>
-                    ស្វែងយល់អំពីស្រូវ និងកសិកម្មនៅកម្ពុជា
+                    {{ lang.public.home.subtitle }}
                 </h2>
 
                 <p>
-                    Explore Cambodian rice varieties, learn about cultivation,
-                    understand rice diseases, and discover modern farm management
-                    through agricultural knowledge and technology.
+                    {{ lang.public.home.description }}
                 </p>
 
                 <div class="hero-buttons">
@@ -41,13 +38,13 @@
                     <a href="{{ url_for('public.about_rice') }}"
                        class="btn btn-success btn-lg rounded-pill px-4">
                         <i class="bi bi-book me-2"></i>
-                        Explore Rice
+                        {{ lang.public.home.explore_rice }}
                     </a>
 
                     <a href="{{ url_for('auth.login') }}"
                        class="btn btn-outline-success btn-lg rounded-pill px-4">
                         <i class="bi bi-search me-2"></i>
-                        Start Diagnosis
+                        {{ lang.public.home.start_diagnosis }}
                     </a>
 
                 </div>
@@ -57,17 +54,17 @@
 
                     <div class="hero-highlight-item">
                         <i class="bi bi-flower1"></i>
-                        <span>Rice Knowledge</span>
+                        <span>{{ lang.public.home.rice_knowledge }}</span>
                     </div>
 
                     <div class="hero-highlight-item">
                         <i class="bi bi-shield-check"></i>
-                        <span>Disease Prevention</span>
+                        <span>{{ lang.public.home.disease_prevention }}</span>
                     </div>
 
                     <div class="hero-highlight-item">
                         <i class="bi bi-graph-up-arrow"></i>
-                        <span>Smart Farming</span>
+                        <span>{{ lang.public.home.smart_farming }}</span>
                     </div>
 
                 </div>
@@ -115,7 +112,7 @@
                         <div class="carousel-inner">
 
                             <div class="carousel-item active">
-                                <img src="{{ url_for('static', filename='images/home/home1.jpg') }}"
+                                <img src="{{ url_for('static', filename='images/home/home6.jpg') }}"
                                     class="d-block w-100 hero-image"
                                     alt="Beautiful Cambodian green rice fields">
                             </div>
@@ -175,8 +172,8 @@
                         </div>
 
                         <div>
-                            <h5>Smart Agriculture</h5>
-                            <p>Knowledge for better rice farming</p>
+                            <h5>{{ lang.public.home.smart_agriculture }}</h5>
+                            <p>{{ lang.public.home.better_farming }}</p>
                         </div>
 
                     </div>
@@ -184,7 +181,7 @@
                     <!-- Image Caption -->
                     <div class="hero-image-caption">
                         <i class="bi bi-geo-alt-fill"></i>
-                        Cambodian Rice Fields
+                        {{ lang.public.home.rice_fields }}
                     </div>
 
                 </div>
@@ -206,22 +203,28 @@
         <div class="row align-items-center g-5">
 
             <div class="col-lg-6">
-                <span class="section-label">ABOUT CAMBODIAN RICE</span>
+                <div class="rice-intro-card">
+                    <!-- <i class="bi bi-flower2"></i> -->
+                     <img src="{{ url_for('static', filename='images/home/home5.jpg') }}"
+                        alt="Cambodian Rice Fields"
+                        class="img-fluid rounded">
+                    <h3>{{ lang.public.home.cambodian_rice }}</h3>
+                    <p>Food • Culture • Agriculture • Economy</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <span class="section-label">{{ lang.public.home.about_cambodian_rice }}</span>
 
                 <h2 class="section-title">
-                    Rice: The Heart of Cambodian Agriculture
+                    {{ lang.public.home.rice_heart }}
                 </h2>
 
                 <p>
-                    Rice is one of the most important agricultural crops
-                    in Cambodia. It is a major source of food, income,
-                    employment, and economic development.
+                    {{ lang.public.home.rice_description }}
                 </p>
 
                 <p>
-                    Cambodian farmers have cultivated rice for generations.
-                    Rice farming is closely connected to Cambodian culture,
-                    traditions, and rural livelihoods.
+                    {{ lang.public.home.rice_culture }}
                 </p>
 
                 <p class="khmer-text">
@@ -232,16 +235,8 @@
 
                 <a href="{{ url_for('public.about_rice') }}"
                    class="btn btn-outline-success rounded-pill px-4">
-                    Learn More <i class="bi bi-arrow-right ms-2"></i>
+                    {{ lang.public.home.learn_more }} <i class="bi bi-arrow-right ms-2"></i>
                 </a>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="rice-intro-card">
-                    <i class="bi bi-flower2"></i>
-                    <h3>Cambodian Rice</h3>
-                    <p>Food • Culture • Agriculture • Economy</p>
-                </div>
             </div>
 
         </div>
@@ -254,9 +249,9 @@
     <div class="container">
 
         <div class="section-heading text-center">
-            <span class="section-label">EXPLORE INFORMATION</span>
-            <h2 class="section-title">Learn About Cambodian Rice</h2>
-            <p>Explore agricultural knowledge and rice cultivation information.</p>
+            <span class="section-label">{{ lang.public.home.explore_information }}</span>
+            <h2 class="section-title">{{ lang.public.home.learn_about_rice }}</h2>
+            <p>{{ lang.public.home.explore_knowledge }}</p>
         </div>
 
         <div class="row g-4 mt-3">
@@ -267,9 +262,9 @@
                         <i class="bi bi-book"></i>
                     </div>
                     <h5>About Rice</h5>
-                    <p>Understand the importance of rice in Cambodia.</p>
+                    <p>{{ lang.public.home.about_rice_description }}</p>
                     <a href="{{ url_for('public.about_rice') }}">
-                        Explore <i class="bi bi-arrow-right"></i>
+                        {{ lang.public.home.explore }} <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -280,7 +275,7 @@
                         <i class="bi bi-flower1"></i>
                     </div>
                     <h5>Rice Varieties</h5>
-                    <p>Discover popular Cambodian rice varieties.</p>
+                    <p>{{ lang.public.home.varieties_description }}</p>
                     <a href="{{ url_for('public.rice_varieties') }}">
                         Explore <i class="bi bi-arrow-right"></i>
                     </a>
@@ -293,7 +288,7 @@
                         <i class="bi bi-tree"></i>
                     </div>
                     <h5>Cultivation</h5>
-                    <p>Learn about rice growth and cultivation stages.</p>
+                    <p>{{ lang.public.home.cultivation_description }}</p>
                     <a href="{{ url_for('public.cultivation') }}">
                         Explore <i class="bi bi-arrow-right"></i>
                     </a>
@@ -306,7 +301,7 @@
                         <i class="bi bi-shield-plus"></i>
                     </div>
                     <h5>Rice Diseases</h5>
-                    <p>Identify common rice diseases and symptoms.</p>
+                    <p>{{ lang.public.home.diseases_description }}</p>
                     <a href="{{ url_for('public.diseases') }}">
                         Explore <i class="bi bi-arrow-right"></i>
                     </a>
@@ -323,9 +318,9 @@
     <div class="container">
 
         <div class="section-heading text-center">
-            <span class="section-label">RICE CULTIVATION</span>
-            <h2 class="section-title">Rice Growth Stages</h2>
-            <p>Understand the journey from planting to harvesting.</p>
+            <span class="section-label">{{ lang.public.nav.cultivation }}</span>
+            <h2 class="section-title">{{ lang.public.home.growth_stages }}</h2>
+            <p>{{ lang.public.home.growth_stages_description }}</p>
         </div>
 
         <div class="row g-4 mt-3">
@@ -354,22 +349,20 @@
         <div class="text-center mt-4">
             <a href="{{ url_for('public.cultivation') }}"
                class="btn btn-success rounded-pill px-4">
-                View Cultivation Process
+                {{ lang.public.home.view_cultivation }}
             </a>
         </div>
     </div>
 </section>
-
-
 <!-- DISEASE SECTION -->
 <section class="section-padding bg-light">
     <div class="container">
 
         <div class="section-heading text-center">
-            <span class="section-label">PLANT HEALTH</span>
+            <span class="section-label">{{ lang.public.home.plant_health }}</span>
             <h2 class="section-title">Common Rice Diseases</h2>
             <p>
-                Learn about symptoms, causes, prevention, and disease management.
+                {{ lang.public.home.common_diseases_description }}
             </p>
         </div>
 
@@ -496,5 +489,151 @@
 
     </div>
 </section>
+ 
+<!-- CAMBODIAN AGRICULTURE MINISTRIES & INSTITUTIONS (logos scroll right to left) -->
+<section class="section-padding">
+    <div class="container">
+ 
+        <div class="section-heading text-center" data-animate="fade-up">
+            <span class="section-label">{{ lang.public.home.agriculture_institutions }}</span>
+            <h2 class="section-title">{{ lang.public.home.agriculture_institutions_title }}</h2>
+            <p class="khmer-text">{{ lang.public.home.agriculture_institutions_subtitle }}</p>
+        </div>
+ 
+    </div>
+ 
+    {# (short name, English name, Khmer name, logo file in static/images/agencies/) #}
+    {% set agencies = [
+        ('MAFF', 'Ministry of Agriculture, Forestry and Fisheries',
+         'ក្រសួងកសិកម្ម រុក្ខាប្រមាញ់ និងនេសាទ', 'MAFF.jpg'),
+        ('GDA', 'General Directorate of Agriculture',
+         'អគ្គនាយកដ្ឋានក្សេត្រសាស្រ្ត', 'GDA.png'),
+        ('CARDI', 'Cambodian Agricultural Research and Development Institute',
+         'វិទ្យាស្ថានស្រាវជ្រាវ និងអភិវឌ្ឍន៍កសិកម្មកម្ពុជា', 'CARDI.jpg'),
+        ('RUA', 'Royal University of Agriculture',
+         'សាកលវិទ្យាល័យភូមិន្ទកសិកម្ម', 'RUA.png'),
+        ('MOWRAM', 'Ministry of Water Resources and Meteorology',
+         'ក្រសួងធនធានទឹក និងឧតុនិយម', 'MOWRAM.jpg'),
+        ('MRD', 'Ministry of Rural Development',
+         'ក្រសួងអភិវឌ្ឍន៍ជនបទ', 'MRD.png')
+    ] %}
+ 
+    <div class="logo-marquee mt-4" data-animate="fade-up" aria-label="Agriculture ministries and institutions in Cambodia">
+        <div class="logo-marquee-track">
+            {% for copy in range(2) %}
+            <div class="logo-group" {% if copy == 1 %}aria-hidden="true"{% endif %}>
+                {% for short, english, khmer, file in agencies %}
+                <div class="logo-item" title="{{ khmer if session.get('lang') == 'km' else english }} — {{ english }}">
+                    <img src="{{ url_for('static', filename='images/agencies/' ~ file) }}"
+                         alt="{{ short }}"
+                         loading="lazy"
+                         draggable="false"
+                         onerror="this.style.display='none'; this.nextElementSibling.insertAdjacentHTML('afterbegin', '<i class=&quot;bi bi-bank2 logo-fallback&quot; aria-hidden=&quot;true&quot;></i>');">
+                    <span class="logo-image-slot" aria-hidden="true"></span>
+                    <strong class="logo-short">{{ short }}</strong>
+                    <span class="logo-name">{{ khmer if session.get('lang') == 'km' else english }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+ 
+    <!-- Pause / play control (shown by JavaScript) -->
+    <div class="text-center mt-3" id="logoToggleWrap" hidden>
+        <button type="button" class="logo-toggle" id="logoToggle"
+                aria-pressed="false" aria-label="Pause scrolling logos">
+            <i class="bi bi-pause-fill"></i><span>Pause</span>
+        </button>
+    </div>
+</section>
+ 
+<script>
+  // Right-to-left logo marquee. Same idea as the Java ThreadPanelScroll:
+  //   x -= 5 on every tick, and when the content has left the screen it starts again.
+  (function () {
+    var marquee = document.querySelector(".logo-marquee");
+    var track = document.querySelector(".logo-marquee-track");
+    var firstGroup = track ? track.querySelector(".logo-group") : null;
+ 
+    if (!marquee || !track || !firstGroup) {
+      console.warn("Logo marquee: elements not found");
+      return;
+    }
+ 
+    marquee.classList.add("is-scripted");      // turns the CSS animation off, JavaScript moves it
+ 
+    var x = 0;                                  // like "int x" in Java
+    var speed = window.innerWidth < 576 ? 45 : 60;   // pixels per second (Java: 5 px every 80 ms = 62 px/s)
+    var last = null;
+    var hovered = false;
+    var userPaused = false;
+ 
+    marquee.addEventListener("mouseenter", function () { hovered = true; });
+    marquee.addEventListener("mouseleave", function () { hovered = false; });
+ 
+    // Pause / play button
+    var toggle = document.getElementById("logoToggle");
+    var toggleWrap = document.getElementById("logoToggleWrap");
+ 
+    if (toggle && toggleWrap) {
+      toggleWrap.hidden = false;
+ 
+      toggle.addEventListener("click", function () {
+        userPaused = !userPaused;
+        toggle.setAttribute("aria-pressed", String(userPaused));
+        toggle.setAttribute("aria-label", userPaused ? "Play scrolling logos" : "Pause scrolling logos");
+        toggle.querySelector("i").className = userPaused ? "bi bi-play-fill" : "bi bi-pause-fill";
+        toggle.querySelector("span").textContent = userPaused ? "Play" : "Pause";
+      });
+    }
+ 
+    // Like run() + repaint() in Java: called again and again
+    function tick(time) {
+      if (last === null) last = time;
+      var seconds = Math.min((time - last) / 1000, 0.05);
+      last = time;
+ 
+      if (!hovered && !userPaused) {
+        x -= speed * seconds;                   // like "x -= 5"
+ 
+        var groupWidth = firstGroup.getBoundingClientRect().width;   // like "stringWidth"
+        if (x <= -groupWidth) {                 // like "if (x + stringWidth < 0)"
+          x += groupWidth;                      // start over (seamless, because the next group is identical)
+        }
+ 
+        track.style.transform = "translate3d(" + x + "px, 0, 0)";
+      }
+ 
+      requestAnimationFrame(tick);
+    }
+ 
+    requestAnimationFrame(tick);
+    console.log("Logo marquee started");
+  })();
+</script>
+ 
+<script>
+  // Reveal elements as they scroll into view
+  (function () {
+    var items = document.querySelectorAll("[data-animate]");
+ 
+    if (!("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+ 
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+ 
+    items.forEach(function (el) { observer.observe(el); });
+  })();
+</script>
 
 {% endblock %}
