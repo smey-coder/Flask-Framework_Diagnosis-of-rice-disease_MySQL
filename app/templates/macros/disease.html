@@ -1,0 +1,9 @@
+{% macro image_url(image) -%}
+  {%- if image -%}
+    {%- if image.startswith('http://') or image.startswith('https://') or image.startswith('/') -%}
+      {{ image }}
+    {%- else -%}
+      {{ url_for('static', filename='uploads/disease/' + image.replace('\\', '/')) }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro %}

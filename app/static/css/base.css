@@ -1,416 +1,717 @@
 /* =========================================================
-   1. GLOBAL STYLES & VARIABLES
-========================================================= */
-:root {
-  --rice-green: #198754;
-  --rice-green-dark: #146c43;
-  --rice-green-light: #eaf7ef;
-  --text-dark: #1f2937;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 5px 18px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
-  --font-main: "Inter", "Noto Sans Khmer", sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body,
-h1, h2, h3, h4, h5, h6,
-.navbar-brand,
-.nav-link,
-button,
-.btn,
-label,
-input,
-select,
-textarea {
-  font-family: var(--font-main);
-  line-height: 1.6; /* Prevents Khmer sub-consonants (ជើងអក្សរ) from clipping */
-}
-
-body.app-body {
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f8faf9;
-  color: var(--text-dark);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* =========================================================
-   2. NAVBAR & GLASSMORPHISM
+   2. NAVBAR - PREMIUM GREEN GLASSMORPHISM
 ========================================================= */
 
 .rice-navbar,
 .custom-navbar {
-  min-height: 72px;
-  background: linear-gradient(
-    135deg,
-    rgba(25, 135, 84, 0.95) 0%,
-    rgba(21, 115, 71, 0.95) 55%,
-    rgba(15, 81, 50, 0.95) 100%
-  ) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: var(--shadow-md);
-  z-index: 1030;
-  transition: all 0.3s ease;
+    position: sticky;
+    top: 0;
+    min-height: 72px;
+
+    background: linear-gradient(
+        135deg,
+        rgba(25, 135, 84, 0.97) 0%,
+        rgba(21, 115, 71, 0.97) 55%,
+        rgba(15, 81, 50, 0.97) 100%
+    ) !important;
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+
+    z-index: 1030;
+
+    animation: navbarSlideDown 0.55s ease both;
+
+    transition:
+        background 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
-/* BRANDING & LOGO ANIMATION */
+@keyframes navbarSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* BRAND */
+
 .navbar-brand {
-  transition: transform 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #ffffff !important;
+    font-weight: 800;
+
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
 }
 
 .navbar-brand:hover {
-  transform: translateY(-1px);
+    transform: translateY(-2px);
+    opacity: 0.95;
 }
 
+/* Logo image - supports existing HTML and brand-logo */
+
 .navbar-brand img,
-.brand-logo-wrapper {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.brand-logo {
+    width: 44px;
+    height: 44px;
+
+    object-fit: cover;
+    border-radius: 50%;
+
+    border: 2px solid rgba(255, 255, 255, 0.85);
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease;
 }
 
 .navbar-brand:hover img,
-.navbar-brand:hover .brand-logo-wrapper {
-  transform: rotate(12deg) scale(1.08);
+.navbar-brand:hover .brand-logo {
+    transform: rotate(12deg) scale(1.1);
+
+    box-shadow:
+        0 0 0 5px rgba(255, 255, 255, 0.15),
+        0 5px 18px rgba(0, 0, 0, 0.2);
 }
+
+/* Alternative logo wrapper */
 
 .brand-logo-wrapper {
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  backdrop-filter: blur(6px);
-  box-shadow: var(--shadow-sm);
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    border-radius: 50%;
+    backdrop-filter: blur(8px);
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+
+    transition: transform 0.35s ease;
 }
 
-.brand-logo {
-  width: 38px;
-  height: 38px;
-  object-fit: cover;
-  border-radius: 50%;
+.navbar-brand:hover .brand-logo-wrapper {
+    transform: rotate(10deg) scale(1.08);
 }
 
 .brand-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  line-height: 1.2;
-  color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.3;
+    color: #ffffff;
 }
 
 .brand-subtitle {
-  font-size: 0.7rem;
-  opacity: 0.85;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 400;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 400;
 }
 
+/* Mobile Toggle */
+
+.rice-navbar .navbar-toggler,
+.custom-navbar .navbar-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 10px;
+    padding: 7px 10px;
+
+    box-shadow: none !important;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.rice-navbar .navbar-toggler:hover,
+.custom-navbar .navbar-toggler:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.04);
+}
+
+.rice-navbar .navbar-toggler:active,
+.custom-navbar .navbar-toggler:active {
+    transform: scale(0.94);
+}
+
+/* White hamburger icon */
+
+.rice-navbar .navbar-toggler-icon,
+.custom-navbar .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+
 /* =========================================================
-   3. NAVIGATION LINKS & ACTIVE INDICATOR
+   3. NAVIGATION LINKS & ACTIVE ANIMATION
 ========================================================= */
 
 .rice-navbar .nav-link,
 .custom-navbar .nav-link {
-  position: relative;
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 500;
-  padding: 8px 14px !important;
-  border-radius: 10px;
-  transition: all 0.25s ease;
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+
+    color: rgba(255, 255, 255, 0.9) !important;
+
+    font-size: 0.88rem;
+    font-weight: 500;
+
+    padding: 10px 13px !important;
+    margin: 0 2px;
+
+    border-radius: 10px;
+
+    transition:
+        color 0.25s ease,
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
+
+/* Icon animation */
+
+.rice-navbar .nav-link i,
+.custom-navbar .nav-link i {
+    transition:
+        transform 0.3s ease,
+        color 0.25s ease;
+}
+
+.rice-navbar .nav-link:hover i,
+.custom-navbar .nav-link:hover i {
+    transform: translateY(-2px) scale(1.12);
+}
+
+/* Hover */
 
 .rice-navbar .nav-link:hover,
 .custom-navbar .nav-link:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+    color: #ffffff !important;
+
+    background: rgba(255, 255, 255, 0.16);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Animated active underline indicator */
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 10px;
-  right: 10px;
-  height: 2px;
-  background-color: #ffffff;
-  border-radius: 2px;
-  animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Active navigation */
+
+.rice-navbar .nav-link.active,
+.custom-navbar .nav-link.active {
+    color: #ffffff !important;
+
+    background: rgba(255, 255, 255, 0.16);
+
+    font-weight: 700;
 }
 
-@keyframes scaleIn {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+/* Active underline */
+
+.rice-navbar .nav-link.active::after,
+.custom-navbar .nav-link.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 14px;
+    right: 14px;
+    bottom: 3px;
+
+    height: 2px;
+
+    background: #ffffff;
+    border-radius: 5px;
+
+    transform-origin: center;
+    animation: navUnderline 0.3s ease both;
 }
+
+@keyframes navUnderline {
+    from {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+}
+
+/* Touch feedback */
+
+@media (hover: none) {
+    .rice-navbar .nav-link:active,
+    .custom-navbar .nav-link:active {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(0.97);
+    }
+}
+
+
+/* =========================================================
+   4. NAVBAR BUTTONS & USER PROFILE
+========================================================= */
+
+/* Register button */
 
 .register-nav-btn {
-  border: none;
-  background-color: #ffffff !important;
-  color: var(--rice-green-dark) !important;
-  font-weight: 700;
-  border-radius: 50rem !important;
-  padding: 8px 20px !important;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    color: var(--rice-green-dark) !important;
+    background: #ffffff !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50rem !important;
+
+    padding: 9px 20px !important;
+
+    font-size: 0.88rem;
+    font-weight: 700;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+
+    transition: all 0.3s ease;
 }
 
 .register-nav-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  background-color: #f8f9fa !important;
+    color: #ffffff !important;
+    background: transparent !important;
+
+    border-color: #ffffff;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
 }
 
-/* =========================================================
-   4. USER AVATAR & DROPDOWN MENU
-========================================================= */
+/* Login button */
+
+.login-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    color: #ffffff !important;
+    background: transparent;
+
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 50rem;
+
+    padding: 9px 18px;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    transition: all 0.25s ease;
+}
+
+.login-nav-btn:hover {
+    color: var(--rice-green-dark) !important;
+    background: #ffffff;
+
+    transform: translateY(-2px);
+}
+
+/* Dashboard button */
+
+.dashboard-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.14);
+
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 50rem;
+
+    padding: 9px 16px;
+
+    font-size: 0.86rem;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: all 0.25s ease;
+}
+
+.dashboard-nav-btn:hover {
+    color: var(--rice-green-dark) !important;
+    background: #ffffff;
+
+    transform: translateY(-2px);
+}
+
+/* Logout button */
+
+.logout-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    color: #ffffff !important;
+    background: rgba(220, 53, 69, 0.95);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50rem;
+
+    padding: 9px 16px;
+
+    font-size: 0.86rem;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: all 0.25s ease;
+}
+
+.logout-nav-btn:hover {
+    background: #bb2d3b;
+
+    color: #ffffff !important;
+
+    transform: translateY(-2px);
+}
+
+/* User avatar */
 
 .user-avatar {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: var(--rice-green);
-  background: #ffffff;
-  border-radius: 50%;
-  font-size: 0.9rem;
-  font-weight: 800;
-  box-shadow: var(--shadow-sm);
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    color: var(--rice-green);
+    background: #ffffff;
+
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+
+    font-size: 0.9rem;
+    font-weight: 800;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+
+    transition: transform 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: rotate(8deg) scale(1.08);
 }
 
 .user-avatar.large {
-  width: 48px;
-  height: 48px;
-  font-size: 1.1rem;
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
 }
 
-.user-nav-link {
-  padding: 4px 10px !important;
-}
+/* Username */
 
 .user-nav-name {
-  color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 700;
-  max-width: 140px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    max-width: 140px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .user-nav-username {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.72rem;
 }
 
+.user-nav-link {
+    padding: 4px 10px !important;
+}
+
+/* Dropdown */
+
 .user-dropdown {
-  min-width: 270px;
-  margin-top: 12px !important;
-  border-radius: 16px !important;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  animation: dropdownSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    min-width: 270px;
+
+    margin-top: 12px !important;
+
+    background: #ffffff;
+
+    border: 1px solid var(--border-color);
+    border-radius: 16px !important;
+
+    box-shadow: var(--shadow-lg);
+
+    overflow: hidden;
+
+    animation: dropdownSlide 0.25s ease both;
 }
 
 @keyframes dropdownSlide {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropdown-user-header {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  background: var(--rice-green-light);
-  border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 16px;
+
+    background: var(--rice-green-light);
+
+    border-bottom: 1px solid var(--border-color);
 }
 
 .user-dropdown .dropdown-item {
-  padding: 10px 16px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border-radius: 8px;
-  margin: 4px 6px;
-  width: calc(100% - 12px);
-  transition: all 0.2s ease;
+    padding: 11px 16px;
+
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    border-radius: 8px;
+
+    margin: 4px 6px;
+    width: calc(100% - 12px);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .user-dropdown .dropdown-item:hover {
-  background: var(--rice-green-light);
-  color: var(--rice-green-dark);
-  transform: translateX(4px);
+    color: var(--rice-green-dark);
+    background: var(--rice-green-light);
+
+    transform: translateX(4px);
 }
+
 
 /* =========================================================
-   5. MAIN CONTENT WRAPPER & ANIMATIONS
+   8. RESPONSIVE NAVBAR
 ========================================================= */
 
-.main-wrapper,
-main.content-wrapper {
-  flex: 1 0 auto;
-  padding-top: 24px;
-  padding-bottom: 40px;
-  animation: pageFadeIn 0.35s ease-in-out forwards;
+@media (max-width: 1199.98px) {
+    .rice-navbar .nav-link,
+    .custom-navbar .nav-link {
+        padding: 9px 9px !important;
+        font-size: 0.82rem;
+    }
 }
-
-@keyframes pageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================================================
-   6. FLASH ALERT MESSAGES
-========================================================= */
-
-.flash-container {
-  max-width: 1100px;
-  margin: 0 auto 20px;
-}
-
-.custom-alert {
-  border: none;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  font-size: 0.92rem;
-  font-weight: 500;
-  border-left: 4px solid;
-  animation: alertSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.alert-success { border-left-color: var(--rice-green); }
-.alert-danger { border-left-color: #dc3545; }
-.alert-warning { border-left-color: #ffc107; }
-.alert-info { border-left-color: #0dcaf0; }
-
-@keyframes alertSlideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================================================
-   7. FOOTER (STICKY BOTTOM)
-========================================================= */
-
-footer,
-.app-footer {
-  flex-shrink: 0;
-  padding: 22px 0;
-  background-color: #ffffff;
-  border-top: 1px solid var(--border-color);
-  margin-top: auto;
-}
-
-.footer-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  color: var(--rice-green-dark);
-  text-decoration: none;
-}
-
-.footer-brand img {
-  width: 30px;
-  height: 30px;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-/* =========================================================
-   8. RESPONSIVE BREAKPOINTS
-========================================================= */
 
 @media (max-width: 991.98px) {
-  .rice-navbar,
-  .custom-navbar {
-    min-height: 64px;
-  }
 
-  .brand-subtitle {
-    display: none;
-  }
+    .rice-navbar,
+    .custom-navbar {
+        min-height: 64px;
+    }
 
-  .navbar-collapse {
-    margin-top: 12px;
-    padding: 16px;
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
+    .navbar-collapse {
+        margin-top: 14px;
+        padding: 16px;
 
-  .user-nav-info {
-    display: flex !important;
-    flex-direction: column;
-  }
+        background: rgba(7, 54, 32, 0.96);
 
-  .user-nav-link {
-    width: 100%;
-  }
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
 
-  .register-nav-btn {
-    margin-top: 10px;
-    width: 100%;
-    text-align: center;
-  }
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 16px;
 
-  .main-wrapper,
-  main.content-wrapper {
-    padding-top: 16px;
-  }
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+        animation: mobileMenuOpen 0.3s ease both;
+    }
+
+    @keyframes mobileMenuOpen {
+        from {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .rice-navbar .nav-link,
+    .custom-navbar .nav-link {
+        display: flex;
+        width: 100%;
+
+        padding: 12px 14px !important;
+        margin: 3px 0;
+
+        font-size: 0.9rem;
+    }
+
+    .rice-navbar .nav-link.active::after,
+    .custom-navbar .nav-link.active::after {
+        left: 14px;
+        right: auto;
+        width: 28px;
+        bottom: 3px;
+    }
+
+    .navbar-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch !important;
+
+        gap: 10px;
+
+        width: 100%;
+        margin-top: 15px;
+        padding-top: 15px;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .navbar-actions > * {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .brand-subtitle {
+        display: none;
+    }
+
+    .user-nav-info {
+        display: flex !important;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .register-nav-btn {
+        width: 100%;
+        margin-top: 4px;
+    }
 }
 
 @media (max-width: 575.98px) {
-  .brand-title {
-    font-size: 0.95rem;
-  }
 
-  .brand-logo-wrapper {
-    width: 40px;
-    height: 40px;
-  }
+    .brand-title {
+        font-size: 0.95rem;
+    }
 
-  .brand-logo {
-    width: 33px;
-    height: 33px;
-  }
+    .navbar-brand img,
+    .brand-logo {
+        width: 38px;
+        height: 38px;
+    }
 
-  footer,
-  .app-footer {
-    text-align: center;
-  }
+    .brand-logo-wrapper {
+        width: 42px;
+        height: 42px;
+    }
+
+    .rice-navbar .navbar-collapse,
+    .custom-navbar .navbar-collapse {
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+    .main-wrapper,
+    main.content-wrapper {
+        padding-top: 16px;
+        padding-bottom: 25px;
+    }
+
+    footer,
+    .app-footer {
+        text-align: center;
+    }
 }
 
+
+/* =========================================================
+   9. TOUCH, FOCUS & ACCESSIBILITY
+========================================================= */
+
+/* Touch-friendly navigation */
+
+.rice-navbar .nav-link,
+.custom-navbar .nav-link,
+.register-nav-btn,
+.login-nav-btn,
+.dashboard-nav-btn,
+.logout-nav-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Press animation */
+
+.register-nav-btn:active,
+.login-nav-btn:active,
+.dashboard-nav-btn:active,
+.logout-nav-btn:active {
+    transform: scale(0.96);
+}
+
+/* Keyboard accessibility */
+
+.rice-navbar a:focus-visible,
+.custom-navbar a:focus-visible,
+.rice-navbar button:focus-visible,
+.custom-navbar button:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+}
+
+/* Prevent unwanted animation for accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

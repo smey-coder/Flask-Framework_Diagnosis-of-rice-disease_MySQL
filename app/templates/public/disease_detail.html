@@ -1,0 +1,314 @@
+{% extends "layouts/base.html" %}
+
+{# ---- Split "ជំងឺប្លាស (Rice Blast)" into Khmer + English parts ---- #}
+{% set name_parts = disease.disease_name.split('(') %}
+{% set name_km = name_parts[0].strip() %}
+{% set name_en = name_parts[1].rstrip(')').strip() if name_parts|length > 1 else '' %}
+
+{# ---- Severity colour ---- #}
+{% set sev = (disease.severity_level or '')|lower %}
+{% if sev.startswith('very high') %}
+    {% set sev_class = 'sev-very-high' %}
+{% elif sev.startswith('high') %}
+    {% set sev_class = 'sev-high' %}
+{% elif sev.startswith('medium') %}
+    {% set sev_class = 'sev-medium' %}
+{% elif sev.startswith('low') %}
+    {% set sev_class = 'sev-low' %}
+{% else %}
+    {% set sev_class = 'sev-none' %}
+{% endif %}
+
+{% from "macros/disease.html" import image_url as disease_image_url %}
+{% set image_url = disease_image_url(disease.image) %}
+
+{% block title %}{{ name_en or name_km }} | Rice Disease Diagnosis System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+
+<style>
+  .dd-breadcrumb { font-size: .85rem; color: rgba(255,255,255,.8); margin-bottom: 8px; }
+  .dd-breadcrumb a { color: #fff; text-decoration: none; }
+  .dd-breadcrumb a:hover { text-decoration: underline; }
+
+  .dd-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+  .dd-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: .82rem;
+    font-weight: 700;
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.3);
+    color: #fff;
+  }
+
+  .dd-badge.new { background: #facc15; border-color: #facc15; color: #422006; }
+
+  /* Severity colours */
+  .sev-very-high { --sev: #b91c1c; --sev-bg: #fee2e2; }
+  .sev-high      { --sev: #dc2626; --sev-bg: #fee2e2; }
+  .sev-medium    { --sev: #b45309; --sev-bg: #fef3c7; }
+  .sev-low       { --sev: #15803d; --sev-bg: #dcfce7; }
+  .sev-none      { --sev: #475569; --sev-bg: #e2e8f0; }
+
+  .sev-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--sev);
+    background: var(--sev-bg);
+  }
+
+  /* Image */
+  .dd-image {
+    position: relative;
+    height: 380px;
+    border-radius: 22px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #bbf7d0, #86efac);
+    box-shadow: 0 18px 40px rgba(20, 83, 45, .15);
+    display: grid;
+    place-items: center;
+  }
+
+  .dd-image > i { font-size: 5rem; color: rgba(20,83,45,.45); }
+
+  .dd-image > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .8s ease;
+  }
+
+  .dd-image:hover > img { transform: scale(1.06); }
+
+  .dd-description {
+    white-space: pre-line;       /* keeps the line breaks stored in the database */
+    color: var(--rice-gray);
+    line-height: 1.95;
+    margin: 0;
+  }
+
+  /* Sidebar */
+  .dd-side-card {
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .dd-side-card h5 { color: var(--rice-dark); font-weight: 800; font-size: 1rem; margin-bottom: 16px; }
+
+  .dd-fact { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px dashed #e5eee7; font-size: .9rem; }
+  .dd-fact:last-child { border-bottom: 0; }
+  .dd-fact span:first-child { color: var(--rice-gray); }
+  .dd-fact span:last-child  { font-weight: 600; text-align: right; }
+
+  .dd-cta {
+    background: linear-gradient(135deg, #14532d, #198754);
+    color: #fff;
+    border: 0;
+  }
+
+  .dd-cta h5 { color: #fff; }
+  .dd-cta p  { color: rgba(255,255,255,.85); font-size: .9rem; line-height: 1.7; }
+
+  .dd-other {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--rice-text);
+    transition: background .25s, transform .25s;
+  }
+
+  .dd-other:hover { background: var(--rice-light); transform: translateX(4px); }
+
+  .dd-other-thumb {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: var(--rice-light);
+    color: var(--rice-green);
+    position: relative;
+  }
+
+  .dd-other-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .dd-other strong { display: block; font-size: .88rem; line-height: 1.4; }
+  .dd-other small  { color: var(--rice-gray); }
+
+  @media (max-width: 767.98px) { .dd-image { height: 260px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<script>document.documentElement.classList.add("reveal-ready");</script>
+
+<!-- PAGE HEADER -->
+<section class="page-hero">
+    <div class="container">
+
+        <div class="dd-breadcrumb">
+            <a href="{{ url_for('public.diseases') }}">Rice Diseases</a>
+            <i class="bi bi-chevron-right mx-1"></i>
+            <span>{{ name_en or name_km }}</span>
+        </div>
+
+        <h1 class="khmer-text">{{ name_km }}</h1>
+        {% if name_en %}<p class="mb-0">{{ name_en }}</p>{% endif %}
+
+        <div class="dd-badges">
+            {% if disease.is_new %}
+            <span class="dd-badge new"><i class="bi bi-stars"></i> New</span>
+            {% endif %}
+            {% if disease.disease_type %}
+            <span class="dd-badge"><i class="bi bi-bug"></i> {{ disease.disease_type }}</span>
+            {% endif %}
+            {% if disease.severity_level %}
+            <span class="dd-badge"><i class="bi bi-exclamation-triangle"></i> {{ disease.severity_level }}</span>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+
+<!-- DETAIL -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Left: image + description -->
+            <div class="col-lg-8">
+
+                <div class="dd-image" data-animate="fade-up">
+                    <i class="bi bi-virus"></i>
+                    {% if image_url %}
+                    <img src="{{ image_url }}" alt="{{ name_en or name_km }}" onerror="this.remove()">
+                    {% endif %}
+                </div>
+
+                <div class="detail-content-card" data-animate="fade-up" style="--d: 1">
+                    <h5 class="mb-3">
+                        <i class="bi bi-card-text me-2 text-success"></i>
+                        Description
+                        <span class="khmer-text">/ ការពិពណ៌នា</span>
+                    </h5>
+
+                    {% if disease.description %}
+                    <p class="dd-description khmer-text">{{ disease.description }}</p>
+                    {% else %}
+                    <p class="text-muted mb-0">No description available yet.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Right: facts + CTA + other diseases -->
+            <div class="col-lg-4">
+
+                <div class="dd-side-card" data-animate="fade-left" style="--d: 1">
+                    <h5><i class="bi bi-info-circle me-2 text-success"></i>Quick Facts</h5>
+
+                    <div class="dd-fact">
+                        <span>Type</span>
+                        <span>{{ disease.disease_type or '-' }}</span>
+                    </div>
+
+                    <div class="dd-fact">
+                        <span>Severity</span>
+                        <span>
+                            {% if disease.severity_level %}
+                            <span class="sev-pill {{ sev_class }}">
+                                <i class="bi bi-activity"></i>{{ disease.severity_level }}
+                            </span>
+                            {% else %}-{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="dd-fact">
+                        <span>Last updated</span>
+                        <span>{{ disease.updated_at.strftime('%d %b %Y') if disease.updated_at else '-' }}</span>
+                    </div>
+                </div>
+
+                <div class="dd-side-card dd-cta" data-animate="fade-left" style="--d: 2">
+                    <h5><i class="bi bi-search me-2"></i>Think your rice has this?</h5>
+                    <p>Use our expert system to match your field symptoms and get prevention advice.</p>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-light text-success rounded-pill px-4">
+                        Start Diagnosis
+                    </a>
+                </div>
+
+                {% if other_diseases %}
+                <div class="dd-side-card" data-animate="fade-left" style="--d: 3">
+                    <h5><i class="bi bi-collection me-2 text-success"></i>Other Diseases</h5>
+
+                    {% for d in other_diseases %}
+                    {% set thumb = disease_image_url(d.image) %}
+                    <a href="{{ url_for('public.disease_detail', disease_id=d.id) }}" class="dd-other">
+                        <div class="dd-other-thumb">
+                            <i class="bi bi-virus"></i>
+                            {% if thumb %}<img src="{{ thumb }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+                        </div>
+                        <div>
+                            <strong class="khmer-text">{{ d.disease_name }}</strong>
+                            <small>{{ d.severity_level or '' }}</small>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div class="mt-4" data-animate="fade-up">
+            <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-success rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>Back to all diseases
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<script>
+  (function () {
+    var items = document.querySelectorAll("[data-animate]");
+
+    if (!("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+    items.forEach(function (el) { observer.observe(el); });
+  })();
+</script>
+{% endblock %}

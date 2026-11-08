@@ -1,0 +1,149 @@
+
+{% extends "layouts/base.html" %}
+
+{% block title %}Rice Disease Prevention{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="section-label text-white-50">PROTECT RICE CROPS</span>
+        <h1>Rice Disease Prevention</h1>
+        <p>ការការពារ និងគ្រប់គ្រងជំងឺស្រូវ</p>
+        <p>Learn practical methods to maintain healthy rice crops.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">PREVENTION METHODS</span>
+            <h2 class="section-title">How to Prevent Rice Diseases</h2>
+            <p>
+                Prevention and regular monitoring are important
+                parts of successful rice farm management.
+            </p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set methods = [
+                ('Use Healthy Seeds', 'bi-flower1',
+                 'Select healthy, high-quality seeds from reliable sources.'),
+                ('Choose Suitable Varieties', 'bi-shield-check',
+                 'Select rice varieties suitable for local growing conditions and disease risks.'),
+                ('Manage Water Properly', 'bi-droplet',
+                 'Maintain appropriate irrigation and drainage based on crop requirements.'),
+                ('Apply Balanced Fertilizer', 'bi-moisture',
+                 'Provide balanced nutrients and avoid excessive fertilizer application.'),
+                ('Monitor Crops Regularly', 'bi-search',
+                 'Inspect rice leaves, stems, and grains for unusual symptoms.'),
+                ('Manage Infected Plants', 'bi-trash3',
+                 'Remove and manage infected plant materials appropriately.'),
+                ('Control Weeds', 'bi-tree',
+                 'Manage weeds to reduce competition and maintain field health.'),
+                ('Consult Agricultural Experts', 'bi-person-check',
+                 'Seek expert advice when disease symptoms are uncertain.')
+            ] %}
+
+            {% for title, icon, description in methods %}
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="prevention-card h-100">
+
+                    <i class="bi {{ icon }}"></i>
+
+                    <h6>{{ title }}</h6>
+
+                    <p>{{ description }}</p>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- MONITORING -->
+<section class="section-padding bg-light">
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+
+                <span class="section-label">EARLY DETECTION</span>
+
+                <h2 class="section-title">
+                    Monitor Rice Crops Regularly
+                </h2>
+
+                <p>
+                    Regular crop monitoring allows farmers to identify
+                    abnormal changes in rice plants and respond
+                    before problems become more serious.
+                </p>
+
+                <ul class="stage-task-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Inspect leaves and stems.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Observe changes in plant color.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Record unusual crop conditions.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Seek expert advice when necessary.</li>
+                </ul>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="rice-intro-card">
+                    <i class="bi bi-activity"></i>
+                    <h3>Crop Monitoring</h3>
+                    <p>Observe • Record • Analyze • Manage</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- SYSTEM CTA -->
+<section class="section-padding">
+    <div class="container">
+
+        <div class="system-banner text-center">
+
+            <i class="bi bi-cpu system-banner-icon"></i>
+
+            <h2>Use Our Rice Disease Diagnosis System</h2>
+
+            <p>
+                Identify possible rice diseases based on symptoms
+                and receive recommendations from our Expert System.
+            </p>
+
+            <a href="{{ url_for('auth.login') }}"
+               class="btn btn-light text-success rounded-pill px-4">
+                <i class="bi bi-search me-2"></i>
+                Start Diagnosis
+            </a>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

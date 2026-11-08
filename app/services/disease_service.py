@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 import os
 import cloudinary.uploader
 import cloudinary.api
+from sqlalchemy import or_
 
 from app.services.audit_service import log_audit
 
@@ -118,6 +119,59 @@ class DiseaseService:
         query = query.order_by(DiseaseTable.id.desc())
         return query.paginate(page=page, per_page=per_page, error_out=False)
 
+    @staticmethod
+    def get_active_disease_by_id(disease_id: int) -> Optional[DiseaseTable]:
+        """Public page: only diseases that are switched on."""
+        return DiseaseTable.query.filter(
+            DiseaseTable.id == disease_id,
+            DiseaseTable.is_active.is_(True),
+        ).first()
+
+    @staticmethod
+    def get_other_diseases(disease_id: int, limit: int = 3):
+        """Sidebar list on the detail page."""
+        return (
+            DiseaseTable.query
+            .filter(
+                DiseaseTable.id != disease_id,
+                DiseaseTable.is_active.is_(True),
+            )
+            .order_by(DiseaseTable.id)
+            .limit(limit)
+            .all()
+        )
+    @staticmethod
+    def search_public_diseases(q="", disease_type="", severity="", page=1, per_page=9):
+        query = DiseaseTable.query.filter(DiseaseTable.is_active.is_(True))
+
+        if q:
+            like = f"%{q}%"
+            query = query.filter(or_(
+                DiseaseTable.disease_name.ilike(like),
+                DiseaseTable.description.ilike(like),
+            ))
+        if disease_type:
+            query = query.filter(DiseaseTable.disease_type == disease_type)
+        if severity:
+            query = query.filter(DiseaseTable.severity_level == severity)
+
+        return query.order_by(DiseaseTable.id).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
+
+    @staticmethod
+    def get_disease_types():
+        rows = (db.session.query(DiseaseTable.disease_type)
+                .filter(DiseaseTable.is_active.is_(True), DiseaseTable.disease_type.isnot(None))
+                .distinct().order_by(DiseaseTable.disease_type).all())
+        return [r[0] for r in rows]
+
+    @staticmethod
+    def get_severity_levels():
+        rows = (db.session.query(DiseaseTable.severity_level)
+                .filter(DiseaseTable.is_active.is_(True), DiseaseTable.severity_level.isnot(None))
+                .distinct().order_by(DiseaseTable.severity_level).all())
+        return [r[0] for r in rows]
     # ---------- CREATE ---------- #
     @staticmethod
     def create_disease(data: dict, image_file=None) -> DiseaseTable:

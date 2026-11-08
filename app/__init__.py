@@ -65,14 +65,15 @@ def create_app(config_class: type[Config] = Config):
     # ================= HOME REDIRECT =================
     @app.route("/")
     def home():
-        if current_user.is_authenticated:
-            if current_user.has_role("Admin"):
-                return redirect(url_for("admin.dashboard"))
-            elif current_user.has_role("Expert"):
-                return redirect(url_for("admin.dashboard"))
-            else:
-                return redirect(url_for("user.dashboard"))
-        return redirect(url_for("auth.login"))
+        # if current_user.is_authenticated:
+        #     if current_user.has_role("Admin"):
+        #         return redirect(url_for("admin.dashboard"))
+        #     elif current_user.has_role("Expert"):
+        #         return redirect(url_for("admin.dashboard"))
+        #     else:
+        #         return redirect(url_for("user.dashboard"))
+        # return redirect(url_for("auth.login"))
+        return render_template('public/home.html')
     # ================= REGISTER BLUEPRINTS =================
     from app.routes.user_routes import user_bp
     from app.routes.role_routes import role_bp
@@ -99,11 +100,13 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.user_route.profile_routes_user import profile_user_bp 
     from app.routes.growth_stage import growth_stage_bp
     from app.routes.rice_variety_routes import rice_variety_bp
+    from app.routes.public import public_bp
   
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(public_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(expert_bp)
     app.register_blueprint(user_dashboard_bp)

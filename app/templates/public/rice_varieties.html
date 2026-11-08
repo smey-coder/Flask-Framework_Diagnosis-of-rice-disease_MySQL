@@ -1,0 +1,130 @@
+
+{% extends "layouts/base.html" %}
+
+{% block title %}Cambodian Rice Varieties{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="section-label text-white-50">RICE INFORMATION</span>
+        <h1>Cambodian Rice Varieties</h1>
+        <p>ពូជស្រូវនៅប្រទេសកម្ពុជា</p>
+        <p>Discover the characteristics of different rice varieties.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">POPULAR VARIETIES</span>
+            <h2 class="section-title">Rice Varieties in Cambodia</h2>
+            <p>
+                Explore important Cambodian rice varieties and their characteristics.
+            </p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set varieties = [
+                {
+                    'name': 'Phka Rumduol',
+                    'khmer': 'ផ្ការំដួល',
+                    'type': 'Fragrant Rice',
+                    'description': 'A well-known Cambodian aromatic rice variety.',
+                    'duration': 'Varies by growing conditions'
+                },
+                {
+                    'name': 'Phka Malis',
+                    'khmer': 'ផ្កាម្លិះ',
+                    'type': 'Aromatic Rice',
+                    'description': 'An aromatic rice variety included in Cambodian rice information.',
+                    'duration': 'Varies by growing conditions'
+                },
+                {
+                    'name': 'Sen Kra Ob',
+                    'khmer': 'សែនក្រអូប',
+                    'type': 'Rice Variety',
+                    'description': 'A rice variety to explore in the local variety catalog.',
+                    'duration': 'Verify by variety'
+                },
+                {
+                    'name': 'IR 504',
+                    'khmer': 'អាយអា ៥០៤',
+                    'type': 'Rice Variety',
+                    'description': 'A variety name used in rice production information.',
+                    'duration': 'Verify by variety'
+                }
+            ] %}
+
+            {% for rice in varieties %}
+            <div class="col-md-6 col-lg-3">
+                <div class="info-card h-100">
+
+                    <div class="info-icon">
+                        <i class="bi bi-flower1"></i>
+                    </div>
+
+                    <span class="badge bg-success-subtle text-success mb-3">
+                        {{ rice.type }}
+                    </span>
+
+                    <h5>{{ rice.name }}</h5>
+
+                    <p class="khmer-text">{{ rice.khmer }}</p>
+
+                    <p>{{ rice.description }}</p>
+
+                    <hr>
+
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        Growing duration: {{ rice.duration }}
+                    </small>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+</section>
+
+<section class="section-padding bg-light">
+    <div class="container">
+
+        <div class="section-heading">
+            <h2 class="section-title">Information to Consider When Selecting Rice Seeds</h2>
+            <p>Farmers should consider the following factors.</p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set factors = [
+                ('Climate Conditions', 'Select varieties suitable for local weather and rainfall.', 'bi-cloud-sun'),
+                ('Growing Season', 'Consider the appropriate planting season.', 'bi-calendar3'),
+                ('Water Availability', 'Consider irrigation and water availability.', 'bi-droplet'),
+                ('Disease Resistance', 'Choose varieties with suitable disease resistance.', 'bi-shield-check')
+            ] %}
+
+            {% for title, description, icon in factors %}
+            <div class="col-md-6 col-lg-3">
+                <div class="prevention-card">
+                    <i class="bi {{ icon }}"></i>
+                    <h6>{{ title }}</h6>
+                    <p>{{ description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,500 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Home | Rice Disease Diagnosis System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <!-- LEFT: HERO CONTENT -->
+            <div class="col-lg-6 hero-content">
+
+                <span class="hero-label">
+                    <i class="bi bi-flower1"></i>
+                    Cambodian Agriculture
+                </span>
+
+                <h1>
+                    Discover the World of
+                    <span>Cambodian Rice</span>
+                </h1>
+
+                <h2>
+                    ស្វែងយល់អំពីស្រូវ និងកសិកម្មនៅកម្ពុជា
+                </h2>
+
+                <p>
+                    Explore Cambodian rice varieties, learn about cultivation,
+                    understand rice diseases, and discover modern farm management
+                    through agricultural knowledge and technology.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="{{ url_for('public.about_rice') }}"
+                       class="btn btn-success btn-lg rounded-pill px-4">
+                        <i class="bi bi-book me-2"></i>
+                        Explore Rice
+                    </a>
+
+                    <a href="{{ url_for('auth.login') }}"
+                       class="btn btn-outline-success btn-lg rounded-pill px-4">
+                        <i class="bi bi-search me-2"></i>
+                        Start Diagnosis
+                    </a>
+
+                </div>
+
+                <!-- Hero Highlights -->
+                <div class="hero-highlights">
+
+                    <div class="hero-highlight-item">
+                        <i class="bi bi-flower1"></i>
+                        <span>Rice Knowledge</span>
+                    </div>
+
+                    <div class="hero-highlight-item">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Disease Prevention</span>
+                    </div>
+
+                    <div class="hero-highlight-item">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Smart Farming</span>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- RIGHT: HERO IMAGE SLIDESHOW -->
+            <div class="col-lg-6 hero-image-column">
+
+                <div class="hero-image-wrapper">
+
+                    <!-- Bootstrap Carousel -->
+                    <div id="riceHeroCarousel"
+                        class="carousel slide carousel-fade hero-carousel"
+                        data-bs-ride="carousel"
+                        data-bs-interval="4000"
+                        data-bs-pause="hover"
+                        data-bs-touch="true">
+
+                        <!-- Indicators -->
+                        <div class="carousel-indicators">
+                            <button type="button"
+                                    data-bs-target="#riceHeroCarousel"
+                                    data-bs-slide-to="0"
+                                    class="active"
+                                    aria-current="true"
+                                    aria-label="Slide 1"></button>
+
+                            <button type="button"
+                                    data-bs-target="#riceHeroCarousel"
+                                    data-bs-slide-to="1"
+                                    aria-label="Slide 2"></button>
+
+                            <button type="button"
+                                    data-bs-target="#riceHeroCarousel"
+                                    data-bs-slide-to="2"
+                                    aria-label="Slide 3"></button>
+
+                            <button type="button"
+                                    data-bs-target="#riceHeroCarousel"
+                                    data-bs-slide-to="3"
+                                    aria-label="Slide 4"></button>
+                        </div>
+
+                        <!-- Slideshow Images -->
+                        <div class="carousel-inner">
+
+                            <div class="carousel-item active">
+                                <img src="{{ url_for('static', filename='images/home/home1.jpg') }}"
+                                    class="d-block w-100 hero-image"
+                                    alt="Beautiful Cambodian green rice fields">
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="{{ url_for('static', filename='images/home/home2.jpg') }}"
+                                    class="d-block w-100 hero-image"
+                                    alt="Cambodian farmers cultivating rice">
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="{{ url_for('static', filename='images/home/home3.jpg') }}"
+                                    class="d-block w-100 hero-image"
+                                    alt="Golden rice fields ready for harvest">
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="{{ url_for('static', filename='images/home/home4.jpg') }}"
+                                    class="d-block w-100 hero-image"
+                                    alt="Rice farming in the Cambodian countryside">
+                            </div>
+
+                        </div>
+
+                        <!-- Previous Button -->
+                        <button class="carousel-control-prev"
+                                type="button"
+                                data-bs-target="#riceHeroCarousel"
+                                data-bs-slide="prev">
+
+                            <span class="carousel-control-prev-icon"
+                                aria-hidden="true"></span>
+
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+
+                        <!-- Next Button -->
+                        <button class="carousel-control-next"
+                                type="button"
+                                data-bs-target="#riceHeroCarousel"
+                                data-bs-slide="next">
+
+                            <span class="carousel-control-next-icon"
+                                aria-hidden="true"></span>
+
+                            <span class="visually-hidden">Next</span>
+                        </button>
+
+                    </div>
+
+                    <!-- Image Overlay -->
+                    <div class="hero-image-overlay"></div>
+                    <!-- Floating Information Card -->
+                    <div class="hero-floating-card">
+                        <div class="hero-floating-icon">
+                            <i class="bi bi-flower2"></i>
+                        </div>
+
+                        <div>
+                            <h5>Smart Agriculture</h5>
+                            <p>Knowledge for better rice farming</p>
+                        </div>
+
+                    </div>
+
+                    <!-- Image Caption -->
+                    <div class="hero-image-caption">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Cambodian Rice Fields
+                    </div>
+
+                </div>
+
+                <div class="hero-decoration"></div>
+
+            </div>
+
+
+        </div>
+    </div>
+</section>
+
+
+
+<!-- INTRODUCTION -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+                <span class="section-label">ABOUT CAMBODIAN RICE</span>
+
+                <h2 class="section-title">
+                    Rice: The Heart of Cambodian Agriculture
+                </h2>
+
+                <p>
+                    Rice is one of the most important agricultural crops
+                    in Cambodia. It is a major source of food, income,
+                    employment, and economic development.
+                </p>
+
+                <p>
+                    Cambodian farmers have cultivated rice for generations.
+                    Rice farming is closely connected to Cambodian culture,
+                    traditions, and rural livelihoods.
+                </p>
+
+                <p class="khmer-text">
+                    ស្រូវគឺជាដំណាំកសិកម្មដ៏សំខាន់មួយនៅក្នុងប្រទេសកម្ពុជា។
+                    វាជាប្រភពអាហារ ចំណូល និងការងារសម្រាប់ប្រជាកសិករ
+                    ព្រមទាំងមានតួនាទីសំខាន់ក្នុងការអភិវឌ្ឍសេដ្ឋកិច្ចជាតិ។
+                </p>
+
+                <a href="{{ url_for('public.about_rice') }}"
+                   class="btn btn-outline-success rounded-pill px-4">
+                    Learn More <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="rice-intro-card">
+                    <i class="bi bi-flower2"></i>
+                    <h3>Cambodian Rice</h3>
+                    <p>Food • Culture • Agriculture • Economy</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- INFORMATION CARDS -->
+<section class="section-padding bg-light">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">EXPLORE INFORMATION</span>
+            <h2 class="section-title">Learn About Cambodian Rice</h2>
+            <p>Explore agricultural knowledge and rice cultivation information.</p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h5>About Rice</h5>
+                    <p>Understand the importance of rice in Cambodia.</p>
+                    <a href="{{ url_for('public.about_rice') }}">
+                        Explore <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-flower1"></i>
+                    </div>
+                    <h5>Rice Varieties</h5>
+                    <p>Discover popular Cambodian rice varieties.</p>
+                    <a href="{{ url_for('public.rice_varieties') }}">
+                        Explore <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-tree"></i>
+                    </div>
+                    <h5>Cultivation</h5>
+                    <p>Learn about rice growth and cultivation stages.</p>
+                    <a href="{{ url_for('public.cultivation') }}">
+                        Explore <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-shield-plus"></i>
+                    </div>
+                    <h5>Rice Diseases</h5>
+                    <p>Identify common rice diseases and symptoms.</p>
+                    <a href="{{ url_for('public.diseases') }}">
+                        Explore <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- CULTIVATION STAGES -->
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">RICE CULTIVATION</span>
+            <h2 class="section-title">Rice Growth Stages</h2>
+            <p>Understand the journey from planting to harvesting.</p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set stages = [
+                ('Land Preparation', 'ការរៀបចំដី', 'bi-border-all'),
+                ('Seedling', 'ការបណ្តុះកូនស្រូវ', 'bi-flower1'),
+                ('Transplanting', 'ការស្ទូងស្រូវ', 'bi-tree'),
+                ('Tillering', 'ការបែកគុម្ព', 'bi-flower2'),
+                ('Flowering', 'ការចេញផ្កា', 'bi-flower3'),
+                ('Harvesting', 'ការប្រមូលផល', 'bi-basket')
+            ] %}
+
+            {% for name, khmer, icon in stages %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stage-card">
+                    <i class="bi {{ icon }}"></i>
+                    <h6>{{ name }}</h6>
+                    <small>{{ khmer }}</small>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('public.cultivation') }}"
+               class="btn btn-success rounded-pill px-4">
+                View Cultivation Process
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- DISEASE SECTION -->
+<section class="section-padding bg-light">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">PLANT HEALTH</span>
+            <h2 class="section-title">Common Rice Diseases</h2>
+            <p>
+                Learn about symptoms, causes, prevention, and disease management.
+            </p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set disease_list = [
+                (1, 'Rice Blast', 'ជំងឺអុជស្លឹកស្រូវ',
+                 'Diamond-shaped lesions on rice leaves.'),
+                (2, 'Bacterial Leaf Blight', 'ជំងឺបាក់តេរីរលាកស្លឹក',
+                 'Yellowing and drying of leaf edges.'),
+                (3, 'Brown Spot', 'ជំងឺអុចត្នោត',
+                 'Brown circular or oval spots on leaves.'),
+                (4, 'Sheath Blight', 'ជំងឺរលាកស្រោមស្លឹក',
+                 'Lesions on leaf sheaths and lower plant parts.')
+            ] %}
+
+            {% for id, name, khmer, description in disease_list %}
+            <div class="col-md-6 col-lg-3">
+                <div class="disease-card">
+                    <div class="disease-card-icon">
+                        <i class="bi bi-virus"></i>
+                    </div>
+
+                    <div class="p-3">
+                        <h5>{{ name }}</h5>
+                        <p class="khmer-text">{{ khmer }}</p>
+                        <p>{{ description }}</p>
+
+                        <a href="{{ url_for('public.disease_detail', disease_id=id) }}"
+                           class="btn btn-outline-success btn-sm rounded-pill">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('public.diseases') }}"
+               class="btn btn-success rounded-pill px-4">
+                View All Diseases
+            </a>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- SYSTEM INTRODUCTION -->
+<section class="section-padding">
+    <div class="container">
+        <div class="system-banner">
+
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-8">
+                    <span class="section-label text-white-50">
+                        SMART AGRICULTURE TECHNOLOGY
+                    </span>
+
+                    <h2>Rice Disease Diagnosis & Farm Management</h2>
+
+                    <p>
+                        Our Expert System helps farmers identify rice diseases
+                        based on symptoms, receive prevention recommendations,
+                        monitor crop conditions, and manage their farms.
+                    </p>
+
+                    <a href="{{ url_for('auth.login') }}"
+                       class="btn btn-light text-success rounded-pill px-4">
+                        <i class="bi bi-search me-2"></i>
+                        Start Diagnosis
+                    </a>
+                </div>
+
+                <div class="col-lg-4 text-center">
+                    <i class="bi bi-cpu system-banner-icon"></i>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- PREVENTION SECTION -->
+<section class="section-padding bg-light">
+    <div class="container text-center">
+
+        <span class="section-label">PROTECT YOUR CROPS</span>
+        <h2 class="section-title">Prevention Is Better Than Cure</h2>
+
+        <p class="section-description">
+            Regular crop monitoring and proper agricultural practices
+            can help reduce rice disease risks.
+        </p>
+
+        <div class="row g-4 mt-3">
+
+            {% set tips = [
+                ('Healthy Seeds', 'bi-flower1'),
+                ('Field Monitoring', 'bi-search'),
+                ('Water Management', 'bi-droplet'),
+                ('Balanced Fertilizer', 'bi-moisture')
+            ] %}
+
+            {% for name, icon in tips %}
+            <div class="col-6 col-md-3">
+                <div class="prevention-card">
+                    <i class="bi {{ icon }}"></i>
+                    <h6>{{ name }}</h6>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <a href="{{ url_for('public.prevention') }}"
+           class="btn btn-success rounded-pill px-4 mt-4">
+            Learn Prevention Methods
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}

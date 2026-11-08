@@ -1,0 +1,530 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Treatment | Rice Disease Diagnosis System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+
+<style>
+  /* ---------- Approach steps ---------- */
+  .tr-step {
+    position: relative;
+    height: 100%;
+    padding: 28px 22px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-radius: 18px;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+
+  .tr-step:hover { transform: translateY(-8px); box-shadow: 0 16px 32px rgba(20, 83, 45, .13); }
+
+  .tr-step-number {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: .85rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #198754, #20a66a);
+    box-shadow: 0 4px 10px rgba(25, 135, 84, .35);
+  }
+
+  .tr-step i { display: inline-block; font-size: 2.3rem; color: var(--rice-green); margin: 6px 0 12px; transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }
+  .tr-step:hover i { transform: scale(1.2) rotate(-6deg); }
+  .tr-step h6 { color: var(--rice-dark); font-weight: 800; }
+  .tr-step p  { color: var(--rice-gray); font-size: .88rem; line-height: 1.8; margin: 0; }
+
+  /* ---------- Method cards ---------- */
+  .tr-method {
+    height: 100%;
+    padding: 28px;
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-top: 4px solid var(--accent, var(--rice-green));
+    border-radius: 18px;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+
+  .tr-method:hover { transform: translateY(-8px); box-shadow: 0 18px 36px rgba(20, 83, 45, .13); }
+
+  .tr-method-icon {
+    width: 60px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    margin-bottom: 18px;
+    font-size: 1.7rem;
+    color: var(--accent, var(--rice-green));
+    background: color-mix(in srgb, var(--accent, #198754) 12%, white);
+  }
+
+  .tr-method h5 { color: var(--rice-dark); font-weight: 800; margin-bottom: 4px; }
+  .tr-method .tr-tag { font-size: .78rem; font-weight: 700; color: var(--accent, var(--rice-green)); }
+  .tr-method p { color: var(--rice-gray); font-size: .9rem; line-height: 1.8; margin: 12px 0; }
+
+  .tr-list { list-style: none; padding: 0; margin: 0; }
+  .tr-list li { display: flex; gap: 9px; margin-bottom: 9px; font-size: .88rem; color: var(--rice-text); line-height: 1.6; }
+  .tr-list li i { color: var(--accent, var(--rice-green)); margin-top: 3px; flex-shrink: 0; }
+
+  /* ---------- Accordion ---------- */
+  .tr-accordion .accordion-item {
+    border: 1px solid #e5eee7;
+    border-radius: 16px !important;
+    overflow: hidden;
+    margin-bottom: 14px;
+    background: #fff;
+    transition: box-shadow .3s ease;
+  }
+
+  .tr-accordion .accordion-item:hover { box-shadow: 0 10px 24px rgba(20, 83, 45, .09); }
+
+  .tr-accordion .accordion-button {
+    gap: 14px;
+    padding: 18px 22px;
+    font-weight: 700;
+    color: var(--rice-dark);
+    background: #fff;
+    box-shadow: none;
+  }
+
+  .tr-accordion .accordion-button:not(.collapsed) { background: var(--rice-light); color: var(--rice-dark); }
+  .tr-accordion .accordion-button:focus { box-shadow: 0 0 0 .22rem rgba(25, 135, 84, .15); }
+
+  .tr-acc-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--rice-green);
+    background: var(--rice-light);
+    font-size: 1.2rem;
+  }
+
+  .accordion-button:not(.collapsed) .tr-acc-icon { background: #fff; }
+
+  .tr-acc-title small { display: block; font-weight: 500; color: var(--rice-gray); font-size: .8rem; }
+
+  .tr-acc-body { padding: 24px; }
+
+  .tr-col-title {
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--rice-green);
+    margin-bottom: 12px;
+  }
+
+  /* ---------- Safety banner ---------- */
+  .tr-safety {
+    position: relative;
+    overflow: hidden;
+    padding: 50px;
+    color: #fff;
+    border-radius: 24px;
+    background: linear-gradient(120deg, #14532d, #198754);
+  }
+
+  .tr-safety::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    right: -90px;
+    top: -90px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .07);
+    animation: pulseRing 6s ease-in-out infinite;
+  }
+
+  .tr-safety > .row { position: relative; z-index: 1; }
+  .tr-safety h2 { font-weight: 800; font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 14px; }
+  .tr-safety p  { color: rgba(255, 255, 255, .85); line-height: 1.8; }
+
+  .tr-safety-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    font-size: .9rem;
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .18);
+    transition: transform .25s ease, background .25s ease;
+  }
+
+  .tr-safety-item:hover { transform: translateX(6px); background: rgba(255, 255, 255, .2); }
+  .tr-safety-item i { color: #b8e6a7; font-size: 1.15rem; margin-top: 1px; }
+
+  /* ---------- Note ---------- */
+  .tr-note {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 18px 22px;
+    border-radius: 16px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #78350f;
+    font-size: .9rem;
+    line-height: 1.8;
+  }
+
+  .tr-note i { font-size: 1.4rem; color: #d97706; }
+
+  @media (max-width: 767.98px) {
+    .tr-safety { padding: 32px 22px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<script>document.documentElement.classList.add("reveal-ready");</script>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+    <div class="container">
+        <span class="section-label text-white-50">DISEASE MANAGEMENT</span>
+        <h1>Rice Disease Treatment</h1>
+        <p class="khmer-text">វិធីព្យាបាល និងការគ្រប់គ្រងជំងឺស្រូវ</p>
+        <p>Practical steps to protect your rice crop and recover from disease.</p>
+    </div>
+</section>
+
+
+<!-- APPROACH -->
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center" data-animate="fade-up">
+            <span class="section-label">THE RIGHT APPROACH</span>
+            <h2 class="section-title">Four Steps to Manage Rice Disease</h2>
+            <p>
+                Effective treatment starts with a correct diagnosis and
+                combines several methods instead of relying on one.
+            </p>
+        </div>
+
+        <div class="row g-4 mt-4">
+            {% set steps = [
+                ('bi-search', 'Identify', 'Match field symptoms to the disease before applying any treatment.'),
+                ('bi-shield-check', 'Prevent', 'Use healthy seed, balanced fertilizer, and good water control.'),
+                ('bi-bandaid', 'Treat', 'Apply the right cultural, biological, or chemical method early.'),
+                ('bi-binoculars', 'Monitor', 'Check the field regularly to see whether the disease is spreading.')
+            ] %}
+
+            {% for icon, title, text in steps %}
+            <div class="col-sm-6 col-lg-3" data-animate="fade-up" style="--d: {{ loop.index0 }}">
+                <div class="tr-step">
+                    <span class="tr-step-number">{{ loop.index }}</span>
+                    <i class="bi {{ icon }}"></i>
+                    <h6>{{ title }}</h6>
+                    <p>{{ text }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+
+<!-- TREATMENT METHODS -->
+<section class="section-padding bg-light">
+    <div class="container">
+
+        <div class="section-heading text-center" data-animate="fade-up">
+            <span class="section-label">TREATMENT METHODS</span>
+            <h2 class="section-title">Choose the Right Method</h2>
+            <p>Start with the safest, lowest-cost methods and use chemicals only when needed.</p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set methods = [
+                {
+                    'icon': 'bi-flower2', 'accent': '#198754',
+                    'title': 'Cultural Control', 'tag': 'First choice • Low cost',
+                    'text': 'Change how the crop is grown so the disease finds it harder to spread.',
+                    'points': [
+                        'Plant certified, disease-free seed',
+                        'Avoid too much nitrogen fertilizer',
+                        'Manage water and drain the field when needed',
+                        'Remove weeds and infected crop residue'
+                    ]
+                },
+                {
+                    'icon': 'bi-bug', 'accent': '#0891b2',
+                    'title': 'Biological Control', 'tag': 'Eco-friendly',
+                    'text': 'Use natural organisms and products that suppress disease-causing microbes.',
+                    'points': [
+                        'Seed treatment with beneficial microbes',
+                        'Use compost and organic matter to improve soil health',
+                        'Protect natural enemies in the field',
+                        'Combine with cultural control for better results'
+                    ]
+                },
+                {
+                    'icon': 'bi-shield-plus', 'accent': '#7c3aed',
+                    'title': 'Resistant Varieties', 'tag': 'Long-term protection',
+                    'text': 'Grow rice varieties that tolerate or resist the diseases common in your area.',
+                    'points': [
+                        'Ask the local agriculture office for suitable varieties',
+                        'Rotate varieties between seasons',
+                        'Avoid planting one variety over very large areas',
+                        'Keep good seed for the next season'
+                    ]
+                },
+                {
+                    'icon': 'bi-droplet-half', 'accent': '#dc2626',
+                    'title': 'Chemical Control', 'tag': 'Last resort • Use with care',
+                    'text': 'Fungicides and bactericides can help when the disease is serious or spreading fast.',
+                    'points': [
+                        'Use only products approved for rice',
+                        'Apply at the recommended time and rate on the label',
+                        'Rotate products to reduce resistance',
+                        'Follow the waiting period before harvest'
+                    ]
+                }
+            ] %}
+
+            {% for m in methods %}
+            <div class="col-md-6" data-animate="fade-up" style="--d: {{ loop.index0 }}">
+                <div class="tr-method" style="--accent: {{ m.accent }}">
+                    <div class="tr-method-icon"><i class="bi {{ m.icon }}"></i></div>
+                    <h5>{{ m.title }}</h5>
+                    <span class="tr-tag">{{ m.tag }}</span>
+                    <p>{{ m.text }}</p>
+
+                    <ul class="tr-list">
+                        {% for point in m.points %}
+                        <li><i class="bi bi-check-circle-fill"></i><span>{{ point }}</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+
+<!-- TREATMENT BY DISEASE -->
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center" data-animate="fade-up">
+            <span class="section-label">BY DISEASE</span>
+            <h2 class="section-title">Treatment for Common Diseases</h2>
+            <p>Open a disease to see what to do in the field.</p>
+        </div>
+
+        <div class="accordion tr-accordion mt-4" id="treatmentAccordion" data-animate="fade-up">
+
+            {% set plans = [
+                {
+                    'name': 'Rice Blast', 'khmer': 'ជំងឺប្លាស', 'type': 'Fungal', 'icon': 'bi-virus', 'search': 'Blast',
+                    'cultural': [
+                        'Use resistant varieties and healthy seed',
+                        'Avoid excess nitrogen; split fertilizer into smaller doses',
+                        'Keep the field from drying out during the growing stage',
+                        'Remove and destroy infected straw after harvest'
+                    ],
+                    'chemical': 'If leaf lesions spread quickly or the neck is at risk, ask your local agriculture office about a fungicide approved for rice, and apply it at the recommended stage.'
+                },
+                {
+                    'name': 'Bacterial Leaf Blight', 'khmer': 'ជំងឺរលាកបាក់តេរី', 'type': 'Bacterial', 'icon': 'bi-droplet', 'search': 'Bacterial',
+                    'cultural': [
+                        'Plant certified seed and resistant varieties',
+                        'Avoid cutting or damaging leaf tips when transplanting',
+                        'Drain the field to reduce spread after heavy rain or flooding',
+                        'Avoid excess nitrogen and keep field edges free of weeds'
+                    ],
+                    'chemical': 'Fungicides do not control bacteria. Rely on resistant varieties and field hygiene, and ask the agriculture office before using any bactericide.'
+                },
+                {
+                    'name': 'Brown Spot', 'khmer': 'ជំងឺអុចត្នោត', 'type': 'Fungal', 'icon': 'bi-circle-half', 'search': 'Brown',
+                    'cultural': [
+                        'Correct poor soil with balanced fertilizer, including potassium',
+                        'Use clean, healthy seed',
+                        'Avoid water stress and drought during growth',
+                        'Remove infected residue and weeds'
+                    ],
+                    'chemical': 'Brown spot is usually linked to weak crop nutrition. Fix the soil first, and use a fungicide only if the outbreak is heavy and on advice from an agriculture officer.'
+                },
+                {
+                    'name': 'Sheath Blight', 'khmer': 'ជំងឺរលាកស្រោមស្លឹក', 'type': 'Fungal', 'icon': 'bi-layers', 'search': 'Sheath',
+                    'cultural': [
+                        'Do not plant too densely; give plants room and airflow',
+                        'Avoid too much nitrogen fertilizer',
+                        'Remove weeds and crop residue that carry the fungus',
+                        'Drain the field to lower humidity at the base of the plants'
+                    ],
+                    'chemical': 'Treat early, when lesions first appear on lower leaf sheaths. Use a rice-approved fungicide as advised locally and follow the label.'
+                }
+            ] %}
+
+            {% for p in plans %}
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button {{ '' if loop.first else 'collapsed' }}"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#plan{{ loop.index }}"
+                            aria-expanded="{{ 'true' if loop.first else 'false' }}"
+                            aria-controls="plan{{ loop.index }}">
+                        <span class="tr-acc-icon"><i class="bi {{ p.icon }}"></i></span>
+                        <span class="tr-acc-title">
+                            {{ p.name }}
+                            <small><span class="khmer-text">{{ p.khmer }}</span> • {{ p.type }}</small>
+                        </span>
+                    </button>
+                </h2>
+
+                <div id="plan{{ loop.index }}"
+                     class="accordion-collapse collapse {{ 'show' if loop.first }}"
+                     data-bs-parent="#treatmentAccordion">
+                    <div class="accordion-body tr-acc-body">
+                        <div class="row g-4">
+
+                            <div class="col-lg-7">
+                                <div class="tr-col-title"><i class="bi bi-flower2 me-1"></i>What to do in the field</div>
+                                <ul class="tr-list">
+                                    {% for item in p.cultural %}
+                                    <li><i class="bi bi-check-circle-fill"></i><span>{{ item }}</span></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <div class="col-lg-5">
+                                <div class="tr-col-title"><i class="bi bi-droplet-half me-1"></i>If the outbreak is serious</div>
+                                <p class="mb-3" style="font-size:.9rem; line-height:1.8; color: var(--rice-gray);">
+                                    {{ p.chemical }}
+                                </p>
+                                <a href="{{ url_for('public.diseases', q=p.search) }}"
+                                   class="btn btn-outline-success btn-sm rounded-pill">
+                                    View disease information
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="tr-note mt-4" data-animate="fade-up">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+                <strong>Important:</strong> This page gives general guidance only.
+                Disease pressure, rice variety, and local rules differ between areas.
+                Before using any chemical product, confirm the product and dose with your
+                local agriculture officer or the label.
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- SAFETY -->
+<section class="section-padding bg-light">
+    <div class="container" data-animate="zoom-in">
+        <div class="tr-safety">
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-5">
+                    <span class="section-label text-white-50">SAFETY FIRST</span>
+                    <h2>Protect Yourself and the Environment</h2>
+                    <p>
+                        Good safety habits keep farmers healthy and prevent harm to
+                        water, fish, and nearby crops.
+                    </p>
+                </div>
+
+                <div class="col-lg-7">
+                    {% set safety = [
+                        'Wear gloves, mask, long sleeves, and boots when spraying',
+                        'Read and follow the product label every time',
+                        'Never spray in strong wind or just before rain',
+                        'Keep chemicals away from canals, ponds, and drinking water',
+                        'Store products in their original container, away from children',
+                        'Wash your hands and clothes after spraying'
+                    ] %}
+
+                    {% for item in safety %}
+                    <div class="tr-safety-item">
+                        <i class="bi bi-shield-fill-check"></i>
+                        <span>{{ item }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- CTA -->
+<section class="section-padding">
+    <div class="container text-center" data-animate="fade-up">
+
+        <h2 class="section-title">Not Sure Which Disease Your Rice Has?</h2>
+
+        <p class="section-description">
+            Identify the disease first. Use our Expert System to match your field
+            symptoms and get a diagnosis with prevention advice.
+        </p>
+
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-success rounded-pill px-4">
+                <i class="bi bi-search me-2"></i>Start Disease Diagnosis
+            </a>
+            <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-success rounded-pill px-4">
+                <i class="bi bi-book me-2"></i>Browse Diseases
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<script>
+  (function () {
+    var items = document.querySelectorAll("[data-animate]");
+
+    if (!("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+    items.forEach(function (el) { observer.observe(el); });
+  })();
+</script>
+
+{% endblock %}

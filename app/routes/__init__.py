@@ -15,3 +15,4 @@ from .profile_routes import profile_bp
 from .growth_stage import growth_stage_bp
 from .rice_variety_routes import rice_variety_bp
 from .dashboard import count_bp
+from .public import public_bp

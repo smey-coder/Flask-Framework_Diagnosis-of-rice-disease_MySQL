@@ -1,0 +1,148 @@
+
+{% extends "layouts/base.html" %}
+
+{% block title %}Rice Cultivation Process{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="section-label text-white-50">RICE FARMING</span>
+        <h1>Rice Cultivation Process</h1>
+        <p>ដំណើរការដាំដុះស្រូវ</p>
+        <p>Learn the important stages of rice growth and development.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">GROWTH AND DEVELOPMENT</span>
+            <h2 class="section-title">Six Main Stages of Rice Cultivation</h2>
+            <p>
+                Understanding rice growth stages helps farmers monitor
+                crop health and manage agricultural activities.
+            </p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set stages = [
+                {
+                    'number': 1,
+                    'name': 'Land Preparation',
+                    'khmer': 'ការរៀបចំដី',
+                    'icon': 'bi-tractor',
+                    'description': 'Prepare the agricultural field before planting rice.',
+                    'tasks': ['Clear the field', 'Plow and level the soil', 'Prepare irrigation and drainage']
+                },
+                {
+                    'number': 2,
+                    'name': 'Seed Selection and Nursery',
+                    'khmer': 'ការជ្រើសរើសពូជ និងបណ្តុះកូនស្រូវ',
+                    'icon': 'bi-flower1',
+                    'description': 'Select quality seeds and prepare healthy rice seedlings.',
+                    'tasks': ['Select healthy seeds', 'Prepare seedbeds', 'Monitor seedling growth']
+                },
+                {
+                    'number': 3,
+                    'name': 'Transplanting / Direct Seeding',
+                    'khmer': 'ការស្ទូង ឬព្រោះស្រូវ',
+                    'icon': 'bi-tree',
+                    'description': 'Establish rice plants in the prepared agricultural field.',
+                    'tasks': ['Transplant seedlings or sow seeds', 'Maintain proper spacing', 'Manage field water']
+                },
+                {
+                    'number': 4,
+                    'name': 'Tillering and Vegetative Growth',
+                    'khmer': 'ការបែកគុម្ព និងលូតលាស់',
+                    'icon': 'bi-flower2',
+                    'description': 'Rice plants grow leaves, stems, and additional tillers.',
+                    'tasks': ['Monitor plant growth', 'Manage weeds', 'Inspect disease symptoms']
+                },
+                {
+                    'number': 5,
+                    'name': 'Flowering and Grain Formation',
+                    'khmer': 'ការចេញផ្កា និងបង្កើតគ្រាប់',
+                    'icon': 'bi-flower3',
+                    'description': 'Rice plants flower and begin developing grains.',
+                    'tasks': ['Monitor crop health', 'Manage water', 'Check for pests and diseases']
+                },
+                {
+                    'number': 6,
+                    'name': 'Maturity and Harvesting',
+                    'khmer': 'ការទុំ និងប្រមូលផល',
+                    'icon': 'bi-basket',
+                    'description': 'Rice grains mature and become ready for harvesting.',
+                    'tasks': ['Check grain maturity', 'Harvest rice', 'Dry and store grains']
+                }
+            ] %}
+
+            {% for stage in stages %}
+            <div class="col-md-6">
+
+                <div class="stage-detail-card h-100">
+
+                    <div class="d-flex align-items-center gap-3 mb-3">
+
+                        <div class="stage-number">
+                            {{ stage.number }}
+                        </div>
+
+                        <div>
+                            <h5 class="mb-1">{{ stage.name }}</h5>
+                            <small class="text-success">{{ stage.khmer }}</small>
+                        </div>
+
+                        <i class="bi {{ stage.icon }} ms-auto stage-icon"></i>
+
+                    </div>
+
+                    <p>{{ stage.description }}</p>
+
+                    <h6>Important Activities</h6>
+
+                    <ul class="stage-task-list">
+                        {% for task in stage.tasks %}
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            {{ task }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+</section>
+
+<section class="section-padding bg-light">
+    <div class="container text-center">
+
+        <h2 class="section-title">Monitor Your Rice Crops</h2>
+
+        <p>
+            Regular monitoring helps farmers identify changes in crop
+            conditions and detect possible disease symptoms early.
+        </p>
+
+        <a href="{{ url_for('auth.login') }}"
+           class="btn btn-success rounded-pill px-4">
+            <i class="bi bi-activity me-2"></i>
+            Access Crop Monitoring
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}

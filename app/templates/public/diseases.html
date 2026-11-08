@@ -1,0 +1,565 @@
+{% extends "layouts/base.html" %}
+
+{% from "macros/disease.html" import image_url as disease_image_url %}
+
+{% block title %}Common Rice Diseases{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+
+<style>
+  /* ---------- Severity colours ---------- */
+  .sev-very-high { --sev: #b91c1c; --sev-bg: #fee2e2; }
+  .sev-high      { --sev: #dc2626; --sev-bg: #fee2e2; }
+  .sev-medium    { --sev: #b45309; --sev-bg: #fef3c7; }
+  .sev-low       { --sev: #15803d; --sev-bg: #dcfce7; }
+  .sev-none      { --sev: #475569; --sev-bg: #e2e8f0; }
+
+  .sev-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 11px;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--sev);
+    background: var(--sev-bg);
+  }
+
+  /* ---------- Filter bar ---------- */
+  .ds-filter {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+    padding: 20px;
+    margin-bottom: 18px;
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(20, 83, 45, .06);
+  }
+
+  .ds-filter .filter-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--rice-dark);
+  }
+
+  .ds-filter .form-control,
+  .ds-filter .form-select,
+  .ds-filter .input-group-text {
+    border-radius: 12px;
+    border-color: #dbe7de;
+  }
+
+  .ds-filter .input-group > .form-control { border-radius: 0 12px 12px 0; }
+  .ds-filter .input-group > .input-group-text { border-radius: 12px 0 0 12px; background: var(--rice-light); color: var(--rice-green); }
+
+  .ds-filter .form-control:focus,
+  .ds-filter .form-select:focus {
+    border-color: var(--rice-green);
+    box-shadow: 0 0 0 .22rem rgba(25, 135, 84, .15);
+  }
+
+  .ds-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: none;
+    color: #94a3b8;
+    z-index: 5;
+    display: none;
+  }
+
+  .ds-clear:hover { color: #dc2626; }
+
+  .ds-result-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: .88rem;
+    color: var(--rice-gray);
+  }
+
+  #diseaseResults { transition: opacity .2s ease; }
+
+  /* ---------- Disease cards ---------- */
+  .ds-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-radius: 20px;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+
+  .ds-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(20, 83, 45, .16);
+  }
+
+  .ds-col {
+    animation: cardPop .55s cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: calc(var(--d, 0) * 60ms);
+  }
+
+  @keyframes cardPop {
+    from { opacity: 0; transform: translateY(26px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .ds-thumb {
+    position: relative;
+    height: 190px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #bbf7d0, #86efac);
+  }
+
+  .ds-thumb > i { font-size: 3.2rem; color: rgba(20, 83, 45, .5); }
+
+  .ds-thumb > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .7s ease;
+  }
+
+  .ds-card:hover .ds-thumb > img { transform: scale(1.12); }
+
+  .ds-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, .3), transparent 55%);
+    pointer-events: none;
+  }
+
+  .ds-new {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    padding: 4px 11px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 800;
+    background: #facc15;
+    color: #422006;
+  }
+
+  .ds-sev { position: absolute; right: 12px; bottom: 12px; z-index: 2; }
+
+  .ds-body { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+
+  .ds-type {
+    align-self: flex-start;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--rice-green);
+    background: var(--rice-light);
+  }
+
+  .ds-body h5 { color: var(--rice-dark); font-weight: 800; font-size: 1.05rem; line-height: 1.7; margin: 0; }
+  .ds-en { color: var(--rice-gray); font-size: .85rem; margin: 2px 0 10px; }
+
+  .ds-desc {
+    color: var(--rice-gray);
+    font-size: .88rem;
+    line-height: 1.85;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ds-body .btn { margin-top: auto; }
+
+  .ds-body .btn i { display: inline-block; transition: transform .25s; }
+  .ds-body .btn:hover i { transform: translateX(5px); }
+
+  .ds-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border: 1px dashed #cfe3d4;
+    border-radius: 20px;
+    color: var(--rice-gray);
+  }
+
+  .ds-empty i { font-size: 3rem; color: var(--rice-green); }
+
+  /* ---------- Pagination ---------- */
+  .ds-pagination .page-link { color: var(--rice-green); border-radius: 10px; margin: 0 3px; border-color: #dbe7de; }
+  .ds-pagination .page-item.active .page-link { background: var(--rice-green); border-color: var(--rice-green); color: #fff; }
+  .ds-pagination .page-item.disabled .page-link { color: #94a3b8; }
+
+  @media (max-width: 991.98px) {
+    .ds-filter { grid-template-columns: 1fr 1fr; }
+    .ds-filter .ds-search { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 575.98px) {
+    .ds-filter { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ds-col { animation: none !important; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<script>document.documentElement.classList.add("reveal-ready");</script>
+
+{% macro sev_class(level) -%}
+{%- set s = (level or '')|lower -%}
+{%- if s.startswith('very high') -%}sev-very-high
+{%- elif s.startswith('high') -%}sev-high
+{%- elif s.startswith('medium') -%}sev-medium
+{%- elif s.startswith('low') -%}sev-low
+{%- else -%}sev-none{%- endif -%}
+{%- endmacro %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="section-label text-white-50">RICE PLANT HEALTH</span>
+        <h1>Common Rice Diseases</h1>
+        <p class="khmer-text">ជំងឺដែលកើតមានលើដំណាំស្រូវ</p>
+        <p>Understand symptoms, causes, and disease prevention.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center mb-4" data-animate="fade-up">
+            <span class="section-label">DISEASE INFORMATION</span>
+            <h2 class="section-title">Rice Disease Catalog</h2>
+            <p>
+                Search and learn to recognize common rice diseases and
+                understand their effects on rice plants.
+            </p>
+        </div>
+
+        <!-- FILTER BAR -->
+        <form method="get" action="{{ url_for('public.diseases') }}" class="ds-filter" id="diseaseFilter" data-animate="fade-up">
+
+            <div class="ds-search">
+                <label for="dsSearch" class="filter-label">
+                    <i class="bi bi-search me-1"></i>Search
+                </label>
+                <div class="input-group position-relative">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="dsSearch" name="q" value="{{ q }}"
+                           class="form-control" autocomplete="off"
+                           placeholder="Search disease name or symptoms...">
+                    <button type="button" class="ds-clear" id="dsClear" title="Clear">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label for="dsType" class="filter-label">
+                    <i class="bi bi-bug me-1"></i>Type
+                </label>
+                <select id="dsType" name="type" class="form-select">
+                    <option value="">All Types</option>
+                    {% for t in types %}
+                    <option value="{{ t }}" {{ 'selected' if t == disease_type }}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="dsSeverity" class="filter-label">
+                    <i class="bi bi-activity me-1"></i>Severity
+                </label>
+                <select id="dsSeverity" name="severity" class="form-select">
+                    <option value="">All Levels</option>
+                    {% for s in severities %}
+                    <option value="{{ s }}" {{ 'selected' if s == severity }}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-secondary rounded-pill" id="dsReset">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                </a>
+            </div>
+        </form>
+
+        <!-- RESULTS (replaced while searching) -->
+        <div id="diseaseResults">
+
+            <div class="ds-result-bar">
+                <span>
+                    <i class="bi bi-funnel-fill me-1 text-success"></i>
+                    {% if diseases.total %}
+                    Showing <strong>{{ diseases.first }}–{{ diseases.last }}</strong>
+                    of <strong>{{ diseases.total }}</strong> diseases
+                    {% else %}
+                    Showing <strong>0</strong> diseases
+                    {% endif %}
+                </span>
+
+                {% if q or disease_type or severity %}
+                <span class="badge bg-success-subtle text-success">
+                    <i class="bi bi-filter me-1"></i>Filters applied
+                </span>
+                {% endif %}
+            </div>
+
+            {% if diseases.items %}
+            <div class="row g-4">
+
+                {% for d in diseases.items %}
+                {% set parts = d.disease_name.split('(') %}
+                {% set name_km = parts[0].strip() %}
+                {% set name_en = parts[1].rstrip(')').strip() if parts|length > 1 else '' %}
+                {% set img = disease_image_url(d.image) %}
+
+                <div class="col-md-6 col-lg-4 ds-col" style="--d: {{ loop.index0 }}">
+                    <div class="ds-card">
+
+                        <div class="ds-thumb">
+                            <i class="bi bi-virus"></i>
+                            {% if img %}
+                            <img src="{{ img }}" alt="{{ name_en or name_km }}" loading="lazy" onerror="this.remove()">
+                            {% endif %}
+
+                            {% if d.is_new %}<span class="ds-new">NEW</span>{% endif %}
+
+                            {% if d.severity_level %}
+                            <span class="ds-sev sev-pill {{ sev_class(d.severity_level) }}">
+                                <i class="bi bi-activity"></i>{{ d.severity_level }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="ds-body">
+                            {% if d.disease_type %}
+                            <span class="ds-type">{{ d.disease_type }}</span>
+                            {% endif %}
+
+                            <h5 class="khmer-text">{{ name_km }}</h5>
+                            {% if name_en %}<div class="ds-en">{{ name_en }}</div>{% endif %}
+
+                            <p class="ds-desc khmer-text">{{ d.description or 'No description available yet.' }}</p>
+
+                            <a href="{{ url_for('public.disease_detail', disease_id=d.id) }}"
+                               class="btn btn-outline-success rounded-pill w-100">
+                                View Disease Details
+                                <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- PAGINATION -->
+            {% if diseases.pages > 1 %}
+            <nav aria-label="Disease pages" class="d-flex justify-content-center mt-5 ds-pagination">
+                <ul class="pagination mb-0">
+                    <li class="page-item {{ 'disabled' if not diseases.has_prev }}">
+                        <a class="page-link"
+                           href="{{ url_for('public.diseases', **dict(request.args.to_dict(), page=diseases.prev_num)) if diseases.has_prev else '#' }}">&laquo;</a>
+                    </li>
+
+                    {% for p in diseases.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if p %}
+                        <li class="page-item {{ 'active' if p == diseases.page }}">
+                            <a class="page-link"
+                               href="{{ url_for('public.diseases', **dict(request.args.to_dict(), page=p)) }}">{{ p }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <li class="page-item {{ 'disabled' if not diseases.has_next }}">
+                        <a class="page-link"
+                           href="{{ url_for('public.diseases', **dict(request.args.to_dict(), page=diseases.next_num)) if diseases.has_next else '#' }}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="ds-empty">
+                <i class="bi bi-search"></i>
+                <h5 class="mt-3">No Diseases Found</h5>
+                <p>No diseases match your search or filters.</p>
+                {% if q or disease_type or severity %}
+                <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-success rounded-pill">Reset Filters</a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+
+<section class="section-padding bg-light">
+    <div class="container text-center" data-animate="fade-up">
+
+        <h2 class="section-title">Need Help Identifying Rice Diseases?</h2>
+
+        <p>
+            Use our Expert System to analyze rice symptoms
+            and receive diagnosis results.
+        </p>
+
+        <a href="{{ url_for('auth.login') }}"
+           class="btn btn-success rounded-pill px-4">
+            <i class="bi bi-search me-2"></i>
+            Start Disease Diagnosis
+        </a>
+
+    </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var form = document.getElementById("diseaseFilter");
+    var input = document.getElementById("dsSearch");
+    var typeSel = document.getElementById("dsType");
+    var sevSel = document.getElementById("dsSeverity");
+    var clearBtn = document.getElementById("dsClear");
+    var resetBtn = document.getElementById("dsReset");
+    var baseUrl = form.getAttribute("action");
+
+    var timer = null;
+    var controller = null;
+
+    function toggleClear() {
+      clearBtn.style.display = input.value.trim() ? "block" : "none";
+    }
+
+    function buildUrl() {
+      var params = new URLSearchParams();
+      if (input.value.trim()) params.set("q", input.value.trim());
+      if (typeSel.value) params.set("type", typeSel.value);
+      if (sevSel.value) params.set("severity", sevSel.value);
+      var qs = params.toString();
+      return qs ? baseUrl + "?" + qs : baseUrl;
+    }
+
+    // Fetch in the background and swap only the results area
+    async function load(url, scrollToResults) {
+      var box = document.getElementById("diseaseResults");
+
+      if (controller) controller.abort();
+      controller = new AbortController();
+
+      box.style.opacity = "0.45";
+      try {
+        var res = await fetch(url, { signal: controller.signal });
+        var html = await res.text();
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var fresh = doc.getElementById("diseaseResults");
+
+        if (fresh) {
+          box.innerHTML = fresh.innerHTML;
+          history.replaceState(null, "", url);
+          if (scrollToResults) {
+            box.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") console.error(err);
+      } finally {
+        box.style.opacity = "";
+      }
+    }
+
+    input.addEventListener("input", function () {
+      toggleClear();
+      clearTimeout(timer);
+      timer = setTimeout(function () { load(buildUrl()); }, 300);
+    });
+
+    typeSel.addEventListener("change", function () { load(buildUrl()); });
+    sevSel.addEventListener("change", function () { load(buildUrl()); });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      clearTimeout(timer);
+      load(buildUrl());
+    });
+
+    clearBtn.addEventListener("click", function () {
+      input.value = "";
+      toggleClear();
+      input.focus();
+      load(buildUrl());
+    });
+
+    resetBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      input.value = "";
+      typeSel.value = "";
+      sevSel.value = "";
+      toggleClear();
+      load(baseUrl);
+    });
+
+    // Pagination links live inside the swapped area, so use delegation
+    document.getElementById("diseaseResults").addEventListener("click", function (e) {
+      var link = e.target.closest(".page-link");
+      if (!link) return;
+
+      e.preventDefault();
+      var href = link.getAttribute("href");
+      if (href && href !== "#") load(href, true);
+    });
+
+    toggleClear();
+  });
+
+  // Reveal static sections on scroll
+  (function () {
+    var items = document.querySelectorAll("[data-animate]");
+
+    if (!("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+    items.forEach(function (el) { observer.observe(el); });
+  })();
+</script>
+
+{% endblock %}
