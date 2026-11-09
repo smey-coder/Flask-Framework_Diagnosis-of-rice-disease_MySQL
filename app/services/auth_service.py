@@ -17,6 +17,22 @@ class AuthService:
         if user and user.check_password(password):
             return user
         return None
+    # ===================== GOOGLE USER LOOKUP =====================
+    @staticmethod
+    def get_user_by_google_id(google_id: str) -> Optional[UserTable]:
+        """Find an existing user using Google ID."""
+        return UserTable.query.filter_by(
+            google_id=google_id
+        ).first()
+
+
+    # ===================== FIND USER BY EMAIL =====================
+    @staticmethod
+    def get_user_by_email(email: str) -> Optional[UserTable]:
+        """Find an existing user using email."""
+        return UserTable.query.filter_by(
+            email=email
+        ).first()
 
     # ===================== FORGOT PASSWORD =====================
     @staticmethod

@@ -14,7 +14,20 @@ class UserTable(UserMixin, db.Model):
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     email_verified = db.Column(db.Boolean, default=False, nullable=False)
     #NEW: store only the hash, never plain text
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=True)
+    # Unique Google account identifier (Google sub claim)
+    google_id = db.Column(
+        db.String(255),
+        unique=True,
+        nullable=True
+    )
+
+    # Authentication provider: local or google
+    auth_provider = db.Column(
+        db.String(20),
+        default="local",
+        nullable=False
+    )
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     
@@ -23,19 +36,22 @@ class UserTable(UserMixin, db.Model):
     reset_code = db.Column(db.String(6), nullable=True)
     reset_code_expire = db.Column(db.DateTime)
 
-    
     roles = db.relationship("RoleTable", secondary=tbl_user_roles, back_populates="users")
-    farms = db.relationship(
-        "FarmTable",
-        back_populates="user",
-        cascade="all, delete-orphan"
-    )
+    farms = db.relationship("FarmTable",back_populates="user",cascade="all, delete-orphan")
     
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)
         
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+
+    # ------------------- GOOGLE AUTHENTICATION -------------------
+    def set_google_account(self, google_id: str) -> None:
+        self.google_id = google_id
+
+    def is_google_user(self) -> bool:
+        return self.google_id is not None
+
     
     def set_reset_code(self, otp, minutes=5):
         self.reset_code = otp

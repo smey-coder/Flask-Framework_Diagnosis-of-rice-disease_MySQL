@@ -986,7 +986,6 @@ def about():
 def diagnosis_input():
     try:
         form = DiagnosisForm()
-
         # Monitor & Farm params handling
         monitoring_id = request.args.get("monitoring_id", type=int)
         farm_id = request.args.get("farm_id", type=int)
@@ -1220,15 +1219,11 @@ def save_diagnosis_history(
             diagnosis_ids.append(
                 result.lastrowid
             )
-
-
         # =====================================================
         # COMMIT
         # =====================================================
 
         db.session.commit()
-
-
         # =====================================================
         # VERY IMPORTANT
         # =====================================================
@@ -1247,6 +1242,7 @@ def save_diagnosis_history(
         raise
 
 
+#Version 1
 # @user_bp.route("/diagnosis/result")
 # @login_required
 # @role_required("User")
@@ -1307,6 +1303,7 @@ def save_diagnosis_history(
 #         farm_id=farm_id
 #     )
 
+#Version 2
 @user_bp.route("/diagnosis/result")
 @login_required
 @role_required("User")
@@ -1352,8 +1349,6 @@ def diagnosis_result():
             rule_trace,
             monitoring_id=monitoring_id
         )
-
-
         # =====================================================
         # PREPARE RESULTS
         # =====================================================
@@ -1394,6 +1389,7 @@ def diagnosis_result():
             #         disease_id
             #     )
             # )
+
             # =====================================================
             # TREATMENT RECOMMENDATION
             # =====================================================
@@ -1405,11 +1401,8 @@ def diagnosis_result():
                 )
             )
             results.append({
-
                 "diagnosis_id": diagnosis_id,
-
                 "disease_id": disease_id,
-
                 "disease_name": (
                     getattr(
                         disease,
@@ -1463,26 +1456,19 @@ def diagnosis_result():
 
         return render_template(
             "user_page/result.html",
-
             results=results,
-
             user=current_user,
-
             monitoring_id=monitoring_id,
-
             farm_id=farm_id,
-
             skipped_rules = skipped_rules
         )
 
 
     except Exception as e:
-
         logger.exception(f"Diagnosis Result Error: {e}")
-
         flash("Unable to process diagnosis result.","danger")
-
         return redirect(url_for("user.diagnosis_input"))
+    
 @user_bp.route("/history")
 @login_required
 @role_required("User")
@@ -1636,8 +1622,6 @@ def diagnosis_explain(diagnosis_id):
             return redirect(
                 url_for("user.diagnosis_input")
             )
-
-
         # =====================================================
         # EXPLAIN DISEASE
         # =====================================================
@@ -1646,17 +1630,10 @@ def diagnosis_explain(diagnosis_id):
             diagnosis.disease_id,
             rule_trace
         )
-
         if not logs:
+            flash("No explanation available for this disease.","info")
 
-            flash(
-                "No explanation available for this disease.",
-                "info"
-            )
-
-            return redirect(
-                url_for("user.diagnosis_result")
-            )
+            return redirect(url_for("user.diagnosis_result"))
 
 
         # =====================================================

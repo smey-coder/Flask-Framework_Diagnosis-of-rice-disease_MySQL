@@ -39,4 +39,5 @@ yarl               == 1.22.0
 gunicorn           ==21.2.0
 pytz==2025.2
 cloudinary         ==1.46.2
+Authlib            ==1.9.5
 

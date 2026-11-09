@@ -7,6 +7,12 @@ from app.services.user_service import UserService
 from app.services.auth_service import AuthService
 from extensions import csrf, db
 from app.decorators.access import permission_required, role_required
+
+import secrets
+import re
+
+from authlib.integrations.flask_client import OAuth
+from flask import current_app
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 #pubblic Login and rigister

@@ -16,7 +16,9 @@ class DiagnosisService:
     def combine_cfs(cf1: float, cf2: float) -> float:
         """Combine two certainty factors using MYCIN formula."""
         return cf1 + cf2 * (1 - cf1)
-    
+
+
+    #Version 1
     # @classmethod
     # def infer(cls, selected_symptom_ids: List[int]) -> Tuple[Dict[int, dict], Dict[str, List[dict]], List[dict]]:
     #     """
@@ -131,6 +133,8 @@ class DiagnosisService:
     #         print(f"Audit Error: {e}")
 
     #     return sorted_conclusions, rule_trace, skipped_rules
+
+    #Version 2
     @classmethod
     def infer(cls, selected_symptom_ids: List[int]) -> Tuple[Dict[int, dict], Dict[str, List[dict]], List[dict]]:
         """
@@ -253,13 +257,17 @@ class DiagnosisService:
             print(f"Audit Error: {e}")
 
         return sorted_conclusions, rule_trace, skipped_rules
-    
+
+
+    # Version 1
     # @staticmethod
     # def explain_disease(disease_id: int, rule_trace: Dict[str, List[dict]]) -> List[dict]:
     #     # Make sure ID is string (keys in rule_trace are strings)
     #     disease_id = str(disease_id)
 
     #     return rule_trace.get(disease_id, [])
+
+    #Version 2
     @staticmethod
     def explain_disease(disease_id: int, rule_trace: Dict[str, List[dict]]) -> List[dict]:
         """
@@ -478,13 +486,10 @@ class DiagnosisService:
                     "applying treatment."
                 )
             }
-
         # =====================================================
         # LOW CERTAINTY
         # =====================================================
-
         else:
-
             return {
                 "status": "insufficient",
                 "level": "low",
