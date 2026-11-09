@@ -8,6 +8,26 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
 
 <style>
+  .ds-catalog-heading {
+    max-width: none;
+    padding: clamp(32px, 6vw, 64px) 24px;
+    border-radius: 24px;
+    color: #fff;
+    background:
+      linear-gradient(rgba(8, 35, 18, .72), rgba(8, 35, 18, .72)),
+      url("{{ url_for('static', filename='images/prevention.jpg') }}") center / cover no-repeat;
+  }
+
+  .ds-catalog-heading .section-label,
+  .ds-catalog-heading .section-title,
+  .ds-catalog-heading p {
+    color: #fff;
+  }
+
+  .ds-catalog-heading p {
+    margin-bottom: 0;
+  }
+
   /* ---------- Severity colours ---------- */
   .sev-very-high { --sev: #b91c1c; --sev-bg: #fee2e2; }
   .sev-high      { --sev: #dc2626; --sev-bg: #fee2e2; }
@@ -239,7 +259,7 @@
 {%- else -%}sev-none{%- endif -%}
 {%- endmacro %}
 
-<section class="page-hero">
+<section class="page-hero ds-page-hero">
     <div class="container">
         <span class="section-label text-white-50">{{ lang.public.diseases.label }}</span>
         <h1>{{ lang.public.diseases.title }}</h1>

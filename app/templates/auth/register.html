@@ -1,11 +1,20 @@
-{% extends "layouts/base.html" %} {% block title %}Create Account{% endblock %}
+{% extends "layouts/base.html" %} {% block title %}{{ lang.auth.register.title }}{% endblock %}
 {% block content %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/auth/register.css') }}"
 />
 
-<div class="register-page">
+<div class="register-page"
+  data-show-password="{{ lang.auth.show_password }}"
+  data-hide-password="{{ lang.auth.hide_password }}"
+  data-strength-none="{{ lang.auth.strength.none }}"
+  data-strength-weak="{{ lang.auth.strength.weak }}"
+  data-strength-fair="{{ lang.auth.strength.fair }}"
+  data-strength-good="{{ lang.auth.strength.good }}"
+  data-strength-strong="{{ lang.auth.strength.strong }}"
+  data-passwords-match="{{ lang.auth.passwords_match }}"
+  data-passwords-mismatch="{{ lang.auth.passwords_mismatch }}">
   <div class="register-card">
     <!-- ================= LEFT PANEL ================= -->
     <div class="register-info">
@@ -13,25 +22,23 @@
         <i class="bi bi-flower1"></i>
       </div>
 
-      <h2>Rice Expert</h2>
+      <h2>{{ lang.auth.brand }}</h2>
 
-      <p class="system-title">Rice Disease Diagnosis System</p>
-
-      <p class="khmer-text">ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវ</p>
+      <p class="system-title">{{ lang.auth.register.system_title }}</p>
 
       <div class="info-line">
           <i class="bi bi-shield-check"></i>
-          <span>គណនីមានសុវត្ថិភាព និងការពារទិន្នន័យ</span>
+          <span>{{ lang.auth.register.secure_account }}</span>
       </div>
 
       <div class="info-line">
           <i class="bi bi-cpu"></i>
-          <span>ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវឆ្លាតវៃ</span>
+          <span>{{ lang.auth.register.smart_system }}</span>
       </div>
 
       <div class="info-line">
           <i class="bi bi-tree"></i>
-          <span>ចំណេះដឹងអំពីការដាំដុះ និងថែទាំស្រូវ</span>
+          <span>{{ lang.auth.register.cultivation_knowledge }}</span>
       </div>
     </div>
 
@@ -39,9 +46,9 @@
     <div class="register-form-section">
       <div class="form-header">
         <div>
-          <h2>Create Account</h2>
+          <h2>{{ lang.auth.register.title }}</h2>
 
-          <p>Create your Rice Expert account</p>
+          <p>{{ lang.auth.register.description }}</p>
         </div>
       </div>
 
@@ -51,7 +58,7 @@
         <div class="step active" id="stepIndicator1">
           <div class="step-number">1</div>
 
-          <span>Account</span>
+          <span>{{ lang.auth.register.step_account }}</span>
         </div>
 
         <div class="step-line" id="stepLine"></div>
@@ -59,7 +66,7 @@
         <div class="step" id="stepIndicator2">
           <div class="step-number">2</div>
 
-          <span>Security</span>
+          <span>{{ lang.auth.register.step_security }}</span>
         </div>
       </div>
 
@@ -78,15 +85,15 @@
 
         <div class="register-step active-step" id="step1">
           <div class="step-title">
-            <h4>Account Information</h4>
+            <h4>{{ lang.auth.register.account_information }}</h4>
 
-            <p>Enter your basic account information.</p>
+            <p>{{ lang.auth.register.account_information_description }}</p>
           </div>
 
           <!-- Username -->
 
           <div class="register-field">
-            <label for="username"> Username </label>
+            <label for="username">{{ lang.auth.register.username }}</label>
 
             <div class="input-wrapper">
               <i class="bi bi-person input-icon"></i>
@@ -96,7 +103,7 @@
                 class="register-input"
                 id="username"
                 name="username"
-                placeholder="Enter your username"
+                placeholder="{{ lang.auth.register.username_placeholder }}"
                 value="{{ username or '' }}"
                 autocomplete="username"
                 required
@@ -108,7 +115,7 @@
           <!-- Email -->
 
           <div class="register-field">
-            <label for="email"> Email </label>
+            <label for="email">{{ lang.auth.register.email }}</label>
 
             <div class="input-wrapper">
               <i class="bi bi-envelope input-icon"></i>
@@ -118,7 +125,7 @@
                 class="register-input"
                 id="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder="{{ lang.auth.register.email_placeholder }}"
                 value="{{ email or '' }}"
                 autocomplete="email"
                 required
@@ -129,7 +136,7 @@
           <!-- Full Name -->
 
           <div class="register-field">
-            <label for="full_name"> Full Name </label>
+            <label for="full_name">{{ lang.auth.register.full_name }}</label>
 
             <div class="input-wrapper">
               <i class="bi bi-person-vcard input-icon"></i>
@@ -139,7 +146,7 @@
                 class="register-input"
                 id="full_name"
                 name="full_name"
-                placeholder="Enter your full name"
+                placeholder="{{ lang.auth.register.full_name_placeholder }}"
                 value="{{ full_name or '' }}"
                 autocomplete="name"
                 required
@@ -148,7 +155,7 @@
           </div>
 
           <button type="button" class="btn-next" id="nextBtn">
-            Continue
+            {{ lang.auth.register.continue }}
             <i class="bi bi-arrow-right"></i>
           </button>
         </div>
@@ -159,15 +166,15 @@
 
         <div class="register-step" id="step2">
           <div class="step-title">
-            <h4>Secure Your Account</h4>
+            <h4>{{ lang.auth.register.secure_your_account }}</h4>
 
-            <p>Create a strong password for your account.</p>
+            <p>{{ lang.auth.register.password_description }}</p>
           </div>
 
           <!-- Password -->
 
           <div class="register-field">
-            <label for="password"> Password </label>
+            <label for="password">{{ lang.auth.register.password }}</label>
 
             <div class="input-wrapper">
               <i class="bi bi-lock input-icon"></i>
@@ -177,7 +184,7 @@
                 class="register-input password-input"
                 id="password"
                 name="password"
-                placeholder="Create a strong password"
+                placeholder="{{ lang.auth.register.password_placeholder }}"
                 autocomplete="new-password"
                 required
               />
@@ -186,7 +193,9 @@
                 type="button"
                 class="password-toggle"
                 data-target="password"
-                aria-label="Show password"
+                aria-label="{{ lang.auth.show_password }}"
+                data-show-password="{{ lang.auth.show_password }}"
+                data-hide-password="{{ lang.auth.hide_password }}"
               >
                 <i class="bi bi-eye"></i>
               </button>
@@ -197,9 +206,9 @@
 
           <div class="password-strength">
             <div class="strength-header">
-              <span>Password strength</span>
+              <span>{{ lang.auth.register.strength }}</span>
 
-              <strong id="strengthText"> None </strong>
+              <strong id="strengthText">{{ lang.auth.strength.none }}</strong>
             </div>
 
             <div class="strength-bar">
@@ -212,34 +221,34 @@
           <div class="password-requirements">
             <div class="requirement" id="lengthRequirement">
               <i class="bi bi-circle"></i>
-              <span>At least 8 characters</span>
+              <span>{{ lang.auth.requirements.length }}</span>
             </div>
 
             <div class="requirement" id="uppercaseRequirement">
               <i class="bi bi-circle"></i>
-              <span>One uppercase letter</span>
+              <span>{{ lang.auth.requirements.uppercase }}</span>
             </div>
 
             <div class="requirement" id="lowercaseRequirement">
               <i class="bi bi-circle"></i>
-              <span>One lowercase letter</span>
+              <span>{{ lang.auth.requirements.lowercase }}</span>
             </div>
 
             <div class="requirement" id="numberRequirement">
               <i class="bi bi-circle"></i>
-              <span>One number</span>
+              <span>{{ lang.auth.requirements.number }}</span>
             </div>
 
             <div class="requirement" id="specialRequirement">
               <i class="bi bi-circle"></i>
-              <span>One special character</span>
+              <span>{{ lang.auth.requirements.special }}</span>
             </div>
           </div>
 
           <!-- Confirm Password -->
 
           <div class="register-field">
-            <label for="confirm_password"> Confirm Password </label>
+            <label for="confirm_password">{{ lang.auth.register.confirm_password }}</label>
 
             <div class="input-wrapper">
               <i class="bi bi-lock-fill input-icon"></i>
@@ -249,7 +258,7 @@
                 class="register-input password-input"
                 id="confirm_password"
                 name="confirm_password"
-                placeholder="Confirm your password"
+                placeholder="{{ lang.auth.register.confirm_password_placeholder }}"
                 autocomplete="new-password"
                 required
               />
@@ -258,7 +267,9 @@
                 type="button"
                 class="password-toggle"
                 data-target="confirm_password"
-                aria-label="Show password"
+                aria-label="{{ lang.auth.show_password }}"
+                data-show-password="{{ lang.auth.show_password }}"
+                data-hide-password="{{ lang.auth.hide_password }}"
               >
                 <i class="bi bi-eye"></i>
               </button>
@@ -272,15 +283,15 @@
           <div class="form-buttons">
             <button type="button" class="btn-back" id="backBtn">
               <i class="bi bi-arrow-left"></i>
-              Back
+              {{ lang.auth.register.back }}
             </button>
 
             <button type="submit" class="btn-create" id="createBtn">
-              <span id="createText"> Create Account </span>
+              <span id="createText">{{ lang.auth.register.create_account }}</span>
 
               <span id="createLoading" class="d-none">
                 <span class="spinner-border spinner-border-sm me-2"></span>
-                Creating account...
+                {{ lang.auth.register.creating_account }}
               </span>
             </button>
           </div>
@@ -290,9 +301,9 @@
       <!-- LOGIN -->
 
       <div class="login-link">
-        Already have an account?
+        {{ lang.auth.register.already_account }}
 
-        <a href="{{ url_for('auth.login') }}"> Sign In </a>
+        <a href="{{ url_for('auth.login') }}">{{ lang.auth.register.sign_in }}</a>
       </div>
 
       <!-- SECURITY NOTE -->
@@ -300,7 +311,7 @@
       <div class="security-note">
         <i class="bi bi-shield-lock"></i>
 
-        <span> Your account information is securely protected. </span>
+        <span>{{ lang.auth.register.security_note }}</span>
       </div>
     </div>
   </div>

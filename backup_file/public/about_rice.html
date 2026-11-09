@@ -1,0 +1,201 @@
+
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ lang.public.about.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero ds-page-hero">
+    <div class="container">
+        <span class="section-label text-white-50">{{ lang.public.about.label }}</span>
+        <h1>{{ lang.public.about.title }}</h1>
+        <p>{{ lang.public.about.description }}</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+                <span class="section-label">{{ lang.public.about.introduction }}</span>
+                <h2 class="section-title">{{ lang.public.about.what_is_rice }}</h2>
+
+                <p>
+                    Rice is a cereal grain and one of the most important
+                    food crops in the world. It is a staple food for
+                    millions of people, particularly in Asia.
+                </p>
+
+                <p>
+                    Rice is cultivated in different environments,
+                    including irrigated lowlands, rainfed lowlands,
+                    deepwater areas, and upland fields.
+                </p>
+
+                <p class="khmer-text">
+                    ស្រូវគឺជាដំណាំធញ្ញជាតិដែលមានសារៈសំខាន់ខ្លាំងសម្រាប់
+                    ការផ្គត់ផ្គង់ស្បៀងអាហាររបស់មនុស្សជាតិ។
+                    ប្រជាជនកម្ពុជាភាគច្រើនប្រើប្រាស់អង្ករជាអាហារចម្បងប្រចាំថ្ងៃ។
+                </p>
+            </div>
+
+            {# Replace the About page's <div class="col-lg-6"> that holds the rice-intro-card with this.
+            Put your photos in static/images/about/ and list their file names below. #}
+
+            {% set rice_slides = ['rice01.jpg', 'rice02.png', 'rice03.jpg', 'rice04.jpg'] %}
+
+            <div class="col-lg-6" data-animate="fade-right">
+                <div class="rice-intro-card rice-intro-card--image">
+
+                    <!-- Slideshow -->
+                    <div id="riceIntroCarousel"
+                        class="carousel slide carousel-fade rice-intro-carousel"
+                        data-bs-ride="carousel"
+                        data-bs-interval="4500"
+                        aria-label="Rice agriculture photos">
+
+                        <div class="carousel-indicators">
+                            {% for slide in rice_slides %}
+                            <button type="button"
+                                    data-bs-target="#riceIntroCarousel"
+                                    data-bs-slide-to="{{ loop.index0 }}"
+                                    class="{{ 'active' if loop.first }}"
+                                    {% if loop.first %}aria-current="true"{% endif %}
+                                    aria-label="Photo {{ loop.index }}"></button>
+                            {% endfor %}
+                        </div>
+
+                        <div class="carousel-inner">
+                            {% for slide in rice_slides %}
+                            <div class="carousel-item {{ 'active' if loop.first }}">
+                                <img src="{{ url_for('static', filename='images/rices/' ~ slide) }}"
+                                    alt="{{ lang.public.about.rice_agriculture }} {{ loop.index }}"
+                                    class="rice-intro-img"
+                                    {% if not loop.first %}loading="lazy"{% endif %}
+                                    onerror="this.style.display='none'">
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <button class="carousel-control-prev" type="button"
+                                data-bs-target="#riceIntroCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button"
+                                data-bs-target="#riceIntroCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+
+                    <!-- Text on top of the photos -->
+                    <div class="rice-intro-caption">
+                        <h3>{{ lang.public.about.rice_agriculture }}</h3>
+                        <p>
+                            {{ lang.public.about.growing }} •
+                            {{ lang.public.about.harvesting }} •
+                            {{ lang.public.about.processing }}
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+</div>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="section-padding bg-light">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">{{ lang.public.about.importance }}</span>
+            <h2 class="section-title">{{ lang.public.about.why_important }}</h2>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set items = [
+                ('Food Security', 'Rice provides a major source of daily food for Cambodian people.', 'bi-basket'),
+                ('Farmer Income', 'Rice cultivation supports the livelihoods of many rural households.', 'bi-cash-coin'),
+                ('Employment', 'Rice production creates agricultural and processing employment.', 'bi-people'),
+                ('National Economy', 'Rice production and trade contribute to economic development.', 'bi-graph-up-arrow'),
+                ('Culture & Tradition', 'Rice farming is closely connected to Cambodian history and traditions.', 'bi-bank'),
+                ('Agricultural Development', 'Modern rice farming supports agricultural innovation.', 'bi-tree')
+            ] %}
+
+            {% for title, description, icon in items %}
+            <div class="col-md-6 col-lg-4">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi {{ icon }}"></i>
+                    </div>
+                    <h5>{{ title }}</h5>
+                    <p>{{ description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <div class="section-heading text-center">
+            <span class="section-label">{{ lang.public.about.environments }}</span>
+            <h2 class="section-title">{{ lang.public.about.cultivation_in_cambodia }}</h2>
+            <p>{{ lang.public.about.different_environments }}</p>
+        </div>
+
+        <div class="row g-4 mt-3">
+
+            {% set environments = [
+                ('Rainfed Lowland Rice', 'ស្រូវវស្សា', 'Cultivated in lowland fields that depend mainly on rainfall.'),
+                ('Dry Season Rice', 'ស្រូវប្រាំង', 'Cultivated during the dry season using irrigation.'),
+                ('Deepwater Rice', 'ស្រូវទឹកជ្រៅ', 'Adapted to areas that experience deep seasonal flooding.'),
+                ('Upland Rice', 'ស្រូវចម្ការ', 'Cultivated in upland fields, generally without standing water.')
+            ] %}
+
+            {% for title, khmer, description in environments %}
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5>{{ title }}</h5>
+                    <p class="khmer-text">{{ khmer }}</p>
+                    <p>{{ description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+</section>
+
+<section class="section-padding bg-light">
+    <div class="container text-center">
+        <h2 class="section-title">{{ lang.public.about.explore_more }}</h2>
+
+        <a href="{{ url_for('public.rice_varieties') }}"
+           class="btn btn-success rounded-pill px-4">
+            {{ lang.public.about.explore_varieties }}
+        </a>
+
+        <a href="{{ url_for('public.cultivation') }}"
+           class="btn btn-outline-success rounded-pill px-4 ms-2">
+            {{ lang.public.about.rice_cultivation }}
+        </a>
+    </div>
+</section>
+
+{% endblock %}

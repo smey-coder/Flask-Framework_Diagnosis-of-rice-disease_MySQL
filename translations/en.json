@@ -98,6 +98,135 @@
     "Account_Settings" : "Account Settings",
     "About_This_System" : "About This Syste"
   },
+  "auth": {
+    "brand": "Rice Expert",
+    "system_name": "Rice Disease Diagnosis System",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "strength": {
+      "none": "None",
+      "enter_password": "Enter a password",
+      "weak": "Weak",
+      "fair": "Fair",
+      "medium": "Medium",
+      "good": "Good",
+      "strong": "Strong"
+    },
+    "passwords_match": "Passwords match",
+    "passwords_mismatch": "Passwords do not match",
+    "requirements": {
+      "length": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "lowercase": "One lowercase letter",
+      "number": "One number",
+      "special": "One special character"
+    },
+    "login": {
+      "title": "Sign In",
+      "brand_subtitle": "Smart Rice Disease Diagnosis System",
+      "feature_diagnosis": "Rice Disease Diagnosis",
+      "feature_diagnosis_description": "Identify rice diseases and support faster diagnosis.",
+      "feature_monitoring": "Rice Health Monitoring",
+      "feature_monitoring_description": "Monitor the health, growth, and water conditions of rice crops.",
+      "feature_farm": "Smart Farm Management",
+      "feature_farm_description": "Easily manage fields, crops, rice varieties, and farming activities.",
+      "feature_detection": "Early Disease Detection",
+      "feature_detection_description": "Recognize disease symptoms early to help farmers make better decisions.",
+      "welcome": "Welcome Back",
+      "description": "Sign in to access your Rice Expert account.",
+      "username": "Username",
+      "username_placeholder": "Enter your username",
+      "password": "Password",
+      "password_placeholder": "Enter your password",
+      "remember": "Remember me",
+      "forgot_password": "Forgot password?",
+      "submit": "Sign In",
+      "loading": "Signing in...",
+      "or": "OR",
+      "no_account": "Don't have an account?",
+      "create_account": "Create Account",
+      "security": "Your account information is protected with secure authentication.",
+      "logo_alt": "Rice Expert logo"
+    },
+    "register": {
+      "title": "Create Account",
+      "system_title": "Rice Disease Diagnosis System",
+      "secure_account": "Your account is secure and your data is protected.",
+      "smart_system": "Smart rice disease diagnosis system",
+      "cultivation_knowledge": "Knowledge of rice cultivation and care",
+      "description": "Create your Rice Expert account",
+      "step_account": "Account",
+      "step_security": "Security",
+      "account_information": "Account Information",
+      "account_information_description": "Enter your basic account information.",
+      "username": "Username",
+      "username_placeholder": "Enter your username",
+      "email": "Email",
+      "email_placeholder": "Enter your email",
+      "full_name": "Full Name",
+      "full_name_placeholder": "Enter your full name",
+      "continue": "Continue",
+      "secure_your_account": "Secure Your Account",
+      "password_description": "Create a strong password for your account.",
+      "password": "Password",
+      "password_placeholder": "Create a strong password",
+      "strength": "Password strength",
+      "confirm_password": "Confirm Password",
+      "confirm_password_placeholder": "Confirm your password",
+      "back": "Back",
+      "create_account": "Create Account",
+      "creating_account": "Creating account...",
+      "already_account": "Already have an account?",
+      "sign_in": "Sign In",
+      "security_note": "Your account information is securely protected."
+    },
+    "forgot": {
+      "title": "Forgot Password",
+      "secure_recovery": "Secure password recovery",
+      "code_sent": "A verification code will be sent to your email",
+      "account_protected": "Your account remains protected",
+      "heading": "Forgot Password?",
+      "description": "Don't worry. Enter the email address associated with your account and we'll send you a verification code.",
+      "email": "Email Address",
+      "email_placeholder": "Enter your email address",
+      "email_help": "We'll send a 6-digit verification code to this email.",
+      "send_code": "Send Verification Code",
+      "sending": "Sending...",
+      "security_heading": "Security Notice",
+      "security_note": "Never share your verification code with anyone. Our team will never ask for your OTP or password.",
+      "back_login": "Back to Login"
+    },
+    "verify": {
+      "title": "Verify Email",
+      "secure_verification": "Secure Email Verification",
+      "heading": "Verify Your Email",
+      "description": "Enter the 6-digit verification code sent to your email address.",
+      "code_sent_to": "Verification code sent to",
+      "verification_code": "Verification Code",
+      "code_placeholder": "000000",
+      "code_help": "Enter the 6-digit code from your email.",
+      "verify_code": "Verify Code",
+      "verifying": "Verifying...",
+      "not_received": "Didn't receive the code?",
+      "resend": "Resend OTP",
+      "security_note": "Never share your verification code with anyone.",
+      "back_sign_in": "Back to Sign In"
+    },
+    "reset": {
+      "title": "Reset Password",
+      "secure_recovery": "Secure Password Recovery",
+      "heading": "Reset Password",
+      "description": "Create a new strong password for your account.",
+      "new_password": "New Password",
+      "new_password_placeholder": "Create a strong password",
+      "confirm_password": "Confirm Password",
+      "confirm_password_placeholder": "Confirm your new password",
+      "reset_password": "Reset Password",
+      "resetting": "Resetting...",
+      "security_note": "Use a strong password that you don't use on other websites.",
+      "back_sign_in": "Back to Sign In"
+    }
+  },
   "public": {
     "nav": {
       "home": "Home",
@@ -260,13 +389,164 @@
       "right_approach": "The Right Approach",
       "four_steps": "Four Steps to Manage Rice Disease",
       "approach_description": "Effective treatment starts with a correct diagnosis and combines several methods instead of relying on one.",
+      "slideshow_title": "Visual Guide to Rice Disease Management",
+      "slideshow_description": "Explore practical ways to prevent and manage rice diseases.",
+      "slide_label": "Slide",
+      "slides": {
+        "cultural": {
+          "title": "Cultural Control",
+          "description": "Use crop rotation and intercropping to support healthier fields."
+        },
+        "chemical": {
+          "title": "Responsible Chemical Use",
+          "description": "Use approved products only when needed and follow label directions."
+        },
+        "prevention": {
+          "title": "Prevention and Monitoring",
+          "description": "Monitor crops regularly and choose resistant rice varieties."
+        },
+        "integrated": {
+          "title": "Integrated Disease Management",
+          "description": "Combine suitable methods and make decisions based on field conditions."
+        }
+      },
+      "steps": [
+        {
+          "title": "Identify",
+          "description": "Match field symptoms to the disease before applying any treatment."
+        },
+        {
+          "title": "Prevent",
+          "description": "Use healthy seed, balanced fertilizer, and good water control."
+        },
+        {
+          "title": "Treat",
+          "description": "Apply the right cultural, biological, or chemical method early."
+        },
+        {
+          "title": "Monitor",
+          "description": "Check the field regularly to see whether the disease is spreading."
+        }
+      ],
       "treatment_methods": "Treatment Methods",
       "choose_approach": "Choose the Right Treatment Approach",
       "method_description": "Select treatment methods based on disease type, severity, crop stage, and local regulations.",
+      "methods": [
+        {
+          "title": "Cultural Control",
+          "tag": "First choice • Low cost",
+          "description": "Change how the crop is grown so the disease finds it harder to spread.",
+          "points": [
+            "Plant certified, disease-free seed",
+            "Avoid too much nitrogen fertilizer",
+            "Manage water and drain the field when needed",
+            "Remove weeds and infected crop residue"
+          ]
+        },
+        {
+          "title": "Biological Control",
+          "tag": "Eco-friendly",
+          "description": "Use natural organisms and products that suppress disease-causing microbes.",
+          "points": [
+            "Treat seed with beneficial microbes",
+            "Use compost and organic matter to improve soil health",
+            "Protect natural enemies in the field",
+            "Combine with cultural control for better results"
+          ]
+        },
+        {
+          "title": "Resistant Varieties",
+          "tag": "Long-term protection",
+          "description": "Grow rice varieties that tolerate or resist diseases common in your area.",
+          "points": [
+            "Ask the local agriculture office for suitable varieties",
+            "Rotate varieties between seasons",
+            "Avoid planting one variety over very large areas",
+            "Keep good seed for the next season"
+          ]
+        },
+        {
+          "title": "Chemical Control",
+          "tag": "Last resort • Use with care",
+          "description": "Fungicides and bactericides can help when disease is serious or spreading fast.",
+          "points": [
+            "Use only products approved for rice",
+            "Apply at the recommended time and rate on the label",
+            "Rotate products to reduce resistance",
+            "Follow the waiting period before harvest"
+          ]
+        }
+      ],
       "guide": "Treatment Guide",
       "guide_title": "What Should You Do for Different Problems?",
+      "by_disease": "BY DISEASE",
+      "disease_title": "Treatment for Common Diseases",
+      "disease_description": "Open a disease to see what to do in the field.",
+      "fungal": "Fungal",
+      "bacterial": "Bacterial",
+      "what_to_do": "What to do in the field",
+      "serious_outbreak": "If the outbreak is serious",
+      "view_disease": "View disease information",
+      "important": "Important:",
+      "general_guidance": "This page gives general guidance only. Disease pressure, rice variety, and local rules differ between areas. Before using any chemical product, confirm the product and dose with your local agriculture officer or the label.",
+      "diseases": {
+        "blast": {
+          "name": "Rice Blast",
+          "cultural": [
+            "Use resistant varieties and healthy seed",
+            "Avoid excess nitrogen; split fertilizer into smaller doses",
+            "Keep the field from drying out during the growing stage",
+            "Remove and destroy infected straw after harvest"
+          ],
+          "chemical": "If leaf lesions spread quickly or the neck is at risk, ask your local agriculture office about a fungicide approved for rice, and apply it at the recommended stage."
+        },
+        "bacterial_blight": {
+          "name": "Bacterial Leaf Blight",
+          "cultural": [
+            "Plant certified seed and resistant varieties",
+            "Avoid cutting or damaging leaf tips when transplanting",
+            "Drain the field to reduce spread after heavy rain or flooding",
+            "Avoid excess nitrogen and keep field edges free of weeds"
+          ],
+          "chemical": "Fungicides do not control bacteria. Rely on resistant varieties and field hygiene, and ask the agriculture office before using any bactericide."
+        },
+        "brown_spot": {
+          "name": "Brown Spot",
+          "cultural": [
+            "Correct poor soil with balanced fertilizer, including potassium",
+            "Use clean, healthy seed",
+            "Avoid water stress and drought during growth",
+            "Remove infected residue and weeds"
+          ],
+          "chemical": "Brown spot is usually linked to weak crop nutrition. Improve the soil first, and use a fungicide only for a severe outbreak on the advice of an agriculture officer."
+        },
+        "sheath_blight": {
+          "name": "Sheath Blight",
+          "cultural": [
+            "Do not plant too densely; give plants room and airflow",
+            "Avoid too much nitrogen fertilizer",
+            "Remove weeds and crop residue that carry the fungus",
+            "Drain the field to lower humidity at the base of the plants"
+          ],
+          "chemical": "Treat early, when lesions first appear on lower leaf sheaths. Use a rice-approved fungicide as advised locally and follow the label."
+        }
+      },
       "safety": "Safety and Responsible Use",
       "safety_title": "Protect Your Family, Crop, and Environment",
+      "safety_first": "SAFETY FIRST",
+      "safety_description": "Good safety habits keep farmers healthy and prevent harm to water, fish, and nearby crops.",
+      "safety_items": [
+        "Wear gloves, a mask, long sleeves, and boots when spraying",
+        "Read and follow the product label every time",
+        "Never spray in strong wind or just before rain",
+        "Keep chemicals away from canals, ponds, and drinking water",
+        "Store products in their original container, away from children",
+        "Wash your hands and clothes after spraying"
+      ],
+      "cta_title": "Not Sure Which Disease Your Rice Has?",
+      "cta_description": "Identify the disease first. Use our Expert System to match your field symptoms and get a diagnosis with prevention advice.",
+      "diagnose_button": "Start Disease Diagnosis",
+      "browse_button": "Browse Diseases",
       "understanding": "Understanding rice disease treatment helps farmers choose timely actions and avoid unnecessary or harmful practices.",
       "important_note": "Always follow local agricultural guidance and product labels. If you are uncertain about a diagnosis or treatment, consult an agricultural expert."
     },

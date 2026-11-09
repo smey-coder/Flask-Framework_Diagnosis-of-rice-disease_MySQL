@@ -1,5 +1,4 @@
-{% extends "layouts/base.html" %} {% block title %}Sign In | Rice
-Expert{% endblock %} {% block content %}
+{% extends "layouts/base.html" %} {% block title %}{{ lang.auth.login.title }} | {{ lang.auth.brand }}{% endblock %} {% block content %}
 
 <link
   rel="stylesheet"
@@ -16,14 +15,12 @@ Expert{% endblock %} {% block content %}
         <div class="brand-icon">
             <img
                 src="{{ url_for('static', filename='images/rice_icon_login.png') }}"
-                alt="Rice Expert Logo"
+                alt="{{ lang.auth.login.logo_alt }}"
             >
         </div>
-        <h1 class="brand-title" style="text-align: center;">Rice Expert</h1>
+        <h1 class="brand-title" style="text-align: center;">{{ lang.auth.brand }}</h1>
         <p class="brand-subtitle" style="text-align: center;">
-          Smart Rice Disease Diagnosis System
-          <br />
-          ប្រព័ន្ធវិនិច្ឆ័យជំងឺស្រូវឆ្លាតវៃ
+          {{ lang.auth.login.brand_subtitle }}
         </p>
         <div class="feature-list">
     <div class="rice-info-card">
@@ -31,10 +28,9 @@ Expert{% endblock %} {% block content %}
             <i class="bi bi-virus"></i>
         </div>
         <div class="feature-content">
-            <h6>Rice Disease Diagnosis</h6>
+            <h6>{{ lang.auth.login.feature_diagnosis }}</h6>
             <p>
-                ជួយកំណត់អត្តសញ្ញាណជំងឺស្រូវ
-                និងគាំទ្រការវិនិច្ឆ័យជំងឺបានឆាប់រហ័ស។
+                {{ lang.auth.login.feature_diagnosis_description }}
             </p>
         </div>
 
@@ -48,11 +44,10 @@ Expert{% endblock %} {% block content %}
         </div>
 
         <div class="feature-content">
-            <h6>Rice Health Monitoring</h6>
+            <h6>{{ lang.auth.login.feature_monitoring }}</h6>
 
             <p>
-                តាមដានសុខភាព ការលូតលាស់
-                និងស្ថានភាពទឹករបស់ដំណាំស្រូវ។
+                {{ lang.auth.login.feature_monitoring_description }}
             </p>
         </div>
 
@@ -66,11 +61,10 @@ Expert{% endblock %} {% block content %}
         </div>
 
         <div class="feature-content">
-            <h6>Smart Farm Management</h6>
+            <h6>{{ lang.auth.login.feature_farm }}</h6>
 
             <p>
-                គ្រប់គ្រងស្រែ ដំណាំ ពូជស្រូវ
-                និងសកម្មភាពកសិកម្មបានងាយស្រួល។
+                {{ lang.auth.login.feature_farm_description }}
             </p>
 
         </div>
@@ -85,11 +79,10 @@ Expert{% endblock %} {% block content %}
         </div>
 
         <div class="feature-content">
-            <h6>Early Disease Detection</h6>
+            <h6>{{ lang.auth.login.feature_detection }}</h6>
 
             <p>
-                ជួយសម្គាល់រោគសញ្ញាជំងឺបានឆាប់
-                ដើម្បីជួយកសិករធ្វើការសម្រេចចិត្តបានល្អ។
+                {{ lang.auth.login.feature_detection_description }}
             </p>
         </div>
 
@@ -106,8 +99,8 @@ Expert{% endblock %} {% block content %}
     <section class="login-panel">
       <div class="login-content">
         <div class="login-header">
-          <h2>Welcome Back</h2>
-          <p>Sign in to access your Rice Expert account.</p>
+          <h2>{{ lang.auth.login.welcome }}</h2>
+          <p>{{ lang.auth.login.description }}</p>
         </div>
 
         <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
@@ -116,7 +109,7 @@ Expert{% endblock %} {% block content %}
           <!-- USERNAME -->
 
           <div class="mb-3">
-            <label for="username" class="form-label fw-semibold"> Username </label>
+            <label for="username" class="form-label fw-semibold">{{ lang.auth.login.username }}</label>
             <div class="input-icon-wrapper">
               <i class="bi bi-person input-icon"></i>
               <input
@@ -124,7 +117,7 @@ Expert{% endblock %} {% block content %}
                 class="form-control input-with-icon"
                 id="username"
                 name="username"
-                placeholder="Enter your username"
+                placeholder="{{ lang.auth.login.username_placeholder }}"
                 autocomplete="username"
                 required
                 autofocus
@@ -134,7 +127,7 @@ Expert{% endblock %} {% block content %}
 
           <!-- PASSWORD -->
           <div class="mb-3">
-            <label for="password" class="form-label fw-semibold"> Password </label>
+            <label for="password" class="form-label fw-semibold">{{ lang.auth.login.password }}</label>
 
             <div class="input-icon-wrapper">
               <i class="bi bi-lock input-icon"></i>
@@ -144,7 +137,7 @@ Expert{% endblock %} {% block content %}
                 class="form-control input-with-icon"
                 id="password"
                 name="password"
-                placeholder="Enter your password"
+                placeholder="{{ lang.auth.login.password_placeholder }}"
                 autocomplete="current-password"
                 required
               />
@@ -153,7 +146,9 @@ Expert{% endblock %} {% block content %}
                 type="button"
                 class="password-toggle"
                 id="togglePassword"
-                aria-label="Show password"
+                aria-label="{{ lang.auth.show_password }}"
+                data-show-password="{{ lang.auth.show_password }}"
+                data-hide-password="{{ lang.auth.hide_password }}"
               >
                 <i class="bi bi-eye"></i>
               </button>
@@ -172,12 +167,12 @@ Expert{% endblock %} {% block content %}
               />
 
               <label class="form-check-label small" for="remember">
-                Remember me
+                {{ lang.auth.login.remember }}
               </label>
             </div>
 
             <a href="{{ url_for('auth.forget_password') }}" class="forgot-link">
-              Forgot password?
+              {{ lang.auth.login.forgot_password }}
             </a>
           </div>
 
@@ -191,13 +186,13 @@ Expert{% endblock %} {% block content %}
             >
               <span id="loginText">
                 <i class="bi bi-box-arrow-in-right me-2"></i>
-                Sign In
+                {{ lang.auth.login.submit }}
               </span>
 
               <span id="loginLoading" class="d-none">
                 <span class="spinner-border spinner-border-sm me-2"></span>
 
-                Signing in...
+                {{ lang.auth.login.loading }}
               </span>
             </button>
           </div>
@@ -205,15 +200,15 @@ Expert{% endblock %} {% block content %}
 
         <!-- DIVIDER -->
 
-        <div class="divider">OR</div>
+        <div class="divider">{{ lang.auth.login.or }}</div>
 
         <!-- REGISTER -->
 
         <div class="register-text">
-          Don't have an account?
+          {{ lang.auth.login.no_account }}
 
           <a href="{{ url_for('auth.register') }}" class="register-link">
-            Create Account
+            {{ lang.auth.login.create_account }}
           </a>
         </div>
 
@@ -223,7 +218,7 @@ Expert{% endblock %} {% block content %}
           <i class="bi bi-shield-lock-fill"></i>
 
           <span>
-            Your account information is protected with secure authentication.
+            {{ lang.auth.login.security }}
           </span>
         </div>
       </div>
@@ -251,7 +246,7 @@ Expert{% endblock %} {% block content %}
 
         icon.classList.add("bi-eye-slash");
 
-        this.setAttribute("aria-label", "Hide password");
+        this.setAttribute("aria-label", this.dataset.hidePassword);
       } else {
         password.type = "password";
 
@@ -259,7 +254,7 @@ Expert{% endblock %} {% block content %}
 
         icon.classList.add("bi-eye");
 
-        this.setAttribute("aria-label", "Show password");
+        this.setAttribute("aria-label", this.dataset.showPassword);
       }
     });
   }
@@ -319,8 +314,8 @@ document.addEventListener("DOMContentLoaded", function () {
             togglePassword.setAttribute(
                 "aria-label",
                 isPassword
-                    ? "Hide password"
-                    : "Show password"
+                    ? togglePassword.dataset.hidePassword
+                    : togglePassword.dataset.showPassword
             );
         });
     }

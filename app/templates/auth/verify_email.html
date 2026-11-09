@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %} {% block title %}Verify Email{% endblock %} {%
+{% extends "layouts/base.html" %} {% block title %}{{ lang.auth.verify.title }}{% endblock %} {%
 block content %}
 <link
   rel="stylesheet"
@@ -12,15 +12,15 @@ block content %}
         <i class="bi bi-shield-check"></i>
       </div>
 
-      <h2>Rice Expert</h2>
+      <h2>{{ lang.auth.brand }}</h2>
 
-      <p>Rice Disease Diagnosis System</p>
+      <p>{{ lang.auth.system_name }}</p>
 
       <div class="security-icon">
         <i class="bi bi-envelope-check"></i>
       </div>
 
-      <span class="security-text"> Secure Email Verification </span>
+      <span class="security-text">{{ lang.auth.verify.secure_verification }}</span>
     </div>
 
     <!-- ================= RIGHT PANEL ================= -->
@@ -31,9 +31,9 @@ block content %}
           <i class="bi bi-key-fill"></i>
         </div>
 
-        <h3>Verify Your Email</h3>
+        <h3>{{ lang.auth.verify.heading }}</h3>
 
-        <p>Enter the 6-digit verification code sent to your email address.</p>
+        <p>{{ lang.auth.verify.description }}</p>
       </div>
 
       <!-- Email Information -->
@@ -43,7 +43,7 @@ block content %}
         </div>
 
         <div>
-          <small>Verification code sent to</small>
+          <small>{{ lang.auth.verify.code_sent_to }}</small>
 
           <strong> {{ email }} </strong>
         </div>
@@ -54,7 +54,7 @@ block content %}
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
         <div class="otp-field">
-          <label for="otp"> Verification Code </label>
+          <label for="otp">{{ lang.auth.verify.verification_code }}</label>
 
           <div class="otp-wrapper">
             <i class="bi bi-shield-lock otp-icon"></i>
@@ -68,7 +68,7 @@ block content %}
               minlength="6"
               inputmode="numeric"
               autocomplete="one-time-code"
-              placeholder="000000"
+              placeholder="{{ lang.auth.verify.code_placeholder }}"
               pattern="[0-9]{6}"
               required
               autofocus
@@ -77,7 +77,7 @@ block content %}
 
           <small class="otp-help">
             <i class="bi bi-info-circle me-1"></i>
-            Enter the 6-digit code from your email.
+            {{ lang.auth.verify.code_help }}
           </small>
         </div>
 
@@ -85,7 +85,7 @@ block content %}
         <button type="submit" class="verify-btn" id="verifyBtn">
           <span id="verifyText">
             <i class="bi bi-check-circle me-1"></i>
-            Verify Code
+            {{ lang.auth.verify.verify_code }}
           </span>
 
           <span id="verifyLoading" class="d-none">
@@ -94,18 +94,18 @@ block content %}
               role="status"
             ></span>
 
-            Verifying...
+            {{ lang.auth.verify.verifying }}
           </span>
         </button>
       </form>
 
       <!-- Resend -->
       <div class="resend-section">
-        <p>Didn't receive the code?</p>
+        <p>{{ lang.auth.verify.not_received }}</p>
 
         <a href="{{ url_for('auth.forget_password') }}" class="resend-link">
           <i class="bi bi-arrow-repeat me-1"></i>
-          Resend OTP
+          {{ lang.auth.verify.resend }}
         </a>
       </div>
 
@@ -113,14 +113,14 @@ block content %}
       <div class="security-note">
         <i class="bi bi-shield-lock-fill"></i>
 
-        <span> Never share your verification code with anyone. </span>
+        <span>{{ lang.auth.verify.security_note }}</span>
       </div>
 
       <!-- Back -->
       <div class="back-login">
         <a href="{{ url_for('auth.login') }}">
           <i class="bi bi-arrow-left me-1"></i>
-          Back to Sign In
+          {{ lang.auth.verify.back_sign_in }}
         </a>
       </div>
     </div>

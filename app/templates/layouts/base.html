@@ -640,7 +640,6 @@
 
             <!-- Project -->
             <div class="col-lg-3 col-md-6">
-
                 <h6 class="text-white fw-bold mb-3">
                     About Project
                 </h6>
@@ -654,7 +653,38 @@
                     <i class="bi bi-mortarboard me-1"></i>
                     Software Development
                 </p>
+            </div>
 
+                        {# Paste this row inside the footer, right after your existing <div class="row g-4 mb-4"> ... </div> #}
+            
+            <!-- Map of Cambodia -->
+            <div class="row mb-4">
+                <div class="col-12">
+            
+                    <div class="footer-map">
+            
+                        <iframe
+                            title="Map of Cambodia"
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=102.2%2C10.2%2C107.8%2C14.9&amp;layer=mapnik&amp;marker=11.5564%2C104.9282"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
+            
+                        <span class="footer-map-label">
+                            <i class="bi bi-geo-alt-fill me-1"></i>
+                            Cambodia
+                            <span class="khmer-text ms-1">កម្ពុជា</span>
+                        </span>
+            
+                        <a class="footer-map-link"
+                        href="https://www.openstreetmap.org/?mlat=11.5564&amp;mlon=104.9282#map=7/12.6/104.9"
+                        target="_blank" rel="noopener">
+                            View larger map <i class="bi bi-box-arrow-up-right ms-1"></i>
+                        </a>
+            
+                    </div>
+            
+                </div>
             </div>
 
         </div>
@@ -662,11 +692,8 @@
 
         <!-- Footer Bottom -->
         <div class="footer-bottom pt-3">
-
             <div class="row align-items-center text-center">
-
                 <div class="col-md-6 text-md-start mb-2 mb-md-0">
-
                     <small>
                         &copy; {{ now.year if now else '2026' }}
                         Rice Disease Diagnosis System.

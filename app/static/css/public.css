@@ -508,6 +508,12 @@ body {
     background: linear-gradient(120deg, #14532d, #198754);
 }
 
+.ds-page-hero {
+    background:
+        linear-gradient(rgba(8, 35, 18, .66), rgba(8, 35, 18, .66)),
+        url("../images/prevention.jpg") center / cover no-repeat;
+}
+
 .page-hero h1 {
     font-size: clamp(2rem, 4vw, 3.2rem);
     font-weight: 800;
@@ -627,7 +633,13 @@ body {
     color: rgba(255,255,255,.9);
 }
 
-/* Old text-only card (kept for other pages) */
+/* =====================================================
+   RICE INTRO CARD
+   Use the base card for icon + text,
+   or add .rice-intro-card--image for a photo card.
+===================================================== */
+
+/* ---------- Base card (icon + text) ---------- */
 
 .rice-intro-card {
     min-height: 370px;
@@ -661,7 +673,278 @@ body {
 }
 
 .rice-intro-card p {
-    color: rgba(255,255,255,.8);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- Photo card (.rice-intro-card--image) ---------- */
+
+.rice-intro-card--image {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+
+    padding: 0;
+
+    align-items: stretch;
+    justify-content: flex-end;
+
+    background: linear-gradient(135deg, #14532d, #198754); /* shown while the photo loads */
+
+    box-shadow: 0 24px 50px rgba(20, 83, 45, 0.25);
+}
+
+.rice-intro-img {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform 0.8s ease;
+}
+
+.rice-intro-card--image:hover .rice-intro-img {
+    transform: scale(1.07);
+}
+
+/* dark gradient so the white text is easy to read */
+
+.rice-intro-card--image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        to top,
+        rgba(5, 46, 22, 0.88) 0%,
+        rgba(5, 46, 22, 0.35) 45%,
+        transparent 70%
+    );
+
+    pointer-events: none;
+}
+
+.rice-intro-caption {
+    position: relative;
+    z-index: 2;
+
+    padding: 28px 30px;
+
+    text-align: left;
+}
+
+.rice-intro-tag {
+    display: inline-block;
+
+    padding: 5px 14px;
+    margin-bottom: 12px;
+
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* the base ".rice-intro-card i" rule makes icons huge, so reset it for the tag */
+
+.rice-intro-card--image .rice-intro-tag i {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #b8e6a7;
+}
+
+.rice-intro-caption h3 {
+    margin: 0 0 4px;
+
+    font-size: 1.7rem;
+    font-weight: 800;
+}
+
+.rice-intro-caption p {
+    margin: 0;
+
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 768px) {
+    .rice-intro-card {
+        min-height: 280px;
+    }
+
+    .rice-intro-card--image {
+        min-height: 0;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .rice-intro-card--image {
+        aspect-ratio: 1 / 1;
+    }
+
+    .rice-intro-caption {
+        padding: 20px;
+    }
+
+    .rice-intro-caption h3 {
+        font-size: 1.4rem;
+    }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .rice-intro-img {
+        transition: none;
+    }
+}
+
+
+/* =====================================================
+   INTRO CARD SLIDESHOW (.rice-intro-carousel)
+   Goes inside .rice-intro-card--image. Add at the END of the file.
+===================================================== */
+
+.rice-intro-carousel {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
+.rice-intro-carousel .carousel-inner,
+.rice-intro-carousel .carousel-item {
+    width: 100%;
+    height: 100%;
+}
+
+.rice-intro-carousel .carousel-item {
+    transition: opacity 1s ease-in-out;
+}
+
+/* slow zoom on the photo that is showing */
+
+.rice-intro-carousel .rice-intro-img {
+    transform: scale(1);
+    transition: transform 6s ease;
+}
+
+.rice-intro-carousel .carousel-item.active .rice-intro-img {
+    transform: scale(1.08);
+}
+
+/* the caption must not block clicks on the arrows below it */
+
+.rice-intro-card--image .rice-intro-caption {
+    pointer-events: none;
+}
+
+/* dots: top-right, so they do not cover the text */
+
+.rice-intro-carousel .carousel-indicators {
+    top: 16px;
+    right: 16px;
+    bottom: auto;
+    left: auto;
+
+    z-index: 5;
+    margin: 0;
+    justify-content: flex-end;
+}
+
+.rice-intro-carousel .carousel-indicators button {
+    width: 9px;
+    height: 9px;
+
+    margin: 0 4px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background-color: #fff;
+    opacity: 0.6;
+
+    transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+.rice-intro-carousel .carousel-indicators button.active {
+    width: 26px;
+    border-radius: 10px;
+    opacity: 1;
+}
+
+/* arrows: round buttons, shown when the card is hovered */
+
+.rice-intro-carousel .carousel-control-prev,
+.rice-intro-carousel .carousel-control-next {
+    z-index: 4;
+
+    top: 50%;
+    bottom: auto;
+
+    width: 40px;
+    height: 40px;
+
+    margin: 0 12px;
+    transform: translateY(-50%);
+
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    opacity: 0;
+    transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.rice-intro-carousel .carousel-control-prev:hover,
+.rice-intro-carousel .carousel-control-next:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.rice-intro-card--image:hover .carousel-control-prev,
+.rice-intro-card--image:hover .carousel-control-next {
+    opacity: 1;
+}
+
+.rice-intro-carousel .carousel-control-prev-icon,
+.rice-intro-carousel .carousel-control-next-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* touch screens have no hover, so keep the arrows visible */
+
+@media (hover: none) {
+    .rice-intro-carousel .carousel-control-prev,
+    .rice-intro-carousel .carousel-control-next {
+        opacity: 0.85;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rice-intro-carousel .carousel-item,
+    .rice-intro-carousel .rice-intro-img {
+        transition: none !important;
+    }
+
+    .rice-intro-carousel .carousel-item.active .rice-intro-img {
+        transform: none;
+    }
 }
 
 /* =====================================================

@@ -752,3 +752,92 @@
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: none; }
 }
+
+ 
+/* =====================================================
+   FOOTER MAP (Cambodia)
+===================================================== */
+ 
+.footer-map {
+    position: relative;
+ 
+    height: 260px;
+ 
+    border-radius: 18px;
+    overflow: hidden;
+ 
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: #1b4d33;
+ 
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+ 
+.footer-map iframe {
+    display: block;
+ 
+    width: 100%;
+    height: 100%;
+ 
+    border: 0;
+ 
+    /* soften the colours so the map blends into the dark footer */
+    filter: grayscale(0.3) contrast(1.05);
+    transition: filter 0.4s ease;
+}
+ 
+.footer-map:hover iframe {
+    filter: none;
+}
+ 
+.footer-map-label {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+ 
+    padding: 8px 16px;
+ 
+    color: #14532d;
+    font-size: 0.85rem;
+    font-weight: 700;
+ 
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 50px;
+ 
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+ 
+    pointer-events: none;
+}
+ 
+.footer-map-label i {
+    color: #198754;
+}
+ 
+.footer-map-link {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+ 
+    padding: 6px 14px;
+ 
+    color: #14532d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+ 
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 50px;
+ 
+    transition: background 0.2s ease, color 0.2s ease;
+}
+ 
+.footer-map-link:hover {
+    color: #fff;
+    background: #198754;
+}
+ 
+@media (max-width: 575.98px) {
+    .footer-map {
+        height: 220px;
+        border-radius: 14px;
+    }
+}

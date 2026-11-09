@@ -1,145 +1,1165 @@
-
 {% extends "layouts/base.html" %}
 
-{% block title %}{{ lang.public.about.title }}{% endblock %}
+{% block title %}About Cambodian Rice | ស្វែងយល់អំពីស្រូវកម្ពុជា{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+<style>
+  /* =====================================================
+     ABOUT RICE PAGE  (prefix: ar-)
+  ===================================================== */
+
+  .ar-en { display: block; color: var(--rice-gray); font-size: .85rem; font-weight: 500; }
+
+  /* ---------- Stats strip ---------- */
+  .ar-stats { margin-top: -50px; position: relative; z-index: 3; }
+
+  .ar-stat {
+    height: 100%;
+    padding: 22px 20px;
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-radius: 18px;
+    box-shadow: 0 14px 34px rgba(20, 83, 45, .10);
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+
+  .ar-stat:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(20, 83, 45, .16); }
+  .ar-stat i { font-size: 1.5rem; color: var(--rice-green); }
+  .ar-stat strong { display: block; font-size: 1.8rem; line-height: 1.2; color: var(--rice-dark); font-weight: 800; margin-top: 6px; }
+  .ar-stat small { display: block; color: var(--rice-gray); line-height: 1.6; font-size: .8rem; }
+
+  /* ---------- Quick links ---------- */
+  .ar-nav { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: thin; }
+
+  .ar-nav a {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--rice-green);
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #cfe3d4;
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+  }
+
+  .ar-nav a:hover { color: #fff; background: var(--rice-green); transform: translateY(-2px); }
+
+  /* ---------- Section heading ---------- */
+  .ar-head { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+
+  .ar-num {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #198754, #20a66a);
+    box-shadow: 0 8px 18px rgba(25, 135, 84, .3);
+  }
+
+  .ar-head h2 { margin: 0; font-size: clamp(1.35rem, 2.6vw, 1.9rem); font-weight: 800; color: var(--rice-dark); line-height: 1.6; }
+
+  /* ---------- Cards ---------- */
+  .ar-card {
+    height: 100%;
+    padding: 26px;
+    background: #fff;
+    border: 1px solid #e5eee7;
+    border-radius: 18px;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+
+  .ar-card:hover { transform: translateY(-6px); box-shadow: 0 16px 34px rgba(20, 83, 45, .12); }
+  .ar-card h5 { color: var(--rice-dark); font-weight: 800; font-size: 1.05rem; line-height: 1.7; }
+  .ar-card p  { color: var(--rice-gray); font-size: .92rem; line-height: 1.95; margin-bottom: 0; }
+
+  .ar-icon {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 14px;
+    border-radius: 15px;
+    font-size: 1.5rem;
+    color: var(--c, var(--rice-green));
+    background: color-mix(in srgb, var(--c, #198754) 12%, white);
+    transition: transform .4s cubic-bezier(.34, 1.56, .64, 1);
+  }
+
+  .ar-card:hover .ar-icon { transform: scale(1.12) rotate(-6deg); }
+
+  .ar-tag {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 3px 11px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--c, var(--rice-green));
+    background: color-mix(in srgb, var(--c, #198754) 12%, white);
+  }
+
+  /* ---------- Bars ---------- */
+  .ar-bars { display: grid; gap: 16px; }
+
+  .ar-bar-row { display: grid; grid-template-columns: 150px 1fr 70px; gap: 12px; align-items: center; font-size: .9rem; }
+  .ar-bar-row .name { font-weight: 700; color: var(--rice-dark); line-height: 1.5; }
+  .ar-bar-row .name small { display: block; color: var(--rice-gray); font-weight: 500; font-size: .75rem; }
+  .ar-bar-row .val { text-align: right; font-weight: 800; color: var(--rice-dark); }
+
+  .ar-bar { height: 14px; border-radius: 50px; background: #e9f3ec; overflow: hidden; }
+
+  .ar-bar span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 50px;
+    background: linear-gradient(90deg, var(--c, #198754), color-mix(in srgb, var(--c, #198754) 55%, white));
+    transition: width 1.2s cubic-bezier(.22, 1, .36, 1);
+    transition-delay: calc(var(--i, 0) * 120ms + 250ms);
+  }
+
+  .is-visible .ar-bar span,
+  .ar-bars.is-visible .ar-bar span { width: var(--w); }
+
+  /* stacked bar */
+  .ar-stack { display: flex; height: 22px; border-radius: 50px; overflow: hidden; background: #e9f3ec; }
+  .ar-stack span { display: block; width: 0; transition: width 1.2s cubic-bezier(.22, 1, .36, 1); }
+  .is-visible .ar-stack span { width: var(--w); }
+
+  .ar-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 12px; font-size: .8rem; color: var(--rice-gray); }
+  .ar-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; background: var(--c); }
+
+  /* ---------- Chips ---------- */
+  .ar-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .ar-chip {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--rice-dark);
+    background: var(--rice-light);
+    border: 1px solid #cfe3d4;
+  }
+
+  /* ---------- Growth timeline ---------- */
+  .ar-steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+
+  .ar-step { position: relative; text-align: center; padding: 18px 8px; border-radius: 16px; background: #fff; border: 1px solid #e5eee7; transition: transform .3s ease, background .3s ease; }
+  .ar-step:hover { transform: translateY(-6px); background: var(--rice-light); }
+  .ar-step i { display: block; font-size: 1.9rem; color: var(--rice-green); margin-bottom: 8px; }
+  .ar-step b { display: block; font-size: .82rem; color: var(--rice-dark); line-height: 1.6; }
+  .ar-step small { color: var(--rice-gray); font-size: .7rem; }
+
+  /* ---------- Map ---------- */
+  .ar-map-card { overflow: hidden; background: #fff; border: 1px solid #e5eee7; border-radius: 22px; box-shadow: 0 18px 40px rgba(20, 83, 45, .12); }
+  .ar-map-tabs { display: flex; gap: 8px; flex-wrap: wrap; padding: 14px 16px; background: #f3f8f4; border-bottom: 1px solid #e5eee7; }
+
+  .ar-map-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border: 1px solid #cfe3d4;
+    border-radius: 50px;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--rice-dark);
+    background: #fff;
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+  }
+
+  .ar-map-tab:hover { transform: translateY(-2px); }
+  .ar-map-tab.active { color: #fff; background: var(--c, #198754); border-color: var(--c, #198754); }
+
+  #riceMap { height: 460px; background: #f3f8f4; }
+
+  .ar-map-note { padding: 14px 20px; font-size: .88rem; line-height: 1.9; color: var(--rice-gray); border-top: 1px solid #e5eee7; min-height: 78px; }
+  .ar-map-note b { color: var(--rice-dark); }
+
+  .ar-maplink {
+    margin-top: 14px;
+    padding: 6px 14px;
+    border: 1px solid #cfe3d4;
+    border-radius: 50px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--rice-green);
+    background: #fff;
+    transition: background .2s ease, color .2s ease;
+  }
+
+  .ar-maplink:hover { color: #fff; background: var(--rice-green); }
+
+  .leaflet-tooltip.ar-label { padding: 3px 9px; font-size: .75rem; font-weight: 700; color: #14532d; background: rgba(255, 255, 255, .96); border: 1px solid #cfe3d4; border-radius: 50px; box-shadow: 0 3px 8px rgba(0, 0, 0, .15); }
+  .leaflet-tooltip.ar-label::before { display: none; }
+
+  /* ---------- Flow diagram ---------- */
+  .ar-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 12px; align-items: center; }
+  .ar-flow-box { padding: 20px; text-align: center; border-radius: 16px; background: #fff; border: 1px solid #e5eee7; }
+  .ar-flow-box i { font-size: 1.8rem; color: var(--rice-green); }
+  .ar-flow-box b { display: block; color: var(--rice-dark); margin: 6px 0 2px; line-height: 1.6; }
+  .ar-flow-box small { color: var(--rice-gray); line-height: 1.6; display: block; }
+  .ar-flow-arrow { font-size: 1.6rem; color: var(--rice-green); animation: arFlow 1.6s ease-in-out infinite; }
+
+  @keyframes arFlow { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+
+  /* ---------- Callout ---------- */
+  .ar-note { display: flex; gap: 14px; padding: 16px 20px; border-radius: 16px; font-size: .88rem; line-height: 1.9; background: #fffbeb; border: 1px solid #fde68a; color: #78350f; }
+  .ar-note i { font-size: 1.3rem; color: #d97706; margin-top: 2px; }
+
+  /* ---------- Sources ---------- */
+  .ar-sources a { color: var(--rice-green); font-weight: 600; text-decoration: none; }
+  .ar-sources a:hover { text-decoration: underline; }
+  .ar-sources li { margin-bottom: 8px; font-size: .88rem; color: var(--rice-gray); line-height: 1.7; }
+
+  @media (max-width: 991.98px) {
+    .ar-steps { grid-template-columns: repeat(3, 1fr); }
+    .ar-flow { grid-template-columns: 1fr; }
+    .ar-flow-arrow { transform: rotate(90deg); text-align: center; animation: none; }
+  }
+
+  @media (max-width: 575.98px) {
+    .ar-stats { margin-top: -30px; }
+    .ar-bar-row { grid-template-columns: 1fr 60px; }
+    .ar-bar-row .ar-bar { grid-column: 1 / -1; order: 3; }
+    .ar-steps { grid-template-columns: repeat(2, 1fr); }
+    #riceMap { height: 380px; }
+    .ar-head { gap: 12px; }
+    .ar-num { width: 44px; height: 44px; font-size: 1.1rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ar-flow-arrow { animation: none; }
+    .ar-bar span, .ar-stack span { transition: none; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+<script>document.documentElement.classList.add("reveal-ready");</script>
 
-<section class="page-hero">
+{# =====================================================
+   DATA  (update these lists when new figures are published)
+   Last checked: 9 November 2026
+===================================================== #}
+
+{% set updated = '9 វិច្ឆិកា 2026 / 9 Nov 2026' %}
+
+{% set stats = [
+    ('bi-basket', '14.2 M', 'លានតោន ស្រូវដែលប្រមូលបាន ២០២៤/២៥', 'Paddy harvested 2024/25 (FAO)'),
+    ('bi-box-seam', '1.01 M', 'លានតោន អង្ករនាំចេញ ២០២៦ (ដល់ ១៩ តុលា) — កំណត់ត្រាថ្មី', 'Milled rice exported in 2026 — first time above 1 million tonnes'),
+    ('bi-stars', '59%', 'ជាអង្ករក្រអូប ក្នុងការនាំចេញ (មករា–កក្កដា ២០២៦)', 'Fragrant rice share of exports'),
+    ('bi-globe-asia-australia', '66', 'ប្រទេស និងតំបន់ ទិញអង្ករកម្ពុជា (មករា–សីហា ២០២៦)', 'Destinations, Jan–Aug 2026')
+] %}
+
+{% set top_provinces = [
+    ('ព្រៃវែង', 'Prey Veng', 13),
+    ('តាកែវ', 'Takeo', 11),
+    ('បាត់ដំបង', 'Battambang', 11),
+    ('បន្ទាយមានជ័យ', 'Banteay Meanchey', 9)
+] %}
+
+{% set destinations = [
+    ('សហភាពអឺរ៉ុប', 'European Union · Jan–Aug 2026', 29.3, '#4f46e5'),
+    ('ចិន', 'China · Jan–Aug 2026', 22.4, '#dc2626'),
+    ('ហ្វីលីពីន', 'Philippines · ≈ 2026 total (MAFF)', 20, '#0891b2')
+] %}
+
+{% set mix = [
+    ('អង្ករក្រអូប', 'Fragrant', 59.2, '#198754'),
+    ('អង្ករសរ', 'White', 23.6, '#0891b2'),
+    ('អង្ករបែក', 'Broken', 13.7, '#d97706'),
+    ('អង្ករចំហុយ និងសរីរាង្គ', 'Parboiled & organic', 3.5, '#7c3aed')
+] %}
+
+{% set prices = [
+    ('ម្លិះសរីរាង្គ', 'Organic jasmine', 1350, '#7c3aed'),
+    ('អង្ករចំហុយសរីរាង្គ', 'Organic parboiled', 1100, '#7c3aed'),
+    ('អង្ករសរសរីរាង្គ', 'Organic white', 1050, '#7c3aed'),
+    ('អង្កររកាត់ (ម្លិះ)', 'Brown rice (jasmine)', 860, '#d97706'),
+    ('ម៉ាលីស អង្គរ (ផ្ការំដួល)', 'Malys Angkor (Phka Rumduol)', 848, '#198754'),
+    ('ក្រអូប SKO', 'Fragrant SKO', 725, '#198754'),
+    ('ក្រអូប SRO', 'Fragrant SRO', 630, '#198754'),
+    ('អង្ករចំហុយ', 'Parboiled', 600, '#0891b2'),
+    ('អង្កររកាត់ (សរ)', 'Brown rice (white)', 560, '#d97706'),
+    ('អង្ករសរ (ទន់)', 'White rice (soft texture)', 550, '#0891b2')
+] %}
+
+{% set stages = [
+    ('bi-layers', 'ការរៀបចំដី', 'Land preparation'),
+    ('bi-flower1', 'ការបណ្តុះកូនស្រូវ', 'Seedling'),
+    ('bi-tree', 'ការស្ទូងស្រូវ', 'Transplanting'),
+    ('bi-flower2', 'ការបែកគុម្ព', 'Tillering'),
+    ('bi-flower3', 'ការចេញផ្កា', 'Flowering'),
+    ('bi-basket', 'ការប្រមូលផល', 'Harvesting')
+] %}
+
+{% set sources = [
+    ('Cambodia Rice Federation តាម AKP — 7 months 2026', 'https://www.akp.gov.kh/post/detail/377583'),
+    ('Khmer Times — Jan–Aug 2026 (EU, China shares)', 'https://en.vietstock.vn/2026/09/cambodia-rice-exports-jump-675-to-nearly-800k-tonnes-52000-642706.htm'),
+    ('Cambodianess — exports top 1 million tonnes (MAFF)', 'https://cambodianess.com/article/cambodias-rice-exports-top-1-million-tonnes-breaking-annual-record'),
+    ('UkrAgroConsult — Philippines share', 'https://ukragroconsult.com/en/news/cambodia-exports-over-1-mln-tons-of-rice-for-the-first-time-as-shipments-to-the-philippines-surge/'),
+    ('CRF export price list, 2 June 2026', 'https://b2b-asianews.com/news/cambodia-exports-over-568-tonnes-of-milled-rice-worth-more-than-327m-in-first-five-months-of-2026/'),
+    ('S&P Global — price outlook & varieties', 'https://www.spglobal.com/energy/en/news-research/latest-news/agriculture/051126-interview-cambodia-aims-to-top-1-mln-mt-rice-exports-in-2026-as-costs-and-risks-mount'),
+    ('FAO — paddy production forecast', 'https://en.vietstock.vn/2025/08/aggregate-paddy-production-forecasted-at-139-mt-10-above-five-year-average-114-619545.htm'),
+    ('Rice News Today — province shares of production', 'https://ricenewstoday.com/?p=34829'),
+    ('USDA FAS GAIN — Cambodia grain and feed', 'https://agriexchange.apeda.gov.in/MarketReport/10056060520267216439138.pdf'),
+    ('Battambang paddy study (Cogent Food & Agriculture, 2023)', 'https://doi.org/10.1080/23311932.2023.2193311'),
+    ('JICA — rice balance by province (2008/09)', 'https://openjicareport.jica.go.jp/pdf/11968856.pdf'),
+    ('Phnom Penh Post — Cambodia\'s "white gold"', 'https://phnompenhpost.com/7days/rice-masters-and-farmers-growth-cambodia%e2%80%99s-%e2%80%98white-gold%e2%80%99'),
+    ('IRRI — Phka Rumduol, World\'s Best Rice', 'https://news.irri.org/2014/01/cambodia-rice-variety-named-worlds-best.html'),
+    ('J-STAGE — rice in Takeo, Phnom Penh and Battambang markets', 'https://www.jstage.jst.go.jp/article/fstr/26/2/26_223/_html/-char/en'),
+    ('Cambodianess — floods and falling rice prices (Svay Rieng)', 'https://www.cambodianess.com/index.php/article/flooded-farmers-call-for-rice-price-stabilization-as-businesses-fail-and-debts-rise'),
+    ('Cambodianess — drought followed by floods', 'https://cambodianess.com/article/cambodian-farmers-suffer-double-blow-as-floods-follow-drought'),
+    ('Cambodianess — fertilizer prices', 'https://cambodianess.com/index.php/article/rain-devastates-dry-season-rice-crop'),
+    ('CamboJA — farmers, debt and agroecology', 'https://cambojanews.com/agroecology-a-way-out-for-cambodian-farmers-facing-debt-crisis/'),
+    ('The Star — fuel and fertilizer costs', 'https://www.thestar.com.my/aseanplus/aseanplus-news/2026/04/01/costly-fuel-fertiliser-strain-cambodian-farmers039-livelihoods-as-middle-east-conflict-drags-on')
+] %}
+
+
+<!-- =========================================
+     PAGE HERO
+========================================== -->
+<section class="page-hero ds-page-hero" style="padding-bottom: 110px;">
     <div class="container">
-        <span class="section-label text-white-50">{{ lang.public.about.label }}</span>
-        <h1>{{ lang.public.about.title }}</h1>
-        <p>{{ lang.public.about.description }}</p>
+        <span class="section-label text-white-50">CAMBODIAN RICE</span>
+        <h1 class="khmer-text">ស្វែងយល់អំពីស្រូវកម្ពុជា</h1>
+        <p class="mb-1">About Cambodian Rice</p>
+        <p class="khmer-text mb-0">
+            ការដាំដុះ ខេត្តផលិតស្រូវ ការនាំចេញ បញ្ហារបស់កសិករ និងតម្លៃទីផ្សារ
+        </p>
     </div>
 </section>
 
-<section class="section-padding">
+<!-- =========================================
+     KEY NUMBERS
+========================================== -->
+<section class="ar-stats">
+    <div class="container">
+        <div class="row g-3">
+            {% for icon, number, kh, en in stats %}
+            <div class="col-6 col-lg-3" data-animate="fade-up" style="--d: {{ loop.index0 }}">
+                <div class="ar-stat">
+                    <i class="bi {{ icon }}"></i>
+                    <strong>{{ number }}</strong>
+                    <small class="khmer-text" style="line-height:1.8">{{ kh }}</small>
+                    <small>{{ en }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- =========================================
+     QUICK LINKS + MAP
+========================================== -->
+<section class="section-padding pb-0">
     <div class="container">
 
-        <div class="row align-items-center g-5">
+        <nav class="ar-nav" aria-label="Sections" data-animate="fade-up">
+            <a href="#cultivation" class="khmer-text">១. ការដាំដុះ</a>
+            <a href="#top-provinces" class="khmer-text">២. ខេត្តផលិតច្រើន</a>
+            <a href="#exports" class="khmer-text">៣. ការនាំចេញ</a>
+            <a href="#quality" class="khmer-text">៤. គុណភាពល្អ</a>
+            <a href="#consumption" class="khmer-text">៥. ការបរិភោគ</a>
+            <a href="#problems" class="khmer-text">៦. បញ្ហាកសិករ</a>
+            <a href="#prices" class="khmer-text">៧. តម្លៃទីផ្សារ</a>
+        </nav>
 
-            <div class="col-lg-6">
-                <span class="section-label">{{ lang.public.about.introduction }}</span>
-                <h2 class="section-title">{{ lang.public.about.what_is_rice }}</h2>
+        <div class="section-heading text-center mt-4 mb-4" data-animate="fade-up">
+            <span class="section-label">RICE MAP</span>
+            <h2 class="section-title khmer-text">ផែនទីស្រូវកម្ពុជា</h2>
+            <p>Choose a layer to see provinces on the map of Cambodia.</p>
+        </div>
 
-                <p>
-                    Rice is a cereal grain and one of the most important
-                    food crops in the world. It is a staple food for
-                    millions of people, particularly in Asia.
-                </p>
-
-                <p>
-                    Rice is cultivated in different environments,
-                    including irrigated lowlands, rainfed lowlands,
-                    deepwater areas, and upland fields.
-                </p>
-
-                <p class="khmer-text">
-                    ស្រូវគឺជាដំណាំធញ្ញជាតិដែលមានសារៈសំខាន់ខ្លាំងសម្រាប់
-                    ការផ្គត់ផ្គង់ស្បៀងអាហាររបស់មនុស្សជាតិ។
-                    ប្រជាជនកម្ពុជាភាគច្រើនប្រើប្រាស់អង្ករជាអាហារចម្បងប្រចាំថ្ងៃ។
-                </p>
+        <div class="ar-map-card" id="riceMapCard" data-animate="fade-up">
+            <div class="ar-map-tabs" role="tablist" aria-label="Map layers">
+                <button type="button" class="ar-map-tab active khmer-text" data-layer="production" style="--c:#198754"><i class="bi bi-bar-chart-fill"></i>ផលិតច្រើន</button>
+                <button type="button" class="ar-map-tab khmer-text" data-layer="quality" style="--c:#d97706"><i class="bi bi-award-fill"></i>គុណភាពល្អ</button>
+                <button type="button" class="ar-map-tab khmer-text" data-layer="export" style="--c:#2563eb"><i class="bi bi-box-arrow-right"></i>ស្រូវទៅវៀតណាម</button>
+                <button type="button" class="ar-map-tab khmer-text" data-layer="consumption" style="--c:#7c3aed"><i class="bi bi-people-fill"></i>ផ្គត់ផ្គង់ភ្នំពេញ</button>
             </div>
 
-            <div class="col-lg-6">
-                <div class="rice-intro-card">
-                    <i class="bi bi-flower2"></i>
-                    <h3>{{ lang.public.about.rice_agriculture }}</h3>
-                    <p>{{ lang.public.about.growing }} • {{ lang.public.about.harvesting }} • {{ lang.public.about.processing }}</p>
+            <div id="riceMap"
+                 data-geojson="{{ url_for('static', filename='data/cambodia.geojson') }}"
+                 role="application"
+                 aria-label="Interactive rice map of Cambodia"></div>
+
+            <div class="ar-map-note khmer-text" id="riceMapNote"></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================
+     1. CULTIVATION
+========================================== -->
+<section class="section-padding" id="cultivation">
+    <div class="container">
+
+        <div class="ar-head" data-animate="fade-up">
+            <span class="ar-num">1</span>
+            <h2 class="khmer-text">ការដាំដុះស្រូវ <span class="ar-en">Rice cultivation</span></h2>
+        </div>
+
+        <p class="khmer-text mb-4" data-animate="fade-up" style="color: var(--rice-gray)">
+            ស្រូវជាដំណាំសំខាន់បំផុតរបស់កសិករកម្ពុជា។ តាមជំរឿនកសិកម្ម ២០២៣ គ្រួសារប្រមាណ ៥៤% ធ្វើកសិកម្ម ហើយភាគច្រើនដាំស្រូវ។
+        </p>
+
+        <div class="row g-4">
+
+            <div class="col-md-6" data-animate="fade-up">
+                <div class="ar-card" style="--c:#2563eb">
+                    <div class="ar-icon"><i class="bi bi-cloud-rain"></i></div>
+                    <h5 class="khmer-text">ស្រូវវស្សា (រដូវភ្លៀង) <span class="ar-en">Wet season — main crop</span></h5>
+                    <p class="khmer-text">
+                        ពឹងលើទឹកភ្លៀង ចាប់ផ្ដើមដាំពីខែឧសភា ហើយច្រូតកាត់ប្រហែលខែវិច្ឆិកា ដល់ខែមករា។
+                        ជារដូវដែលដាំស្រូវក្រអូបសម្រាប់នាំចេញ ដូចជា ផ្ការំដួល (Phka Rumduol)។
+                        ទិន្នផលរដូវភ្លៀងប៉ាន់ស្មានប្រមាណ ៤,៤ តោន/ហិកតា (USDA ២០២៥)។
+                    </p>
+                    <span class="ar-tag">Plant May · Harvest Nov–Jan</span>
                 </div>
             </div>
 
-        </div>
+            <div class="col-md-6" data-animate="fade-up" style="--d: 1">
+                <div class="ar-card" style="--c:#d97706">
+                    <div class="ar-icon"><i class="bi bi-sun"></i></div>
+                    <h5 class="khmer-text">ស្រូវប្រាំង (រដូវប្រាំង) <span class="ar-en">Dry season — irrigated</span></h5>
+                    <p class="khmer-text">
+                        ដាំដោយប្រើប្រព័ន្ធធារាសាស្ត្រ ឬទឹកបូម ហើយច្រើនប្រើពូជអាយុខ្លី។
+                        ផ្តល់ប្រហែលមួយភាគបួននៃផលស្រូវទូទាំងប្រទេស (២០១៩)។
+                        ស្រូវប្រាំងត្រូវការទឹកស្រោចស្រព ដូច្នេះតំបន់ដែលមានប្រព័ន្ធទឹកល្អ ដាំបានច្រើនជាង។
+                    </p>
+                    <span class="ar-tag">Irrigated · short-cycle varieties</span>
+                </div>
+            </div>
 
-    </div>
-</section>
+            <div class="col-12" data-animate="fade-up">
+                <div class="ar-card">
+                    <h5 class="khmer-text mb-3">ប្រភេទស្រូវដែលដាំ <span class="ar-en">Rice types grown (Census of Agriculture 2023)</span></h5>
 
-<section class="section-padding bg-light">
-    <div class="container">
-
-        <div class="section-heading text-center">
-            <span class="section-label">{{ lang.public.about.importance }}</span>
-            <h2 class="section-title">{{ lang.public.about.why_important }}</h2>
-        </div>
-
-        <div class="row g-4 mt-3">
-
-            {% set items = [
-                ('Food Security', 'Rice provides a major source of daily food for Cambodian people.', 'bi-basket'),
-                ('Farmer Income', 'Rice cultivation supports the livelihoods of many rural households.', 'bi-cash-coin'),
-                ('Employment', 'Rice production creates agricultural and processing employment.', 'bi-people'),
-                ('National Economy', 'Rice production and trade contribute to economic development.', 'bi-graph-up-arrow'),
-                ('Culture & Tradition', 'Rice farming is closely connected to Cambodian history and traditions.', 'bi-bank'),
-                ('Agricultural Development', 'Modern rice farming supports agricultural innovation.', 'bi-tree')
-            ] %}
-
-            {% for title, description, icon in items %}
-            <div class="col-md-6 col-lg-4">
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="bi {{ icon }}"></i>
+                    <div class="ar-stack" data-animate="fade-up">
+                        <span style="--w:80.2%; background:#198754"></span>
+                        <span style="--w:19.7%; background:#d97706"></span>
+                        <span style="--w:0.1%;  background:#7c3aed"></span>
                     </div>
-                    <h5>{{ title }}</h5>
-                    <p>{{ description }}</p>
+
+                    <div class="ar-legend khmer-text">
+                        <span><i style="--c:#198754"></i>ស្រូវមិនក្រអូប 80.2%</span>
+                        <span><i style="--c:#d97706"></i>ស្រូវក្រអូប 19.7%</span>
+                        <span><i style="--c:#7c3aed"></i>ស្រូវដំណើប 0.1%</span>
+                    </div>
                 </div>
             </div>
-            {% endfor %}
 
         </div>
+
+        <h5 class="khmer-text mt-5 mb-3" data-animate="fade-up" style="color: var(--rice-dark); font-weight: 800;">
+            ដំណាក់កាលលូតលាស់ <span class="ar-en">Growth stages</span>
+        </h5>
+
+        <div class="ar-steps">
+            {% for icon, kh, en in stages %}
+            <div class="ar-step" data-animate="zoom-in" style="--d: {{ loop.index0 }}">
+                <i class="bi {{ icon }}"></i>
+                <b class="khmer-text">{{ kh }}</b>
+                <small>{{ en }}</small>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-4" data-animate="fade-up">
+            <a href="{{ url_for('public.cultivation') }}" class="btn btn-outline-success rounded-pill px-4">
+                <span class="khmer-text">មើលដំណើរការដាំដុះលម្អិត</span> <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
     </div>
 </section>
 
-<section class="section-padding">
+
+<!-- =========================================
+     2. TOP PROVINCES
+========================================== -->
+<section class="section-padding bg-light" id="top-provinces">
     <div class="container">
 
-        <div class="section-heading text-center">
-            <span class="section-label">{{ lang.public.about.environments }}</span>
-            <h2 class="section-title">{{ lang.public.about.cultivation_in_cambodia }}</h2>
-            <p>{{ lang.public.about.different_environments }}</p>
+        <div class="ar-head" data-animate="fade-up">
+            <span class="ar-num">2</span>
+            <h2 class="khmer-text">ខេត្តដែលដាំស្រូវច្រើនជាងគេ <span class="ar-en">Top rice-producing provinces</span></h2>
         </div>
 
-        <div class="row g-4 mt-3">
+        <div class="row g-4">
 
-            {% set environments = [
-                ('Rainfed Lowland Rice', 'ស្រូវវស្សា', 'Cultivated in lowland fields that depend mainly on rainfall.'),
-                ('Dry Season Rice', 'ស្រូវប្រាំង', 'Cultivated during the dry season using irrigation.'),
-                ('Deepwater Rice', 'ស្រូវទឹកជ្រៅ', 'Adapted to areas that experience deep seasonal flooding.'),
-                ('Upland Rice', 'ស្រូវចម្ការ', 'Cultivated in upland fields, generally without standing water.')
+            <div class="col-lg-7" data-animate="fade-up">
+                <div class="ar-card">
+                    <h5 class="khmer-text mb-4">
+                        ចំណែកនៃផលិតកម្មស្រូវជាតិ (ប្រមាណ)
+                        <span class="ar-en">Approximate share of national paddy production</span>
+                    </h5>
+
+                    <div class="ar-bars is-visible-parent">
+                        {% for kh, en, pct in top_provinces %}
+                        <div class="ar-bar-row">
+                            <div class="name khmer-text">{{ kh }}<small>{{ en }}</small></div>
+                            <div class="ar-bar" style="--c:#198754"><span style="--w: {{ (pct / 13 * 100)|round(1) }}%; --i: {{ loop.index0 }}"></span></div>
+                            <div class="val">{{ pct }}%</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <p class="khmer-text mt-4">
+                        ព្រៃវែងជាខេត្តដែលផលិតស្រូវច្រើនជាងគេ។ ក្នុងរដូវ ២០១៩–២០២០ ព្រៃវែងផលិតបាន ១,៤០ លានតោន
+                        ហើយបាត់ដំបងបាន ១,១៨ លានតោន។
+                    </p>
+                    <button type="button" class="ar-maplink khmer-text" data-layer="production">
+                        <i class="bi bi-geo-alt-fill me-1"></i>មើលលើផែនទី
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-5" data-animate="fade-up" style="--d: 1">
+                <div class="ar-card" style="--c:#0891b2">
+                    <div class="ar-icon"><i class="bi bi-pin-map"></i></div>
+                    <h5 class="khmer-text">ខេត្តផ្សេងទៀតដែលដាំស្រូវសំខាន់ <span class="ar-en">Other major rice provinces</span></h5>
+                    <div class="ar-chips mt-3 khmer-text">
+                        <span class="ar-chip">សៀមរាប</span>
+                        <span class="ar-chip">កណ្ដាល</span>
+                        <span class="ar-chip">កំពត</span>
+                        <span class="ar-chip">ស្វាយរៀង</span>
+                        <span class="ar-chip">កំពង់ធំ</span>
+                    </div>
+                    <p class="khmer-text mt-3">
+                        ស្រូវដាំស្ទើរគ្រប់ខេត្ត ប៉ុន្តែតំបន់ដែលមានដីទំនាប និងប្រព័ន្ធទឹកល្អ (តំបន់អាងទន្លេសាប និងតំបន់ទន្លេមេគង្គ) ផលិតបានច្រើន។
+                    </p>
+                    <span class="ar-tag">Siem Reap · Kandal · Kampot · Svay Rieng · Kampong Thom</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================
+     3. EXPORTS
+========================================== -->
+<section class="section-padding" id="exports">
+    <div class="container">
+
+        <div class="ar-head" data-animate="fade-up">
+            <span class="ar-num">3</span>
+            <h2 class="khmer-text">ស្រូវអង្ករនាំចេញទៅណាខ្លះ <span class="ar-en">Where Cambodian rice is exported</span></h2>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-6" data-animate="fade-up">
+                <div class="ar-card" style="--c:#2563eb">
+                    <div class="ar-icon"><i class="bi bi-trophy"></i></div>
+                    <h5 class="khmer-text">កំណត់ត្រាថ្មីឆ្នាំ ២០២៦ <span class="ar-en">A new record year</span></h5>
+                    <p class="khmer-text">
+                        តាមក្រសួងកសិកម្ម រុក្ខាប្រមាញ់ និងនេសាទ កម្ពុជានាំចេញអង្ករកិនរួច
+                        <b>១,០១៤,៤២២ តោន</b> គិតដល់ថ្ងៃទី ១៩ តុលា ២០២៦ លើសកំណត់ត្រាឆ្នាំ ២០២៥ (៩៤០,៣២១ តោន ទៅ ៧៥ ទីផ្សារ ទទួលបាន $602 លាន)។
+                        នេះជាលើកដំបូងដែលនាំចេញលើសមួយលានតោនក្នុងមួយឆ្នាំ។
+                    </p>
+                    <span class="ar-tag">Jan–Aug 2026: 792,212 t · $464 M · 66 destinations</span>
+                </div>
+            </div>
+
+            <div class="col-lg-6" data-animate="fade-up" style="--d: 1">
+                <div class="ar-card">
+                    <h5 class="khmer-text mb-4">ទីផ្សារធំៗ <span class="ar-en">Main markets (share of milled-rice exports)</span></h5>
+
+                    <div class="ar-bars">
+                        {% for kh, en, pct, color in destinations %}
+                        <div class="ar-bar-row">
+                            <div class="name khmer-text">{{ kh }}<small>{{ en }}</small></div>
+                            <div class="ar-bar" style="--c: {{ color }}"><span style="--w: {{ pct * 2.5 }}%; --i: {{ loop.index0 }}"></span></div>
+                            <div class="val">{{ '≈' if loop.last }}{{ pct }}%</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <p class="khmer-text mt-4" style="font-size:.85rem">
+                        បារាំងជាអ្នកទិញធំជាងគេក្នុងសហភាពអឺរ៉ុប។ ហ្វីលីពីនកើនពីប្រមាណ ៣ ពាន់តោនទៅ ២០០ ពាន់តោនក្នុងឆ្នាំ ២០២៦។
+                        សហរដ្ឋអាមេរិក និងមជ្ឈឹមបូព៌ា ក៏កំពុងកើនឡើង។
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-6" data-animate="fade-up">
+                <div class="ar-card">
+                    <h5 class="khmer-text mb-3">ប្រភេទអង្កររបស់កម្ពុជាដែលនាំចេញ <span class="ar-en">Export mix, Jan–Jul 2026</span></h5>
+
+                    <div class="ar-stack">
+                        {% for kh, en, pct, color in mix %}
+                        <span style="--w: {{ pct }}%; background: {{ color }}"></span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ar-legend khmer-text">
+                        {% for kh, en, pct, color in mix %}
+                        <span><i style="--c: {{ color }}"></i>{{ kh }} {{ pct }}%</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6" data-animate="fade-up" style="--d: 1">
+                <div class="ar-card" style="--c:#d97706">
+                    <div class="ar-icon"><i class="bi bi-truck"></i></div>
+                    <h5 class="khmer-text">ស្រូវ (មិនទាន់កិន) ទៅវៀតណាម <span class="ar-en">Paddy sold across the border</span></h5>
+                    <p class="khmer-text">
+                        បន្ថែមលើអង្ករកិនរួច កម្ពុជាលក់ស្រូវទៅវៀតណាមតាមព្រំដែនជាចម្បង។ ឆ្នាំ ២០២៥ មាន ៦,៨៥ លានតោន ទទួលបាន $1,58 ពាន់លាន។
+                        ក្នុងរយៈពេល ៧ ខែដើមឆ្នាំ ២០២៦ ស្រូវនាំចេញធ្លាក់ចុះ ២២% ខាងបរិមាណ (ក្រោយពី ៣ លានតោន)។
+                    </p>
+                    <button type="button" class="ar-maplink khmer-text" data-layer="export">
+                        <i class="bi bi-geo-alt-fill me-1"></i>មើលលើផែនទី
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================
+     4. QUALITY PROVINCES
+========================================== -->
+<section class="section-padding bg-light" id="quality">
+    <div class="container">
+
+        <div class="ar-head" data-animate="fade-up">
+            <span class="ar-num">4</span>
+            <h2 class="khmer-text">ខេត្តដែលដាំស្រូវបានគុណភាពល្អ <span class="ar-en">Provinces known for quality rice</span></h2>
+        </div>
+
+        <div class="row g-4">
+            {% set quality = [
+                ('បាត់ដំបង', 'Battambang', 'bi-award-fill', '#d97706',
+                 'ហៅថា «ចានបាយ» របស់ប្រទេស។ ដីសមស្រប និងទីតាំងខ្ពស់ជាង ធ្វើឲ្យបានស្រូវក្រអូបគុណភាពខ្ពស់ និងស្ថិរភាពពេញមួយឆ្នាំ។'),
+                ('បន្ទាយមានជ័យ', 'Banteay Meanchey', 'bi-flower1', '#198754',
+                 'ជាមួយបាត់ដំបង ជាបរិស្ថានល្អបំផុតសម្រាប់ដាំ Phka Malis (ម្លិះកម្ពុជា)។'),
+                ('ពោធិ៍សាត់', 'Pursat', 'bi-stars', '#198754',
+                 'មានតំបន់ស្រូវក្រអូបគុណភាពល្អ និងមានស្ថិរភាព ដូចបាត់ដំបង។'),
+                ('តាកែវ', 'Takeo', 'bi-graph-up-arrow', '#2563eb',
+                 'ទិន្នផលស្រូវល្អ ហើយផ្សារក្នុងខេត្តលក់ស្រូវក្រអូប Phka Rumduol យ៉ាងទូលំទូលាយ។'),
+                ('កំពង់ស្ពឺ និងកំពត', 'Kampong Speu & Kampot', 'bi-droplet-half', '#0891b2',
+                 'មានទិន្នផលល្អ។ កំពង់ស្ពឺ ក៏ជាខេត្តមួយក្នុងកម្មវិធីផលិតស្រូវក្រអូបរបស់ក្រសួង។'),
+                ('ខេត្តផ្សេងៗ', 'Fragrant-rice programme', 'bi-collection', '#7c3aed',
+                 'កម្មវិធីស្រូវក្រអូបមាន ១១ ខេត្ត៖ តាកែវ កំពង់ស្ពឺ កំពង់ឆ្នាំង ពោធិ៍សាត់ បាត់ដំបង សៀមរាប កំពង់ធំ កំពង់ចាម ត្បូងឃ្មុំ ព្រៃវែង និងកណ្ដាល (២០១៧)។')
             ] %}
 
-            {% for title, khmer, description in environments %}
-            <div class="col-md-6">
-                <div class="info-card">
-                    <h5>{{ title }}</h5>
-                    <p class="khmer-text">{{ khmer }}</p>
-                    <p>{{ description }}</p>
+            {% for kh, en, icon, color, text in quality %}
+            <div class="col-md-6 col-lg-4" data-animate="fade-up" style="--d: {{ loop.index0 }}">
+                <div class="ar-card" style="--c: {{ color }}">
+                    <div class="ar-icon"><i class="bi {{ icon }}"></i></div>
+                    <h5 class="khmer-text">{{ kh }} <span class="ar-en">{{ en }}</span></h5>
+                    <p class="khmer-text">{{ text }}</p>
                 </div>
             </div>
             {% endfor %}
+        </div>
 
+        <div class="row g-4 mt-1">
+            <div class="col-12" data-animate="fade-up">
+                <div class="ar-card" style="--c:#d97706">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="ar-icon mb-0"><i class="bi bi-trophy-fill"></i></div>
+                        <div class="flex-grow-1">
+                            <h5 class="khmer-text mb-1">ស្រូវ Phka Rumduol — «ស្រូវល្អបំផុតលើពិភពលោក» <span class="ar-en">World's Best Rice, 2012–2014 and more</span></h5>
+                            <p class="khmer-text mb-0">
+                                ពូជនេះត្រូវបានចេញផ្សាយដោយ CARDI ក្នុងឆ្នាំ ១៩៩៩។ វាឈ្នះពានស្រូវល្អបំផុតលើពិភពលោកឆ្នាំ ២០១២ ២០១៣ និង ២០១៤
+                                ហើយតាមសហព័ន្ធស្រូវអង្ករកម្ពុជា (CRF) កម្ពុជាឈ្នះពាននេះសរុប ៧ដង។
+                            </p>
+                        </div>
+                        <button type="button" class="ar-maplink khmer-text mt-0" data-layer="quality">
+                            <i class="bi bi-geo-alt-fill me-1"></i>មើលលើផែនទី
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
 </section>
 
-<section class="section-padding bg-light">
-    <div class="container text-center">
-        <h2 class="section-title">{{ lang.public.about.explore_more }}</h2>
 
-        <a href="{{ url_for('public.rice_varieties') }}"
-           class="btn btn-success rounded-pill px-4">
-            {{ lang.public.about.explore_varieties }}
-        </a>
+<!-- =========================================
+     5. CONSUMPTION
+========================================== -->
+<section class="section-padding" id="consumption">
+    <div class="container">
 
-        <a href="{{ url_for('public.cultivation') }}"
-           class="btn btn-outline-success rounded-pill px-4 ms-2">
-            {{ lang.public.about.rice_cultivation }}
+        <div class="ar-head" data-animate="fade-up">
+            <span class="ar-num">5</span>
+            <h2 class="khmer-text">ប្រជាជនបរិភោគអង្ករមកពីខេត្តណាច្រើនជាងគេ <span class="ar-en">Where Cambodians' rice comes from</span></h2>
+        </div>
+
+        <div class="ar-flow mb-4" data-animate="fade-up">
+            <div class="ar-flow-box">
+                <i class="bi bi-flower1"></i>
+                <b class="khmer-text">បាត់ដំបង · បន្ទាយមានជ័យ</b>
+                <small>Northwest — surplus provinces</small>
+            </div>
+            <i class="bi bi-arrow-right-circle-fill ar-flow-arrow"></i>
+            <div class="ar-flow-box">
+                <i class="bi bi-shop"></i>
+                <b class="khmer-text">រោងម៉ាស៊ីនកិន និងទីផ្សារ</b>
+                <small>Mills and markets</small>
+            </div>
+            <i class="bi bi-arrow-right-circle-fill ar-flow-arrow"></i>
+            <div class="ar-flow-box" style="border-color:#7c3aed">
+                <i class="bi bi-buildings" style="color:#7c3aed"></i>
+                <b class="khmer-text">ភ្នំពេញ</b>
+                <small>Largest rice-deficit city</small>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6" data-animate="fade-up">
+                <div class="ar-card" style="--c:#7c3aed">
+                    <div class="ar-icon"><i class="bi bi-buildings"></i></div>
+                    <h5 class="khmer-text">ភ្នំពេញ ជាកន្លែងប្រើប្រាស់អង្ករច្រើនជាងគេ <span class="ar-en">Phnom Penh needs the most rice from other provinces</span></h5>
+                    <p class="khmer-text">
+                        ភ្នំពេញមានប្រជាជនច្រើន តែស្ទើរគ្មានស្រែ ដូច្នេះត្រូវទិញអង្ករពីខេត្តផ្សេង។
+                        ការសិក្សារបស់ JICA (២០០៨/០៩) បានរកឃើញថា ភ្នំពេញជាតំបន់ខ្វះអង្ករច្រើនជាងគេ (ប្រមាណ ១៨៥,០០០ តោន)។
+                    </p>
+                    <button type="button" class="ar-maplink khmer-text" data-layer="consumption">
+                        <i class="bi bi-geo-alt-fill me-1"></i>មើលលើផែនទី
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6" data-animate="fade-up" style="--d: 1">
+                <div class="ar-card" style="--c:#198754">
+                    <div class="ar-icon"><i class="bi bi-box-seam"></i></div>
+                    <h5 class="khmer-text">ខេត្តដែលមានអង្ករលើស ផ្គត់ផ្គង់ទីផ្សារក្នុងស្រុក <span class="ar-en">Surplus provinces feed the rest</span></h5>
+                    <p class="khmer-text">
+                        តំបន់ពាយ័ព្យ (បាត់ដំបង បន្ទាយមានជ័យ) ផ្គត់ផ្គង់អង្ករទៅភ្នំពេញ ដោយមានពូជដូចជា សូម៉ាលី និងនាងមិញ។
+                        ក្នុងចំណោមខេត្តដែលមានអង្ករលើស មានបាត់ដំបង (ប្រមាណ ២២៥,០០០ តោន) កំពង់ឆ្នាំង (១៣២,០០០ តោន) និងពោធិ៍សាត់ (៩៣,០០០ តោន)។
+                    </p>
+                    <span class="ar-tag">JICA study, 2008/09 figures</span>
+                </div>
+            </div>
+
+            <div class="col-12" data-animate="fade-up">
+                <div class="ar-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <div class="khmer-text">
+                        <b>សម្គាល់៖</b> មិនមានស្ថិតិផ្លូវការប្រាប់ថា ប្រជាជនបរិភោគអង្ករមកពីខេត្តណាច្រើនជាងគេទេ។ ព័ត៌មានខាងលើផ្អែកលើការសិក្សាអំពីលំហូរពាណិជ្ជកម្មស្រូវ-អង្ករ
+                        (ខ្លះជាទិន្នន័យចាស់ ២០០៨/០៩)។ តាមការស្ទាបស្ទង់ទីផ្សារ ប្រជាជនភាគច្រើនទិញអង្ករសរពីផ្សារ។
+                        <span class="ar-en">No official statistic ranks provinces by rice eaten. This is based on trade-flow studies, some of them old.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================
+     6. PROBLEMS
+========================================== -->
+<section class="section-padding bg-light" id="problems">
+    <div class="container">
+
+        <div class="ar-head" data-animate="fade-up">
+            <span class="ar-num">6</span>
+            <h2 class="khmer-text">បញ្ហាដែលកសិករជួបប្រទះ <span class="ar-en">Problems farmers face</span></h2>
+        </div>
+
+        <div class="row g-4">
+            {% set problems = [
+                ('ទឹកជំនន់', 'Floods', 'bi-water', '#2563eb',
+                 'ទឹកជំនន់ជន់លិចស្រែ បំផ្លាញស្រូវជិតច្រូត និងកូនស្រូវដែលទើបដាំឡើងវិញ។ ឆ្នាំ ២០២៦ កសិករនៅបាត់ដំបង និងស្វាយរៀងរងផលប៉ះពាល់។'),
+                ('ភាពរាំងស្ងួត និងខ្វះទឹក', 'Drought and water shortage', 'bi-sun-fill', '#d97706',
+                 'ភាពរាំងស្ងួតដែលទាក់ទងនឹង El Niño ធ្វើឲ្យខ្វះទឹកស្រោចស្រព។ ខ្លះបាត់បង់ស្រូវដល់ ៥ ហិកតា ហើយបន្ទាប់មកបែរជាជួបទឹកជំនន់ទៀត។'),
+                ('ជំងឺ និងសត្វល្អិត', 'Diseases and pests', 'bi-virus', '#dc2626',
+                 'ជំងឺដូចជា ជំងឺប្លាស បាក់តេរីរលាកស្លឹក អុចត្នោត និងរលាកស្រោមស្លឹក ធ្វើឲ្យទិន្នផលធ្លាក់ចុះ បើរកមិនឃើញឆាប់។'),
+                ('ថ្លៃជី ប្រេង និងគ្រឿងចក្រ', 'Fertilizer, fuel and machinery costs', 'bi-fuel-pump', '#7c3aed',
+                 'ជម្លោះនៅមជ្ឈឹមបូព៌ាបានធ្វើឲ្យថ្លៃប្រេង និងជីឡើង។ កសិករម្នាក់ប្រាប់ថា ជីអ៊ុយរ៉េវៀតណាមឡើងពី ៨០,០០០ ទៅ ១៨០,០០០ រៀលក្នុងមួយការ៉ុង។'),
+                ('បំណុល', 'Debt', 'bi-cash-coin', '#0891b2',
+                 'កសិករជាច្រើនខ្ចីប្រាក់ពីធនាគារ ឬអ្នកឲ្យខ្ចីឯកជន ដើម្បីទិញជី ជួលម៉ាស៊ីនច្រូត និងបង់ឈ្នួល។ បើទិន្នផលធ្លាក់ ក៏ពិបាកសង។'),
+                ('តម្លៃស្រូវធ្លាក់ និងទីផ្សារ', 'Falling prices and weak markets', 'bi-graph-down-arrow', '#198754',
+                 'ទីផ្សារអង្ករពិភពលោកមានអង្ករលើស ជាពិសេសពីឥណ្ឌា។ កសិករនៅស្វាយរៀងថា តម្លៃស្រូវធ្លាក់ ខណៈចំណាយឡើង។ ឃ្លាំងស្តុកក៏មិនទាន់គ្រប់គ្រាន់។')
+            ] %}
+
+            {% for kh, en, icon, color, text in problems %}
+            <div class="col-md-6 col-lg-4" data-animate="fade-up" style="--d: {{ loop.index0 }}">
+                <div class="ar-card" style="--c: {{ color }}">
+                    <div class="ar-icon"><i class="bi {{ icon }}"></i></div>
+                    <h5 class="khmer-text">{{ kh }} <span class="ar-en">{{ en }}</span></h5>
+                    <p class="khmer-text">{{ text }}</p>
+                    {% if en == 'Diseases and pests' %}
+                    <a href="{{ url_for('public.diseases') }}" class="btn btn-sm btn-outline-danger rounded-pill mt-3 khmer-text">មើលជំងឺស្រូវ</a>
+                    <a href="{{ url_for('public.treatment') }}" class="btn btn-sm btn-outline-success rounded-pill mt-3 khmer-text">វិធីព្យាបាល</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="ar-card mt-4" data-animate="fade-up" style="--c:#198754">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <div class="ar-icon mb-0"><i class="bi bi-lightbulb"></i></div>
+                <div class="flex-grow-1">
+                    <h5 class="khmer-text mb-1">អ្វីដែលអាចជួយបាន <span class="ar-en">What can help</span></h5>
+                    <p class="khmer-text mb-0">
+                        ប្រើពូជល្អ ដាក់ជីឲ្យមានតុល្យភាព តាមដានស្រែឲ្យឃើញជំងឺឆាប់ គ្រប់គ្រងទឹក និងចូលរួមសហគមន៍កសិកម្ម ដើម្បីកាត់បន្ថយហានិភ័យ និងចំណាយ។
+                    </p>
+                </div>
+                <a href="{{ url_for('public.prevention') }}" class="btn btn-success rounded-pill px-4 khmer-text">វិធីបង្ការ</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- =========================================
+     7. PRICES
+========================================== -->
+<section class="section-padding" id="prices">
+    <div class="container">
+
+        <div class="ar-head" data-animate="fade-up">
+            <span class="ar-num">7</span>
+            <h2 class="khmer-text">តម្លៃទីផ្សារសម្រាប់នាំចេញ <span class="ar-en">Export market prices</span></h2>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-8" data-animate="fade-up">
+                <div class="ar-card">
+                    <h5 class="khmer-text mb-1">តម្លៃអង្ករនាំចេញ (USD ក្នុងមួយតោន) <span class="ar-en">CRF indicative export prices, 2 June 2026</span></h5>
+                    <p class="khmer-text mb-4" style="font-size:.82rem">សហព័ន្ធស្រូវអង្ករកម្ពុជា (CRF) · តម្លៃប្រែប្រួលជាប្រចាំ</p>
+
+                    <div class="ar-bars">
+                        {% for kh, en, price, color in prices %}
+                        <div class="ar-bar-row">
+                            <div class="name khmer-text">{{ kh }}<small>{{ en }}</small></div>
+                            <div class="ar-bar" style="--c: {{ color }}"><span style="--w: {{ (price / 1350 * 100)|round(1) }}%; --i: {{ loop.index0 }}"></span></div>
+                            <div class="val">${{ '{:,}'.format(price) }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ar-legend khmer-text">
+                        <span><i style="--c:#7c3aed"></i>សរីរាង្គ</span>
+                        <span><i style="--c:#198754"></i>ក្រអូប</span>
+                        <span><i style="--c:#d97706"></i>អង្កររកាត់</span>
+                        <span><i style="--c:#0891b2"></i>អង្ករសរ / ចំហុយ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4" data-animate="fade-up" style="--d: 1">
+                <div class="ar-card" style="--c:#d97706">
+                    <div class="ar-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h5 class="khmer-text">និន្នាការតម្លៃ <span class="ar-en">Outlook</span></h5>
+                    <p class="khmer-text">
+                        CRF បានរំពឹងថា តម្លៃនឹងឡើង ៥–១០% ក្នុងរយៈពេល ៣ ខែ (ពីខែឧសភា ២០២៦) ដោយសារថ្លៃដឹកជញ្ជូន ធានារ៉ាប់រង និងជី។
+                        ស្រូវក្រអូប Phka Malis អាចឡើងដល់ប្រមាណ $870 ក្នុងមួយតោន ចាប់ពីខែកក្កដា។
+                    </p>
+                    <p class="khmer-text mt-3">
+                        អង្ករក្រអូបលក់បានថ្លៃជាងអង្ករសរ ប្រមាណ ៥០% ទៅ ៦០% ដូច្នេះកម្ពុជាផ្តោតលើស្រូវក្រអូប ដើម្បីបង្កើនចំណូលកសិករ។
+                    </p>
+                    <span class="ar-tag">FOB, USD per tonne</span>
+                </div>
+            </div>
+
+            <div class="col-12" data-animate="fade-up">
+                <div class="ar-note">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div class="khmer-text">
+                        <b>សូមពិនិត្យតម្លៃចុងក្រោយ៖</b> តម្លៃខាងលើជាតារាងតម្លៃរបស់ CRF កាលពីថ្ងៃទី ២ មិថុនា ២០២៦។ តម្លៃដើមនៅកសិដ្ឋាន (តម្លៃស្រូវ) មិនដូចតម្លៃនាំចេញទេ ហើយអាចប្រែប្រួលតាមពូជ និងតំបន់។
+                        <span class="ar-en">Prices change often. Farm-gate paddy prices are different from export prices. Check the Cambodia Rice Federation for the latest list.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================
+     SOURCES
+========================================== -->
+<section class="section-padding bg-light pt-5 pb-5">
+    <div class="container ar-sources" data-animate="fade-up">
+        <h5 class="khmer-text" style="color: var(--rice-dark); font-weight: 800;">
+            ប្រភពទិន្នន័យ <span class="ar-en">Sources · data checked {{ updated }}</span>
+        </h5>
+
+        <details class="mt-3">
+            <summary class="khmer-text" style="cursor:pointer; font-weight:700; color: var(--rice-green);">មើលប្រភពទាំងអស់ ({{ sources|length }})</summary>
+            <ul class="mt-3 ps-3">
+                {% for name, url in sources %}
+                <li><a href="{{ url }}" target="_blank" rel="noopener">{{ name }}</a></li>
+                {% endfor %}
+            </ul>
+        </details>
+
+        <p class="khmer-text mt-3 mb-0" style="font-size:.82rem; color: var(--rice-gray)">
+            ទិន្នន័យរួមមានការប៉ាន់ស្មាន និងរបាយការណ៍សារព័ត៌មាន ហើយអាចត្រូវបានកែប្រែនៅពេលក្រោយ។
+        </p>
+    </div>
+</section>
+
+
+<!-- =========================================
+     CTA
+========================================== -->
+<section class="section-padding">
+    <div class="container text-center" data-animate="fade-up">
+        <h2 class="section-title khmer-text">ស្រូវរបស់អ្នកមានបញ្ហាឬទេ?</h2>
+        <p class="section-description khmer-text">
+            ប្រើប្រព័ន្ធជំនាញរបស់យើង ដើម្បីកំណត់ជំងឺស្រូវតាមរោគសញ្ញា ហើយទទួលដំបូន្មានបង្ការ និងព្យាបាល។
+        </p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-success rounded-pill px-4">
+            <i class="bi bi-search me-2"></i><span class="khmer-text">ចាប់ផ្ដើមវិនិច្ឆ័យជំងឺ</span>
         </a>
     </div>
 </section>
+
+
+<!-- =========================================
+     SCRIPTS
+========================================== -->
+<script>
+  // ---------- Reveal on scroll ----------
+  (function () {
+    var items = document.querySelectorAll("[data-animate]");
+
+    if (!("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+    items.forEach(function (el) { observer.observe(el); });
+  })();
+
+  // ---------- Rice map ----------
+  (function () {
+    var el = document.getElementById("riceMap");
+    if (!el) return;
+
+    // Use Leaflet if the page already has it, otherwise load it once
+    function withLeaflet(callback) {
+      if (window.L) return callback();
+
+      var s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+      s.onload = callback;
+      document.head.appendChild(s);
+    }
+
+    withLeaflet(function () {
+      var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var bounds = L.latLngBounds([10.2, 102.2], [14.9, 107.8]);
+
+      var map = L.map(el, {
+        center: [12.6, 104.9], zoom: 6, minZoom: 6, maxZoom: 10, zoomSnap: 0.25,
+        maxBounds: bounds.pad(0.4), maxBoundsViscosity: 0.9,
+        zoomControl: false, scrollWheelZoom: false, doubleClickZoom: false,
+        zoomAnimation: !reduced, fadeAnimation: !reduced
+      });
+
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+        subdomains: "abcd", maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+      }).addTo(map);
+
+      L.control.zoom({ position: "topright" }).addTo(map);
+      L.control.scale({ position: "bottomleft", imperial: false, maxWidth: 120 }).addTo(map);
+
+      map.on("focus", function () { map.scrollWheelZoom.enable(); });
+      map.on("blur", function () { map.scrollWheelZoom.disable(); });
+      map.fitBounds(bounds);
+
+      // ----- Country outline (optional, faded world around it) -----
+      function rings(geo) {
+        var out = [];
+        var list = geo.type === "FeatureCollection" ? geo.features : [geo];
+        list.forEach(function (f) {
+          var g = f.type === "Feature" ? f.geometry : f;
+          if (g.type === "Polygon") out.push(g.coordinates[0]);
+          if (g.type === "MultiPolygon") g.coordinates.forEach(function (p) { out.push(p[0]); });
+        });
+        return out.map(function (r) { return r.map(function (c) { return [c[1], c[0]]; }); });
+      }
+
+      var sources = [
+        el.getAttribute("data-geojson"),
+        "https://raw.githubusercontent.com/johan/world.geo.json/master/countries/KHM.geo.json"
+      ];
+
+      function loadGeo(i) {
+        if (i >= sources.length) return Promise.reject();
+        return fetch(sources[i])
+          .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+          .catch(function () { return loadGeo(i + 1); });
+      }
+
+      loadGeo(0).then(function (geo) {
+        L.polygon([[[-90, -180], [-90, 180], [90, 180], [90, -180]]].concat(rings(geo)), {
+          stroke: false, fillColor: "#f3f8f4", fillOpacity: 0.82, interactive: false
+        }).addTo(map);
+
+        var country = L.geoJSON(geo, {
+          interactive: false,
+          style: { color: "#198754", weight: 2.5, fillColor: "#198754", fillOpacity: 0.1 }
+        }).addTo(map);
+
+        map.fitBounds(country.getBounds(), { padding: [20, 20] });
+      }).catch(function () { /* the clean basemap is still shown */ });
+
+      // ----- Province points (capital towns, approximate) -----
+      var P = {
+        preyveng:  { kh: "ព្រៃវែង", en: "Prey Veng", ll: [11.4868, 105.3253] },
+        takeo:     { kh: "តាកែវ", en: "Takeo", ll: [10.9908, 104.7850] },
+        battambang:{ kh: "បាត់ដំបង", en: "Battambang", ll: [13.0957, 103.2022] },
+        banteay:   { kh: "បន្ទាយមានជ័យ", en: "Banteay Meanchey", ll: [13.5859, 102.9738] },
+        siemreap:  { kh: "សៀមរាប", en: "Siem Reap", ll: [13.3671, 103.8448] },
+        kandal:    { kh: "កណ្ដាល", en: "Kandal", ll: [11.40, 105.10] },
+        kampot:    { kh: "កំពត", en: "Kampot", ll: [10.6104, 104.1815] },
+        svay:      { kh: "ស្វាយរៀង", en: "Svay Rieng", ll: [11.0878, 105.7993] },
+        kthom:     { kh: "កំពង់ធំ", en: "Kampong Thom", ll: [12.7112, 104.8887] },
+        pursat:    { kh: "ពោធិ៍សាត់", en: "Pursat", ll: [12.5388, 103.9192] },
+        kspeu:     { kh: "កំពង់ស្ពឺ", en: "Kampong Speu", ll: [11.4533, 104.5200] },
+        kchhnang:  { kh: "កំពង់ឆ្នាំង", en: "Kampong Chhnang", ll: [12.2500, 104.6667] },
+        pp:        { kh: "ភ្នំពេញ", en: "Phnom Penh", ll: [11.5564, 104.9282] }
+      };
+
+      function dot(key, radius, color, text) {
+        var p = P[key];
+        return L.circleMarker(p.ll, {
+          radius: radius, color: "#fff", weight: 2, fillColor: color, fillOpacity: 0.9
+        }).bindTooltip(p.kh + " · " + p.en + (text ? " — " + text : ""), {
+          permanent: true, direction: "right", offset: [radius * 0.6 + 2, 0], className: "ar-label"
+        });
+      }
+
+      function line(a, b, color, dashed) {
+        return L.polyline([P[a].ll, b], {
+          color: color, weight: 3, opacity: 0.8, dashArray: dashed ? "7 7" : null, interactive: false
+        });
+      }
+
+      var vn = [11.30, 106.45];
+      var layers = {};
+
+      // 1) Most production (circle size = share of national production)
+      layers.production = {
+        note: "<b>ខេត្តផលិតស្រូវច្រើនជាងគេ៖</b> ព្រៃវែង ~១៣% · តាកែវ ~១១% · បាត់ដំបង ~១១% · បន្ទាយមានជ័យ ~៩% (ប្រមាណ)។ រង្វង់តូចៗ គឺខេត្តសំខាន់ផ្សេងទៀត។",
+        items: [
+          dot("preyveng", 29, "#198754", "~13%"),
+          dot("takeo", 25, "#198754", "~11%"),
+          dot("battambang", 25, "#198754", "~11%"),
+          dot("banteay", 21, "#198754", "~9%"),
+          dot("siemreap", 10, "#86efac"),
+          dot("kandal", 10, "#86efac"),
+          dot("kampot", 10, "#86efac"),
+          dot("svay", 10, "#86efac"),
+          dot("kthom", 10, "#86efac")
+        ]
+      };
+
+      // 2) Quality
+      layers.quality = {
+        note: "<b>ខេត្តដែលស្គាល់ដោយគុណភាព៖</b> បាត់ដំបង (ចានបាយ) និងបន្ទាយមានជ័យសម្រាប់ Phka Malis · ពោធិ៍សាត់ ស្ថិរភាពល្អ · តាកែវ កំពង់ស្ពឺ កំពត ទិន្នផលល្អ។",
+        items: [
+          dot("battambang", 20, "#d97706", "★ ចានបាយ"),
+          dot("banteay", 17, "#d97706", "Phka Malis"),
+          dot("pursat", 15, "#d97706", "ស្ថិរភាពល្អ"),
+          dot("takeo", 14, "#f59e0b", "ទិន្នផលល្អ"),
+          dot("kspeu", 13, "#f59e0b"),
+          dot("kampot", 13, "#f59e0b")
+        ]
+      };
+
+      // 3) Paddy sold to Vietnam
+      var exp = [
+        dot("kandal", 10, "#2563eb"), dot("preyveng", 12, "#2563eb"), dot("svay", 12, "#2563eb"),
+        dot("takeo", 12, "#2563eb"), dot("battambang", 10, "#2563eb"), dot("kampot", 10, "#2563eb"),
+        line("preyveng", vn, "#2563eb", true), line("svay", vn, "#2563eb", true),
+        line("kandal", vn, "#2563eb", true), line("takeo", vn, "#2563eb", true),
+        L.circleMarker(vn, { radius: 8, color: "#fff", weight: 2, fillColor: "#1e3a8a", fillOpacity: 1 })
+          .bindTooltip("វៀតណាម · Vietnam", { permanent: true, direction: "right", offset: [8, 0], className: "ar-label" })
+      ];
+      layers.export = {
+        note: "<b>ស្រូវ (មិនទាន់កិន) ទៅវៀតណាម៖</b> មកពីកណ្ដាល ព្រៃវែង ស្វាយរៀង តាកែវ បាត់ដំបង និងកំពត ភាគច្រើនឆ្លងកាត់ព្រំដែនខាងកើត។",
+        items: exp
+      };
+
+      // 4) Supply to Phnom Penh
+      layers.consumption = {
+        note: "<b>ផ្គត់ផ្គង់ភ្នំពេញ៖</b> ភ្នំពេញខ្វះអង្ករច្រើនជាងគេ។ ខេត្តមានអង្ករលើស (បាត់ដំបង បន្ទាយមានជ័យ កំពង់ឆ្នាំង ពោធិ៍សាត់) ផ្គត់ផ្គង់។ ទិន្នន័យ JICA ២០០៨/០៩។",
+        items: [
+          dot("pp", 18, "#7c3aed", "ខ្វះអង្ករច្រើនជាងគេ"),
+          dot("battambang", 13, "#a78bfa"), dot("banteay", 12, "#a78bfa"),
+          dot("kchhnang", 12, "#a78bfa"), dot("pursat", 12, "#a78bfa"),
+          line("battambang", P.pp.ll, "#7c3aed", true), line("banteay", P.pp.ll, "#7c3aed", true),
+          line("kchhnang", P.pp.ll, "#7c3aed", true), line("pursat", P.pp.ll, "#7c3aed", true)
+        ]
+      };
+
+      var group = L.layerGroup().addTo(map);
+      var note = document.getElementById("riceMapNote");
+      var tabs = document.querySelectorAll(".ar-map-tab");
+
+      function setLayer(name) {
+        if (!layers[name]) return;
+
+        group.clearLayers();
+        layers[name].items.forEach(function (item) { group.addLayer(item); });
+        note.innerHTML = layers[name].note;
+
+        tabs.forEach(function (t) { t.classList.toggle("active", t.getAttribute("data-layer") === name); });
+      }
+
+      tabs.forEach(function (t) {
+        t.addEventListener("click", function () { setLayer(t.getAttribute("data-layer")); });
+      });
+
+      // "View on map" buttons in the sections
+      document.querySelectorAll(".ar-maplink").forEach(function (b) {
+        b.addEventListener("click", function () {
+          setLayer(b.getAttribute("data-layer"));
+          document.getElementById("riceMapCard").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+        });
+      });
+
+      setLayer("production");
+    });
+  })();
+</script>
 
 {% endblock %}

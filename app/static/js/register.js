@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const strengthText = document.getElementById("strengthText");
 
   const matchMessage = document.getElementById("matchMessage");
+  const translations = document.querySelector(".register-page").dataset;
 
   /* =====================================================
        STEP 1 VALIDATION
@@ -145,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         icon.classList.add("bi-eye-slash");
 
-        button.setAttribute("aria-label", "Hide password");
+        button.setAttribute("aria-label", button.dataset.hidePassword);
       } else {
         input.type = "password";
 
@@ -153,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         icon.classList.add("bi-eye");
 
-        button.setAttribute("aria-label", "Show password");
+        button.setAttribute("aria-label", button.dataset.showPassword);
       }
     });
   });
@@ -218,28 +219,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const score = Object.values(checks).filter(Boolean).length;
 
     let width = 0;
-    let text = "None";
+    let text = translations.strengthNone;
 
     if (value.length === 0) {
       width = 0;
 
-      text = "None";
+      text = translations.strengthNone;
     } else if (score <= 2) {
       width = 25;
 
-      text = "Weak";
+      text = translations.strengthWeak;
     } else if (score === 3) {
       width = 50;
 
-      text = "Fair";
+      text = translations.strengthFair;
     } else if (score === 4) {
       width = 75;
 
-      text = "Good";
+      text = translations.strengthGood;
     } else {
       width = 100;
 
-      text = "Strong";
+      text = translations.strengthStrong;
     }
 
     strengthBar.style.width = width + "%";
@@ -287,13 +288,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (pass === confirm) {
-      matchMessage.textContent = "✓ Passwords match";
+      matchMessage.textContent = "✓ " + translations.passwordsMatch;
 
       matchMessage.className = "match-message success";
 
       return true;
     } else {
-      matchMessage.textContent = "✕ Passwords do not match";
+      matchMessage.textContent = "✕ " + translations.passwordsMismatch;
 
       matchMessage.className = "match-message error";
 

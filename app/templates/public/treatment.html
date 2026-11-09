@@ -184,8 +184,167 @@
 
   .tr-note i { font-size: 1.4rem; color: #d97706; }
 
+  .tr-carousel {
+    max-width: 1080px;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid #dce9df;
+    border-radius: 28px;
+    background: #f5f8f4;
+    box-shadow: 0 24px 60px rgba(20, 83, 45, .16);
+  }
+
+  .tr-carousel .carousel-item.active,
+  .tr-carousel .carousel-item-next,
+  .tr-carousel .carousel-item-prev {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+    min-height: 410px;
+  }
+
+  .tr-carousel img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 410px;
+    padding: 28px;
+    object-fit: contain;
+    background:
+      radial-gradient(ellipse at center, #fff 0%, #f5f8f4 74%);
+    transition: transform .6s ease;
+  }
+
+  .tr-carousel .carousel-item.active img { transform: scale(1.015); }
+
+  .tr-slide-caption {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 46px 76px;
+    color: #fff;
+    background:
+      radial-gradient(circle at 100% 0, rgba(255, 255, 255, .13), transparent 38%),
+      linear-gradient(145deg, #14532d, #198754);
+  }
+
+  .tr-slide-caption::before {
+    content: "";
+    width: 48px;
+    height: 4px;
+    margin-bottom: 22px;
+    border-radius: 99px;
+    background: #b8e6a7;
+  }
+
+  .tr-slide-caption h3 {
+    margin: 0 0 12px;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  .tr-slide-caption p {
+    max-width: 420px;
+    margin: 0;
+    color: rgba(255, 255, 255, .86);
+    line-height: 1.8;
+  }
+
+  .tr-carousel .carousel-indicators {
+    right: 24px;
+    bottom: 20px;
+    left: calc(57.5% + 24px);
+    justify-content: flex-start;
+    margin: 0;
+  }
+
+  .tr-carousel .carousel-indicators button {
+    width: 24px;
+    height: 4px;
+    margin: 0 5px 0 0;
+    border: 0;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .5);
+    opacity: 1;
+    transition: width .25s ease, background-color .25s ease;
+  }
+
+  .tr-carousel .carousel-indicators button.active {
+    width: 40px;
+    background-color: #fff;
+  }
+
+  .tr-carousel .carousel-control-prev,
+  .tr-carousel .carousel-control-next {
+    top: 50%;
+    bottom: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(20, 83, 45, .82);
+    opacity: .9;
+    transform: translateY(-50%);
+    transition: background-color .2s ease, opacity .2s ease;
+  }
+
+  .tr-carousel .carousel-control-prev { left: 16px; }
+  .tr-carousel .carousel-control-next { right: 16px; }
+
+  .tr-carousel .carousel-control-prev:hover,
+  .tr-carousel .carousel-control-next:hover {
+    background: #14532d;
+    opacity: 1;
+  }
+
   @media (max-width: 767.98px) {
     .tr-safety { padding: 32px 22px; }
+    .tr-carousel .carousel-item.active,
+    .tr-carousel .carousel-item-next,
+    .tr-carousel .carousel-item-prev {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tr-carousel img {
+      height: 280px;
+      min-height: 0;
+      padding: 20px;
+    }
+
+    .tr-slide-caption {
+      min-height: 190px;
+      padding: 28px 24px 58px;
+    }
+
+    .tr-slide-caption::before {
+      width: 36px;
+      margin-bottom: 14px;
+    }
+
+    .tr-carousel .carousel-indicators {
+      right: 24px;
+      bottom: 18px;
+      left: 24px;
+    }
+
+    .tr-carousel .carousel-control-prev,
+    .tr-carousel .carousel-control-next {
+      top: 140px;
+      width: 38px;
+      height: 38px;
+    }
+
+    .tr-carousel .carousel-control-prev { left: 12px; }
+    .tr-carousel .carousel-control-next { right: 12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tr-carousel img,
+    .tr-carousel .carousel-indicators button,
+    .tr-carousel .carousel-control-prev,
+    .tr-carousel .carousel-control-next {
+      transition: none;
+    }
   }
 </style>
 {% endblock %}
@@ -193,7 +352,7 @@
 <script>document.documentElement.classList.add("reveal-ready");</script>
 
 <!-- PAGE HERO -->
-<section class="page-hero">
+<section class="page-hero ds-page-hero">
     <div class="container">
         <span class="section-label text-white-50">{{ lang.public.treatment.label }}</span>
         <h1>{{ lang.public.treatment.title }}</h1>
@@ -201,6 +360,66 @@
     </div>
 </section>
 
+<!-- TREATMENT IMAGE SLIDESHOW -->
+<section class="section-padding pt-0">
+    <div class="container">
+        <div class="section-heading text-center mb-4" data-animate="fade-up">
+            <span class="section-label">{{ lang.public.treatment.treatment_methods }}</span>
+            <h2 class="section-title">{{ lang.public.treatment.slideshow_title }}</h2>
+            <p>{{ lang.public.treatment.slideshow_description }}</p>
+        </div>
+
+        {% set slides = [
+            ('treatments/t_cultural.png', lang.public.treatment.slides.cultural),
+            ('treatments/Screenshot_2026-08-17_212829.png', lang.public.treatment.slides.chemical),
+            ('treatments/Screenshot_2026-08-17_212644.png', lang.public.treatment.slides.prevention),
+            ('treatments/Screenshot_2026-08-17_212800.png', lang.public.treatment.slides.integrated)
+        ] %}
+
+        <div id="treatmentCarousel"
+             class="carousel slide carousel-fade tr-carousel"
+             data-bs-ride="carousel"
+             data-bs-interval="4500"
+             data-bs-pause="hover"
+             data-bs-touch="true"
+             data-animate="fade-up">
+            <div class="carousel-indicators">
+                {% for image, slide in slides %}
+                <button type="button"
+                        data-bs-target="#treatmentCarousel"
+                        data-bs-slide-to="{{ loop.index0 }}"
+                        class="{{ 'active' if loop.first }}"
+                        aria-label="{{ lang.public.treatment.slide_label }} {{ loop.index }}"
+                        aria-current="{{ 'true' if loop.first else 'false' }}"></button>
+                {% endfor %}
+            </div>
+
+            <div class="carousel-inner">
+                {% for image, slide in slides %}
+                <div class="carousel-item {{ 'active' if loop.first }}">
+                    <img src="{{ url_for('static', filename='images/' ~ image) }}"
+                         alt="{{ slide.title }}">
+                    <div class="tr-slide-caption">
+                        <h3>{{ slide.title }}</h3>
+                        <p>{{ slide.description }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button class="carousel-control-prev" type="button"
+                    data-bs-target="#treatmentCarousel" data-bs-slide="prev"
+                    aria-label="{{ lang.public.home.previous }}">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button"
+                    data-bs-target="#treatmentCarousel" data-bs-slide="next"
+                    aria-label="{{ lang.public.home.next }}">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+</section>
 
 <!-- APPROACH -->
 <section class="section-padding">
@@ -215,20 +434,14 @@
         </div>
 
         <div class="row g-4 mt-4">
-            {% set steps = [
-                ('bi-search', 'Identify', 'Match field symptoms to the disease before applying any treatment.'),
-                ('bi-shield-check', 'Prevent', 'Use healthy seed, balanced fertilizer, and good water control.'),
-                ('bi-bandaid', 'Treat', 'Apply the right cultural, biological, or chemical method early.'),
-                ('bi-binoculars', 'Monitor', 'Check the field regularly to see whether the disease is spreading.')
-            ] %}
-
-            {% for icon, title, text in steps %}
+            {% set step_icons = ['bi-search', 'bi-shield-check', 'bi-bandaid', 'bi-binoculars'] %}
+            {% for step in lang.public.treatment.steps %}
             <div class="col-sm-6 col-lg-3" data-animate="fade-up" style="--d: {{ loop.index0 }}">
                 <div class="tr-step">
                     <span class="tr-step-number">{{ loop.index }}</span>
-                    <i class="bi {{ icon }}"></i>
-                    <h6>{{ title }}</h6>
-                    <p>{{ text }}</p>
+                    <i class="bi {{ step_icons[loop.index0] }}"></i>
+                    <h6>{{ step.title }}</h6>
+                    <p>{{ step.description }}</p>
                 </div>
             </div>
             {% endfor %}
@@ -243,67 +456,22 @@
     <div class="container">
 
         <div class="section-heading text-center" data-animate="fade-up">
-            <span class="section-label">TREATMENT METHODS</span>
-            <h2 class="section-title">Choose the Right Method</h2>
-            <p>Start with the safest, lowest-cost methods and use chemicals only when needed.</p>
+            <span class="section-label">{{ lang.public.treatment.treatment_methods }}</span>
+            <h2 class="section-title">{{ lang.public.treatment.choose_approach }}</h2>
+            <p>{{ lang.public.treatment.method_description }}</p>
         </div>
 
         <div class="row g-4 mt-3">
 
-            {% set methods = [
-                {
-                    'icon': 'bi-flower2', 'accent': '#198754',
-                    'title': 'Cultural Control', 'tag': 'First choice • Low cost',
-                    'text': 'Change how the crop is grown so the disease finds it harder to spread.',
-                    'points': [
-                        'Plant certified, disease-free seed',
-                        'Avoid too much nitrogen fertilizer',
-                        'Manage water and drain the field when needed',
-                        'Remove weeds and infected crop residue'
-                    ]
-                },
-                {
-                    'icon': 'bi-bug', 'accent': '#0891b2',
-                    'title': 'Biological Control', 'tag': 'Eco-friendly',
-                    'text': 'Use natural organisms and products that suppress disease-causing microbes.',
-                    'points': [
-                        'Seed treatment with beneficial microbes',
-                        'Use compost and organic matter to improve soil health',
-                        'Protect natural enemies in the field',
-                        'Combine with cultural control for better results'
-                    ]
-                },
-                {
-                    'icon': 'bi-shield-plus', 'accent': '#7c3aed',
-                    'title': 'Resistant Varieties', 'tag': 'Long-term protection',
-                    'text': 'Grow rice varieties that tolerate or resist the diseases common in your area.',
-                    'points': [
-                        'Ask the local agriculture office for suitable varieties',
-                        'Rotate varieties between seasons',
-                        'Avoid planting one variety over very large areas',
-                        'Keep good seed for the next season'
-                    ]
-                },
-                {
-                    'icon': 'bi-droplet-half', 'accent': '#dc2626',
-                    'title': 'Chemical Control', 'tag': 'Last resort • Use with care',
-                    'text': 'Fungicides and bactericides can help when the disease is serious or spreading fast.',
-                    'points': [
-                        'Use only products approved for rice',
-                        'Apply at the recommended time and rate on the label',
-                        'Rotate products to reduce resistance',
-                        'Follow the waiting period before harvest'
-                    ]
-                }
-            ] %}
-
-            {% for m in methods %}
+            {% set method_icons = ['bi-flower2', 'bi-bug', 'bi-shield-plus', 'bi-droplet-half'] %}
+            {% set method_accents = ['#198754', '#0891b2', '#7c3aed', '#dc2626'] %}
+            {% for m in lang.public.treatment.methods %}
             <div class="col-md-6" data-animate="fade-up" style="--d: {{ loop.index0 }}">
-                <div class="tr-method" style="--accent: {{ m.accent }}">
-                    <div class="tr-method-icon"><i class="bi {{ m.icon }}"></i></div>
+                <div class="tr-method" style="--accent: {{ method_accents[loop.index0] }}">
+                    <div class="tr-method-icon"><i class="bi {{ method_icons[loop.index0] }}"></i></div>
                     <h5>{{ m.title }}</h5>
                     <span class="tr-tag">{{ m.tag }}</span>
-                    <p>{{ m.text }}</p>
+                    <p>{{ m.description }}</p>
 
                     <ul class="tr-list">
                         {% for point in m.points %}
@@ -324,57 +492,22 @@
     <div class="container">
 
         <div class="section-heading text-center" data-animate="fade-up">
-            <span class="section-label">BY DISEASE</span>
-            <h2 class="section-title">Treatment for Common Diseases</h2>
-            <p>Open a disease to see what to do in the field.</p>
+            <span class="section-label">{{ lang.public.treatment.by_disease }}</span>
+            <h2 class="section-title">{{ lang.public.treatment.disease_title }}</h2>
+            <p>{{ lang.public.treatment.disease_description }}</p>
         </div>
 
         <div class="accordion tr-accordion mt-4" id="treatmentAccordion" data-animate="fade-up">
 
             {% set plans = [
-                {
-                    'name': 'Rice Blast', 'khmer': 'ជំងឺប្លាស', 'type': 'Fungal', 'icon': 'bi-virus', 'search': 'Blast',
-                    'cultural': [
-                        'Use resistant varieties and healthy seed',
-                        'Avoid excess nitrogen; split fertilizer into smaller doses',
-                        'Keep the field from drying out during the growing stage',
-                        'Remove and destroy infected straw after harvest'
-                    ],
-                    'chemical': 'If leaf lesions spread quickly or the neck is at risk, ask your local agriculture office about a fungicide approved for rice, and apply it at the recommended stage.'
-                },
-                {
-                    'name': 'Bacterial Leaf Blight', 'khmer': 'ជំងឺរលាកបាក់តេរី', 'type': 'Bacterial', 'icon': 'bi-droplet', 'search': 'Bacterial',
-                    'cultural': [
-                        'Plant certified seed and resistant varieties',
-                        'Avoid cutting or damaging leaf tips when transplanting',
-                        'Drain the field to reduce spread after heavy rain or flooding',
-                        'Avoid excess nitrogen and keep field edges free of weeds'
-                    ],
-                    'chemical': 'Fungicides do not control bacteria. Rely on resistant varieties and field hygiene, and ask the agriculture office before using any bactericide.'
-                },
-                {
-                    'name': 'Brown Spot', 'khmer': 'ជំងឺអុចត្នោត', 'type': 'Fungal', 'icon': 'bi-circle-half', 'search': 'Brown',
-                    'cultural': [
-                        'Correct poor soil with balanced fertilizer, including potassium',
-                        'Use clean, healthy seed',
-                        'Avoid water stress and drought during growth',
-                        'Remove infected residue and weeds'
-                    ],
-                    'chemical': 'Brown spot is usually linked to weak crop nutrition. Fix the soil first, and use a fungicide only if the outbreak is heavy and on advice from an agriculture officer.'
-                },
-                {
-                    'name': 'Sheath Blight', 'khmer': 'ជំងឺរលាកស្រោមស្លឹក', 'type': 'Fungal', 'icon': 'bi-layers', 'search': 'Sheath',
-                    'cultural': [
-                        'Do not plant too densely; give plants room and airflow',
-                        'Avoid too much nitrogen fertilizer',
-                        'Remove weeds and crop residue that carry the fungus',
-                        'Drain the field to lower humidity at the base of the plants'
-                    ],
-                    'chemical': 'Treat early, when lesions first appear on lower leaf sheaths. Use a rice-approved fungicide as advised locally and follow the label.'
-                }
+                ('blast', 'bi-virus', 'Blast', 'fungal'),
+                ('bacterial_blight', 'bi-droplet', 'Bacterial', 'bacterial'),
+                ('brown_spot', 'bi-circle-half', 'Brown', 'fungal'),
+                ('sheath_blight', 'bi-layers', 'Sheath', 'fungal')
             ] %}
 
             {% for p in plans %}
+            {% set disease = lang.public.treatment.diseases[p[0]] %}
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button {{ '' if loop.first else 'collapsed' }}"
@@ -383,10 +516,10 @@
                             data-bs-target="#plan{{ loop.index }}"
                             aria-expanded="{{ 'true' if loop.first else 'false' }}"
                             aria-controls="plan{{ loop.index }}">
-                        <span class="tr-acc-icon"><i class="bi {{ p.icon }}"></i></span>
+                        <span class="tr-acc-icon"><i class="bi {{ p[1] }}"></i></span>
                         <span class="tr-acc-title">
-                            {{ p.name }}
-                            <small><span class="khmer-text">{{ p.khmer }}</span> • {{ p.type }}</small>
+                            {{ disease.name }}
+                            <small>{{ lang.public.treatment[p[3]] }}</small>
                         </span>
                     </button>
                 </h2>
@@ -398,22 +531,22 @@
                         <div class="row g-4">
 
                             <div class="col-lg-7">
-                                <div class="tr-col-title"><i class="bi bi-flower2 me-1"></i>What to do in the field</div>
+                                <div class="tr-col-title"><i class="bi bi-flower2 me-1"></i>{{ lang.public.treatment.what_to_do }}</div>
                                 <ul class="tr-list">
-                                    {% for item in p.cultural %}
+                                    {% for item in disease.cultural %}
                                     <li><i class="bi bi-check-circle-fill"></i><span>{{ item }}</span></li>
                                     {% endfor %}
                                 </ul>
                             </div>
 
                             <div class="col-lg-5">
-                                <div class="tr-col-title"><i class="bi bi-droplet-half me-1"></i>If the outbreak is serious</div>
+                                <div class="tr-col-title"><i class="bi bi-droplet-half me-1"></i>{{ lang.public.treatment.serious_outbreak }}</div>
                                 <p class="mb-3" style="font-size:.9rem; line-height:1.8; color: var(--rice-gray);">
-                                    {{ p.chemical }}
+                                    {{ disease.chemical }}
                                 </p>
-                                <a href="{{ url_for('public.diseases', q=p.search) }}"
+                                <a href="{{ url_for('public.diseases', q=p[2]) }}"
                                    class="btn btn-outline-success btn-sm rounded-pill">
-                                    View disease information
+                                    {{ lang.public.treatment.view_disease }}
                                     <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
@@ -429,10 +562,8 @@
         <div class="tr-note mt-4" data-animate="fade-up">
             <i class="bi bi-exclamation-triangle-fill"></i>
             <div>
-                <strong>Important:</strong> This page gives general guidance only.
-                Disease pressure, rice variety, and local rules differ between areas.
-                Before using any chemical product, confirm the product and dose with your
-                local agriculture officer or the label.
+                <strong>{{ lang.public.treatment.important }}</strong>
+                {{ lang.public.treatment.general_guidance }}
             </div>
         </div>
 
@@ -447,25 +578,13 @@
             <div class="row align-items-center g-4">
 
                 <div class="col-lg-5">
-                    <span class="section-label text-white-50">SAFETY FIRST</span>
-                    <h2>Protect Yourself and the Environment</h2>
-                    <p>
-                        Good safety habits keep farmers healthy and prevent harm to
-                        water, fish, and nearby crops.
-                    </p>
+                    <span class="section-label text-white-50">{{ lang.public.treatment.safety_first }}</span>
+                    <h2>{{ lang.public.treatment.safety_title }}</h2>
+                    <p>{{ lang.public.treatment.safety_description }}</p>
                 </div>
 
                 <div class="col-lg-7">
-                    {% set safety = [
-                        'Wear gloves, mask, long sleeves, and boots when spraying',
-                        'Read and follow the product label every time',
-                        'Never spray in strong wind or just before rain',
-                        'Keep chemicals away from canals, ponds, and drinking water',
-                        'Store products in their original container, away from children',
-                        'Wash your hands and clothes after spraying'
-                    ] %}
-
-                    {% for item in safety %}
+                    {% for item in lang.public.treatment.safety_items %}
                     <div class="tr-safety-item">
                         <i class="bi bi-shield-fill-check"></i>
                         <span>{{ item }}</span>
@@ -483,19 +602,16 @@
 <section class="section-padding">
     <div class="container text-center" data-animate="fade-up">
 
-        <h2 class="section-title">Not Sure Which Disease Your Rice Has?</h2>
+        <h2 class="section-title">{{ lang.public.treatment.cta_title }}</h2>
 
-        <p class="section-description">
-            Identify the disease first. Use our Expert System to match your field
-            symptoms and get a diagnosis with prevention advice.
-        </p>
+        <p class="section-description">{{ lang.public.treatment.cta_description }}</p>
 
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
             <a href="{{ url_for('auth.login') }}" class="btn btn-success rounded-pill px-4">
-                <i class="bi bi-search me-2"></i>Start Disease Diagnosis
+                <i class="bi bi-search me-2"></i>{{ lang.public.treatment.diagnose_button }}
             </a>
             <a href="{{ url_for('public.diseases') }}" class="btn btn-outline-success rounded-pill px-4">
-                <i class="bi bi-book me-2"></i>Browse Diseases
+                <i class="bi bi-book me-2"></i>{{ lang.public.treatment.browse_button }}
             </a>
         </div>
 
