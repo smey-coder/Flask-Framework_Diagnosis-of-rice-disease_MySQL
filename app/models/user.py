@@ -43,7 +43,7 @@ class UserTable(UserMixin, db.Model):
         self.password_hash = generate_password_hash(password)
         
     def check_password(self, password: str) -> bool:
-        return check_password_hash(self.password_hash, password)
+        return bool(self.password_hash) and check_password_hash(self.password_hash, password)
 
     # ------------------- GOOGLE AUTHENTICATION -------------------
     def set_google_account(self, google_id: str) -> None:

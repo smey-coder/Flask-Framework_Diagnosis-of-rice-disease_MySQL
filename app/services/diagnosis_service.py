@@ -17,7 +17,6 @@ class DiagnosisService:
         """Combine two certainty factors using MYCIN formula."""
         return cf1 + cf2 * (1 - cf1)
 
-
     #Version 1
     # @classmethod
     # def infer(cls, selected_symptom_ids: List[int]) -> Tuple[Dict[int, dict], Dict[str, List[dict]], List[dict]]:

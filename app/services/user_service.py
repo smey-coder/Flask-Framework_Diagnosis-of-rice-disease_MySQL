@@ -120,6 +120,47 @@ class UserService:
             }
         )
         return user
+
+    @staticmethod
+    def create_google_user(data: dict, google_id: str, role_id: int) -> UserTable:
+        role = db.session.get(RoleTable, role_id)
+        if role is None:
+            raise ValueError("The default user role does not exist.")
+
+        user = UserTable(
+            username=data["username"],
+            email=data["email"],
+            full_name=data["full_name"],
+            image=data.get("image"),
+            is_active=True,
+            email_verified=True,
+            google_id=google_id,
+            auth_provider="google",
+            roles=[role],
+        )
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise ValueError(f"Database error while creating Google user: {str(e)}") from e
+
+        log_audit(
+            "CREATE",
+            "users",
+            user.id,
+            before_data=None,
+            after_data={
+                "username": user.username,
+                "email": user.email,
+                "full_name": user.full_name,
+                "is_active": user.is_active,
+                "auth_provider": user.auth_provider,
+                "roles": [assigned_role.name for assigned_role in user.roles],
+            },
+        )
+        return user
     # ---------- UPDATE ---------- #
     @staticmethod
     def update_user(

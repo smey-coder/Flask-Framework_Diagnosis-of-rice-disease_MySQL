@@ -55,6 +55,11 @@ class Config:
     # ================= API KEYS =================
     OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
+    # ================= GOOGLE OAUTH =================
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+    GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI")
+
     # ================= UPLOAD (optional future use) =================
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB file upload limit
     

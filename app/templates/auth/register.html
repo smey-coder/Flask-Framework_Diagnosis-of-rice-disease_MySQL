@@ -298,6 +298,12 @@
         </div>
       </form>
 
+      <div class="divider">{{ lang.auth.login.or }}</div>
+      <a href="{{ url_for('auth.google_login') }}" class="btn btn-outline-dark w-100 google-auth-button">
+        <i class="bi bi-google me-2" aria-hidden="true"></i>
+        {{ lang.auth.register.google_sign_up }}
+      </a>
+
       <!-- LOGIN -->
 
       <div class="login-link">

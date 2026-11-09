@@ -54,6 +54,25 @@ python run.py
    - **Expert User** → Should redirect to `/expert/dashboard`
    - **Regular User** → Should redirect to `/user/dashboard`
 
+### 5. Configure Google Sign-In (optional)
+
+1. Create a Google OAuth 2.0 Web application client in Google Cloud Console.
+2. Add the app's callback URL to the client's authorized redirect URIs:
+   `http://localhost:5000/auth/google/callback`
+3. Add these values to the application's `.env` file:
+
+```env
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+# Optional when the public callback URL differs from the URL Flask generates:
+# GOOGLE_REDIRECT_URI=https://your-domain.example/auth/google/callback
+```
+
+For production, register the HTTPS callback URL for the deployed domain and set
+`GOOGLE_REDIRECT_URI` to that exact URL if needed. Keep the client secret private.
+The Google sign-in button logs in existing accounts and creates a regular User
+account for a new, Google-verified email address.
+
 ---
 
 ## URL Routes

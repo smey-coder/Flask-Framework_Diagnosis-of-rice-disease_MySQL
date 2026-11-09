@@ -143,6 +143,7 @@
       "submit": "Sign In",
       "loading": "Signing in...",
       "or": "OR",
+      "google_sign_in": "Continue with Google",
       "no_account": "Don't have an account?",
       "create_account": "Create Account",
       "security": "Your account information is protected with secure authentication.",
@@ -176,6 +177,7 @@
       "back": "Back",
       "create_account": "Create Account",
       "creating_account": "Creating account...",
+      "google_sign_up": "Sign up with Google",
       "already_account": "Already have an account?",
       "sign_in": "Sign In",
       "security_note": "Your account information is securely protected."

@@ -18,3 +18,4 @@ On date: 10/09/2026
 1. Update add public file (home, diease, treatment, prevention, rice varieties, cultivation, about rice)
 2. Update traslate khmer to English
 3. Update UI/UX(Disease, Role Management, Permission Management, User Management), Login and Register(Traslate KH ad En)
+4. Login and Register can with Google 

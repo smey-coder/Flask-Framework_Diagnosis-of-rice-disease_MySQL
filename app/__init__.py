@@ -2,7 +2,7 @@ import importlib
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_login import current_user
 from config import Config
-from extensions import db, csrf, login_manager, mail
+from extensions import db, csrf, login_manager, mail, oauth
 from app.models.user import UserTable
 from dotenv import load_dotenv
 import os
@@ -21,6 +21,14 @@ def create_app(config_class: type[Config] = Config):
     csrf.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
+    oauth.init_app(app)
+    oauth.register(
+        name="google",
+        client_id=app.config.get("GOOGLE_CLIENT_ID"),
+        client_secret=app.config.get("GOOGLE_CLIENT_SECRET"),
+        server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+        client_kwargs={"scope": "openid email profile"},
+    )
 
     # ================= LOGIN MANAGER =================
     login_manager.login_view = "auth.login"
