@@ -6,10 +6,8 @@ from werkzeug.security import generate_password_hash
 from flask_mail import Message
 from app.services.audit_service import log_audit
 
-
 class AuthService:
     """Authentication & password recovery service"""
-
     # ===================== AUTHENTICATE =====================
     @staticmethod
     def authenticate(username: str, password: str) -> Optional[UserTable]:
@@ -21,18 +19,13 @@ class AuthService:
     @staticmethod
     def get_user_by_google_id(google_id: str) -> Optional[UserTable]:
         """Find an existing user using Google ID."""
-        return UserTable.query.filter_by(
-            google_id=google_id
-        ).first()
-
+        return UserTable.query.filter_by(google_id=google_id).first()
 
     # ===================== FIND USER BY EMAIL =====================
     @staticmethod
     def get_user_by_email(email: str) -> Optional[UserTable]:
         """Find an existing user using email."""
-        return UserTable.query.filter_by(
-            email=email
-        ).first()
+        return UserTable.query.filter_by(email=email).first()
 
     # ===================== FORGOT PASSWORD =====================
     @staticmethod
