@@ -86,7 +86,6 @@ def diseases():
 # 6. DISEASE DETAILS
 # URL: /diseases/<disease_id>
 # =====================================================
-
 @public_bp.route('/diseases/<int:disease_id>')
 def disease_detail(disease_id):
     disease = DiseaseService.get_active_disease_by_id(disease_id)

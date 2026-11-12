@@ -240,8 +240,6 @@
                         ) }}
 
                     </div>
-
-
                     <!-- Severity -->
                     <div class="col-xl-2 col-lg-2 col-md-6">
 
@@ -254,8 +252,6 @@
                         ) }}
 
                     </div>
-
-
                     <!-- Status -->
                     <div class="col-xl-2 col-lg-2 col-md-6">
 
@@ -427,49 +423,31 @@
             <table class="table disease-table mb-0">
 
                 <thead>
-
                     <tr>
-
                         <th>ID</th>
-
                         <th>Disease</th>
-
                         <th>Type</th>
-
                         <th>Severity</th>
-
                         <th>Status</th>
-
                         <th class="text-end">
                             Actions
                         </th>
-
                     </tr>
-
                 </thead>
-
-
                 <tbody>
-
                     {% if diseases.items %}
-
                         {% for disease in diseases.items %}
-
                         <tr>
-
                             <!-- ID -->
                             <td>
-
                                 <span class="disease-id">
                                     #{{ disease.id }}
                                 </span>
-
                             </td>
 
 
                             <!-- Disease -->
                             <td>
-
                                 <a
                                     href="{{ url_for(
                                         'tbl_diseases.detail',

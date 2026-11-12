@@ -26,7 +26,6 @@ class AuthService:
     def get_user_by_email(email: str) -> Optional[UserTable]:
         """Find an existing user using email."""
         return UserTable.query.filter_by(email=email).first()
-
     # ===================== FORGOT PASSWORD =====================
     @staticmethod
     def send_reset_code(email: str) -> bool:

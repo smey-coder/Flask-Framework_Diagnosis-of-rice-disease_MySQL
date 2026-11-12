@@ -94,10 +94,8 @@ def index():
         logger.error(f"Error listing diseases: {e}")
         flash("An error occurred while loading diseases.", "danger")
         return redirect(url_for("user.dashboard"))
-
-
 # ------------------ DETAIL ------------------
-@disease_bp.route("/<int:disease_id>")
+@disease_bp.route("/<int:disease_id>/detail")
 @login_required
 @role_required("Admin", "Expert")
 @permission_required("DETAIL_DISEASE")
@@ -108,7 +106,6 @@ def detail(disease_id: int):
         if disease is None:
             flash("Disease not found.", "warning")
             abort(404)
-        
         return render_template(
             "disease_page/detail.html",
             disease=disease,
@@ -118,7 +115,6 @@ def detail(disease_id: int):
         logger.error(f"Error retrieving disease detail {disease_id}: {e}")
         flash("An error occurred while loading disease details.", "danger")
         abort(404)
-
 
 # ------------------ CREATE ------------------
 @disease_bp.route("/create", methods=["GET", "POST"])

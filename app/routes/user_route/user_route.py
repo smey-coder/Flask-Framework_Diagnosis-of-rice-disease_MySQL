@@ -960,7 +960,7 @@ def about():
             {"name": "San Reaksmey", "role": "Project Manager", "image": "images/about/san-reaksmey.jpg"},
             {"name": "Try Reaksmey", "role": "Backend Developer", "image": "images/about/try-reaksmey.jpg"},
             {"name": "Pen Panhna", "role": "Frontend Developer", "image": "images/about/pen-panhna.jpg"},
-            {"name": "Tath Kongea", "role": "UI/UX Designer", "image": "images/about/tath-kongkea.jpg"},
+            {"name": "Chen Sopheaktra", "role": "UI/UX Designer", "image": "images/about/chen-sopheaktra.jpg"},
         ]
     }
     return render_template("user_page/about.html", about=about_info)
