@@ -1,6 +1,4 @@
-{% extends "layouts/user_layout/user.html" %} {% block title %} Delete Crop
-Monitoring {% endblock %} {% block page_title %} Delete Crop Monitoring {%
-endblock %} {% block styles %}
+{% extends "layouts/user_layout/user.html" %} {% block title %} {{ lang.crop_monitoring.delete_title if lang and lang.crop_monitoring and lang.crop_monitoring.delete_title else 'Delete Crop Monitoring' }} {% endblock %} {% block page_title %} {{ lang.crop_monitoring.delete_title if lang and lang.crop_monitoring and lang.crop_monitoring.delete_title else 'Delete Crop Monitoring' }} {% endblock %} {% block styles %}
 
 <link
   rel="stylesheet"
@@ -24,7 +22,7 @@ endblock %} {% block styles %}
           <h5 class="mb-0 fw-bold">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
 
-            Delete Crop Monitoring
+            {{ lang.crop_monitoring.delete_title if lang and lang.crop_monitoring and lang.crop_monitoring.delete_title else 'Delete Crop Monitoring' }}
           </h5>
         </div>
 
@@ -37,10 +35,10 @@ endblock %} {% block styles %}
             <i class="bi bi-trash3-fill"></i>
           </div>
 
-          <h4 class="fw-bold">Are you sure?</h4>
+          <h4 class="fw-bold">{{ lang.crop_monitoring.delete_confirm_title if lang and lang.crop_monitoring and lang.crop_monitoring.delete_confirm_title else 'Are you sure?' }}</h4>
 
           <p class="text-muted">
-            You are about to delete this crop monitoring record.
+            {{ lang.crop_monitoring.delete_confirm_message if lang and lang.crop_monitoring and lang.crop_monitoring.delete_confirm_message else 'You are about to delete this crop monitoring record.' }}
           </p>
 
           <!-- =================================================
@@ -51,7 +49,7 @@ endblock %} {% block styles %}
             {% if monitoring.field_crop %}
 
             <div class="mb-2">
-              <small class="text-muted"> Field </small>
+              <small class="text-muted"> {{ lang.crop_monitoring.field if lang and lang.crop_monitoring and lang.crop_monitoring.field else 'Field' }} </small>
 
               <div class="fw-bold">
                 <i class="bi bi-grid-3x3-gap text-success me-1"></i>
@@ -61,7 +59,7 @@ endblock %} {% block styles %}
             </div>
 
             <div class="mb-2">
-              <small class="text-muted"> Rice Variety </small>
+              <small class="text-muted"> {{ lang.crop_monitoring.rice_variety if lang and lang.crop_monitoring and lang.crop_monitoring.rice_variety else 'Rice Variety' }} </small>
 
               <div class="fw-semibold">
                 {{ monitoring .field_crop .rice_variety .variety_name }}
@@ -71,7 +69,7 @@ endblock %} {% block styles %}
             {% endif %} {% if monitoring.monitoring_date %}
 
             <div class="mb-2">
-              <small class="text-muted"> Monitoring Date </small>
+              <small class="text-muted"> {{ lang.crop_monitoring.monitoring_date if lang and lang.crop_monitoring and lang.crop_monitoring.monitoring_date else 'Monitoring Date' }} </small>
 
               <div class="fw-semibold">
                 {{ monitoring .monitoring_date .strftime("%d-%m-%Y") }}
@@ -81,7 +79,7 @@ endblock %} {% block styles %}
             {% endif %} {% if monitoring.growth_stage %}
 
             <div>
-              <small class="text-muted"> Growth Stage </small>
+              <small class="text-muted"> {{ lang.crop_monitoring.growth_stage if lang and lang.crop_monitoring and lang.crop_monitoring.growth_stage else 'Growth Stage' }} </small>
 
               <div>
                 <span class="badge bg-success">
@@ -100,9 +98,9 @@ endblock %} {% block styles %}
           <div class="alert alert-warning mt-4 text-start">
             <i class="bi bi-exclamation-circle me-1"></i>
 
-            <strong>Warning:</strong>
+            <strong>{{ lang.crop_monitoring.warning if lang and lang.crop_monitoring and lang.crop_monitoring.warning else 'Warning:' }}</strong>
 
-            This action cannot be undone.
+            {{ lang.crop_monitoring.warning_message if lang and lang.crop_monitoring and lang.crop_monitoring.warning_message else 'This action cannot be undone.' }}
           </div>
 
           <!-- =================================================
@@ -122,10 +120,10 @@ endblock %} {% block styles %}
               <a href="{{ cancel_url }}" class="btn btn-secondary">
                 <i class="bi bi-x-circle me-1"></i>
 
-                Cancel
+                {{ lang.crop_monitoring.cancel if lang and lang.crop_monitoring and lang.crop_monitoring.cancel else 'Cancel' }}
               </a>
 
-              {{ form.submit( class="btn btn-danger" ) }}
+              {{ form.submit( class="btn btn-danger", value=(lang.crop_monitoring.delete_title if lang and lang.crop_monitoring and lang.crop_monitoring.delete_title else 'Delete Crop Monitoring') ) }}
             </div>
           </form>
         </div>

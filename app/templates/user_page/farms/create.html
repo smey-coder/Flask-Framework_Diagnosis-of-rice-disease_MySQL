@@ -1,8 +1,8 @@
 {% extends "layouts/user_layout/user.html" %} 
 
-{% block title %}បង្កើតកសិដ្ឋានថ្មី | Create Farm{% endblock %} 
+{% block title %}{{ lang.farm.create_new_farm if lang and lang.farm and lang.farm.create_new_farm else 'Create New Farm' }}{% endblock %} 
 
-{% block page_title %}បង្កើតកសិដ្ឋានថ្មី (Create Farm){% endblock %} 
+{% block page_title %}{{ lang.farm.create_new_farm if lang and lang.farm and lang.farm.create_new_farm else 'Create New Farm' }}{% endblock %} 
 
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/farm.css') }}"/>
@@ -17,7 +17,7 @@
       <!-- Card Header -->
       <div class="card-header bg-success text-white py-3 px-4 d-flex align-items-center gap-2 farm-form-header">
         <i class="bi bi-tree-fill fs-4"></i>
-        <h5 class="mb-0 fw-bold">បង្កើតកសិដ្ឋានថ្មី (Create New Farm)</h5>
+        <h5 class="mb-0 fw-bold">{{ lang.farm.create_new_farm if lang and lang.farm and lang.farm.create_new_farm else 'Create New Farm' }}</h5>
       </div>
 
       <!-- Card Body -->

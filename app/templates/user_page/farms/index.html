@@ -1,5 +1,5 @@
-{% extends "layouts/user_layout/user.html" %} {% block title %} Farm Management
-{% endblock %} {% block page_title %} Farm Management {% endblock %} {% block
+{% extends "layouts/user_layout/user.html" %} {% block title %} {{ lang.farm.management if lang and lang.farm and lang.farm.management else 'Farm Management' }}
+{% endblock %} {% block page_title %} {{ lang.farm.management if lang and lang.farm and lang.farm.management else 'Farm Management' }} {% endblock %} {% block
 content %}
 <link
   rel="stylesheet"
@@ -17,10 +17,10 @@ content %}
       </div>
 
       <div>
-        <h4 class="farm-page-title">Farm Management</h4>
+        <h4 class="farm-page-title">{{ lang.farm.management if lang and lang.farm and lang.farm.management else 'Farm Management' }}</h4>
 
         <p class="farm-page-subtitle">
-          Manage your farms, locations, fields and rice production.
+          {{ lang.farm.subtitle if lang and lang.farm and lang.farm.subtitle else 'Manage your farms, locations, fields and rice production.' }}
         </p>
       </div>
     </div>
@@ -30,7 +30,7 @@ content %}
       class="btn btn-success farm-add-btn"
     >
       <i class="bi bi-plus-circle me-1"></i>
-      Add Farm
+      {{ lang.farm.add_farm if lang and lang.farm and lang.farm.add_farm else 'Add Farm' }}
     </a>
   </div>
 
@@ -51,11 +51,11 @@ content %}
       </div>
 
       <div class="farm-summary-content">
-        <span class="farm-summary-label"> Total Farms </span>
+        <span class="farm-summary-label"> {{ lang.farm.total_farms if lang and lang.farm and lang.farm.total_farms else 'Total Farms' }} </span>
 
         <strong class="farm-summary-value"> {{ total_farms }} </strong>
 
-        <span class="farm-summary-description"> Registered farms </span>
+        <span class="farm-summary-description"> {{ lang.farm.registered_farms if lang and lang.farm and lang.farm.registered_farms else 'Registered farms' }} </span>
       </div>
     </div>
 
@@ -66,11 +66,11 @@ content %}
       </div>
 
       <div class="farm-summary-content">
-        <span class="farm-summary-label"> Active Farms </span>
+        <span class="farm-summary-label"> {{ lang.farm.active_farms if lang and lang.farm and lang.farm.active_farms else 'Active Farms' }} </span>
 
         <strong class="farm-summary-value"> {{ active_farms }} </strong>
 
-        <span class="farm-summary-description"> Currently active </span>
+        <span class="farm-summary-description"> {{ lang.farm.currently_active if lang and lang.farm and lang.farm.currently_active else 'Currently active' }} </span>
       </div>
     </div>
 
@@ -81,11 +81,11 @@ content %}
       </div>
 
       <div class="farm-summary-content">
-        <span class="farm-summary-label"> Inactive Farms </span>
+        <span class="farm-summary-label"> {{ lang.farm.inactive_farms if lang and lang.farm and lang.farm.inactive_farms else 'Inactive Farms' }} </span>
 
         <strong class="farm-summary-value"> {{ inactive_farms }} </strong>
 
-        <span class="farm-summary-description"> Currently inactive </span>
+        <span class="farm-summary-description"> {{ lang.farm.currently_inactive if lang and lang.farm and lang.farm.currently_inactive else 'Currently inactive' }} </span>
       </div>
     </div>
 
@@ -96,11 +96,11 @@ content %}
       </div>
 
       <div class="farm-summary-content">
-        <span class="farm-summary-label"> Total Fields </span>
+        <span class="farm-summary-label"> {{ lang.farm.total_fields if lang and lang.farm and lang.farm.total_fields else 'Total Fields' }} </span>
 
         <strong class="farm-summary-value"> {{ total_fields.value }} </strong>
 
-        <span class="farm-summary-description"> Across all farms </span>
+        <span class="farm-summary-description"> {{ lang.farm.across_all_farms if lang and lang.farm and lang.farm.across_all_farms else 'Across all farms' }} </span>
       </div>
     </div>
   </div>
@@ -117,7 +117,7 @@ content %}
         type="text"
         id="farmSearch"
         class="form-control farm-search-input"
-        placeholder="Search farm name, province, district..."
+        placeholder="{{ lang.farm.search_placeholder if lang and lang.farm and lang.farm.search_placeholder else 'Search farm name, province, district...' }}"
         autocomplete="off"
       />
 
@@ -125,7 +125,7 @@ content %}
         type="button"
         id="clearFarmSearch"
         class="farm-search-clear"
-        title="Clear search"
+        title="{{ lang.farm.clear_search if lang and lang.farm and lang.farm.clear_search else 'Clear search' }}"
       >
         <i class="bi bi-x-circle-fill"></i>
       </button>
@@ -134,22 +134,22 @@ content %}
     <div class="farm-filter-wrapper">
       <label for="farmStatusFilter">
         <i class="bi bi-funnel me-1"></i>
-        Status
+        {{ lang.farm.status if lang and lang.farm and lang.farm.status else 'Status' }}
       </label>
 
       <select id="farmStatusFilter" class="form-select farm-status-filter">
-        <option value="all">All Status</option>
+        <option value="all">{{ lang.farm.all_status if lang and lang.farm and lang.farm.all_status else 'All Status' }}</option>
 
-        <option value="Active">Active</option>
+        <option value="Active">{{ lang.farm.active if lang and lang.farm and lang.farm.active else 'Active' }}</option>
 
-        <option value="Inactive">Inactive</option>
+        <option value="Inactive">{{ lang.farm.inactive if lang and lang.farm and lang.farm.inactive else 'Inactive' }}</option>
       </select>
     </div>
 
     <div class="farm-result-count">
       <span id="farmResultCount"> {{ total_farms }} </span>
 
-      <span> farms </span>
+      <span> {{ lang.farm.farms_label if lang and lang.farm and lang.farm.farms_label else 'farms' }} </span>
     </div>
   </div>
 
@@ -183,14 +183,14 @@ content %}
               <h5 class="farm-card-title" title="{{ farm.farm_name }}">
                 {{ farm.farm_name }}
               </h5>
-              <span class="farm-card-id"> Farm #{{ farm.id }} </span>
+              <span class="farm-card-id"> {{ lang.farm.id if lang and lang.farm and lang.farm.id else 'Farm' }} #{{ farm.id }} </span>
             </div>
             {% if farm.status == "Active" %}
-            <span class="farm-status farm-status-active"> Active </span>
+            <span class="farm-status farm-status-active"> {{ lang.farm.active if lang and lang.farm and lang.farm.active else 'Active' }} </span>
 
             {% else %}
 
-            <span class="farm-status farm-status-inactive"> Inactive </span>
+            <span class="farm-status farm-status-inactive"> {{ lang.farm.inactive if lang and lang.farm and lang.farm.inactive else 'Inactive' }} </span>
 
             {% endif %}
           </div>
@@ -207,14 +207,13 @@ content %}
               <i class="bi bi-geo-alt-fill"></i>
             </div>
             <div class="farm-info-content">
-              <span class="farm-info-label"> Location </span>
+              <span class="farm-info-label"> {{ lang.farm.location if lang and lang.farm and lang.farm.location else 'Location' }} </span>
 
               <div class="farm-info-value">
                 {% if farm.province or farm.district or farm.commune %} {% if
                 farm.commune %} {{ farm.commune }}, {% endif %} {% if
                 farm.district %} {{ farm.district }}, {% endif %} {% if
-                farm.province %} {{ farm.province }} {% endif %} {% else %} Not
-                specified {% endif %}
+                farm.province %} {{ farm.province }} {% endif %} {% else %} {{ lang.farm.not_specified if lang and lang.farm and lang.farm.not_specified else 'Not specified' }} {% endif %}
               </div>
             </div>
           </div>
@@ -242,7 +241,7 @@ content %}
               </div>
 
               <div>
-                <span class="farm-stat-label"> Fields </span>
+                <span class="farm-stat-label"> {{ lang.farm.fields if lang and lang.farm and lang.farm.fields else 'Fields' }} </span>
 
                 <strong class="farm-stat-value">
                   {{ farm.fields|length }}
@@ -256,7 +255,7 @@ content %}
           {% if farm.description %}
 
           <div class="farm-description-wrapper">
-            <span class="farm-description-label"> Description </span>
+            <span class="farm-description-label"> {{ lang.farm.description if lang and lang.farm and lang.farm.description else 'Description' }} </span>
 
             <p class="farm-description">{{ farm.description }}</p>
           </div>

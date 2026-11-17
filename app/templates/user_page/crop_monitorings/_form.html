@@ -1,35 +1,34 @@
 <!-- =====================================================
      FIELD CROP
 ====================================================== -->
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/crop_monitoring.css') }}"
+/>
 
 <div class="mb-3">
-  {{ form.field_crop_id.label( class="form-label fw-semibold" ) }}
-
+  <label for="field_crop_id" class="form-label fw-semibold">
+    {{ lang.crop_monitoring.field_crop if lang and lang.crop_monitoring and lang.crop_monitoring.field_crop else 'Field Crop' }}
+  </label>
   <span class="text-danger">*</span>
-
-  {{ form.field_crop_id( class="form-select" ) }} {% for error in
-  form.field_crop_id.errors %}
-
+  {{ form.field_crop_id( class="form-select" ) }} 
+  {% for error in form.field_crop_id.errors %}
   <div class="text-danger small mt-1">
     <i class="bi bi-exclamation-circle me-1"></i>
     {{ error }}
   </div>
-
   {% endfor %}
 </div>
-
 <!-- =====================================================
      MONITORING DATE
 ====================================================== -->
-
 <div class="mb-3">
-  {{ form.monitoring_date.label( class="form-label fw-semibold" ) }}
-
+  <label for="monitoring_date" class="form-label fw-semibold">
+    {{ lang.crop_monitoring.monitoring_date if lang and lang.crop_monitoring and lang.crop_monitoring.monitoring_date else 'Monitoring Date' }}
+  </label>
   <span class="text-danger">*</span>
-
   {{ form.monitoring_date( class="form-control" ) }} {% for error in
   form.monitoring_date.errors %}
-
   <div class="text-danger small mt-1">
     <i class="bi bi-exclamation-circle me-1"></i>
     {{ error }}
@@ -42,15 +41,112 @@
      GROWTH STAGE
 ====================================================== -->
 
-<div class="mb-3">
-  {{ form.growth_stage_id.label( class="form-label fw-semibold" ) }} {{
-  form.growth_stage_id( class="form-select" ) }} {% for error in
-  form.growth_stage_id.errors %}
-
+<!-- <div class="mb-3">
+  <label for="growth_stage_id" class="form-label fw-semibold">
+    {{ lang.crop_monitoring.growth_stage if lang and lang.crop_monitoring and lang.crop_monitoring.growth_stage else 'Growth Stage' }}
+  </label>
+  {{ form.growth_stage_id( class="form-select" ) }} 
+  {% for error in form.growth_stage_id.errors %}
   <div class="text-danger small mt-1">{{ error }}</div>
-
   {% endfor %}
+</div> -->
+
+<!-- =====================================================
+     GROWTH STAGE - IMAGE RADIO CARDS
+====================================================== -->
+
+{% set growth_meta = {
+    'Germination': ('germination.jpg', '#65a30d'),
+    'Seedling': ('seedling.jpg', '#16a34a'),
+    'Tillering': ('tillering.jpg', '#0d9488'),
+    'Panicle Initiation': ('panicle_initiation.jpg', '#0891b2'),
+    'Flowering': ('flowering.jpg', '#7c3aed'),
+    'Ripe (turning yellow)': ('Ripe_turning_yellow.jpg', '#d97706'),
+    'Fully ripe': ('Fully_ripe.jpg', '#ca8a04')
+} %}
+{% set fallback_growth_image = url_for(
+    'static',
+    filename='images/growth_stages/default_rice.jpg'
+) %}
+
+<div class="mb-3 growth-group">
+
+    <label class="form-label fw-semibold d-block">
+        {{ lang.crop_monitoring.growth_stage
+           if lang and lang.crop_monitoring and lang.crop_monitoring.growth_stage
+           else 'Growth Stage' }}
+    </label>
+
+    <div class="row g-3" role="radiogroup"
+         aria-label="Growth stage">
+
+        {% for value, label in form.growth_stage_id.choices %}
+            {% if value %}
+
+                {% set stage_name = label.split(' - ', 1)[0] %}
+                {% set stage = growth_meta.get(
+                    stage_name,
+                    ('default_rice.jpg', '#16a34a')
+                ) %}
+
+                <div class="col-6 col-md-4 col-lg-3">
+
+                    <label class="growth-option"
+                           for="growth_stage_{{ loop.index }}"
+                           style="--c: {{ stage[1] }}">
+
+                        <input
+                            type="radio"
+                            class="growth-input"
+                            id="growth_stage_{{ loop.index }}"
+                            name="{{ form.growth_stage_id.name }}"
+                            value="{{ value }}"
+                            {{ 'checked' if form.growth_stage_id.data|string == value|string }}
+                            required
+                        >
+
+                        <div class="growth-card">
+
+                            <span class="growth-check">
+                                <i class="bi bi-check-lg"></i>
+                            </span>
+
+                            <div class="growth-thumb">
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='images/growth_stages/' ~ stage[0]
+                                    ) }}"
+                                    alt="{{ label }}"
+                                    loading="lazy"
+                                    onerror="this.onerror=null;this.src='{{ fallback_growth_image }}';">
+                            </div>
+
+                            <div class="growth-body">
+                                <strong>{{ label }}</strong>
+                            </div>
+
+                        </div>
+
+                    </label>
+
+                </div>
+
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+    {% for error in form.growth_stage_id.errors %}
+        <div class="text-danger small mt-2">
+            {{ error }}
+        </div>
+    {% endfor %}
+
 </div>
+
+
+
 
 <div class="row">
   <!-- =================================================
@@ -58,10 +154,13 @@
     ================================================== -->
 
   <div class="col-md-6 mb-3">
-    {{ form.plant_height.label( class="form-label fw-semibold" ) }} {{
-    form.plant_height( class="form-control", placeholder="e.g. 35.50" ) }}
+    <label for="plant_height" class="form-label fw-semibold">
+      {{ lang.crop_monitoring.plant_height if lang and lang.crop_monitoring and lang.crop_monitoring.plant_height else 'Plant Height' }}
+    </label>
 
-    <small class="text-muted"> Unit: cm </small>
+    {{ form.plant_height( class="form-control", placeholder="e.g. 35.50" ) }}
+
+    <small class="text-muted"> {{ lang.crop_monitoring.unit_cm if lang and lang.crop_monitoring and lang.crop_monitoring.unit_cm else 'Unit: cm' }} </small>
 
     {% for error in form.plant_height.errors %}
 
@@ -74,28 +173,191 @@
          WATER STATUS
     ================================================== -->
 
-  <div class="col-md-6 mb-3">
-    {{ form.water_status.label( class="form-label fw-semibold" ) }} {{
-    form.water_status( class="form-select" ) }} {% for error in
+  <!-- <div class="col-md-6 mb-3">
+    <label for="water_status" class="form-label fw-semibold">
+      {{ lang.crop_monitoring.water_status if lang and lang.crop_monitoring and lang.crop_monitoring.water_status else 'Water Status' }}
+    </label>
+
+    {{ form.water_status( class="form-select" ) }} {% for error in
     form.water_status.errors %}
 
     <div class="text-danger small mt-1">{{ error }}</div>
 
     {% endfor %}
-  </div>
+  </div> -->
+  
+<!-- =================================================
+     WATER STATUS
+================================================== -->
+
+{# value -> (photo, colour, fallback icon) #}
+{% set water_meta = {
+    'Always wet មានទឹកជាប់លាប់ (ទឹកគ្របដណ្តប់ដីបានល្អ)':   ('always_wet.png',   '#198754', 'bi-water'),
+    'Mostly moist សើមភាគច្រើន (ដីសើម តែស្ងួតម្តងម្កាល)': ('mostly_moist.png', '#65a30d', 'bi-droplet-half'),
+    'Often dry ស្ងួតញឹកញាប់ (ដីស្ងួត)':    ('often_dry.png',    '#d97706', 'bi-sun'),
+    'Very dry ស្ងួតខ្លាំង / ប្រេះ (ដីរឹង និងប្រេះ)':     ('very_dry.png',     '#dc2626', 'bi-exclamation-triangle')
+} %}
+
+<div class="mb-3 water-group {{ 'is-invalid' if form.water_status.errors }}">
+
+    <label class="form-label fw-semibold d-block">
+        {{ lang.crop_monitoring.water_status
+           if lang and lang.crop_monitoring and lang.crop_monitoring.water_status
+           else 'Water Status' }}
+    </label>
+
+    <div class="row g-3"
+         role="radiogroup"
+         aria-label="Water status">
+
+        {% for value, label in form.water_status.choices %}
+            {% if value %}
+
+                {% set parts = label.split(' - ') %}
+                {% set photo, color, icon = water_meta.get(
+                    value,
+                    ('', '#198754', 'bi-droplet')
+                ) %}
+
+                <div class="col-6 col-md-3">
+
+                    <label class="water-option"
+                           for="water_status_{{ loop.index }}"
+                           style="--c: {{ color }}">
+
+                        <input type="radio"
+                               class="water-input"
+                               id="water_status_{{ loop.index }}"
+                               name="{{ form.water_status.name }}"
+                               value="{{ value }}"
+                               {{ 'checked' if form.water_status.data == value }}
+                               required>
+
+                        <div class="water-card">
+
+                            <span class="water-check">
+                                <i class="bi bi-check-lg"></i>
+                            </span>
+
+                            <div class="water-thumb">
+
+                                <i class="bi {{ icon }}"></i>
+
+                                {% if photo %}
+                                    <img
+                                        src="{{ url_for(
+                                            'static',
+                                            filename='images/water_status/' ~ photo
+                                        ) }}"
+                                        alt="{{ parts[0] }}"
+                                        loading="lazy"
+                                        onerror="this.remove()">
+                                {% endif %}
+
+                            </div>
+
+                            <div class="water-body">
+                                <strong>{{ parts[0] }}</strong>
+
+                                {% if parts|length > 1 %}
+                                    <span>{{ parts[1] }}</span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </label>
+
+                </div>
+
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+    {% for error in form.water_status.errors %}
+        <div class="text-danger small mt-2">
+            {{ error }}
+        </div>
+    {% endfor %}
+
+</div>
+
 </div>
 
 <!-- =====================================================
      PLANT CONDITION
 ====================================================== -->
 
-<div class="mb-3">
-  {{ form.plant_condition.label( class="form-label fw-semibold" ) }} {{
-  form.plant_condition( class="form-select" ) }} {% for error in
+<!-- <div class="mb-3">
+  <label for="plant_condition" class="form-label fw-semibold">
+    {{ lang.crop_monitoring.rice_situation if lang and lang.crop_monitoring and lang.crop_monitoring.rice_situation else 'Rice Situation' }}
+  </label>
+
+  {{ form.plant_condition( class="form-select" ) }} {% for error in
   form.plant_condition.errors %}
 
   <div class="text-danger small mt-1">{{ error }}</div>
 
+  {% endfor %}
+</div> -->
+{# value -> (photo, colour, fallback icon) #}
+{% set rs_meta = {
+    'Very good': ('rice_very_good.png', '#198754', 'bi-emoji-laughing'),
+    'Good':      ('good.jpg',      '#65a30d', 'bi-emoji-smile'),
+    'Moderate':  ('rice_moderate.jpg',  '#d97706', 'bi-emoji-neutral'),
+    'Not Good':  ('rice_not_good.png',  '#dc2626', 'bi-emoji-frown')
+} %}
+
+<div class="mb-3 rs-group {{ 'is-invalid' if form.plant_condition.errors }}">
+
+  <label class="form-label fw-semibold d-block">
+    {{ lang.crop_monitoring.rice_situation if lang and lang.crop_monitoring and lang.crop_monitoring.rice_situation else 'Rice Situation' }}
+  </label>
+
+  <div class="row g-3" role="radiogroup" aria-label="Rice situation">
+    {% for value, label in form.plant_condition.choices %}
+      {% if value %}
+        {% set parts = label.split(' - ') %}
+        {% set photo, color, icon = rs_meta.get(value, ('', '#198754', 'bi-flower1')) %}
+
+        <div class="col-6 col-md-3">
+          <label class="rs-option" for="plant_condition_{{ loop.index }}" style="--c: {{ color }}">
+
+            <input type="radio"
+                   class="rs-input"
+                   id="plant_condition_{{ loop.index }}"
+                   name="{{ form.plant_condition.name }}"
+                   value="{{ value }}"
+                   {{ 'checked' if form.plant_condition.data == value }}
+                   required>
+
+            <div class="rs-card">
+              <span class="rs-check"><i class="bi bi-check-lg"></i></span>
+
+              <div class="rs-thumb">
+                <i class="bi {{ icon }}"></i>
+                {% if photo %}
+                <img src="{{ url_for('static', filename='images/rice_situation/' ~ photo) }}"
+                     alt="{{ parts[0] }}"
+                     loading="lazy"
+                     onerror="this.remove()">
+                {% endif %}
+              </div>
+
+              <div class="rs-body">
+                <strong>{{ parts[0] }}</strong>
+                {% if parts|length > 1 %}<span>{{ parts[1] }}</span>{% endif %}
+              </div>
+            </div>
+
+          </label>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% for error in form.plant_condition.errors %}
+  <div class="text-danger small mt-2">{{ error }}</div>
   {% endfor %}
 </div>
 
@@ -105,8 +367,11 @@
     ================================================== -->
 
   <div class="col-md-6 mb-3">
-    {{ form.pest_status.label( class="form-label fw-semibold" ) }} {{
-    form.pest_status( class="form-select" ) }} {% for error in
+    <label for="pest_status" class="form-label fw-semibold">
+      {{ lang.crop_monitoring.pest_status if lang and lang.crop_monitoring and lang.crop_monitoring.pest_status else 'Pest Status' }}
+    </label>
+
+    {{ form.pest_status( class="form-select" ) }} {% for error in
     form.pest_status.errors %}
 
     <div class="text-danger small mt-1">{{ error }}</div>
@@ -119,8 +384,11 @@
     ================================================== -->
 
   <div class="col-md-6 mb-3">
-    {{ form.disease_status.label( class="form-label fw-semibold" ) }} {{
-    form.disease_status( class="form-select" ) }} {% for error in
+    <label for="disease_status" class="form-label fw-semibold">
+      {{ lang.crop_monitoring.disease_status if lang and lang.crop_monitoring and lang.crop_monitoring.disease_status else 'Disease Status' }}
+    </label>
+
+    {{ form.disease_status( class="form-select" ) }} {% for error in
     form.disease_status.errors %}
 
     <div class="text-danger small mt-1">{{ error }}</div>
@@ -134,8 +402,11 @@
 ====================================================== -->
 
 <div class="mb-3">
-  {{ form.description.label( class="form-label fw-semibold" ) }} {{
-  form.description( class="form-control", rows="4", placeholder="Enter monitoring notes..." ) }} {% for error in form.description.errors %}
+  <label for="description" class="form-label fw-semibold">
+    {{ lang.crop_monitoring.description if lang and lang.crop_monitoring and lang.crop_monitoring.description else 'Description' }}
+  </label>
+
+  {{ form.description( class="form-control", rows="4", placeholder=(lang.crop_monitoring.placeholder_notes if lang and lang.crop_monitoring and lang.crop_monitoring.placeholder_notes else 'Enter monitoring notes...') ) }} {% for error in form.description.errors %}
 
   <div class="text-danger small mt-1">{{ error }}</div>
 
@@ -150,8 +421,8 @@
   <a href="{{ cancel_url }}" class="btn btn-secondary">
     <i class="bi bi-x-circle me-1"></i>
 
-    Cancel
+    {{ lang.crop_monitoring.cancel if lang and lang.crop_monitoring and lang.crop_monitoring.cancel else 'Cancel' }}
   </a>
 
-  {{ form.submit( class="btn btn-success" ) }}
+  {{ form.submit( class="btn btn-success", value=(lang.crop_monitoring.save_monitoring if lang and lang.crop_monitoring and lang.crop_monitoring.save_monitoring else 'Save Monitoring') ) }}
 </div>

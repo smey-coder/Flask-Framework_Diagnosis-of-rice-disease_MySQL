@@ -1,8 +1,8 @@
 {% extends "layouts/user_layout/user.html" %} 
 
-{% block title %}កែប្រែកសិដ្ឋាន | Edit Farm{% endblock %} 
+{% block title %}{{ lang.farm.edit_farm if lang and lang.farm and lang.farm.edit_farm else 'Edit Farm' }}{% endblock %} 
 
-{% block page_title %}កែប្រែកសិដ្ឋាន (Edit Farm){% endblock %} 
+{% block page_title %}{{ lang.farm.edit_farm if lang and lang.farm and lang.farm.edit_farm else 'Edit Farm' }}{% endblock %} 
 
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/farm.css') }}"/>
@@ -17,7 +17,7 @@
       <!-- Card Header -->
       <div class="card-header bg-success text-white py-3 px-4 d-flex align-items-center gap-2 farm-form-header">
         <i class="bi bi-pencil-square fs-4"></i>
-        <h5 class="mb-0 fw-bold">កែប្រែព័ត៌មានកសិដ្ឋាន (Edit Farm Details)</h5>
+        <h5 class="mb-0 fw-bold">{{ lang.farm.edit_farm_details if lang and lang.farm and lang.farm.edit_farm_details else 'Edit Farm Details' }}</h5>
       </div>
 
       <!-- Card Body -->

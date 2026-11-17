@@ -5,7 +5,7 @@
   <!-- <div class="card-header bg-success text-white py-3 px-4">
     <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
       <i class="bi bi-tree-fill fs-5"></i>
-      <span>ព័ត៌មានកសិដ្ឋាន (Farm Information)</span>
+      <span>{{ lang.farm.information if lang and lang.farm and lang.farm.information else 'Farm Information' }}</span>
     </h5>
   </div> -->
 
@@ -13,7 +13,7 @@
     <!-- Farm Name -->
     <div class="mb-3">
       <label class="form-label fw-semibold text-dark">
-        {{ form.farm_name.label.text }} <span class="text-danger">*</span>
+        {{ lang.farm.farm_name if lang and lang.farm and lang.farm.farm_name else form.farm_name.label.text }} <span class="text-danger">*</span>
       </label>
       <div class="input-group">
         <span class="input-group-text bg-light border-end-0">
@@ -21,7 +21,7 @@
         </span>
         {{ form.farm_name(
             class="form-control border-start-0" ~ (" is-invalid" if form.farm_name.errors else ""),
-            placeholder="បញ្ចូលឈ្មោះកសិដ្ឋាន / Enter farm name"
+            placeholder=lang.farm.enter_farm_name if lang and lang.farm and lang.farm.enter_farm_name else "Enter farm name"
         ) }}
         {% for error in form.farm_name.errors %}
           <div class="invalid-feedback">{{ error }}</div>
@@ -34,7 +34,7 @@
       <!-- Province -->
       <div class="col-md-4">
         <label class="form-label fw-semibold text-dark">
-          {{ form.province.label.text }} <span class="text-danger">*</span>
+          {{ lang.farm.province if lang and lang.farm and lang.farm.province else form.province.label.text }} <span class="text-danger">*</span>
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -52,7 +52,7 @@
       <!-- District -->
       <div class="col-md-4">
         <label class="form-label fw-semibold text-dark">
-          {{ form.district.label.text }} <span class="text-danger">*</span>
+          {{ lang.farm.district if lang and lang.farm and lang.farm.district else form.district.label.text }} <span class="text-danger">*</span>
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -60,7 +60,7 @@
           </span>
           {{ form.district(
               class="form-control border-start-0" ~ (" is-invalid" if form.district.errors else ""),
-              placeholder="ស្រុក/ខណ្ឌ (District)"
+              placeholder=lang.farm.district if lang and lang.farm and lang.farm.district else "District"
           ) }}
           {% for error in form.district.errors %}
             <div class="invalid-feedback">{{ error }}</div>
@@ -71,7 +71,7 @@
       <!-- Commune -->
       <div class="col-md-4">
         <label class="form-label fw-semibold text-dark">
-          {{ form.commune.label.text }} <span class="text-danger">*</span>
+          {{ lang.farm.commune if lang and lang.farm and lang.farm.commune else form.commune.label.text }} <span class="text-danger">*</span>
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -79,7 +79,7 @@
           </span>
           {{ form.commune(
               class="form-control border-start-0" ~ (" is-invalid" if form.commune.errors else ""),
-              placeholder="ឃុំ/សង្កាត់ (Commune)"
+              placeholder=lang.farm.commune if lang and lang.farm and lang.farm.commune else "Commune"
           ) }}
           {% for error in form.commune.errors %}
             <div class="invalid-feedback">{{ error }}</div>
@@ -102,10 +102,10 @@
       {{ form.location(
           class="form-control border-start-0" ~ (" is-invalid" if form.location.errors else ""),
           id="locationInput",
-          placeholder="ជ្រើសរើសទីតាំងលើផែនទី ឬវាយបញ្ចូល / Click map or type location"
+          placeholder=lang.farm.click_map if lang and lang.farm and lang.farm.click_map else "Click map or type location"
       ) }}
       <button class="btn btn-outline-secondary" type="button" id="getCurrentLocBtn" onclick="getCurrentLocation()">
-        <i class="bi bi-crosshair me-1"></i> ទីតាំងបច្ចុប្បន្ន (My Location)
+        <i class="bi bi-crosshair me-1"></i> {{ lang.farm.my_location if lang and lang.farm and lang.farm.my_location else 'My Location' }}
       </button>
     </div>
     
@@ -118,7 +118,7 @@
     <!-- Leaflet Map Container -->
     <div id="map" class="rounded-3 border shadow-xs" style="height: 320px; width: 100%; z-index: 1;"></div>
     <div class="form-text small text-muted mt-1">
-      <i class="bi bi-info-circle me-1"></i> ចុចលើផែនទីដើម្បីជ្រើសរើសទីតាំង (Click anywhere on the map to set location pin).
+      <i class="bi bi-info-circle me-1"></i> {{ lang.farm.click_map if lang and lang.farm and lang.farm.click_map else 'Click anywhere on the map to set location pin.' }}
     </div>
   </div>
 
@@ -144,7 +144,7 @@
       {{ form.description(
           class="form-control rounded-3" ~ (" is-invalid" if form.description.errors else ""),
           rows="4",
-          placeholder="ពិពណ៌នាបន្ថែមអំពីកសិដ្ឋាន... / Enter farm description..."
+          placeholder=lang.farm.enter_description if lang and lang.farm and lang.farm.enter_description else "Enter farm description..."
       ) }}
       {% for error in form.description.errors %}
         <div class="invalid-feedback">{{ error }}</div>
@@ -156,12 +156,12 @@
   <div class="card-footer bg-light p-3 px-4 d-flex justify-content-end align-items-center gap-2">
     <a href="{{ cancel_url }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
       <i class="bi bi-x-circle me-1"></i>
-      បោះបង់ (Cancel)
+      {{ lang.farm.cancel if lang and lang.farm and lang.farm.cancel else 'Cancel' }}
     </a>
 
     <button type="submit" class="btn btn-success rounded-pill px-4 py-2 shadow-sm fw-semibold d-inline-flex align-items-center gap-2">
       <i class="bi bi-check-circle-fill"></i>
-      រក្សាទុក (Save Farm)
+      {{ lang.farm.save_farm if lang and lang.farm and lang.farm.save_farm else 'Save Farm' }}
     </button>
   </div>
 </form>

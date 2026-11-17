@@ -1,7 +1,7 @@
 {% extends "layouts/user_layout/user.html" %}
 
 {% block title %}
-Crop Monitoring Detail
+{{ lang.crop_monitoring.detail_title if lang and lang.crop_monitoring and lang.crop_monitoring.detail_title else 'Crop Monitoring Detail' }}
 {% endblock %}
 
 
@@ -18,11 +18,11 @@ Crop Monitoring Detail
         <div>
             <h3 class="fw-bold mb-1">
                 <i class="bi bi-flower1 text-success me-2"></i>
-                Crop Monitoring Detail
+                {{ lang.crop_monitoring.detail_title if lang and lang.crop_monitoring and lang.crop_monitoring.detail_title else 'Crop Monitoring Detail' }}
             </h3>
 
             <p class="text-muted mb-0">
-                Detailed information about crop monitoring
+                {{ lang.crop_monitoring.detail_subtitle if lang and lang.crop_monitoring and lang.crop_monitoring.detail_subtitle else 'Detailed information about crop monitoring' }}
             </p>
         </div>
 
@@ -31,7 +31,7 @@ Crop Monitoring Detail
             class="btn btn-outline-secondary"
         >
             <i class="bi bi-arrow-left me-1"></i>
-            Back
+            {{ lang.crop_monitoring.back if lang and lang.crop_monitoring and lang.crop_monitoring.back else 'Back' }}
         </a>
 
     </div>
@@ -52,7 +52,7 @@ Crop Monitoring Detail
         ></div>
 
         <div class="mt-3 text-muted">
-            Loading crop monitoring...
+            {{ lang.crop_monitoring.loading if lang and lang.crop_monitoring and lang.crop_monitoring.loading else 'Loading crop monitoring...' }}
         </div>
 
     </div>
@@ -70,7 +70,7 @@ Crop Monitoring Detail
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
 
         <span id="errorText">
-            Failed to load crop monitoring.
+            {{ lang.crop_monitoring.load_failed if lang and lang.crop_monitoring and lang.crop_monitoring.load_failed else 'Failed to load crop monitoring.' }}
         </span>
 
     </div>
@@ -97,7 +97,7 @@ Crop Monitoring Detail
 
                     <i class="bi bi-info-circle text-primary me-2"></i>
 
-                    Monitoring Information
+                    {{ lang.crop_monitoring.monitoring_information if lang and lang.crop_monitoring and lang.crop_monitoring.monitoring_information else 'Monitoring Information' }}
 
                 </h5>
 
@@ -123,7 +123,7 @@ Crop Monitoring Detail
                             <div>
 
                                 <small class="text-muted">
-                                    Field Crop
+                                    {{ lang.crop_monitoring.field if lang and lang.crop_monitoring and lang.crop_monitoring.field else 'Field Crop' }}
                                 </small>
 
                                 <h6
@@ -155,7 +155,7 @@ Crop Monitoring Detail
                             <div>
 
                                 <small class="text-muted">
-                                    Monitoring Date
+                                    {{ lang.crop_monitoring.monitoring_date if lang and lang.crop_monitoring and lang.crop_monitoring.monitoring_date else 'Monitoring Date' }}
                                 </small>
 
                                 <h6
@@ -187,7 +187,7 @@ Crop Monitoring Detail
                             <div>
 
                                 <small class="text-muted">
-                                    Growth Stage
+                                    {{ lang.crop_monitoring.growth_stage if lang and lang.crop_monitoring and lang.crop_monitoring.growth_stage else 'Growth Stage' }}
                                 </small>
 
                                 <h6
@@ -219,7 +219,7 @@ Crop Monitoring Detail
                             <div>
 
                                 <small class="text-muted">
-                                    Plant Height
+                                    {{ lang.crop_monitoring.plant_height if lang and lang.crop_monitoring and lang.crop_monitoring.plant_height else 'Plant Height' }}
                                 </small>
 
                                 <h6
@@ -254,7 +254,7 @@ Crop Monitoring Detail
 
                     <i class="bi bi-heart-pulse text-danger me-2"></i>
 
-                    Plant Condition
+                    {{ lang.crop_monitoring.plant_condition if lang and lang.crop_monitoring and lang.crop_monitoring.plant_condition else 'Plant Condition' }}
 
                 </h5>
 
@@ -273,7 +273,7 @@ Crop Monitoring Detail
 
                             <span>
                                 <i class="bi bi-droplet me-2 text-primary"></i>
-                                Water Status
+                                {{ lang.crop_monitoring.water_status if lang and lang.crop_monitoring and lang.crop_monitoring.water_status else 'Water Status' }}
                             </span>
 
                             <span
@@ -296,7 +296,7 @@ Crop Monitoring Detail
 
                             <span>
                                 <i class="bi bi-flower1 me-2 text-success"></i>
-                                Plant Condition
+                                {{ lang.crop_monitoring.plant_condition if lang and lang.crop_monitoring and lang.crop_monitoring.plant_condition else 'Plant Condition' }}
                             </span>
 
                             <span
@@ -319,7 +319,7 @@ Crop Monitoring Detail
 
                             <span>
                                 <i class="bi bi-bug me-2 text-warning"></i>
-                                Pest Status
+                                {{ lang.crop_monitoring.pest_status if lang and lang.crop_monitoring and lang.crop_monitoring.pest_status else 'Pest Status' }}
                             </span>
 
                             <span
@@ -342,7 +342,7 @@ Crop Monitoring Detail
 
                             <span>
                                 <i class="bi bi-virus me-2 text-danger"></i>
-                                Disease Status
+                                {{ lang.crop_monitoring.disease_status if lang and lang.crop_monitoring and lang.crop_monitoring.disease_status else 'Disease Status' }}
                             </span>
 
                             <span
@@ -375,7 +375,7 @@ Crop Monitoring Detail
 
                     <i class="bi bi-card-text text-secondary me-2"></i>
 
-                    Description
+                    {{ lang.crop_monitoring.description if lang and lang.crop_monitoring and lang.crop_monitoring.description else 'Description' }}
 
                 </h5>
 
@@ -914,8 +914,6 @@ document.addEventListener(
                     formatValue(
                         data.description
                     );
-
-
                 // =================================================
                 // HIDE LOADING
                 // =================================================
@@ -968,7 +966,5 @@ document.addEventListener(
     }
 
 );
-
 </script>
-
 {% endblock %}

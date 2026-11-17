@@ -1,5 +1,4 @@
 from flask_wtf import FlaskForm
-
 from wtforms import (
     SelectField,
     DateField,
@@ -7,7 +6,6 @@ from wtforms import (
     TextAreaField,
     SubmitField
 )
-
 from wtforms.validators import (
     DataRequired,
     Optional,
@@ -48,7 +46,6 @@ class CropMonitoringForm(FlaskForm):
     # =========================================================
     # GROWTH STAGE
     # =========================================================
-
     growth_stage_id = SelectField(
         "Growth Stage",
         coerce=int,
@@ -81,15 +78,13 @@ class CropMonitoringForm(FlaskForm):
     water_status = SelectField(
         "Water Status",
         choices=[
-            ("", "-- Select Water Status --"),
-            ("Good", "Good / ល្អ"),
-            ("Low", "Low / ទាប"),
-            ("High", "High / ខ្ពស់"),
-            ("None", "None / គ្មាន")
+            ("", "-- ជ្រើសរើសស្ថានភាពទឹក --"),
+            ("Always wet មានទឹកជាប់លាប់ (ទឹកគ្របដណ្តប់ដីបានល្អ)",   "មានទឹកជាប់លាប់ (ទឹកគ្របដណ្តប់ដីបានល្អ)"),
+            ("Mostly moist សើមភាគច្រើន (ដីសើម តែស្ងួតម្តងម្កាល)", "សើមភាគច្រើន (ដីសើម តែស្ងួតម្តងម្កាល)"),
+            ("Often dry ស្ងួតញឹកញាប់ (ដីស្ងួត)",    "ស្ងួតញឹកញាប់ (ដីស្ងួត)"),
+            ("Very dry ស្ងួតខ្លាំង / ប្រេះ (ដីរឹង និងប្រេះ)",     "ស្ងួតខ្លាំង / ប្រេះ (ដីរឹង និងប្រេះ)"),
         ],
-        validators=[
-            Optional()
-        ]
+        validators=[DataRequired(message="សូមជ្រើសរើសស្ថានភាពទឹក")]
     )
 
     # =========================================================
@@ -97,13 +92,20 @@ class CropMonitoringForm(FlaskForm):
     # =========================================================
 
     plant_condition = SelectField(
-        "Plant Condition",
+        "Rice Situation",
+        # choices=[
+        #     ("", "-- Select Plant Condition --"),
+        #     ("Healthy", "Healthy / មានសុខភាពល្អ"),
+        #     ("Moderate", "Moderate / មធ្យម"),
+        #     ("Poor", "Poor / ខ្សោយ"),
+        #     ("Critical", "Critical / ធ្ងន់ធ្ងរ")
+        # ],
         choices=[
-            ("", "-- Select Plant Condition --"),
-            ("Healthy", "Healthy / មានសុខភាពល្អ"),
-            ("Moderate", "Moderate / មធ្យម"),
-            ("Poor", "Poor / ខ្សោយ"),
-            ("Critical", "Critical / ធ្ងន់ធ្ងរ")
+                ("", "-- Select Rice Situation --"),
+                ("Very good","Very good - ល្អណាស់"),
+                ("Good", "Good - ល្អ"),
+                ("Moderate","Moderate - មធ្យម"),
+                ("Not Good","Not Good - មិនល្អ")
         ],
         validators=[
             Optional()

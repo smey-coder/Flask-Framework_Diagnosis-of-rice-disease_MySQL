@@ -1,6 +1,4 @@
-{% extends "layouts/user_layout/user.html" %} {% block title %} Edit Crop
-Monitoring {% endblock %} {% block page_title %} Edit Crop Monitoring {%
-endblock %} {% block styles %}
+{% extends "layouts/user_layout/user.html" %} {% block title %} {{ lang.crop_monitoring.edit_title if lang and lang.crop_monitoring and lang.crop_monitoring.edit_title else 'Edit Crop Monitoring' }} {% endblock %} {% block page_title %} {{ lang.crop_monitoring.edit_title if lang and lang.crop_monitoring and lang.crop_monitoring.edit_title else 'Edit Crop Monitoring' }} {% endblock %} {% block styles %}
 
 <link rel="stylesheet" href="{{ url_for('static',filename='css/crop_monitoring.css') }}" />
 {% endblock %} {% block content %}
@@ -16,15 +14,15 @@ endblock %} {% block styles %}
           class="text-decoration-none text-muted"
         >
           <i class="bi bi-arrow-left me-1"></i>
-          Back to Crop Monitoring
+          {{ lang.crop_monitoring.back if lang and lang.crop_monitoring and lang.crop_monitoring.back else 'Back to Crop Monitoring' }}
         </a>
         <h3 class="fw-bold mt-3 mb-1">
           <i class="bi bi-pencil-square text-primary me-2"></i>
-          Edit Crop Monitoring
+          {{ lang.crop_monitoring.edit_title if lang and lang.crop_monitoring and lang.crop_monitoring.edit_title else 'Edit Crop Monitoring' }}
         </h3>
 
         <p class="text-muted">
-          Update the monitoring information for your rice crop.
+          {{ lang.crop_monitoring.update_description if lang and lang.crop_monitoring and lang.crop_monitoring.update_description else 'Update the monitoring information for your rice crop.' }}
         </p>
       </div>
 
@@ -37,7 +35,7 @@ endblock %} {% block styles %}
           <h5 class="mb-0 fw-bold">
             <i class="bi bi-clipboard2-pulse me-2"></i>
 
-            Update Monitoring Information
+            {{ lang.crop_monitoring.update_monitoring_information if lang and lang.crop_monitoring and lang.crop_monitoring.update_monitoring_information else 'Update Monitoring Information' }}
           </h5>
         </div>
 

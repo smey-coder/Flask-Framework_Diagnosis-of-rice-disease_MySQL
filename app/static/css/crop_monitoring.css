@@ -1320,3 +1320,286 @@
     padding-bottom: 12px;
   }
 }
+
+/* Rice Situation */
+.rs-group { margin-bottom: 1rem; }
+
+  .rs-option { position: relative; display: block; height: 100%; margin: 0; cursor: pointer; }
+
+  /* the real radio button stays in the page for keyboard and screen readers */
+  .rs-input {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .rs-card {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+    border: 2px solid #e5eee7;
+    border-radius: 16px;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+
+  .rs-option:hover .rs-card {
+    transform: translateY(-5px);
+    border-color: var(--c);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .12);
+  }
+
+  .rs-thumb {
+    position: relative;
+    height: 120px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--c) 14%, white);
+  }
+
+  .rs-thumb > i { font-size: 2.6rem; color: var(--c); }
+
+  .rs-thumb > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .6s ease;
+  }
+
+  .rs-option:hover .rs-thumb > img { transform: scale(1.1); }
+
+  .rs-body { padding: 10px 12px 12px; text-align: center; }
+  .rs-body strong { display: block; color: var(--c); font-size: .95rem; line-height: 1.4; }
+  .rs-body span   { display: block; font-size: .85rem; color: #6b7280; line-height: 1.8; font-family: 'Noto Sans Khmer', sans-serif; }
+
+  /* check mark badge */
+  .rs-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--c);
+    font-size: .9rem;
+    transform: scale(0);
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+  }
+
+  /* selected */
+  .rs-input:checked + .rs-card {
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 7%, white);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 22%, transparent);
+  }
+
+  .rs-input:checked + .rs-card .rs-check { transform: scale(1); }
+
+  /* keyboard focus */
+  .rs-input:focus-visible + .rs-card { outline: 3px solid var(--c); outline-offset: 2px; }
+
+  .rs-group.is-invalid .rs-card { border-color: #dc2626; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rs-card, .rs-thumb > img, .rs-check { transition: none; }
+  }
+
+
+/* =====================================================
+   GROWTH STAGE RADIO CARDS
+===================================================== */
+
+
+/* =====================================================
+   GROWTH STAGE IMAGE CARDS
+===================================================== */
+
+.growth-option {
+    display: block;
+    height: 100%;
+    cursor: pointer;
+}
+
+.growth-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.growth-card {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    transition: all 0.25s ease;
+}
+
+.growth-thumb {
+    width: 100%;
+    height: 135px;
+    overflow: hidden;
+    background: #f0fdf4;
+}
+
+.growth-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.growth-body {
+    padding: 12px 8px;
+    text-align: center;
+}
+
+.growth-body strong {
+    font-size: 14px;
+    color: #374151;
+    display: block;
+}
+
+.growth-check {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    color: white;
+    background: var(--c);
+}
+
+.growth-option:hover .growth-card {
+    border-color: var(--c);
+    transform: translateY(-3px);
+}
+
+.growth-option:hover .growth-thumb img {
+    transform: scale(1.05);
+}
+
+.growth-input:checked + .growth-card {
+    border-color: var(--c);
+    box-shadow: 0 0 0 2px var(--c);
+    background: #f0fdf4;
+}
+
+.growth-input:checked + .growth-card .growth-check {
+    display: block;
+}
+
+.growth-input:checked + .growth-card .growth-body strong {
+    color: var(--c);
+}
+
+.growth-input:focus-visible + .growth-card {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+
+/* Water Status */
+.water-option {
+    display: block;
+    cursor: pointer;
+    height: 100%;
+}
+
+.water-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.water-card {
+    position: relative;
+    height: 100%;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.water-thumb {
+    height: 130px;
+    background: #f0fdf4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.water-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+}
+
+.water-thumb > i {
+    font-size: 40px;
+    color: var(--c);
+}
+
+.water-body {
+    padding: 12px;
+    text-align: center;
+}
+
+.water-body strong,
+.water-body span {
+    display: block;
+}
+
+.water-body span {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+.water-check {
+    display: none;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    z-index: 2;
+    background: var(--c);
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 25px;
+}
+
+.water-input:checked + .water-card {
+    border-color: var(--c);
+    box-shadow: 0 0 0 2px var(--c);
+}
+
+.water-input:checked + .water-card .water-check {
+    display: block;
+}
+
+.water-option:hover .water-card {
+    transform: translateY(-3px);
+}

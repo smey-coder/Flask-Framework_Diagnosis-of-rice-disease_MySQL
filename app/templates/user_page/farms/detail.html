@@ -1,7 +1,5 @@
 {% extends "layouts/user_layout/user.html" %} {% block title %} {{
-farm.farm_name }} - Farm Details {% endblock %} {% block page_title %} Farm
-Details {% endblock %} {% block styles %}
-{% endblock %} {% block content %}
+farm.farm_name }} - {{ lang.farm.details if lang and lang.farm and lang.farm.details else 'Farm Details' }} {% endblock %} {% block page_title %} {{ lang.farm.details if lang and lang.farm and lang.farm.details else 'Farm Details' }} {% endblock %} {% block styles %}{% endblock %} {% block content %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/farm.css') }}"
@@ -14,7 +12,7 @@ Details {% endblock %} {% block styles %}
   <div class="farm-breadcrumb mb-3">
     <a href="{{ url_for('farms.index') }}">
       <i class="bi bi-house-door me-1"></i>
-      Farms
+      {{ lang.sidebar.Farms if lang and lang.sidebar and lang.sidebar.Farms else 'Farms' }}
     </a>
 
     <i class="bi bi-chevron-right"></i>
@@ -38,18 +36,18 @@ Details {% endblock %} {% block styles %}
 
           {% if farm.status == "Active" %}
 
-          <span class="farm-status farm-status-active"> Active </span>
+          <span class="farm-status farm-status-active"> {{ lang.farm.active if lang and lang.farm and lang.farm.active else 'Active' }} </span>
 
           {% else %}
 
-          <span class="farm-status farm-status-inactive"> Inactive </span>
+          <span class="farm-status farm-status-inactive"> {{ lang.farm.inactive if lang and lang.farm and lang.farm.inactive else 'Inactive' }} </span>
 
           {% endif %}
         </div>
 
         <p class="farm-detail-subtitle">
           <i class="bi bi-hash"></i>
-          Farm ID: {{ farm.id }}
+          {{ lang.farm.id if lang and lang.farm and lang.farm.id else 'Farm ID' }}: {{ farm.id }}
         </p>
       </div>
     </div>
@@ -62,12 +60,12 @@ Details {% endblock %} {% block styles %}
         class="btn btn-warning"
       >
         <i class="bi bi-pencil-square me-1"></i>
-        Edit Farm
+        {{ lang.farm.edit_farm if lang and lang.farm and lang.farm.edit_farm else 'Edit Farm' }}
       </a>
 
       <a href="{{ url_for('farms.index') }}" class="btn btn-light">
         <i class="bi bi-arrow-left me-1"></i>
-        Back
+        {{ lang.farm.back if lang and lang.farm and lang.farm.back else 'Back' }}
       </a>
     </div>
   </div>
@@ -85,10 +83,10 @@ Details {% endblock %} {% block styles %}
       </div>
 
       <div>
-        <span class="farm-detail-summary-label"> Farm Area </span>
+        <span class="farm-detail-summary-label"> {{ lang.farm.area if lang and lang.farm and lang.farm.area else 'Farm Area' }} </span>
 
         <strong class="farm-detail-summary-value">
-          {% if farm.area %} {{ farm.area }} ha {% else %} N/A {% endif %}
+          {% if farm.area %} {{ farm.area }} ha {% else %} {{ lang.farm.n_a if lang and lang.farm and lang.farm.n_a else 'N/A' }} {% endif %}
         </strong>
       </div>
     </div>
@@ -101,7 +99,7 @@ Details {% endblock %} {% block styles %}
       </div>
 
       <div>
-        <span class="farm-detail-summary-label"> Total Fields </span>
+        <span class="farm-detail-summary-label"> {{ lang.farm.total_fields if lang and lang.farm and lang.farm.total_fields else 'Total Fields' }} </span>
 
         <strong class="farm-detail-summary-value">
           {{ farm.fields|length }}
@@ -117,7 +115,7 @@ Details {% endblock %} {% block styles %}
       </div>
 
       <div>
-        <span class="farm-detail-summary-label"> Active Fields </span>
+        <span class="farm-detail-summary-label"> {{ lang.farm.active_fields if lang and lang.farm and lang.farm.active_fields else 'Active Fields' }} </span>
 
         <strong class="farm-detail-summary-value">
           {{ farm.fields |selectattr("status", "equalto", "Active") |list
@@ -134,7 +132,7 @@ Details {% endblock %} {% block styles %}
       </div>
 
       <div>
-        <span class="farm-detail-summary-label"> Farm Status </span>
+        <span class="farm-detail-summary-label"> {{ lang.farm.farm_status if lang and lang.farm and lang.farm.farm_status else 'Farm Status' }} </span>
 
         <strong class="farm-detail-summary-value"> {{ farm.status }} </strong>
       </div>
@@ -153,9 +151,9 @@ Details {% endblock %} {% block styles %}
         </div>
 
         <div>
-          <h5>Farm Information</h5>
+          <h5>{{ lang.farm.information if lang and lang.farm and lang.farm.information else 'Farm Information' }}</h5>
 
-          <span> Basic information about this farm </span>
+          <span> {{ lang.farm.basic_information if lang and lang.farm and lang.farm.basic_information else 'Basic information about this farm' }} </span>
         </div>
       </div>
     </div>
@@ -171,7 +169,7 @@ Details {% endblock %} {% block styles %}
             </div>
 
             <div>
-              <span class="farm-detail-info-label"> Farm ID </span>
+              <span class="farm-detail-info-label"> {{ lang.farm.id if lang and lang.farm and lang.farm.id else 'Farm ID' }} </span>
 
               <div class="farm-detail-info-value">#{{ farm.id }}</div>
             </div>
@@ -187,10 +185,10 @@ Details {% endblock %} {% block styles %}
             </div>
 
             <div>
-              <span class="farm-detail-info-label"> Province </span>
+              <span class="farm-detail-info-label"> {{ lang.farm.province if lang and lang.farm and lang.farm.province else 'Province' }} </span>
 
               <div class="farm-detail-info-value">
-                {{ farm.province or "Not specified" }}
+                {{ farm.province or (lang.farm.not_specified if lang and lang.farm and lang.farm.not_specified else 'Not specified') }}
               </div>
             </div>
           </div>
@@ -205,10 +203,10 @@ Details {% endblock %} {% block styles %}
             </div>
 
             <div>
-              <span class="farm-detail-info-label"> District </span>
+              <span class="farm-detail-info-label"> {{ lang.farm.district if lang and lang.farm and lang.farm.district else 'District' }} </span>
 
               <div class="farm-detail-info-value">
-                {{ farm.district or "Not specified" }}
+                {{ farm.district or (lang.farm.not_specified if lang and lang.farm and lang.farm.not_specified else 'Not specified') }}
               </div>
             </div>
           </div>
@@ -223,10 +221,10 @@ Details {% endblock %} {% block styles %}
             </div>
 
             <div>
-              <span class="farm-detail-info-label"> Commune </span>
+              <span class="farm-detail-info-label"> {{ lang.farm.commune if lang and lang.farm and lang.farm.commune else 'Commune' }} </span>
 
               <div class="farm-detail-info-value">
-                {{ farm.commune or "Not specified" }}
+                {{ farm.commune or (lang.farm.not_specified if lang and lang.farm and lang.farm.not_specified else 'Not specified') }}
               </div>
             </div>
           </div>
@@ -241,11 +239,10 @@ Details {% endblock %} {% block styles %}
         </div>
 
         <div class="farm-detail-location-content">
-          <span class="farm-detail-location-title"> Farm Location </span>
+          <span class="farm-detail-location-title"> {{ lang.farm.farm_location if lang and lang.farm and lang.farm.farm_location else 'Farm Location' }} </span>
 
           <p class="farm-detail-location-text">
-            {% if farm.location %} {{ farm.location }} {% else %} Location has
-            not been specified. {% endif %}
+            {% if farm.location %} {{ farm.location }} {% else %} {{ lang.farm.location_not_set if lang and lang.farm and lang.farm.location_not_set else 'Location has not been specified.' }} {% endif %}
           </p>
         </div>
       </div>
@@ -258,7 +255,7 @@ Details {% endblock %} {% block styles %}
         <div class="farm-detail-description-heading">
           <i class="bi bi-card-text"></i>
 
-          Description
+          {{ lang.farm.description if lang and lang.farm and lang.farm.description else 'Description' }}
         </div>
 
         <p class="farm-detail-description-text">{{ farm.description }}</p>
@@ -282,10 +279,10 @@ Details {% endblock %} {% block styles %}
         </div>
 
         <div>
-          <h5 class="farm-fields-title">Farm Fields</h5>
+          <h5 class="farm-fields-title">{{ lang.farm.fields if lang and lang.farm and lang.farm.fields else 'Farm Fields' }}</h5>
 
           <span class="farm-fields-subtitle">
-            Manage fields belonging to this farm
+            {{ lang.farm.manage_fields if lang and lang.farm and lang.farm.manage_fields else 'Manage fields belonging to this farm' }}
           </span>
         </div>
       </div>
@@ -295,7 +292,7 @@ Details {% endblock %} {% block styles %}
         class="btn btn-success"
       >
         <i class="bi bi-plus-circle me-1"></i>
-        Add Field
+        {{ lang.farm.add_field if lang and lang.farm and lang.farm.add_field else 'Add Field' }}
       </a>
     </div>
 
@@ -311,18 +308,18 @@ Details {% endblock %} {% block styles %}
           type="text"
           id="fieldSearch"
           class="form-control"
-          placeholder="Search field name..."
+          placeholder="{{ lang.farm.search_field_name if lang and lang.farm and lang.farm.search_field_name else 'Search field name...' }}"
           autocomplete="off"
         />
       </div>
 
       <div class="farm-field-filter">
         <select id="fieldStatusFilter" class="form-select">
-          <option value="all">All Status</option>
+          <option value="all">{{ lang.farm.all_status if lang and lang.farm and lang.farm.all_status else 'All Status' }}</option>
 
-          <option value="Active">Active</option>
+          <option value="Active">{{ lang.farm.active if lang and lang.farm and lang.farm.active else 'Active' }}</option>
 
-          <option value="Inactive">Inactive</option>
+          <option value="Inactive">{{ lang.farm.inactive if lang and lang.farm and lang.farm.inactive else 'Inactive' }}</option>
         </select>
       </div>
     </div>
@@ -340,13 +337,13 @@ Details {% endblock %} {% block styles %}
             <tr>
               <th width="60">#</th>
 
-              <th>Field</th>
+              <th>{{ lang.farm.field_name if lang and lang.farm and lang.farm.field_name else 'Field' }}</th>
 
-              <th>Area</th>
+              <th>{{ lang.farm.area if lang and lang.farm and lang.farm.area else 'Area' }}</th>
 
-              <th>Status</th>
+              <th>{{ lang.farm.status if lang and lang.farm and lang.farm.status else 'Status' }}</th>
 
-              <th class="text-end">Action</th>
+              <th class="text-end">{{ lang.farm.action if lang and lang.farm and lang.farm.action else 'Action' }}</th>
             </tr>
           </thead>
 
@@ -373,14 +370,14 @@ Details {% endblock %} {% block styles %}
                       {{ field.field_name }}
                     </strong>
 
-                    <span class="farm-field-id"> Field #{{ field.id }} </span>
+                    <span class="farm-field-id"> {{ lang.farm.field_label if lang and lang.farm and lang.farm.field_label else 'Field' }} #{{ field.id }} </span>
                   </div>
                 </div>
               </td>
 
               <td>
                 <span class="farm-field-area">
-                  {% if field.area %} {{ field.area }} ha {% else %} N/A {%
+                  {% if field.area %} {{ field.area }} ha {% else %} {{ lang.farm.n_a if lang and lang.farm and lang.farm.n_a else 'N/A' }} {%
                   endif %}
                 </span>
               </td>
@@ -388,7 +385,7 @@ Details {% endblock %} {% block styles %}
               <td>
                 {% if field.status == "Active" %}
 
-                <span class="farm-status farm-status-active"> Active </span>
+                <span class="farm-status farm-status-active"> {{ lang.farm.active if lang and lang.farm and lang.farm.active else 'Active' }} </span>
 
                 {% else %}
 
@@ -403,7 +400,7 @@ Details {% endblock %} {% block styles %}
                 <a
                   href="{{ url_for('fields.detail', field_id=field.id) }}"
                   class="farm-field-view-btn"
-                  title="View Field"
+                  title="{{ lang.farm.view_field if lang and lang.farm and lang.farm.view_field else 'View Field' }}"
                 >
                   <i class="bi bi-eye"></i>
                 </a>
@@ -422,9 +419,9 @@ Details {% endblock %} {% block styles %}
           <i class="bi bi-search"></i>
         </div>
 
-        <h6>No Fields Found</h6>
+        <h6>{{ lang.farm.no_fields_found if lang and lang.farm and lang.farm.no_fields_found else 'No Fields Found' }}</h6>
 
-        <p>No fields match your search or filter.</p>
+        <p>{{ lang.farm.no_fields_match if lang and lang.farm and lang.farm.no_fields_match else 'No fields match your search or filter.' }}</p>
       </div>
 
       {% else %}
@@ -436,16 +433,16 @@ Details {% endblock %} {% block styles %}
           <i class="bi bi-grid-3x3-gap"></i>
         </div>
 
-        <h6>No Fields Yet</h6>
+        <h6>{{ lang.farm.no_fields_yet if lang and lang.farm and lang.farm.no_fields_yet else 'No Fields Yet' }}</h6>
 
-        <p>This farm does not have any fields yet.</p>
+        <p>{{ lang.farm.no_fields_yet_message if lang and lang.farm and lang.farm.no_fields_yet_message else 'This farm does not have any fields yet.' }}</p>
 
         <a
           href="{{ url_for('fields.create', farm_id=farm.id) }}"
           class="btn btn-success"
         >
           <i class="bi bi-plus-circle me-1"></i>
-          Add First Field
+          {{ lang.farm.add_first_field if lang and lang.farm and lang.farm.add_first_field else 'Add First Field' }}
         </a>
       </div>
 

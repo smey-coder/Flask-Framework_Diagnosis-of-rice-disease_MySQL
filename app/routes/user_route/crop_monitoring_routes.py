@@ -117,7 +117,8 @@ def create():
             (
                 crop.id,
                 f"{crop.field.field_name} - "
-                f"{crop.rice_variety.variety_name}"
+                f"{crop.rice_variety.variety_name}("
+                f"{crop.rice_variety.name_kh})"
             )
             for crop in field_crops
         ]
