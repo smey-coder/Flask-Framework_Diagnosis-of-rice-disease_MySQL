@@ -49,9 +49,7 @@ field_crop_bp = Blueprint("field_crops",__name__,url_prefix="/user/field-crops",
 @role_required("User")
 @permission_required("VIEW_FIELD_CROP")
 def index():
-
     try:
-
         crops = FieldCropService.get_all(
             user_id=current_user.id
         )
@@ -62,7 +60,6 @@ def index():
         )
 
     except Exception as e:
-
         print(
             f"Field crop index error: {e}"
         )

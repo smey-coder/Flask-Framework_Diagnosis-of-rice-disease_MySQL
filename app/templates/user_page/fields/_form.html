@@ -305,12 +305,15 @@
 }
 
 </style>
+{% if not embedded_form %}
 <form method="POST" action="{{ form_action }}" novalidate>
+{% endif %}
   {{ form.hidden_tag() }}
 
   <!-- =====================================================
        FARM
   ====================================================== -->
+  {% if not combined_form %}
   <div class="mb-3">
     <label for="farm_id" class="form-label fw-semibold">
       កសិដ្ឋាន / Farm <span class="text-danger">*</span>
@@ -328,6 +331,9 @@
     </select>
     <div class="form-text">ជ្រើសរើសកសិដ្ឋានដែលវាលស្រែនេះស្ថិតនៅ (Select the farm where this field belongs).</div>
   </div>
+  {% endif %}
+
+  {% if combined_form %}<fieldset id="newFieldDetails">{% endif %}
 
   <!-- =====================================================
        FIELD NAME
@@ -549,6 +555,7 @@
   <!-- =====================================================
        FORM ACTION BUTTONS
   ====================================================== -->
+  {% if not embedded_form %}
   <div class="d-flex flex-column flex-sm-row justify-content-end align-items-stretch align-items-sm-center gap-2 pt-3 border-top">
     <a href="{{ cancel_url }}" class="btn btn-outline-secondary rounded-3 px-3 px-sm-4 py-2 fw-semibold text-nowrap d-inline-flex align-items-center justify-content-center gap-1">
       <i class="bi bi-x-circle"></i>
@@ -560,7 +567,11 @@
       <span>រក្សាទុក (Save Field)</span>
     </button>
   </div>
+  {% endif %}
+  {% if combined_form %}</fieldset>{% endif %}
+{% if not embedded_form %}
 </form>
+{% endif %}
 
 <!-- CSS to hide flag icons in map attribution -->
 <style>
@@ -594,7 +605,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // The drawn shape is saved in a hidden field called "boundary".
   // hidden_tag() renders it when the form class has a HiddenField; otherwise it is created here.
-  let boundaryInput = form.querySelector('input[name="boundary"]');
+  let boundaryInput = form.querySelector('input[name="{{ form.boundary.name }}"]');
   if (!boundaryInput) {
     boundaryInput = document.createElement("input");
     boundaryInput.type = "hidden";

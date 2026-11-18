@@ -1,0 +1,343 @@
+{% extends "layouts/user_layout/user.html" %}
+
+{% block title %}Farm, Field & Crop Management{% endblock %}
+{% block page_title %}Farm, Field & Crop Management{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/field.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/field_crop.css') }}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.css">
+<style>
+  .field-boundary-map { width: 100%; height: 190px; }
+  .management-section { scroll-margin-top: 90px; }
+  #newFarmDetails[hidden], #existingFieldGroup[hidden], #newFieldDetails[hidden] { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h2 class="h4 fw-bold mb-1"><i class="bi bi-tree-fill text-success me-2"></i>Farm, Field & Crop Management</h2>
+      <p class="text-muted mb-0">Manage farms, mapped fields, and rice crops together.</p>
+    </div>
+    {% if can_start_workflow %}
+    <a class="btn btn-success" href="#createRecords">
+      <i class="bi bi-plus-circle me-1"></i>Add farm, field & crop
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100"><div class="card-body d-flex align-items-center gap-3">
+        <span class="fs-3 text-success"><i class="bi bi-house-heart"></i></span>
+        <div><div class="text-muted small">Farms</div><strong class="fs-4">{{ farms|length }}</strong></div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100"><div class="card-body d-flex align-items-center gap-3">
+        <span class="fs-3 text-primary"><i class="bi bi-grid-3x3-gap"></i></span>
+        <div><div class="text-muted small">Fields</div><strong class="fs-4">{{ fields|length }}</strong></div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100"><div class="card-body d-flex align-items-center gap-3">
+        <span class="fs-3 text-warning"><i class="bi bi-flower1"></i></span>
+        <div><div class="text-muted small">Field crops</div><strong class="fs-4">{{ crops|length }}</strong></div>
+      </div></div>
+    </div>
+  </div>
+
+  <section class="card border-0 shadow-sm mb-4 management-section" id="overview">
+    <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <h3 class="h5 fw-bold mb-1">Farm overview</h3>
+        <small class="text-muted">Farm → field → planted crop</small>
+      </div>
+      {% if can_start_workflow %}
+      <a class="btn btn-outline-success btn-sm" href="#createRecords">Add records</a>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      {% if farms %}
+        {% for farm in farms %}
+        <article class="border rounded-3 mb-3 overflow-hidden">
+          <div class="p-3 bg-light d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+              <h4 class="h6 fw-bold mb-1"><i class="bi bi-house-heart text-success me-2"></i>{{ farm.farm_name }}</h4>
+              <div class="small text-muted">
+                {{ farm.commune or '' }}{% if farm.district %}, {{ farm.district }}{% endif %}{% if farm.province %}, {{ farm.province }}{% endif %}
+                {% if farm.status %}<span class="badge bg-secondary ms-2">{{ farm.status }}</span>{% endif %}
+              </div>
+            </div>
+            <div class="btn-group btn-group-sm">
+              <a class="btn btn-outline-info" href="{{ url_for('farms.detail', farm_id=farm.id) }}" title="Farm details"><i class="bi bi-eye"></i></a>
+              <a class="btn btn-outline-primary" href="{{ url_for('farms.edit', farm_id=farm.id) }}" title="Edit farm"><i class="bi bi-pencil"></i></a>
+              <a class="btn btn-outline-danger" href="{{ url_for('farms.delete_confirm', farm_id=farm.id) }}" title="Delete farm"><i class="bi bi-trash"></i></a>
+            </div>
+          </div>
+
+          <div class="p-3">
+            {% if farm.fields %}
+              {% for field in farm.fields %}
+              <div class="row g-3 align-items-start border-bottom py-3">
+                <div class="col-lg-4">
+                  <h5 class="h6 fw-semibold mb-1"><i class="bi bi-grid-fill text-primary me-2"></i>{{ field.field_name }}</h5>
+                  <div class="small text-muted">
+                    {% if field.area %}{{ field.area }} ha{% endif %}
+                    {% if field.soil_type %}{% if field.area %} · {% endif %}{{ field.soil_type }}{% endif %}
+                    {% if field.status %}<span class="badge bg-secondary ms-1">{{ field.status }}</span>{% endif %}
+                  </div>
+                  {% if field.location %}<div class="small text-muted mt-1"><i class="bi bi-geo-alt me-1"></i>{{ field.location }}</div>{% endif %}
+                  <div class="btn-group btn-group-sm mt-2">
+                    <a class="btn btn-outline-info" href="{{ url_for('fields.detail', field_id=field.id) }}" title="Field details"><i class="bi bi-eye"></i></a>
+                    <a class="btn btn-outline-primary" href="{{ url_for('fields.edit', field_id=field.id) }}" title="Edit field"><i class="bi bi-pencil"></i></a>
+                    <a class="btn btn-outline-danger" href="{{ url_for('fields.delete_confirm', field_id=field.id) }}" title="Delete field"><i class="bi bi-trash"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  {% if field.boundary %}
+                  <div class="field-boundary-map border rounded"
+                       data-boundary="{{ field.boundary|forceescape }}"
+                       role="img"
+                       aria-label="Map showing the boundary of {{ field.field_name }}"></div>
+                  {% elif field.location %}
+                  <iframe class="border rounded w-100" height="190"
+                          src="https://maps.google.com/maps?q={{ field.location|urlencode }}&amp;output=embed"
+                          title="Map showing {{ field.field_name }}" loading="lazy"
+                          referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  {% else %}
+                  <div class="text-muted small py-3">No map location saved.</div>
+                  {% endif %}
+                </div>
+                <div class="col-lg-5">
+                  {% if field.field_crops %}
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead><tr><th>Rice crop</th><th>Growth stage</th><th>Planting / harvest</th><th>Area</th><th>Status</th><th></th></tr></thead>
+                      <tbody>
+                        {% for crop in field.field_crops %}
+                        <tr>
+                          <td>{{ crop.rice_variety.variety_name if crop.rice_variety else '—' }}{% if crop.rice_variety and crop.rice_variety.name_kh %}<small class="d-block text-muted">{{ crop.rice_variety.name_kh }}</small>{% endif %}</td>
+                          <td>{{ crop.growth_stage.stage_name if crop.growth_stage else '—' }}</td>
+                          <td>
+                            {{ crop.planting_date.strftime('%Y-%m-%d') if crop.planting_date else '—' }}
+                            {% if crop.expected_harvest_date %}<small class="d-block text-muted">Expected: {{ crop.expected_harvest_date.strftime('%Y-%m-%d') }}</small>{% endif %}
+                          </td>
+                          <td>{{ crop.area if crop.area else '—' }}{% if crop.area %} ha{% endif %}</td>
+                          <td><span class="badge bg-success-subtle text-success-emphasis">{{ crop.status }}</span></td>
+                          <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-info" href="{{ url_for('field_crops.detail', crop_id=crop.id) }}" title="Crop details"><i class="bi bi-eye"></i></a>
+                            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('field_crops.edit', crop_id=crop.id) }}" title="Edit crop"><i class="bi bi-pencil"></i></a>
+                            <a class="btn btn-sm btn-outline-danger" href="{{ url_for('field_crops.delete_confirm', crop_id=crop.id) }}" title="Delete crop"><i class="bi bi-trash"></i></a>
+                            <a class="btn btn-sm btn-outline-success" href="{{ url_for('user.monitoring_history', farm_id=farm.id, field_crop_id=crop.id) }}" title="Monitoring history"><i class="bi bi-clock-history"></i></a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  {% else %}
+                  <span class="small text-muted">No crop has been added to this field yet.</span>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <p class="small text-muted mb-0">No fields have been added to this farm yet.</p>
+            {% endif %}
+          </div>
+        </article>
+        {% endfor %}
+      {% else %}
+      <div class="text-center py-4">
+        <i class="bi bi-tree display-5 text-muted"></i>
+        <p class="text-muted mt-2 mb-0">No farms have been created yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if can_start_workflow %}
+  <section class="card border-0 shadow-sm management-section mb-4" id="createRecords">
+    <div class="card-header bg-success text-white">
+      <h3 class="h5 fw-bold mb-1"><i class="bi bi-plus-circle me-2"></i>Add farm, field & field crop</h3>
+      <small>Select existing records or create the farm and field while adding a crop.</small>
+    </div>
+    <div class="card-body p-4">
+      {% for error in management_errors %}
+      <div class="alert alert-danger py-2">{{ error }}</div>
+      {% endfor %}
+
+      {% if not rice_varieties %}
+      <div class="alert alert-warning">
+        No active rice variety is available. Add one before creating a field crop.
+      </div>
+      {% else %}
+      <form method="POST" action="{{ url_for('farm_management.index') }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {{ farm_form.hidden_tag() }}
+        <section class="mb-4">
+          <h4 class="h6 fw-bold text-success">1. Choose a farm</h4>
+          <label for="farm_id" class="form-label">Farm <span class="text-danger">*</span></label>
+          <select id="farm_id" name="farm_id" class="form-select" required>
+            <option value="">-- Select a farm --</option>
+            {% for farm in farms %}
+            <option value="{{ farm.id }}" {% if selected_farm_id == farm.id|string %}selected{% endif %}>{{ farm.farm_name }}</option>
+            {% endfor %}
+            {% if can_create_farm_and_field %}
+            <option value="new" {% if selected_farm_id == 'new' %}selected{% endif %}>＋ Create a new farm</option>
+            {% endif %}
+          </select>
+
+          <fieldset id="newFarmDetails" class="border rounded-3 p-3 mt-3"
+                    {% if selected_farm_id != 'new' %}hidden disabled{% endif %}>
+            <legend class="float-none w-auto px-2 fs-6 fw-semibold">New farm details</legend>
+            <div class="row g-3">
+              <div class="col-md-6">
+                {{ farm_form.farm_name.label(class="form-label") }}
+                {{ farm_form.farm_name(class="form-control" ~ (" is-invalid" if farm_form.farm_name.errors else "")) }}
+                {% for error in farm_form.farm_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                {{ farm_form.province.label(class="form-label") }}
+                {{ farm_form.province(class="form-select" ~ (" is-invalid" if farm_form.province.errors else "")) }}
+                {% for error in farm_form.province.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                {{ farm_form.district.label(class="form-label") }}
+                {{ farm_form.district(class="form-control" ~ (" is-invalid" if farm_form.district.errors else "")) }}
+                {% for error in farm_form.district.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                {{ farm_form.commune.label(class="form-label") }}
+                {{ farm_form.commune(class="form-control" ~ (" is-invalid" if farm_form.commune.errors else "")) }}
+                {% for error in farm_form.commune.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                {{ farm_form.location.label(class="form-label") }}
+                {{ farm_form.location(class="form-control" ~ (" is-invalid" if farm_form.location.errors else "")) }}
+                {% for error in farm_form.location.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                {{ farm_form.status.label(class="form-label") }}
+                {{ farm_form.status(class="form-select" ~ (" is-invalid" if farm_form.status.errors else "")) }}
+                {% for error in farm_form.status.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-12">
+                {{ farm_form.description.label(class="form-label") }}
+                {{ farm_form.description(class="form-control" ~ (" is-invalid" if farm_form.description.errors else ""), rows="2") }}
+                {% for error in farm_form.description.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="mb-4">
+          <h4 class="h6 fw-bold text-success">2. Choose or create a field</h4>
+          <label for="field_mode" class="form-label">Field</label>
+          <select id="field_mode" name="field_mode" class="form-select mb-3">
+            <option value="existing" {% if selected_field_mode == 'existing' %}selected{% endif %}>Use an existing field</option>
+            {% if can_create_field %}
+            <option value="new" {% if selected_field_mode == 'new' %}selected{% endif %}>Create a new field</option>
+            {% endif %}
+          </select>
+          <div id="existingFieldGroup" class="mb-3">
+            <label for="existing_field_id" class="form-label">Existing field</label>
+            <select id="existing_field_id" name="existing_field_id" class="form-select">
+              <option value="">-- Select a field --</option>
+              {% for field in fields %}
+              <option value="{{ field.id }}" data-farm-id="{{ field.farm_id }}"
+                      {% if selected_existing_field_id == field.id|string %}selected{% endif %}>
+                {{ field.field_name }} — {{ field.farm.farm_name if field.farm else 'Farm' }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          {% set form = field_form %}
+          {% set embedded_form = true %}
+          {% set combined_form = true %}
+          {% include "user_page/fields/_form.html" %}
+        </section>
+
+        <section class="mb-4">
+          <h4 class="h6 fw-bold text-success">3. Crop details</h4>
+          {% set form = crop_form %}
+          {% set embedded_form = true %}
+          {% set combined_form = true %}
+          {% include "user_page/field_crops/_form.html" %}
+        </section>
+
+        <div class="d-flex justify-content-end border-top pt-3">
+          <button type="submit" class="btn btn-success px-4" {% if not rice_varieties %}disabled{% endif %}>
+            <i class="bi bi-check-circle me-1"></i>Save all
+          </button>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/field_boundary_map.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const farmSelect = document.getElementById("farm_id");
+  const farmDetails = document.getElementById("newFarmDetails");
+  const fieldMode = document.getElementById("field_mode");
+  const existingFieldGroup = document.getElementById("existingFieldGroup");
+  const existingFieldSelect = document.getElementById("existing_field_id");
+  const newFieldDetails = document.getElementById("newFieldDetails");
+  if (!farmSelect || !fieldMode || !existingFieldSelect || !newFieldDetails) return;
+
+  const existingFieldOption = fieldMode.querySelector('option[value="existing"]');
+  const canCreateField = Boolean(fieldMode.querySelector('option[value="new"]'));
+
+  function updateFieldOptions() {
+    const newFarm = farmSelect.value === "new";
+    let hasMatchingField = false;
+    Array.from(existingFieldSelect.options).forEach(function (option) {
+      if (!option.value) return;
+      const matchesFarm = !newFarm && option.dataset.farmId === farmSelect.value;
+      option.hidden = !matchesFarm;
+      if (matchesFarm) hasMatchingField = true;
+      if (!matchesFarm && option.selected) option.selected = false;
+    });
+
+    if (newFarm || (!hasMatchingField && canCreateField)) {
+      fieldMode.value = "new";
+    }
+    if (existingFieldOption) existingFieldOption.disabled = newFarm || !hasMatchingField;
+    fieldMode.disabled = !newFarm && !hasMatchingField && !canCreateField;
+
+    const useExistingField = !newFarm && fieldMode.value === "existing" && hasMatchingField;
+    const useNewField = newFarm || fieldMode.value === "new";
+    existingFieldGroup.hidden = !useExistingField;
+    existingFieldSelect.disabled = !useExistingField;
+    existingFieldSelect.required = useExistingField;
+    newFieldDetails.hidden = !useNewField;
+    newFieldDetails.disabled = !useNewField;
+    if (farmDetails) {
+      farmDetails.hidden = !newFarm;
+      farmDetails.disabled = !newFarm;
+    }
+  }
+
+  farmSelect.addEventListener("change", updateFieldOptions);
+  fieldMode.addEventListener("change", updateFieldOptions);
+  updateFieldOptions();
+});
+</script>
+{% if open_create_form %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const section = document.getElementById("createRecords");
+  if (section) section.scrollIntoView({ behavior: "smooth" });
+});
+</script>
+{% endif %}
+{% endblock %}

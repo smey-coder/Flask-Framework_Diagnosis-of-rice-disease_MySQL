@@ -98,6 +98,7 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.audit_routes import audit_bp
     from app.routes.rule_routes import rule_bp
     from app.routes.user_route.farm_routes import farm_bp
+    from app.routes.user_route.farm_management_routes import farm_management_bp
     from app.routes.user_route.field_routes import field_bp
     from app.routes.user_route.field_crop_routes import field_crop_bp
     from app.routes.user_route.crop_monitoring_routes import crop_monitoring_bp
@@ -126,6 +127,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(audit_bp)
     app.register_blueprint(rule_bp)
     app.register_blueprint(farm_bp)
+    app.register_blueprint(farm_management_bp)
     app.register_blueprint(field_bp)
     app.register_blueprint(field_crop_bp)
     app.register_blueprint(crop_monitoring_bp)

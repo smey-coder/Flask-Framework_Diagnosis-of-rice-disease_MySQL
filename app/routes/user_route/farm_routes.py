@@ -45,7 +45,6 @@ def index():
         print(f"Error: {e}")
         flash("Don't can open farm!","danger")
         return redirect(url_for("user.dashboard"))
-
 # =========================================================
 # FARM DETAIL
 # =========================================================

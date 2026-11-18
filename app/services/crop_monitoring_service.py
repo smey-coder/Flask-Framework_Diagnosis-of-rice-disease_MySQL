@@ -2,14 +2,50 @@ from flask_login import current_user
 
 from app.models.UserNotification import UserNotification
 from app.models.field import FieldTable
+from app.models.field_crop import FieldCropTable
+from app.models.growth_stage import GrowthStageTable
 from extensions import db
 
 from app.models.crop_monitoring import CropMonitoringTable
-from app.models.field_crop import FieldCropTable
 from app.services.audit_service import log_audit
 
 
 class CropMonitoringService:
+
+    @staticmethod
+    def _sync_field_crop_harvest_stage(field_crop_id, growth_stage_id):
+        if not growth_stage_id:
+            return None
+
+        growth_stage = db.session.get(GrowthStageTable, growth_stage_id)
+        if (
+            not growth_stage
+            or (growth_stage.stage_name or "").strip().casefold() != "harvest"
+        ):
+            return None
+
+        field_crop = db.session.get(FieldCropTable, field_crop_id)
+        if not field_crop or field_crop.growth_stage_id == growth_stage.id:
+            return None
+
+        previous_stage_id = field_crop.growth_stage_id
+        field_crop.growth_stage_id = growth_stage.id
+        return field_crop, previous_stage_id
+
+    @staticmethod
+    def _log_field_crop_stage_sync(stage_sync):
+        if not stage_sync:
+            return
+
+        field_crop, previous_stage_id = stage_sync
+        log_audit(
+            action="UPDATE",
+            table_name="field_crops",
+            record_id=field_crop.id,
+            before_data={"growth_stage_id": previous_stage_id},
+            after_data={"growth_stage_id": field_crop.growth_stage_id},
+            description="Synchronized growth stage from harvest monitoring"
+        )
 
     # =========================================================
     # GET ALL MONITORINGS
@@ -134,6 +170,13 @@ class CropMonitoringService:
 
             db.session.add(monitoring)
 
+            field_crop_stage_sync = (
+                CropMonitoringService._sync_field_crop_harvest_stage(
+                    field_crop_id,
+                    growth_stage_id
+                )
+            )
+
             # =====================================================
             # GET AUTO-INCREMENT monitoring.id
             # =====================================================
@@ -167,6 +210,9 @@ class CropMonitoringService:
             # =====================================================
 
             db.session.commit()
+            CropMonitoringService._log_field_crop_stage_sync(
+                field_crop_stage_sync
+            )
 
             # =====================================================
             # REFRESH MONITORING
@@ -227,6 +273,7 @@ class CropMonitoringService:
     ):
 
         try:
+            field_crop_id = monitoring.field_crop_id
 
             monitoring.monitoring_date = (
                 monitoring_date
@@ -260,7 +307,17 @@ class CropMonitoringService:
                 description
             )
 
+            field_crop_stage_sync = (
+                CropMonitoringService._sync_field_crop_harvest_stage(
+                    field_crop_id,
+                    growth_stage_id
+                )
+            )
+
             db.session.commit()
+            CropMonitoringService._log_field_crop_stage_sync(
+                field_crop_stage_sync
+            )
 
             db.session.refresh(
                 monitoring

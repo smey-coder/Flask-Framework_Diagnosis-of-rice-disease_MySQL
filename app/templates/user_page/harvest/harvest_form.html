@@ -94,6 +94,11 @@
 <form method="POST" action="" class="needs-validation" novalidate>
   {{ form.hidden_tag() }}
 
+  <div class="alert alert-info" role="note">
+    A harvest can be recorded only when the field crop growth stage and its
+    latest monitoring growth stage are both <strong>Harvest</strong>.
+  </div>
+
   <!-- 1. LOCATION & CROP SELECTION -->
   <div class="harvest-card">
     <div class="section-title">
@@ -122,6 +127,9 @@
         {% for error in form.field_crop_id.errors %}
           <div class="invalid-feedback">{{ error }}</div>
         {% endfor %}
+      </div>
+      <div class="col-12">
+        <div id="crop_readiness_status" class="form-text" role="status" aria-live="polite"></div>
       </div>
     </div>
   </div>
@@ -223,13 +231,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const farmSelect = document.getElementById("farm_select");
   const fieldSelect = document.getElementById("field_select");
   const cropSelect = document.getElementById("crop_select");
+  const cropReadinessStatus = document.getElementById("crop_readiness_status");
 
-  if (!farmSelect || !fieldSelect || !cropSelect) return;
+  if (!farmSelect || !fieldSelect || !cropSelect || !cropReadinessStatus) return;
 
   // 1. Function ទាញយក Field (ស្រែ)
   function loadFields(farmId, selectedFieldId = null) {
     fieldSelect.innerHTML = '<option value="">កំពុងទាញយក... (Loading...)</option>';
     cropSelect.innerHTML = '<option value="">-- ជ្រើសរើសដំណាំ --</option>';
+    cropReadinessStatus.textContent = "";
 
     // បង្កើត URL ដោយស្វ័យប្រវត្តិតាម Flask Blueprint
     const baseUrl = "{{ url_for('user.get_fields_by_farm', farm_id=0) }}";
@@ -265,6 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // 2. Function ទាញយក Crop (ដំណាំ)
   function loadFieldCrops(fieldId, selectedCropId = null) {
     cropSelect.innerHTML = '<option value="">កំពុងទាញយក... (Loading...)</option>';
+    cropReadinessStatus.textContent = "Checking crop harvest readiness...";
 
     const baseUrl = "{{ url_for('user.get_crops_by_field', field_id=0) }}";
     const apiUrl = baseUrl.replace('/0', '/' + fieldId);
@@ -285,10 +296,14 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           cropSelect.appendChild(opt);
         });
+        cropReadinessStatus.textContent = data.length
+          ? "Only crops with both the field-crop and latest monitoring growth stages set to Harvest are listed."
+          : "No crop is ready. Set both the field-crop and latest monitoring growth stages to Harvest.";
       })
       .catch((err) => {
         console.error("Error loading crops:", err);
         cropSelect.innerHTML = '<option value="">-- មានបញ្ហាក្នុងការទាញយក --</option>';
+        cropReadinessStatus.textContent = "Unable to check harvest readiness. Please try again.";
       });
   }
 
@@ -299,6 +314,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       fieldSelect.innerHTML = '<option value="">-- ជ្រើសរើសស្រែ/ក្បាលដី --</option>';
       cropSelect.innerHTML = '<option value="">-- ជ្រើសរើសដំណាំ --</option>';
+      cropReadinessStatus.textContent = "";
     }
   });
 
@@ -307,6 +323,7 @@ document.addEventListener("DOMContentLoaded", function () {
       loadFieldCrops(this.value);
     } else {
       cropSelect.innerHTML = '<option value="">-- ជ្រើសរើសដំណាំ --</option>';
+      cropReadinessStatus.textContent = "";
     }
   });
 

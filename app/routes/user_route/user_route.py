@@ -3194,6 +3194,47 @@ def monitoring_history(farm_id, field_crop_id):
                 "field_crops.index"
             )
         )
+def _is_harvest_stage(growth_stage):
+    return bool(
+        growth_stage
+        and (growth_stage.stage_name or "").strip().casefold() == "harvest"
+    )
+
+
+def _is_harvest_ready(field_crop):
+    if not _is_harvest_stage(field_crop.growth_stage):
+        return False
+
+    latest_monitoring = max(
+        field_crop.monitorings,
+        key=lambda monitoring: (
+            monitoring.monitoring_date,
+            monitoring.id
+        ),
+        default=None
+    )
+    return bool(
+        latest_monitoring
+        and _is_harvest_stage(latest_monitoring.growth_stage)
+    )
+
+
+def _get_harvest_ready_crops(field_id):
+    crops = (
+        FieldCropTable.query
+        .options(
+            db.joinedload(FieldCropTable.rice_variety),
+            db.joinedload(FieldCropTable.growth_stage),
+            db.joinedload(FieldCropTable.monitorings)
+            .joinedload(CropMonitoringTable.growth_stage)
+        )
+        .filter_by(field_id=field_id)
+        .order_by(FieldCropTable.id.desc())
+        .all()
+    )
+    return [crop for crop in crops if _is_harvest_ready(crop)]
+
+
 @user_bp.route("/harvest/create", methods=["GET", "POST"])
 @login_required
 @role_required("User")
@@ -3206,40 +3247,70 @@ def add_harvest():
         return redirect(url_for('user.dashboard'))
 
     form = HarvestForm()
-    # Populate Farm options (must be int IDs)
     form.farm_id.choices = [(f.id, f.farm_name) for f in farms]
+    form.field_id.choices = []
+    form.field_crop_id.choices = []
 
-    # Re-bind choices dynamically during POST submit
+    selected_farm = None
+    selected_field = None
+    eligible_crops = []
     if request.method == 'POST':
-        selected_farm = request.form.get('farm_id', type=int)
-        selected_field = request.form.get('field_id', type=int)
-        
-        # 1. Re-bind Fields
-        if selected_farm:
-            fields = FieldTable.query.filter_by(farm_id=selected_farm).all()
-            form.field_id.choices = [(f.id, f.field_name) for f in fields]
-        else:
-            form.field_id.choices = []
+        selected_farm_id = request.form.get('farm_id', type=int)
+        selected_field_id = request.form.get('field_id', type=int)
 
-        # 2. Re-bind FieldCrops (MUST include status="Active" to match API)
-        if selected_field:
-            crops = (
-                FieldCropTable.query.options(db.joinedload(FieldCropTable.rice_variety))
-                .filter_by(field_id=selected_field, status="Active")
-                .all()
+        selected_farm = next(
+            (farm for farm in farms if farm.id == selected_farm_id),
+            None
+        )
+        if selected_farm:
+            fields = FieldTable.query.filter_by(
+                farm_id=selected_farm.id
+            ).order_by(FieldTable.id.desc()).all()
+            form.field_id.choices = [
+                (field.id, field.field_name)
+                for field in fields
+            ]
+            selected_field = next(
+                (field for field in fields if field.id == selected_field_id),
+                None
             )
+
+        if selected_field:
+            eligible_crops = _get_harvest_ready_crops(selected_field.id)
             form.field_crop_id.choices = [
                 (
-                    fc.id, 
-                    f"{fc.rice_variety.variety_name} (ដាំ: {fc.planting_date.strftime('%Y-%m-%d') if fc.planting_date else 'N/A'})"
-                ) 
-                for fc in crops
+                    crop.id,
+                    f"{crop.rice_variety.variety_name} "
+                    f"(ដាំ: {crop.planting_date.strftime('%Y-%m-%d') if crop.planting_date else 'N/A'})"
+                )
+                for crop in eligible_crops
             ]
-        else:
-            form.field_crop_id.choices = []
+            if not eligible_crops:
+                flash(
+                    "Harvest can only be recorded when the field crop growth stage and its latest monitoring growth stage are both Harvest.",
+                    "warning"
+                )
 
     if form.validate_on_submit():
         try:
+            selected_crop = next(
+                (
+                    crop
+                    for crop in _get_harvest_ready_crops(form.field_id.data)
+                    if crop.id == form.field_crop_id.data
+                ),
+                None
+            )
+            if not selected_crop:
+                flash(
+                    "This crop is not ready for harvest. Set both its growth stage and latest monitoring growth stage to Harvest first.",
+                    "warning"
+                )
+                return render_template(
+                    'user_page/harvest/harvest_form.html',
+                    form=form
+                )
+
             currency = form.currency.data
             exchange_rate = float(form.exchange_rate.data or 4100.0)
             quantity_tons = float(form.quantity_tons.data)
@@ -3254,7 +3325,7 @@ def add_harvest():
             net_profit_usd = round(total_revenue_usd - cost_usd, 2)
 
             new_harvest = Harvest(
-                field_crop_id=form.field_crop_id.data,
+                field_crop_id=selected_crop.id,
                 harvest_date=form.harvest_date.data,
                 quantity_tons=quantity_tons,
                 quality_grade=form.quality_grade.data,
@@ -3283,8 +3354,16 @@ def add_harvest():
 @role_required("User")
 @permission_required("GET_FIELD_BY_FARM_USER")
 def get_fields_by_farm(farm_id: int):
-    """Retrieves all fields associated with a given farm ID for dropdown population."""
-    fields = FieldTable.query.filter_by(farm_id=farm_id).all()
+    """Return fields for an active farm owned by the current user."""
+    farm = FarmTable.query.filter_by(
+        id=farm_id,
+        user_id=current_user.id,
+        status="Active"
+    ).first()
+    if not farm:
+        return jsonify([]), 200
+
+    fields = FieldTable.query.filter_by(farm_id=farm.id).all()
 
     return jsonify([
         {
@@ -3300,15 +3379,21 @@ def get_fields_by_farm(farm_id: int):
 @role_required("User")
 @permission_required("GET_CROP_BY_FIELD_USER")
 def get_crops_by_field(field_id: int):
-    """Retrieves active crops and planting dates for a specific field ID.
-
-    Uses joinedload to eliminate N+1 query overhead on rice_variety.
-    """
-    field_crops = (
-        FieldCropTable.query.options(db.joinedload(FieldCropTable.rice_variety))
-        .filter_by(field_id=field_id, status="Active")
-        .all()
+    """Return crops meeting the field and latest-monitoring harvest conditions."""
+    field = (
+        FieldTable.query
+        .join(FieldTable.farm)
+        .filter(
+            FieldTable.id == field_id,
+            FarmTable.user_id == current_user.id,
+            FarmTable.status == "Active"
+        )
+        .first()
     )
+    if not field:
+        return jsonify([]), 200
+
+    field_crops = _get_harvest_ready_crops(field.id)
 
     return jsonify([
         {
