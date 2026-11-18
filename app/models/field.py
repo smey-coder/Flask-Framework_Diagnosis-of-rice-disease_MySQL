@@ -40,6 +40,11 @@ class FieldTable(db.Model):
         nullable=True
     )
 
+    boundary = db.Column(
+        db.Text,
+        nullable=True
+    )
+
     description = db.Column(
         db.Text,
         nullable=True

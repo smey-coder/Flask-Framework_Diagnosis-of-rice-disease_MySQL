@@ -6,6 +6,10 @@ styles %}
   rel="stylesheet"
   href="{{ url_for('static', filename='css/field.css') }}"
 />
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
 {% endblock %} {% block content %}
 
@@ -71,6 +75,8 @@ styles %}
               <th>Soil Type</th>
 
               <th>Location</th>
+
+              <th>Map</th>
 
               <th class="text-center">Status</th>
 
@@ -167,6 +173,32 @@ styles %}
                 {% endif %}
               </td>
 
+              <!-- MAP PREVIEW -->
+              <td>
+                {% if field.location %}
+                <div
+                  id="field-map-{{ field.id }}"
+                  class="field-boundary-map border rounded"
+                  data-boundary="{{ field.boundary|forceescape }}"
+                  style="width: 150px; height: 100px;"
+                  role="img"
+                  aria-label="Map showing the boundary of {{ field.field_name }}"
+                ></div>
+                {% elif field.location %}
+                <iframe
+                  src="https://maps.google.com/maps?q={{ field.boundary|urlencode }}&amp;output=embed"
+                  title="Map showing {{ field.field_name }}"
+                  width="150"
+                  height="100"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  class="border rounded"
+                ></iframe>
+                {% else %}
+                <span class="text-muted"> — </span>
+                {% endif %}
+              </td>
+
               <!-- STATUS -->
 
               <td class="text-center">
@@ -249,5 +281,9 @@ styles %}
     </div>
   </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="{{ url_for('static', filename='js/field_boundary_map.js') }}"></script>
 
 {% endblock %}

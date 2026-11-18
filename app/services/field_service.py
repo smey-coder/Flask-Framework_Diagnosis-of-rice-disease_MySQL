@@ -84,6 +84,7 @@ class FieldService:
         area=None,
         soil_type=None,
         location=None,
+        boundary=None,
         description=None,
         status="Active"
     ):
@@ -101,6 +102,8 @@ class FieldService:
                 soil_type=soil_type,
 
                 location=location,
+
+                boundary=boundary,
 
                 description=description,
 
@@ -124,6 +127,7 @@ class FieldService:
                     "area": area,
                     "soil_type": soil_type,
                     "location": location,
+                    "boundary": boundary,
                     "description": description,
                     "status": status
                 }
@@ -153,6 +157,7 @@ class FieldService:
         area=None,
         soil_type=None,
         location=None,
+        boundary=None,
         description=None,
         status="Active"
     ):
@@ -166,6 +171,8 @@ class FieldService:
             field.soil_type = soil_type
 
             field.location = location
+
+            field.boundary = boundary
 
             field.description = description
 
@@ -183,6 +190,7 @@ class FieldService:
                     "field_name": field_name,
                     "soil_type": soil_type,
                     "location": location,
+                    "boundary": boundary,
                     "description": description,
                     "status": status
                 }

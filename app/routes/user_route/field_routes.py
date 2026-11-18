@@ -245,6 +245,8 @@ def create():
                     else None
                 ),
 
+                boundary=form.boundary.data or None,
+
                 description=(
                     form.description.data.strip()
                     if form.description.data
@@ -488,6 +490,8 @@ def edit(field_id):
                     if form.location.data
                     else None
                 ),
+
+                boundary=form.boundary.data or None,
 
                 description=(
                     form.description.data.strip()

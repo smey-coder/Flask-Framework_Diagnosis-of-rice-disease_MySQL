@@ -1,19 +1,138 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<!-- Leaflet-Geoman (drawing tools) -->
+<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.css" />
+
+<style>
+  /* ---------- Guide and result boxes ---------- */
+  .draw-guide {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: #166534;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+  }
+
+  .draw-guide i { font-size: 1.15rem; margin-top: 2px; }
+
+  .measure-box {
+    margin-top: 10px;
+    padding: 14px 16px;
+    background: #ecfdf5;
+    border: 1px solid #86efac;
+    border-radius: 14px;
+  }
+
+  .measure-box[hidden],
+  #clearDrawingBtn[hidden] { display: none; }
+
+  .measure-totals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin-bottom: 12px;
+  }
+
+  .measure-total small { display: block; color: #6b7280; font-size: 0.75rem; }
+  .measure-total strong { font-size: 1.15rem; color: #14532d; }
+
+  .measure-sides {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+
+  .measure-side {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background: #fff;
+    border: 1px solid #d1fae5;
+    border-radius: 10px;
+  }
+
+  .measure-side span { color: #6b7280; }
+  .measure-side b { color: #14532d; }
+
+  /* ---------- Labels on the map ---------- */
+  .edge-label,
+  .corner-label {
+    background: transparent;
+    border: 0;
+    pointer-events: none;
+  }
+
+  /* the length of one side, shown in the middle of the side */
+  .edge-label span {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    padding: 2px 9px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    color: #14532d;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #22c55e;
+    border-radius: 50px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .edge-label.draft span {
+    border-style: dashed;
+    background: rgba(255, 251, 235, 0.97);
+    border-color: #f59e0b;
+    color: #78350f;
+  }
+
+  /* corner number */
+  .corner-label span {
+    position: absolute;
+    transform: translate(8px, -22px);
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    background: #16a34a;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+  }
+
+  /* length that follows the mouse while drawing */
+  .leaflet-tooltip.live-measure {
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #78350f;
+    background: #fffbeb;
+    border: 1px solid #f59e0b;
+    border-radius: 50px;
+  }
+
+  .leaflet-tooltip.live-measure::before { display: none; }
+
+  .leaflet-control-attribution img,
+  .leaflet-attribution-flag { display: none !important; }
+</style>
+
 <form method="POST" action="{{ form_action }}" novalidate class="card border-0 shadow-sm rounded-4 overflow-hidden">
   {{ form.hidden_tag() }}
 
-  <!-- Form Header -->
-  <!-- <div class="card-header bg-success text-white py-3 px-4">
-    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
-      <i class="bi bi-tree-fill fs-5"></i>
-      <span>{{ lang.farm.information if lang and lang.farm and lang.farm.information else 'Farm Information' }}</span>
-    </h5>
-  </div> -->
-
   <div class="card-body p-4">
-    <!-- Farm Name -->
     <div class="mb-3">
       <label class="form-label fw-semibold text-dark">
-        {{ lang.farm.farm_name if lang and lang.farm and lang.farm.farm_name else form.farm_name.label.text }} <span class="text-danger">*</span>
+        {{ lang.farm.farm_name if lang and lang.farm and lang.farm.farm_name else form.farm_name.label.text }}
+        <span class="text-danger">*</span>
       </label>
       <div class="input-group">
         <span class="input-group-text bg-light border-end-0">
@@ -29,30 +148,27 @@
       </div>
     </div>
 
-    <!-- Location Fields (Grid Row for Province, District, Commune) -->
     <div class="row g-3 mb-3">
-      <!-- Province -->
       <div class="col-md-4">
         <label class="form-label fw-semibold text-dark">
-          {{ lang.farm.province if lang and lang.farm and lang.farm.province else form.province.label.text }} <span class="text-danger">*</span>
+          {{ lang.farm.province if lang and lang.farm and lang.farm.province else form.province.label.text }}
+          <span class="text-danger">*</span>
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
             <i class="bi bi-map text-success"></i>
           </span>
-          {{ form.province(
-              class="form-select border-start-0" ~ (" is-invalid" if form.province.errors else "")
-          ) }}
+          {{ form.province(class="form-select border-start-0" ~ (" is-invalid" if form.province.errors else "")) }}
           {% for error in form.province.errors %}
             <div class="invalid-feedback">{{ error }}</div>
           {% endfor %}
         </div>
       </div>
 
-      <!-- District -->
       <div class="col-md-4">
         <label class="form-label fw-semibold text-dark">
-          {{ lang.farm.district if lang and lang.farm and lang.farm.district else form.district.label.text }} <span class="text-danger">*</span>
+          {{ lang.farm.district if lang and lang.farm and lang.farm.district else form.district.label.text }}
+          <span class="text-danger">*</span>
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -68,10 +184,10 @@
         </div>
       </div>
 
-      <!-- Commune -->
       <div class="col-md-4">
         <label class="form-label fw-semibold text-dark">
-          {{ lang.farm.commune if lang and lang.farm and lang.farm.commune else form.commune.label.text }} <span class="text-danger">*</span>
+          {{ lang.farm.commune if lang and lang.farm and lang.farm.commune else form.commune.label.text }}
+          <span class="text-danger">*</span>
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -88,57 +204,14 @@
       </div>
     </div>
 
-    <!-- =====================================================
-       LOCATION (MAP SELECTION)
-  ====================================================== -->
-  <div class="mb-3">
-    {{ form.location.label(class="form-label fw-semibold text-dark") }}
-    
-    <!-- Location Text Input and GPS Button -->
-    <div class="input-group mb-2">
-      <span class="input-group-text bg-light border-end-0">
-        <i class="bi bi-geo-alt-fill text-danger"></i>
-      </span>
-      {{ form.location(
-          class="form-control border-start-0" ~ (" is-invalid" if form.location.errors else ""),
-          id="locationInput",
-          placeholder=lang.farm.click_map if lang and lang.farm and lang.farm.click_map else "Click map or type location"
-      ) }}
-      <button class="btn btn-outline-secondary" type="button" id="getCurrentLocBtn" onclick="getCurrentLocation()">
-        <i class="bi bi-crosshair me-1"></i> {{ lang.farm.my_location if lang and lang.farm and lang.farm.my_location else 'My Location' }}
-      </button>
-    </div>
-    
-    {% for error in form.location.errors %}
-      <div class="invalid-feedback d-block mb-2">
-        <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
-      </div>
-    {% endfor %}
-
-    <!-- Leaflet Map Container -->
-    <div id="map" class="rounded-3 border shadow-xs" style="height: 320px; width: 100%; z-index: 1;"></div>
-    <div class="form-text small text-muted mt-1">
-      <i class="bi bi-info-circle me-1"></i> {{ lang.farm.click_map if lang and lang.farm and lang.farm.click_map else 'Click anywhere on the map to set location pin.' }}
-    </div>
-  </div>
-
-    <!-- Status -->
     <div class="mb-3">
       {{ form.status.label(class="form-label fw-semibold text-dark") }}
-      <div class="input-group">
-        <span class="input-group-text bg-light border-end-0">
-          <i class="bi bi-activity text-success"></i>
-        </span>
-        {{ form.status(
-            class="form-select border-start-0" ~ (" is-invalid" if form.status.errors else "")
-        ) }}
-        {% for error in form.status.errors %}
-          <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-      </div>
+      {{ form.status(class="form-select" ~ (" is-invalid" if form.status.errors else "")) }}
+      {% for error in form.status.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
     </div>
 
-    <!-- Description -->
     <div class="mb-3">
       {{ form.description.label(class="form-label fw-semibold text-dark") }}
       {{ form.description(
@@ -152,116 +225,452 @@
     </div>
   </div>
 
-  <!-- Form Actions Footer -->
   <div class="card-footer bg-light p-3 px-4 d-flex justify-content-end align-items-center gap-2">
     <a href="{{ cancel_url }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
       <i class="bi bi-x-circle me-1"></i>
-      {{ lang.farm.cancel if lang and lang.farm and lang.farm.cancel else 'Cancel' }}
+      {{ lang.farm.cancel if lang and lang.farm and lang.farm.cancel else "Cancel" }}
     </a>
-
     <button type="submit" class="btn btn-success rounded-pill px-4 py-2 shadow-sm fw-semibold d-inline-flex align-items-center gap-2">
       <i class="bi bi-check-circle-fill"></i>
-      {{ lang.farm.save_farm if lang and lang.farm and lang.farm.save_farm else 'Save Farm' }}
+      {{ lang.farm.save_farm if lang and lang.farm and lang.farm.save_farm else "Save Farm" }}
     </button>
   </div>
 </form>
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<!-- CSS to hide flag icons in map attribution -->
-<style>
-  .leaflet-control-attribution img,
-  .leaflet-attribution-flag {
-    display: none !important;
-  }
-</style>
 
-<!-- Map & Interaction Handling Logic -->
-<!-- Leaflet JavaScript API Script -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-<script>
+<!-- Leaflet-Geoman (drawing tools) -->
+<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.min.js"></script>
+<!-- <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // 1. Initial coordinates set to Norton University / Chroy Changvar
   const defaultLat = 11.5760686;
   const defaultLng = 104.9563933;
-
-  const mapContainer = document.getElementById('map');
+  const mapContainer = document.getElementById("map");
   if (!mapContainer) return;
 
-  // 2. Initialize Leaflet Map
-  const map = L.map('map').setView([defaultLat, defaultLng], 16);
+  const form = mapContainer.closest("form");
+  const locationInput = document.getElementById("locationInput");
+  const measureBox = document.getElementById("measureBox");
+  const clearBtn = document.getElementById("clearDrawingBtn");
+  const citySearchInput = document.getElementById("mapCitySearch");
+  const citySearchButton = document.getElementById("mapCitySearchButton");
+  const citySearchStatus = document.getElementById("mapCitySearchStatus");
 
-  // 3. Remove standard attribution prefix
-  map.attributionControl.setPrefix('');
+  // The drawn shape is saved in a hidden field called "boundary".
+  // hidden_tag() renders it when the form class has a HiddenField; otherwise it is created here.
+  let boundaryInput = form.querySelector('input[name="boundary"]');
+  if (!boundaryInput) {
+    boundaryInput = document.createElement("input");
+    boundaryInput.type = "hidden";
+    boundaryInput.name = "boundary";
+    form.appendChild(boundaryInput);
+  }
 
-  // 4. Render Google Maps Hybrid Layer (Satellite + Labels & Place Names)
-  L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+  const map = L.map(mapContainer).setView([defaultLat, defaultLng], 16);
+  map.attributionControl.setPrefix("");
+  L.tileLayer("https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
     maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    attribution: '&copy; Google Maps'
+    subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    attribution: "&copy; Google Maps"
   }).addTo(map);
-
-  // 5. Add Draggable Pin Marker
   const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
 
-  // Recalculate container dimensions
-  setTimeout(function() {
-    map.invalidateSize();
-  }, 300);
+  // ---------------------------------------------------------
+  // Location text (reverse geocoding)
+  // ---------------------------------------------------------
+  let geocodeTimer = null;
 
-  // Function to update input field and reverse geocode location
-  function updateLocation(lat, lng) {
-    marker.setLatLng([lat, lng]);
-    map.panTo([lat, lng]);
-
+  function reverseGeocode(lat, lng) {
     fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
-      .then(response => response.json())
-      .then(data => {
-        const locationInput = document.getElementById('locationInput');
+      .then(function (response) { return response.json(); })
+      .then(function (data) {
         if (locationInput) {
-          if (data && data.display_name) {
-            locationInput.value = data.display_name;
-          } else {
-            locationInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-          }
+          locationInput.value = data && data.display_name
+            ? data.display_name
+            : `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
         }
       })
-      .catch(() => {
-        const locationInput = document.getElementById('locationInput');
-        if (locationInput) {
-          locationInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-        }
+      .catch(function () {
+        if (locationInput) locationInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       });
   }
 
-  // Map Click Listener
-  map.on('click', function (e) {
-    updateLocation(e.latlng.lat, e.latlng.lng);
+  function updateLocation(lat, lng, pan) {
+    marker.setLatLng([lat, lng]);
+    if (pan !== false) map.panTo([lat, lng]);
+
+    // wait a little so the address service is not called many times in a row
+    clearTimeout(geocodeTimer);
+    geocodeTimer = setTimeout(function () { reverseGeocode(lat, lng); }, 700);
+  }
+
+  function searchCity() {
+    const query = citySearchInput.value.trim();
+    if (!query) {
+      citySearchStatus.textContent = "Enter a city or place to search.";
+      return;
+    }
+
+    citySearchButton.disabled = true;
+    citySearchStatus.textContent = "Searching...";
+    const searchUrl = new URL("https://nominatim.openstreetmap.org/search");
+    searchUrl.search = new URLSearchParams({
+      q: query,
+      format: "jsonv2",
+      limit: "1"
+    });
+
+    fetch(searchUrl)
+      .then(function (response) {
+        if (!response.ok) throw new Error("Place search failed.");
+        return response.json();
+      })
+      .then(function (results) {
+        if (!results.length) {
+          citySearchStatus.textContent = "No matching city or place found.";
+          return;
+        }
+
+        const place = results[0];
+        const lat = Number(place.lat);
+        const lng = Number(place.lon);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          throw new Error("The place search returned invalid coordinates.");
+        }
+
+        clearTimeout(geocodeTimer);
+        marker.setLatLng([lat, lng]);
+        map.setView([lat, lng], 13);
+        if (locationInput) locationInput.value = place.display_name;
+        citySearchStatus.textContent = place.display_name;
+      })
+      .catch(function () {
+        citySearchStatus.textContent = "Could not search for that place. Please try again.";
+      })
+      .finally(function () {
+        citySearchButton.disabled = false;
+      });
+  }
+
+  citySearchButton.addEventListener("click", searchCity);
+  citySearchInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchCity();
+    }
   });
 
-  // Marker Drag Listener
-  marker.on('dragend', function (e) {
+  // ---------------------------------------------------------
+  // Measuring helpers
+  // ---------------------------------------------------------
+  function fmtLength(meters) {
+    if (meters < 1000) return meters.toFixed(1) + " m";
+    return (meters / 1000).toFixed(2) + " km";
+  }
+
+  function fmtLengthKh(meters) {
+    if (meters < 1000) return meters.toFixed(1) + " ម៉ែត្រ";
+    return (meters / 1000).toFixed(2) + " គីឡូម៉ែត្រ";
+  }
+
+  // Area of a polygon on the Earth's surface (square metres)
+  function geodesicArea(points) {
+    const rad = Math.PI / 180;
+    let area = 0;
+
+    if (points.length > 2) {
+      for (let i = 0; i < points.length; i++) {
+        const p1 = points[i];
+        const p2 = points[(i + 1) % points.length];
+        area += ((p2.lng - p1.lng) * rad) * (2 + Math.sin(p1.lat * rad) + Math.sin(p2.lat * rad));
+      }
+      area = area * 6378137.0 * 6378137.0 / 2.0;
+    }
+    return Math.abs(area);
+  }
+
+  function ringOf(layer) {
+    let latlngs = layer.getLatLngs();
+    while (Array.isArray(latlngs[0])) latlngs = latlngs[0];
+    return latlngs;
+  }
+
+  function midpoint(a, b) {
+    return L.latLng((a.lat + b.lat) / 2, (a.lng + b.lng) / 2);
+  }
+
+  function textLabel(latlng, text, cls) {
+    return L.marker(latlng, {
+      interactive: false,
+      keyboard: false,
+      zIndexOffset: 500,
+      icon: L.divIcon({ className: cls, html: "<span>" + text + "</span>", iconSize: [0, 0] })
+    });
+  }
+
+  // ---------------------------------------------------------
+  // The field boundary and the length of every side
+  // ---------------------------------------------------------
+  const FIELD_STYLE = { color: "#22c55e", weight: 3, fillColor: "#22c55e", fillOpacity: 0.22 };
+  const labelGroup = L.layerGroup().addTo(map);   // lengths of the finished shape
+  const draftGroup = L.layerGroup().addTo(map);   // lengths while drawing
+  let fieldLayer = null;
+
+  // Draw the length of each side on the map and fill in the summary
+  function renderMeasurements() {
+    labelGroup.clearLayers();
+
+    if (!fieldLayer) {
+      measureBox.hidden = true;
+      clearBtn.hidden = true;
+      return;
+    }
+
+    const ring = ringOf(fieldLayer);
+    const sides = [];
+    let perimeter = 0;
+
+    ring.forEach(function (point, i) {
+      const next = ring[(i + 1) % ring.length];
+      const length = map.distance(point, next);
+      perimeter += length;
+      sides.push({ from: i + 1, to: ((i + 1) % ring.length) + 1, length: length });
+
+      labelGroup.addLayer(textLabel(midpoint(point, next), fmtLength(length), "edge-label"));
+      labelGroup.addLayer(textLabel(point, String(i + 1), "corner-label"));
+    });
+
+    const m2 = geodesicArea(ring);
+
+    measureBox.innerHTML =
+      '<div class="measure-totals">' +
+        '<div class="measure-total"><small>ចំនួនជ្រុង / Sides</small><strong>' + sides.length + '</strong></div>' +
+        '<div class="measure-total"><small>បរិវេណ / Perimeter</small><strong>' + fmtLengthKh(perimeter) + '</strong></div>' +
+        '<div class="measure-total"><small>ក្រឡាផ្ទៃ / Area</small><strong>' + (m2 / 10000).toFixed(2) + ' ហិកតា</strong>' +
+          '<small>' + Math.round(m2).toLocaleString() + ' ម៉ែត្រការ៉េ (m²)</small></div>' +
+      '</div>' +
+      '<div class="measure-sides">' +
+        sides.map(function (s) {
+          return '<div class="measure-side"><span>ជ្រុង ' + s.from + '–' + s.to + '</span><b>' + fmtLengthKh(s.length) + '</b></div>';
+        }).join("") +
+      '</div>';
+
+    measureBox.hidden = false;
+    clearBtn.hidden = false;
+  }
+
+  // Save the shape in the hidden field and refresh the labels
+  function syncFromLayer(updateLocationFromCenter) {
+    if (!fieldLayer) {
+      boundaryInput.value = "";
+      renderMeasurements();
+      return;
+    }
+
+    const geometry = fieldLayer.toGeoJSON().geometry;
+    boundaryInput.value = JSON.stringify(geometry, function (key, value) {
+      return typeof value === "number" ? Math.round(value * 1e6) / 1e6 : value;
+    });
+
+    renderMeasurements();
+
+    if (updateLocationFromCenter) {
+      const c = fieldLayer.getBounds().getCenter();
+      updateLocation(c.lat, c.lng, false);
+    }
+  }
+
+  function attach(layer) {
+    fieldLayer = layer;
+    layer.setStyle(FIELD_STYLE);
+
+    // keep the lengths correct while the shape is changed
+    ["pm:markerdrag", "pm:vertexadded", "pm:vertexremoved", "pm:drag", "pm:rotate"].forEach(function (name) {
+      layer.on(name, renderMeasurements);
+    });
+    layer.on("pm:edit", function () { syncFromLayer(false); });
+    layer.on("pm:dragend", function () { syncFromLayer(true); });
+    layer.on("pm:remove", function () {
+      if (fieldLayer === layer) {
+        fieldLayer = null;
+        syncFromLayer(false);
+      }
+    });
+  }
+
+  function clearDrawing() {
+    if (fieldLayer) map.removeLayer(fieldLayer);
+    fieldLayer = null;
+    syncFromLayer(false);
+  }
+
+  clearBtn.addEventListener("click", clearDrawing);
+
+  // ---------------------------------------------------------
+  // Lengths shown while drawing
+  // ---------------------------------------------------------
+  let drawShape = null;     // "Polygon" or "Rectangle" while a tool is in use
+  let draftPoints = [];
+  const liveDot = L.circleMarker([0, 0], { radius: 0, opacity: 0, fillOpacity: 0, interactive: false });
+  liveDot.bindTooltip("", { permanent: true, direction: "right", offset: [14, 0], className: "live-measure" });
+
+  function endDraft() {
+    drawShape = null;
+    draftPoints = [];
+    draftGroup.clearLayers();
+    if (map.hasLayer(liveDot)) map.removeLayer(liveDot);
+  }
+
+  function showLive(latlng) {
+    if (!drawShape || draftPoints.length === 0) return;
+
+    const last = draftPoints[draftPoints.length - 1];
+    let text;
+
+    if (drawShape === "Rectangle") {
+      const width = map.distance(last, L.latLng(last.lat, latlng.lng));
+      const height = map.distance(last, L.latLng(latlng.lat, last.lng));
+      text = fmtLength(width) + " × " + fmtLength(height);
+    } else {
+      text = fmtLength(map.distance(last, latlng));
+    }
+
+    if (!map.hasLayer(liveDot)) liveDot.addTo(map);
+    liveDot.setLatLng(latlng);
+    liveDot.setTooltipContent(text);
+    liveDot.openTooltip();
+  }
+
+  // ---------------------------------------------------------
+  // Drawing tools (Leaflet-Geoman)
+  // ---------------------------------------------------------
+  if (map.pm) {
+    map.pm.addControls({
+      position: "topleft",
+      drawMarker: false,
+      drawCircleMarker: false,
+      drawPolyline: false,
+      drawCircle: false,
+      drawText: false,
+      drawRectangle: true,
+      drawPolygon: true,
+      editMode: true,
+      dragMode: true,
+      cutPolygon: false,
+      rotateMode: false,
+      removalMode: true
+    });
+
+    map.pm.setGlobalOptions({
+      allowSelfIntersection: false,
+      snappable: false,
+      pathOptions: FIELD_STYLE,
+      templineStyle: { color: "#f59e0b" },
+      hintlineStyle: { color: "#f59e0b", dashArray: [5, 5] }
+    });
+
+    map.on("pm:drawstart", function (e) {
+      if (e.shape === "Polygon" || e.shape === "Rectangle") {
+        drawShape = e.shape;
+        draftPoints = [];
+      }
+    });
+
+    map.on("pm:drawend", endDraft);
+
+    // A field has one boundary: a new drawing replaces the old one
+    map.on("pm:create", function (e) {
+      if (e.shape !== "Polygon" && e.shape !== "Rectangle") return;
+
+      if (fieldLayer && fieldLayer !== e.layer) map.removeLayer(fieldLayer);
+
+      endDraft();
+      attach(e.layer);
+      syncFromLayer(true);
+    });
+  } else {
+    measureBox.hidden = false;
+    measureBox.innerHTML = "មិនអាចផ្ទុកឧបករណ៍គូសបានទេ (Drawing tools could not be loaded).";
+  }
+
+  // Show the saved boundary when the farm is opened for editing
+  if (boundaryInput.value) {
+    try {
+      const saved = L.geoJSON(JSON.parse(boundaryInput.value)).getLayers()[0];
+
+      if (saved) {
+        saved.addTo(map);
+        attach(saved);
+        renderMeasurements();
+        map.fitBounds(saved.getBounds(), { padding: [50, 50] });
+        marker.setLatLng(saved.getBounds().getCenter());
+      }
+    } catch (err) {
+      console.warn("Saved boundary could not be read", err);
+    }
+  }
+
+  // ---------------------------------------------------------
+  // Map clicks: drawing, or placing the location pin
+  // ---------------------------------------------------------
+  function otherToolActive() {
+    return map.pm && (
+      map.pm.globalEditModeEnabled() ||
+      map.pm.globalDragModeEnabled() ||
+      map.pm.globalRemovalModeEnabled()
+    );
+  }
+
+  map.on("click", function (event) {
+    // while drawing: remember the corner and show the length of the side just made
+    if (drawShape) {
+      if (drawShape === "Rectangle") {
+        if (draftPoints.length === 0) draftPoints.push(event.latlng);
+        return;
+      }
+
+      const previous = draftPoints[draftPoints.length - 1];
+      draftPoints.push(event.latlng);
+
+      if (previous) {
+        const length = map.distance(previous, event.latlng);
+        draftGroup.addLayer(textLabel(midpoint(previous, event.latlng), fmtLength(length), "edge-label draft"));
+      }
+      return;
+    }
+
+    if (otherToolActive()) return;
+
+    updateLocation(event.latlng.lat, event.latlng.lng);
+  });
+
+  map.on("mousemove", function (event) { showLive(event.latlng); });
+
+  marker.on("dragend", function () {
     const position = marker.getLatLng();
     updateLocation(position.lat, position.lng);
   });
 
-  // Geolocation trigger function
-  window.getCurrentLocation = function () {
-    if (navigator.geolocation) {
+  const currentLocationButton = document.getElementById("getCurrentLocBtn");
+  if (currentLocationButton) {
+    currentLocationButton.addEventListener("click", function () {
+      if (!navigator.geolocation) {
+        alert("Your browser does not support geolocation.");
+        return;
+      }
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          updateLocation(lat, lng);
-          map.setView([lat, lng], 17);
+        function (position) {
+          updateLocation(position.coords.latitude, position.coords.longitude);
+          map.setView([position.coords.latitude, position.coords.longitude], 17);
         },
-        () => {
-          alert("មិនអាចទាញយកទីតាំងបច្ចុប្បន្នបានទេ (Unable to retrieve location).");
+        function () {
+          alert("Unable to retrieve your current location.");
         }
       );
-    } else {
-      alert("កម្មវិធីរុករករបស់អ្នកមិនគាំទ្រ Geolocation ទេ (Browser does not support Geolocation).");
-    }
-  };
+    });
+  }
+
+  setTimeout(function () {
+    map.invalidateSize();
+  }, 300);
 });
-</script>
+</script> -->
