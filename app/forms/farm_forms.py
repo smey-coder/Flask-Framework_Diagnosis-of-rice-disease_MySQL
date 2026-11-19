@@ -10,7 +10,7 @@ FARM_STATUS_CHOICES = [
     ("Active", "Active"),
     ("Inactive", "Inactive"),
 ]
-# ========================================================= # CAMBODIA PROVINCES # ========================================================= 
+# CAMBODIA PROVINCES
 CAMBODIA_PROVINCES = [ 
     ("", "Select Province"), 
     ("Banteay Meanchey", "Banteay Meanchey"), 
@@ -59,7 +59,6 @@ class FarmCreateForm(FlaskForm):
             )
         ]
     )
-    # ----------------------------------------------------- # PROVINCE # ----------------------------------------------------- 
     province = SelectField( 
         "Province/ខេត្ត", 
         choices=CAMBODIA_PROVINCES, 
@@ -151,9 +150,23 @@ class FarmEditForm(FlaskForm):
             )
         ]
     )
-    province = SelectField( "Province/ខេត្ត", choices=CAMBODIA_PROVINCES, validators=[ DataRequired( message="Please select a province." ) ] ) 
-    district = StringField( "District/ស្រុក", validators=[ DataRequired( message="District is required." ), Length( min=2, max=100, message=( "District must be between " "2 and 100 characters." ) ) ] ) 
-    commune = StringField( "Commune/ឃុំ", validators=[ DataRequired( message="Commune is required." ), Length( min=2, max=100, message=( "Commune must be between " "2 and 100 characters." ) ) ] )
+    province = SelectField( 
+        "Province/ខេត្ត", 
+        choices=CAMBODIA_PROVINCES, 
+        validators=[ DataRequired( message="Please select a province." ) 
+    ] ) 
+    district = StringField( 
+        "District/ស្រុក", 
+        validators=[ 
+            DataRequired( message="District is required." ), 
+            Length( min=2, max=100, message=( "District must be between " "2 and 100 characters." ) ) 
+    ] ) 
+    commune = StringField( 
+        "Commune/ឃុំ", 
+        validators=[ 
+            DataRequired( message="Commune is required." ), 
+            Length( min=2, max=100, message=( "Commune must be between " "2 and 100 characters." ) ) 
+    ] )
     location = StringField(
         "Location",
         validators=[
@@ -164,7 +177,6 @@ class FarmEditForm(FlaskForm):
             )
         ]
     )
-
     status = SelectField(
         "Status",
         choices=FARM_STATUS_CHOICES,
@@ -183,7 +195,6 @@ class FarmEditForm(FlaskForm):
 # =========================================================
 
 class FarmConfirmDeleteForm(FlaskForm):
-
     submit = SubmitField(
         "Confirm Delete"
     )

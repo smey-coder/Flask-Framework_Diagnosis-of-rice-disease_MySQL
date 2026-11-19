@@ -1,0 +1,95 @@
+# Flask Database Migration Commands
+
+Run these commands from the project root.
+
+## 1. Activate the virtual environment
+
+```powershell
+.\.venv_Diagnosis_rice_disease\Scripts\Activate.ps1
+```
+
+If PowerShell blocks activation:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv_Diagnosis_rice_disease\Scripts\Activate.ps1
+```
+
+## 2. Set the Flask application
+
+```powershell
+$env:FLASK_APP="run.py"
+```
+
+## 3. Initialize migrations
+
+Only run this once, when the `migrations` folder does not exist:
+
+```powershell
+flask db init
+```
+
+## 4. Create a migration after editing a model
+
+For example, after editing `app/models/product_model.py`:
+
+```powershell
+flask db migrate -m "Create or update products table"
+```
+
+Before applying it, review the generated file in:
+
+```text
+migrations/versions/
+```
+
+## 5. Apply migrations
+
+```powershell
+flask db upgrade
+```
+
+## 6. Check migration status
+
+```powershell
+flask db current
+flask db history
+```
+
+## 7. Roll back a migration
+
+Roll back one migration:
+
+```powershell
+flask db downgrade
+```
+
+Roll back to a specific revision:
+
+```powershell
+flask db downgrade <revision-id>
+```
+
+## Creating a SQLAlchemy table
+
+Add a model to `app/models/`, for example:
+
+```python
+from extensions import db
+
+
+class Product(db.Model):
+    __tablename__ = "products"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(150), nullable=False)
+    qty = db.Column(db.Integer, nullable=False, default=0)
+```
+
+Import the model in `app/__init__.py` or `app/models/__init__.py`, then generate and apply the migration:
+
+```powershell
+$env:FLASK_APP="run.py"
+flask db migrate -m "Create products table"
+flask db upgrade
+```

@@ -2,13 +2,14 @@ import importlib
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_login import current_user
 from config import Config
-from extensions import db, csrf, login_manager, mail, oauth
+from extensions import db, csrf, login_manager, mail, oauth, migrate
 from app.models.user import UserTable
 from dotenv import load_dotenv
 import os
 import json
 
 def create_app(config_class: type[Config] = Config):
+    
     load_dotenv()
     app = Flask(__name__)
 
@@ -18,6 +19,7 @@ def create_app(config_class: type[Config] = Config):
 
     # ================= INIT EXTENSIONS =================
     db.init_app(app)
+    migrate.init_app(app, db)
     csrf.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
@@ -38,7 +40,6 @@ def create_app(config_class: type[Config] = Config):
     @login_manager.user_loader
     def load_user(user_id: int):
         return UserTable.query.get(int(user_id))
-    # ================= LANGUAGE GLOBAL =================
     # ================= LANGUAGE GLOBAL =================
     @app.context_processor
     def inject_lang():
@@ -82,6 +83,7 @@ def create_app(config_class: type[Config] = Config):
         #         return redirect(url_for("user.dashboard"))
         # return redirect(url_for("auth.login"))
         return render_template('public/home.html')
+    
     # ================= REGISTER BLUEPRINTS =================
     from app.routes.user_routes import user_bp
     from app.routes.role_routes import role_bp
@@ -137,8 +139,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(growth_stage_bp)
     app.register_blueprint(rice_variety_bp)
 
-
     # ================= CREATE TABLES =================
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
     return app

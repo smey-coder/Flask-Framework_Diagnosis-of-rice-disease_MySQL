@@ -9,4 +9,6 @@ from .growth_stage import GrowthStageTable
 from .crop_monitoring import CropMonitoringTable
 from .treatment_histories import TreatmentHistoryTable
 from .harvest import Harvest
+from .product_model import Product
+from .qty_model import Qty
 __all__ = ["UserTable", "RoleTable", "PermissionTable"]

@@ -8,7 +8,6 @@ class FarmTable(db.Model):
         db.ForeignKey("tbl_users.id"),
         nullable=False
     )
-
     farm_name = db.Column(
         db.String(150),
         nullable=False

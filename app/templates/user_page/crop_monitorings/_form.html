@@ -366,8 +366,7 @@
   <!-- =================================================
          PEST STATUS
     ================================================== -->
-
-  <div class="col-md-6 mb-3">
+  <!-- <div class="col-md-6 mb-3">
     <label for="pest_status" class="form-label fw-semibold">
       {{ lang.crop_monitoring.pest_status if lang and lang.crop_monitoring and lang.crop_monitoring.pest_status else 'Pest Status' }}
     </label>
@@ -378,23 +377,77 @@
     <div class="text-danger small mt-1">{{ error }}</div>
 
     {% endfor %}
-  </div>
+  </div> -->
 
   <!-- =================================================
          DISEASE STATUS
     ================================================== -->
 
-  <div class="col-md-6 mb-3">
-    <label for="disease_status" class="form-label fw-semibold">
-      {{ lang.crop_monitoring.disease_status if lang and lang.crop_monitoring and lang.crop_monitoring.disease_status else 'Disease Status' }}
-    </label>
+  <div class="col-12 mb-3">
+    {% set disease_meta = {
+      'None': ('diseases/disease_status/none.png', '#198754', 'bi-shield-check'),
+      'Suspected': ('diseases/disease_status/Suspected.jpg', '#d97706', 'bi-search'),
+      'Detected': ('diseases/disease_status/Detected.jpg', '#ea580c', 'bi-bug'),
+      'Severe': ('diseases/disease_status/Severe.jpg', '#dc2626', 'bi-exclamation-triangle')
+    } %}
+    {% set disease_fallback = url_for('static', filename='images/default_disease.png') %}
 
-    {{ form.disease_status( class="form-select" ) }} {% for error in
-    form.disease_status.errors %}
+    <div class="disease-status-group {{ 'is-invalid' if form.disease_status.errors }}">
+      <label class="form-label fw-semibold d-block">
+        {{ lang.crop_monitoring.disease_status if lang and lang.crop_monitoring and lang.crop_monitoring.disease_status else 'Disease Status' }}
+      </label>
 
-    <div class="text-danger small mt-1">{{ error }}</div>
+      <div class="row g-3" role="radiogroup" aria-label="Disease status">
+        {% for value, label in form.disease_status.choices %}
+          {% if value %}
+            {% set photo, color, icon = disease_meta.get(value, ('default_disease.png', '#6c757d', 'bi-virus')) %}
+            {% set parts = label.split(' - ') %}
+            {% if ' / ' in label %}
+              {% set parts = label.split(' / ') %}
+            {% endif %}
 
-    {% endfor %}
+            <div class="col-6 col-md-3">
+              <label class="disease-status-option"
+                     for="disease_status_{{ loop.index }}"
+                     style="--c: {{ color }}">
+                <input type="radio"
+                       class="disease-status-input"
+                       id="disease_status_{{ loop.index }}"
+                       name="{{ form.disease_status.name }}"
+                       value="{{ value }}"
+                       {{ 'checked' if form.disease_status.data|string == value|string }}
+                       required>
+
+                <div class="disease-status-card">
+                  <span class="disease-status-check">
+                    <i class="bi bi-check-lg"></i>
+                  </span>
+
+                  <div class="disease-status-thumb">
+                    <i class="bi {{ icon }}"></i>
+                    <img src="{{ url_for('static', filename='images/' ~ photo) }}"
+                         alt="{{ parts[0] }}"
+                         loading="lazy"
+                         onerror="this.onerror=null;this.src='{{ disease_fallback }}';">
+                  </div>
+
+                  <div class="disease-status-body">
+                    <strong>{{ parts[0] }}</strong>
+                    {% if parts|length > 1 %}
+                      <span>{{ parts[1] }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </label>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% for error in form.disease_status.errors %}
+        <div class="text-danger small mt-2">{{ error }}</div>
+      {% endfor %}
+    </div>
   </div>
 </div>
 

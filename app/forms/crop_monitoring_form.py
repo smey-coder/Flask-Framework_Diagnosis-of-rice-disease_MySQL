@@ -11,8 +11,6 @@ from wtforms.validators import (
     Optional,
     NumberRange
 )
-
-
 class CropMonitoringForm(FlaskForm):
 
     # =========================================================
@@ -70,11 +68,9 @@ class CropMonitoringForm(FlaskForm):
             )
         ]
     )
-
     # =========================================================
     # WATER STATUS
     # =========================================================
-
     water_status = SelectField(
         "Water Status",
         choices=[

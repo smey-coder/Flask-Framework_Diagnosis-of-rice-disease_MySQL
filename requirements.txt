@@ -36,8 +36,9 @@ urllib3            == 2.6.2
 Werkzeug           == 2.3.7
 WTForms            == 3.1.2
 yarl               == 1.22.0
-gunicorn           ==21.2.0
-pytz==2025.2
-cloudinary         ==1.46.2
-Authlib            ==1.9.5
+gunicorn           == 21.2.0
+pytz               == 2025.2
+cloudinary         == 1.46.2
+Authlib            == 1.9.5
+Flask-Migrate      == 4.1.0
 
